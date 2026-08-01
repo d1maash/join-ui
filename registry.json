@@ -1,0 +1,501 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "joinway",
+  "homepage": "https://ui.joinway.dev",
+  "items": [
+    {
+      "name": "magnetic-button",
+      "type": "registry:ui",
+      "title": "Magnetic Button",
+      "description": "A button that eases toward the pointer as it approaches and springs back on exit.",
+      "author": "Joinway",
+      "dependencies": [
+        "motion",
+        "@radix-ui/react-slot"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "buttons",
+        "button",
+        "cursor",
+        "spring",
+        "cta",
+        "pointer"
+      ],
+      "docs": "https://ui.joinway.dev/components/magnetic-button",
+      "meta": {
+        "status": "stable",
+        "since": "2026-03-14",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/magnetic-button"
+      },
+      "files": [
+        {
+          "path": "registry/components/magnetic-button.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/magnetic-button.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "spotlight-card",
+      "type": "registry:ui",
+      "title": "Spotlight Card",
+      "description": "A surface that lights up under the pointer, with an optional glowing border.",
+      "author": "Joinway",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "cards",
+        "card",
+        "spotlight",
+        "hover",
+        "glow",
+        "surface"
+      ],
+      "docs": "https://ui.joinway.dev/components/spotlight-card",
+      "meta": {
+        "status": "stable",
+        "since": "2026-03-14",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/spotlight-card"
+      },
+      "files": [
+        {
+          "path": "registry/components/spotlight-card.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/spotlight-card.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "morphing-tabs",
+      "type": "registry:ui",
+      "title": "Morphing Tabs",
+      "description": "Tabs whose indicator morphs between items with a shared-layout animation.",
+      "author": "Joinway",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "navigation",
+        "tabs",
+        "navigation",
+        "layout-animation",
+        "segmented",
+        "indicator"
+      ],
+      "docs": "https://ui.joinway.dev/components/morphing-tabs",
+      "meta": {
+        "status": "stable",
+        "since": "2026-03-28",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/morphing-tabs"
+      },
+      "files": [
+        {
+          "path": "registry/components/morphing-tabs.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/morphing-tabs.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "aurora-background",
+      "type": "registry:ui",
+      "title": "Aurora Background",
+      "description": "A GPU-friendly animated backdrop built from three drifting colour fields.",
+      "author": "Joinway",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "backgrounds",
+        "background",
+        "gradient",
+        "aurora",
+        "hero",
+        "ambient"
+      ],
+      "docs": "https://ui.joinway.dev/components/aurora-background",
+      "meta": {
+        "status": "stable",
+        "since": "2026-04-02",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/aurora-background"
+      },
+      "files": [
+        {
+          "path": "registry/components/aurora-background.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/aurora-background.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "gradient-border-card",
+      "type": "registry:ui",
+      "title": "Gradient Border Card",
+      "description": "A card wrapped in a conic gradient that rotates around its edge.",
+      "author": "Joinway",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "cards",
+        "card",
+        "border",
+        "gradient",
+        "conic",
+        "highlight"
+      ],
+      "docs": "https://ui.joinway.dev/components/gradient-border-card",
+      "meta": {
+        "status": "stable",
+        "since": "2026-04-11",
+        "featured": false,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/gradient-border-card"
+      },
+      "files": [
+        {
+          "path": "registry/components/gradient-border-card.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/gradient-border-card.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "animated-command-menu",
+      "type": "registry:ui",
+      "title": "Animated Command Menu",
+      "description": "A command palette that scales in from the caret, with fuzzy search and grouped results.",
+      "author": "Joinway",
+      "dependencies": [
+        "cmdk",
+        "@radix-ui/react-dialog",
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "overlays",
+        "command",
+        "palette",
+        "search",
+        "dialog",
+        "cmdk",
+        "shortcut"
+      ],
+      "docs": "https://ui.joinway.dev/components/animated-command-menu",
+      "meta": {
+        "status": "new",
+        "since": "2026-05-06",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/animated-command-menu"
+      },
+      "files": [
+        {
+          "path": "registry/components/animated-command-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/animated-command-menu.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "floating-dock",
+      "type": "registry:ui",
+      "title": "Floating Dock",
+      "description": "A navigation dock whose icons swell as the pointer sweeps across them.",
+      "author": "Joinway",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "navigation",
+        "dock",
+        "navigation",
+        "magnify",
+        "toolbar",
+        "macos"
+      ],
+      "docs": "https://ui.joinway.dev/components/floating-dock",
+      "meta": {
+        "status": "stable",
+        "since": "2026-04-20",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/floating-dock"
+      },
+      "files": [
+        {
+          "path": "registry/components/floating-dock.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/floating-dock.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "text-scramble",
+      "type": "registry:ui",
+      "title": "Text Scramble",
+      "description": "Decodes text from noise into its final form, without hurting SEO.",
+      "author": "Joinway",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "text-effects",
+        "text",
+        "typography",
+        "scramble",
+        "reveal",
+        "hero"
+      ],
+      "docs": "https://ui.joinway.dev/components/text-scramble",
+      "meta": {
+        "status": "stable",
+        "since": "2026-04-25",
+        "featured": false,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/text-scramble"
+      },
+      "files": [
+        {
+          "path": "registry/components/text-scramble.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/text-scramble.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "expandable-feature-card",
+      "type": "registry:ui",
+      "title": "Expandable Feature Card",
+      "description": "A feature tile that grows to reveal detail instead of navigating away.",
+      "author": "Joinway",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "marketing",
+        "card",
+        "accordion",
+        "disclosure",
+        "features",
+        "marketing"
+      ],
+      "docs": "https://ui.joinway.dev/components/expandable-feature-card",
+      "meta": {
+        "status": "stable",
+        "since": "2026-05-19",
+        "featured": false,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/expandable-feature-card"
+      },
+      "files": [
+        {
+          "path": "registry/components/expandable-feature-card.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/expandable-feature-card.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "cursor-highlight",
+      "type": "registry:ui",
+      "title": "Cursor Highlight",
+      "description": "A highlight that snaps onto whatever the user points at — or tabs to.",
+      "author": "Joinway",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "experimental",
+        "cursor",
+        "highlight",
+        "pointer",
+        "focus",
+        "spring"
+      ],
+      "docs": "https://ui.joinway.dev/components/cursor-highlight",
+      "meta": {
+        "status": "experimental",
+        "since": "2026-06-08",
+        "featured": false,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/cursor-highlight"
+      },
+      "files": [
+        {
+          "path": "registry/components/cursor-highlight.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/cursor-highlight.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "animated-field",
+      "type": "registry:ui",
+      "title": "Animated Field",
+      "description": "A text field whose label floats out of the way and whose underline draws in on focus.",
+      "author": "Joinway",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "forms",
+        "input",
+        "form",
+        "label",
+        "validation",
+        "field"
+      ],
+      "docs": "https://ui.joinway.dev/components/animated-field",
+      "meta": {
+        "status": "new",
+        "since": "2026-06-22",
+        "featured": false,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/animated-field"
+      },
+      "files": [
+        {
+          "path": "registry/components/animated-field.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/animated-field.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "status-pulse",
+      "type": "registry:ui",
+      "title": "Status Pulse",
+      "description": "A live status indicator with an expanding ring and a real text label.",
+      "author": "Joinway",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "feedback",
+        "status",
+        "indicator",
+        "live",
+        "dashboard",
+        "badge"
+      ],
+      "docs": "https://ui.joinway.dev/components/status-pulse",
+      "meta": {
+        "status": "stable",
+        "since": "2026-05-30",
+        "featured": false,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/status-pulse"
+      },
+      "files": [
+        {
+          "path": "registry/components/status-pulse.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/status-pulse.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "metric-card",
+      "type": "registry:ui",
+      "title": "Metric Card",
+      "description": "A KPI tile with a count-up figure, a signed delta and a sparkline.",
+      "author": "Joinway",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "data-display",
+        "metric",
+        "kpi",
+        "counter",
+        "sparkline",
+        "dashboard"
+      ],
+      "docs": "https://ui.joinway.dev/components/metric-card",
+      "meta": {
+        "status": "updated",
+        "since": "2026-06-30",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/metric-card"
+      },
+      "files": [
+        {
+          "path": "registry/components/metric-card.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/metric-card.tsx",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "name": "bento-grid",
+      "type": "registry:ui",
+      "title": "Bento Grid",
+      "description": "A dense, responsive bento layout that collapses to one readable column.",
+      "author": "Joinway",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "layout",
+        "grid",
+        "bento",
+        "layout",
+        "server-component",
+        "responsive"
+      ],
+      "docs": "https://ui.joinway.dev/components/bento-grid",
+      "meta": {
+        "status": "stable",
+        "since": "2026-07-09",
+        "featured": false,
+        "installCommand": "pnpm dlx shadcn@latest add @joinway/bento-grid"
+      },
+      "files": [
+        {
+          "path": "registry/components/bento-grid.tsx",
+          "type": "registry:ui",
+          "target": "components/joinway/bento-grid.tsx",
+          "content": ""
+        }
+      ]
+    }
+  ]
+}
