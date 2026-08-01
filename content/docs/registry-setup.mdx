@@ -1,0 +1,192 @@
+Joinway ships a real shadcn-compatible registry: a JSON index plus one
+installable item per component, generated and validated during the build.
+
+## Consuming the registry
+
+Add the namespace to `components.json`:
+
+```json title="components.json" {3}
+{
+  "registries": {
+    "@joinway": "https://ui.joinway.dev/r/{name}.json"
+  }
+}
+```
+
+`{name}` is substituted by the CLI, so `@joinway/status-pulse` resolves to
+`https://ui.joinway.dev/r/status-pulse.json`.
+
+<InstallTabs target="@joinway/status-pulse" />
+
+Or skip the namespace entirely:
+
+```bash
+pnpm dlx shadcn@latest add https://ui.joinway.dev/r/status-pulse.json
+```
+
+## Endpoints
+
+| URL | Contents |
+| --- | --- |
+| `/r/registry.json` | Index of every item, without file bodies |
+| `/r/<name>.json` | A single installable item, with full source inlined |
+
+Both are static files served with `Access-Control-Allow-Origin: *`, so the CLI
+can read them from any project.
+
+## Anatomy of an item
+
+```json title="public/r/status-pulse.json"
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "status-pulse",
+  "type": "registry:ui",
+  "title": "Status Pulse",
+  "description": "A live status indicator with an expanding ring and a real text label.",
+  "author": "Joinway",
+  "dependencies": [],
+  "registryDependencies": ["utils"],
+  "files": [
+    {
+      "path": "registry/components/status-pulse.tsx",
+      "type": "registry:ui",
+      "target": "components/joinway/status-pulse.tsx",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\n…"
+    }
+  ],
+  "categories": ["feedback", "status", "indicator"],
+  "docs": "https://ui.joinway.dev/components/status-pulse",
+  "meta": { "status": "stable", "since": "2026-05-30", "featured": false }
+}
+```
+
+`path` is where the file lives in this repository; `target` is where it lands in
+yours. `meta` is free-form — the CLI ignores it, and this site uses it to keep
+the published item self-describing.
+
+## Generation and validation
+
+Items are never written by hand. `pnpm registry:build` projects them from the
+component metadata in `lib/registry/components.ts`:
+
+```bash
+pnpm registry:build
+```
+
+```text
+✓ Registry built — 14 items, 74.8 kB of source
+  registry.json
+  public/r/registry.json
+  public/r/*.json (14 files)
+```
+
+The build refuses to emit anything until validation passes:
+
+```bash
+pnpm registry:validate
+```
+
+Validation covers the things a schema alone cannot:
+
+- metadata parses against a Zod schema (kebab-case slugs, PascalCase names, ISO dates, description length);
+- every file a component declares actually exists on disk;
+- every component has a preview registered in `components/previews/registry.tsx`;
+- `related` points only at slugs that exist, and never at itself;
+- the generated item still parses as a valid registry item, with non-empty file contents.
+
+<Callout type="note">
+  `registry:build` runs automatically as `prebuild`, so a production build
+  cannot ship a registry that disagrees with the source.
+</Callout>
+
+## Self-hosting your own registry
+
+The same pipeline works for a private design system.
+
+<Steps>
+  <Step title="Describe a component">
+
+    One entry in `lib/registry/components.ts`. `defineComponent` derives the
+    install command so the namespace lives in exactly one place.
+
+    ```ts title="lib/registry/components.ts"
+    defineComponent({
+      name: "GlowCard",
+      slug: "glow-card",
+      title: "Glow Card",
+      description: "A card with an animated glow.",
+      overview: "…",
+      category: "Cards",
+      tags: ["card", "glow"],
+      status: "new",
+      featured: false,
+      dependencies: [],
+      registryDependencies: ["utils"],
+      files: [uiFile("glow-card")],
+      accessibility: ["…"],
+      keyboard: [],
+      props: [{ name: "GlowCard", props: [] }],
+      usage: "…",
+      customization: [],
+      related: [],
+      since: "2026-08-02",
+    })
+    ```
+
+  </Step>
+
+  <Step title="Build and host">
+
+    ```bash
+    pnpm registry:build
+    ```
+
+    Deploy the site. `public/r/*.json` is served as static JSON — any host will
+    do, including a plain object store behind a CDN.
+
+  </Step>
+
+  <Step title="Point consumers at it">
+
+    ```json title="components.json"
+    {
+      "registries": {
+        "@acme": "https://design.acme.com/r/{name}.json"
+      }
+    }
+    ```
+
+  </Step>
+</Steps>
+
+## Private registries
+
+The CLI supports headers on a registry entry, so a token from the environment is
+enough to gate access:
+
+```json title="components.json"
+{
+  "registries": {
+    "@acme": {
+      "url": "https://design.acme.com/r/{name}.json",
+      "headers": { "Authorization": "Bearer ${ACME_TOKEN}" }
+    }
+  }
+}
+```
+
+Serve `/r/*` behind the check of your choice and drop the wildcard CORS header
+for those routes.
+
+## Registry file types
+
+| Type | Used for |
+| --- | --- |
+| `registry:ui` | A component — what every Joinway item is |
+| `registry:lib` | A utility module |
+| `registry:hook` | A React hook |
+| `registry:component` | A composed, app-level component |
+| `registry:file` | Anything else, placed verbatim at `target` |
+
+Joinway keeps every component to a single `registry:ui` file on purpose: one
+install, one file to read, one file to delete.

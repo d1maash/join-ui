@@ -1,0 +1,154 @@
+Every component in this registry is written to WCAG 2.2 AA. This page documents
+the baseline so you know what you are inheriting — and what you still have to do
+yourself.
+
+## What every component guarantees
+
+<CardGroup columns={2}>
+  <Card title="Real semantics" description="Buttons are buttons, links are links, tab lists implement the WAI-ARIA tabs pattern. No div soup with click handlers." />
+  <Card title="Nothing hover-only" description="Anything reachable with a pointer is reachable with a keyboard. Spotlights follow focus; dock labels appear on focus-within." />
+  <Card title="Visible focus" description="A 2px outline in --ring at a 2px offset, never removed — only ever replaced with something at least as visible." />
+  <Card title="Reduced motion" description="Every animation degrades to a static, fully functional state. No component loses capability when motion is turned down." />
+</CardGroup>
+
+## Focus
+
+Focus is never suppressed. The global rule shows it for keyboard interaction and
+hides it for mouse clicks, which is the behaviour `:focus-visible` was designed
+for:
+
+```css title="app/globals.css"
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+```
+
+Components that portal content — `AnimatedCommandMenu` and the mobile drawer —
+use Radix Dialog, which traps focus while open, marks the background inert, and
+restores focus to the trigger on close. The exit animation is driven with
+`forceMount` inside `AnimatePresence` so focus returns only after the transition
+finishes, not mid-flight.
+
+## Colour and contrast
+
+No component conveys meaning through colour alone.
+
+- `StatusPulse` always renders a text label next to the dot.
+- `MetricCard` shows an arrow glyph and a signed percentage, not just red or green.
+- `AnimatedField` puts the error in a text message, not only in the border colour.
+- `MorphingTabs` marks selection with `aria-selected`, not just the moving indicator.
+
+Body copy clears 4.5:1 and UI borders clear 3:1 in both themes. The contrast
+table is in [theming](/docs/theming).
+
+## Motion
+
+Two layers of protection. A global CSS media query collapses transition and
+animation durations:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+```
+
+CSS cannot reach JavaScript-driven animation, so components that animate in JS
+check the preference themselves:
+
+```tsx
+const reduceMotion = useReducedMotion()
+
+// Skip the work entirely rather than animating fast.
+const active = !reduceMotion && !disabled
+```
+
+`MagneticButton` never attaches its pointer listener under reduced motion.
+`TextScramble` renders the final string immediately. `MetricCard` shows the
+final figure without counting. `AuroraBackground` and `GradientBorderCard` ship
+a `prefers-reduced-motion` query inside their own stylesheet, so they stay
+static even in a project without the global rule.
+
+Nothing flashes more than three times per second, so WCAG 2.3.1 is not engaged
+by any component here.
+
+## Keyboard support
+
+Every component page has a Keyboard interactions table generated from its
+metadata. The recurring patterns:
+
+| Component | Behaviour |
+| --- | --- |
+| `MorphingTabs` | Roving `tabindex`; arrows move and select, `Home`/`End` jump, disabled tabs skipped |
+| `AnimatedCommandMenu` | <Kbd>⌘</Kbd><Kbd>K</Kbd> toggles, arrows navigate, <Kbd>↵</Kbd> runs, <Kbd>Esc</Kbd> closes |
+| `ExpandableFeatureCard` | <Kbd>↵</Kbd> / <Kbd>Space</Kbd> on the header toggles `aria-expanded` |
+| `FloatingDock` | Plain tab order; labels appear on focus |
+| `CursorHighlight` | Highlight follows `focusin` as well as the pointer |
+
+A tab list uses roving `tabindex` deliberately: <Kbd>Tab</Kbd> should move past
+the whole group in one press, not through every tab.
+
+## Announcements
+
+Status changes reach assistive technology without stealing focus:
+
+```tsx
+// Copy confirmation — polite, so it waits for a pause.
+<span aria-live="polite" className="sr-only">
+  {copied ? "Copied to clipboard" : ""}
+</span>
+```
+
+`StatusPulse` wraps itself in `role="status"` when `live` is set — and lets you
+turn that off with `live={false}` for dense tables, where dozens of live regions
+would produce a stream of interruptions. `AnimatedField` announces errors
+assertively and hints politely.
+
+## Touch targets
+
+Interactive controls are at least 24 by 24 CSS pixels, which is the WCAG 2.2
+Target Size (Minimum) threshold. `FloatingDock` drops magnification entirely on
+coarse pointers and renders 40px targets, because a control that grows under the
+cursor is meaningless on a touchscreen.
+
+## What is still your job
+
+Inheriting accessible components is not the same as shipping an accessible page.
+
+<Callout type="warning">
+  These four are outside any component's control and are the most common
+  failures in practice.
+</Callout>
+
+1. **Heading order.** Component headings are `h3`. Give them an `h2` section to
+   sit under, and only one `h1` per page.
+2. **Accessible names.** Icon-only triggers need an `aria-label` that says what
+   they do. `FloatingDock` requires `label` on every item for exactly this
+   reason.
+3. **Language and landmarks.** Set `lang` on `html`, provide a skip link, and
+   make sure each page has one `main`.
+4. **Real content.** An accessible card with an unlabelled image or a link
+   reading "click here" is still inaccessible.
+
+## Testing
+
+Automated tooling catches perhaps a third of what matters. Do both:
+
+```bash
+pnpm dlx @axe-core/cli http://localhost:3000/components
+```
+
+Then, manually:
+
+- Tab through the page and confirm focus is always visible and the order matches the layout.
+- Turn on Reduce Motion at the OS level and reload — nothing should lose function.
+- Zoom to 400% and check that nothing is clipped or requires horizontal scrolling.
+- Run through it with VoiceOver or NVDA once. It takes ten minutes and finds what nothing else does.

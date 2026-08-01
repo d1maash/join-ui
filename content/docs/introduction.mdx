@@ -1,0 +1,96 @@
+Joinway UI is a catalog of React components for Next.js. It is not a package you
+install and import from — it is a registry that writes real source files into
+your repository, which you then own outright.
+
+If you have used shadcn/ui, the model will be familiar. What Joinway adds is a
+focus on motion that stays cheap, accessibility that is designed in rather than
+retrofitted, and a per-component prompt built for coding agents.
+
+## What you get
+
+<CardGroup columns={2}>
+  <Card title="Open code" description="The CLI writes .tsx files into your project. Read them, edit them, delete what you do not need." />
+  <Card title="A real registry" description="Namespaced, schema-valid registry items installable by name or by URL from any project." />
+  <Card title="Copy Prompt" description="One button copies a structured brief — props, a11y rules and full source — for Cursor, Claude Code or Codex." href="/docs/ai" />
+  <Card title="WCAG 2.2 AA baseline" description="Keyboard paths, focus management, live regions and reduced-motion fallbacks in every component." href="/docs/accessibility" />
+</CardGroup>
+
+## Why open code
+
+A component library that ships as a dependency has to guess. It guesses which
+props you will need, which parts you will want to restyle, and which behaviours
+you will want to change. Every guess it gets wrong becomes a wrapper, a
+`!important`, or a fork.
+
+Registry components invert that. The CLI resolves dependencies and writes files;
+after that there is no abstraction between you and the markup. When the design
+changes, you edit a file in your own repository instead of filing an issue.
+
+The tradeoff is real and worth stating: you do not get updates for free. A
+component you installed six months ago stays exactly as it was until you
+reinstall it. For UI — the layer that diverges from upstream fastest — that is
+usually the trade you want.
+
+## Design principles
+
+### Motion is a cost, not a decoration
+
+Every animation here is on `transform` and `opacity` only, so it runs on the
+compositor. Pointer listeners are throttled to one frame and attach only while
+the element is near the viewport. Long-running animations pause when they scroll
+off-screen. And every effect has a static fallback under
+`prefers-reduced-motion: reduce` — not a degraded component, a fully functional
+one that simply does not move.
+
+### Accessibility is part of the component
+
+Interactive components implement the WAI-ARIA pattern they look like: real
+`button` elements, roving `tabindex` on tab lists, `aria-expanded` on
+disclosures, focus traps on dialogs, and polite live regions for status changes.
+Nothing here is hover-only — anything reachable with a pointer is reachable with
+a keyboard.
+
+### Tokens, not `dark:` variants
+
+Registry components theme entirely through CSS custom properties. None of them
+use a `dark:` utility. That sounds like a small stylistic rule, but it is what
+makes the theme islands on this site work: a light preview inside a dark page
+renders correctly because the nearest `.light` ancestor simply redeclares the
+variables. See [dark mode](/docs/dark-mode).
+
+### One source of truth
+
+Every surface of this site — the catalog card, the component page, the sidebar,
+search, the install command, the `/r/*.json` registry item and the AI prompt —
+is projected from a single typed metadata record per component. There is no
+second copy to drift out of sync, and the build refuses to run when a component
+declares a file that does not exist or points `related` at a slug that is not
+real.
+
+## The stack
+
+<Callout type="note">
+  These are the versions the components are written against. They are all
+  current stable releases, and nothing here depends on a paid service.
+</Callout>
+
+| Layer | Choice |
+| --- | --- |
+| Framework | Next.js App Router |
+| UI runtime | React 19 with Server Components |
+| Language | TypeScript, `strict` |
+| Styling | Tailwind CSS v4 with CSS-variable tokens |
+| Primitives | Radix UI |
+| Animation | Motion for React |
+| Icons | Lucide |
+| Highlighting | Shiki, at build time |
+| Content | MDX |
+
+## Where to go next
+
+<CardGroup columns={2}>
+  <Card title="Installation" description="Add Joinway UI to a new or existing Next.js app." href="/docs/installation" />
+  <Card title="Registry setup" description="Wire up the @joinway namespace, or self-host the registry." href="/docs/registry-setup" />
+  <Card title="Browse components" description="Fourteen components across twelve categories." href="/components" />
+  <Card title="Using components with AI" description="What the copied prompt contains and why." href="/docs/ai" />
+</CardGroup>

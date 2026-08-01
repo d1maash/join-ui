@@ -1,0 +1,139 @@
+This page describes how this repository is organised and which conventions the
+components assume. You do not have to copy the layout — but the two aliases in
+the last section are load-bearing.
+
+## Directory layout
+
+```text
+app/
+  (site)/                    # header + footer shell
+    (marketing)/page.tsx     # /
+    components/              # /components and /components/[slug]
+    docs/[[...slug]]/        # /docs and /docs/[slug]
+  (preview)/preview/[slug]/  # bare full-page previews
+  layout.tsx                 # html, fonts, theme provider, toaster
+  globals.css                # design tokens
+  opengraph-image.tsx        # site-wide social card
+  sitemap.ts / robots.ts
+components/
+  docs/                      # documentation chrome
+  previews/                  # one live demo per component
+  ui/                        # local shadcn-style primitives
+content/
+  docs/                      # MDX guides
+lib/
+  registry/                  # metadata, helpers, build + catalog projections
+  prompts/                   # AI prompt generation
+  search/                    # local search index and scorer
+  docs/                      # navigation and sidebar trees
+  mdx/                       # MDX loading, TOC extraction, rehype plugin
+registry/
+  components/                # the components the CLI ships
+public/
+  r/                         # generated registry items (git-ignored)
+scripts/
+  build-registry.ts
+  validate-registry.ts
+types/
+  registry.ts                # the content model
+```
+
+## The separation that matters
+
+Four kinds of code live in this repository, and they are deliberately kept
+apart:
+
+<CardGroup columns={2}>
+  <Card title="registry/components/" description="What users install. No imports from the docs site — these files must compile inside somebody else's project." />
+  <Card title="components/previews/" description="Demos of registry components. They may import from anywhere, because they never leave this site." />
+  <Card title="components/docs/" description="Documentation chrome: code blocks, tabs, copy buttons, the catalog. Never shipped by the registry." />
+  <Card title="components/ui/" description="Local primitives used by the docs. Deliberately separate from registry components." />
+</CardGroup>
+
+<Callout type="warning">
+  A file in `registry/components/` may only import from `react`, its declared
+  npm dependencies, and `@/lib/utils`. Anything else would break the moment the
+  CLI copies it into a project that does not have it.
+</Callout>
+
+## Path aliases
+
+Both aliases below appear inside registry component source, so they must resolve
+in the consuming project too.
+
+```json title="tsconfig.json" {4-6}
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"]
+    }
+  }
+}
+```
+
+`@/lib/utils` must export `cn`:
+
+```ts title="lib/utils.ts"
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+The shadcn CLI creates this file for you during `init`, and every Joinway
+registry item lists `utils` in its `registryDependencies` so it is installed
+automatically when missing.
+
+## Where components land
+
+The registry writes to `components/joinway/<name>.tsx`. That is set once, in
+`lib/site.ts`:
+
+```ts title="lib/site.ts"
+export const siteConfig = {
+  namespace: "@joinway",
+  installTarget: "components/joinway",
+  // …
+} as const
+```
+
+Changing `installTarget` changes the target path in every registry item, every
+install instruction and every generated AI prompt, because all three are derived
+from it.
+
+## TypeScript configuration
+
+The project runs with `strict` plus two extras worth adopting:
+
+```json title="tsconfig.json"
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true
+  }
+}
+```
+
+`noUncheckedIndexedAccess` is why array lookups in the components are guarded
+rather than assumed — `items[index]` is `T | undefined`, and the components
+handle that instead of asserting it away.
+
+## Scripts
+
+| Script | What it does |
+| --- | --- |
+| `pnpm dev` | Development server |
+| `pnpm build` | Runs `registry:build`, then the production build |
+| `pnpm registry:build` | Regenerates `registry.json` and `public/r/*.json` |
+| `pnpm registry:validate` | Schema-checks metadata, files, previews and links |
+| `pnpm typecheck` | `tsc --noEmit` |
+| `pnpm lint` | ESLint |
+| `pnpm check` | Validate, typecheck and lint in one pass |
+
+<Callout type="note">
+  `public/r/` is generated and git-ignored. `prebuild` regenerates it, so a
+  production build can never ship a registry that disagrees with the source.
+</Callout>

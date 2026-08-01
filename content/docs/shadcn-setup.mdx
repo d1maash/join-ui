@@ -1,0 +1,142 @@
+Joinway UI is a shadcn registry, so the CLI is the same one you already use.
+This page covers the configuration it reads.
+
+## Initialise
+
+```bash
+pnpm dlx shadcn@latest init
+```
+
+This writes `components.json`, creates `lib/utils.ts` with the `cn` helper, and
+adds the base tokens to your stylesheet. Joinway components need all three.
+
+## components.json
+
+```json title="components.json"
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "registries": {
+    "@joinway": "https://ui.joinway.dev/r/{name}.json"
+  }
+}
+```
+
+The fields Joinway actually depends on:
+
+| Field | Why it matters |
+| --- | --- |
+| `tailwind.config` | Empty string for Tailwind v4 — there is no config file |
+| `tailwind.cssVariables` | Must be `true`; components theme through variables only |
+| `aliases.utils` | Where `cn` lives. Components import it as `@/lib/utils` |
+| `rsc` | Controls whether the CLI keeps the `"use client"` directive |
+| `registries` | Maps the `@joinway` namespace to the item URL template |
+
+<Callout type="warning">
+  With `cssVariables: false` the CLI rewrites colours into literal utility
+  classes. Joinway components would still render, but theme switching and the
+  per-preview theme islands would stop working. Leave it on.
+</Callout>
+
+## The cn utility
+
+Every registry item declares `utils` in `registryDependencies`, so the CLI
+installs this for you if it is missing:
+
+```ts title="lib/utils.ts"
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+`twMerge` is not optional. Components put their defaults first and `className`
+last, and `twMerge` is what makes a caller's `rounded-full` actually beat the
+component's `rounded-lg`.
+
+## Adding components
+
+By namespace:
+
+<InstallTabs target="@joinway/morphing-tabs" />
+
+Several at once:
+
+```bash
+pnpm dlx shadcn@latest add @joinway/spotlight-card @joinway/metric-card
+```
+
+By URL, with no namespace configured:
+
+```bash
+pnpm dlx shadcn@latest add https://ui.joinway.dev/r/morphing-tabs.json
+```
+
+Mixed with shadcn's own registry — namespaced and bare names resolve
+independently:
+
+```bash
+pnpm dlx shadcn@latest add button dialog @joinway/floating-dock
+```
+
+## What the CLI does
+
+<Steps>
+  <Step title="Fetches the item">
+
+    `GET https://ui.joinway.dev/r/<name>.json`. The response is served with
+    permissive CORS headers, so it works from any origin.
+
+  </Step>
+
+  <Step title="Resolves registryDependencies">
+
+    Joinway items depend on `utils`, which resolves against shadcn's own
+    registry. A namespaced dependency such as `@joinway/aurora-background`
+    resolves against yours.
+
+  </Step>
+
+  <Step title="Installs npm dependencies">
+
+    Detected from your lockfile — pnpm, npm, yarn or bun.
+
+  </Step>
+
+  <Step title="Writes the files">
+
+    Each file has a `target`, so it lands at
+    `components/joinway/<name>.tsx` regardless of your `components` alias.
+
+  </Step>
+</Steps>
+
+## Coexisting with shadcn/ui
+
+Joinway components are deliberately standalone: none of them import
+`@/components/ui/*`. They live in `components/joinway/`, which means:
+
+- adding shadcn components will never overwrite one;
+- `pnpm dlx shadcn@latest add button` upgrading your Button will not touch them;
+- you can delete the whole `components/joinway/` directory to remove every trace.
+
+They do read your tokens, so they inherit your theme automatically.

@@ -1,0 +1,137 @@
+Joinway UI targets Tailwind CSS v4. There is no `tailwind.config.ts` — the
+theme is declared in CSS, which is also what makes the per-preview theme islands
+possible.
+
+## Install
+
+<DependencyTabs packages="tailwindcss @tailwindcss/postcss" />
+
+```js title="postcss.config.mjs"
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+}
+
+export default config
+```
+
+## Import Tailwind
+
+A single import replaces the v3 `@tailwind` directives:
+
+```css title="app/globals.css"
+@import "tailwindcss";
+```
+
+## The dark variant
+
+This is the one line that everything else depends on:
+
+```css title="app/globals.css"
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+Two things to note. First, `:where()` keeps the variant's specificity at zero,
+so a `dark:` utility never accidentally outranks a plain one. Second — and more
+importantly — **registry components do not use this variant at all.** They theme
+purely through custom properties. The variant exists for the documentation
+chrome; the components stay portable. [Dark mode](/docs/dark-mode) explains why
+that distinction matters.
+
+## Map tokens onto utilities
+
+`@theme inline` is what turns `--primary` into `bg-primary`, `text-primary` and
+`border-primary`:
+
+```css title="app/globals.css"
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --radius-lg: var(--radius);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+```
+
+<Callout type="tip">
+  The `inline` keyword matters. Without it Tailwind copies the value at build
+  time; with it, the utility emits `var(--primary)` and follows the token at
+  runtime — which is exactly what theme switching needs.
+</Callout>
+
+## Motion tokens
+
+Durations and easings are tokens too, so timing stays consistent across
+components:
+
+```css title="app/globals.css"
+:root {
+  --duration-instant: 90ms;
+  --duration-fast: 160ms;
+  --duration-base: 240ms;
+  --duration-slow: 420ms;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+```
+
+Components reference them through arbitrary values:
+
+```tsx
+className="transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]"
+```
+
+## The reduced-motion guard
+
+One global rule catches every CSS transition and animation, including ones in
+components that forgot to handle it:
+
+```css title="app/globals.css"
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+```
+
+This is a backstop, not a strategy. JavaScript-driven animation is not covered
+by it, so components that animate in JS check `useReducedMotion()` themselves —
+see [accessibility](/docs/accessibility).
+
+## Content detection
+
+Tailwind v4 scans your source automatically; there is no `content` array to
+maintain. The one thing it cannot see is a class name you build at runtime:
+
+```tsx
+// Tailwind cannot see this — the class gets purged.
+<div className={`md:col-span-${span}`} />
+
+// Look it up from a static map instead.
+const COL_SPAN = { 1: "md:col-span-1", 2: "md:col-span-2" } as const
+<div className={COL_SPAN[span]} />
+```
+
+Every Joinway component uses the second form. `BentoGrid` is the clearest
+example.

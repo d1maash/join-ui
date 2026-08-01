@@ -1,0 +1,177 @@
+Dark mode is a token swap, not a second set of styles. That choice is what lets
+a preview on this site render in light mode while the page around it stays dark.
+
+## Setup
+
+<Steps>
+  <Step title="Install next-themes">
+
+    <DependencyTabs packages="next-themes" />
+
+  </Step>
+
+  <Step title="Add the provider">
+
+    ```tsx title="components/theme-provider.tsx"
+    "use client"
+
+    import { ThemeProvider as NextThemesProvider } from "next-themes"
+
+    export function ThemeProvider({ children }: { children: React.ReactNode }) {
+      return (
+        <NextThemesProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          value={{ light: "light", dark: "dark" }}
+        >
+          {children}
+        </NextThemesProvider>
+      )
+    }
+    ```
+
+    `value` matters: it makes the root element carry `light` *or* `dark`, never
+    neither. The token layer keys off both classes.
+
+  </Step>
+
+  <Step title="Wrap the app">
+
+    ```tsx title="app/layout.tsx" {5}
+    export default function RootLayout({ children }: { children: React.ReactNode }) {
+      return (
+        <html lang="en" suppressHydrationWarning>
+          <body>
+            <ThemeProvider>{children}</ThemeProvider>
+          </body>
+        </html>
+      )
+    }
+    ```
+
+    `suppressHydrationWarning` belongs on `html` only. next-themes writes the
+    class before paint to avoid a flash, so the server and client markup
+    legitimately differ on that one element.
+
+  </Step>
+
+  <Step title="Declare the dark tokens">
+
+    ```css title="app/globals.css"
+    .dark {
+      --background: oklch(0.162 0.011 258);
+      --foreground: oklch(0.958 0.004 250);
+      --card: oklch(0.198 0.013 258);
+      --muted: oklch(0.238 0.013 258);
+      --muted-foreground: oklch(0.688 0.013 258);
+      --border: oklch(0.292 0.013 258);
+      --border-strong: oklch(0.358 0.015 258);
+      --primary: oklch(0.79 0.132 174);
+      --primary-foreground: oklch(0.185 0.045 174);
+      --primary-soft: oklch(0.3 0.05 174);
+    }
+    ```
+
+  </Step>
+</Steps>
+
+## Why components avoid the dark: variant
+
+Not one component in `registry/components/` uses a `dark:` utility. That is a
+deliberate constraint, and this is the reason.
+
+Consider a light-mode preview embedded in a dark page:
+
+```html
+<html class="dark">
+  <div class="light">      <!-- the preview island -->
+    <button class="bg-card text-foreground">Click</button>
+  </div>
+</html>
+```
+
+`bg-card` compiles to `background-color: var(--card)`. The button's nearest
+ancestor that declares `--card` is `.light`, so it resolves to the light value.
+Correct, with no extra work — custom-property inheritance already implements
+"nearest wins".
+
+Now the same markup written with variants:
+
+```html
+<button class="bg-white dark:bg-neutral-900">Click</button>
+```
+
+The `dark:` variant matches on `.dark *`, and `html.dark` is still an ancestor.
+The button renders dark inside a light island. CSS has no "nearest ancestor
+wins" selector, so there is no clean way to fix this at the variant level.
+
+<Callout type="warning">
+  If you add a `dark:` utility to a component, it will look right on a normal
+  page and wrong inside any scoped-theme island. Reach for a token instead.
+</Callout>
+
+## Theme islands
+
+Because of the above, scoping a theme is one class:
+
+```tsx
+<div className="dark" style={{ colorScheme: "dark" }}>
+  <MetricCard label="Revenue" value={48250} prefix="$" />
+</div>
+```
+
+`colorScheme` is worth setting alongside the class — it is what tells the
+browser to render native scrollbars, form controls and autofill in the matching
+theme.
+
+This is exactly how the preview toolbar on every component page works:
+
+<ComponentPreview slug="status-pulse" title="Status Pulse" minHeight="18rem" />
+
+Switch the preview to light while the site is dark (or the reverse) using the
+sun icon in the toolbar.
+
+## Building a theme toggle
+
+Rendering depends on the resolved theme, which is unknown during SSR. Render a
+stable placeholder until mount rather than suppressing the warning:
+
+```tsx title="components/theme-toggle.tsx"
+"use client"
+
+import * as React from "react"
+import { useTheme } from "next-themes"
+import { Moon, Sun } from "lucide-react"
+
+export function ThemeToggle() {
+  const { setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => setMounted(true), [])
+
+  const Icon = !mounted ? Sun : resolvedTheme === "dark" ? Moon : Sun
+
+  return (
+    <button
+      type="button"
+      aria-label={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} theme`}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+    >
+      <Icon aria-hidden="true" className={mounted ? undefined : "opacity-0"} />
+    </button>
+  )
+}
+```
+
+Offer **system** as well as light and dark. Users who set a schedule at the OS
+level expect an app to follow it.
+
+## Checklist
+
+- Tell the browser both themes exist: `color-scheme: light dark` on the root.
+- Set `themeColor` for both schemes in your Next.js `viewport` export.
+- Re-check `--muted-foreground` contrast in dark mode; it is the token most
+  often left too dim.
+- Dark surfaces need larger, softer shadows to read as elevated at all.

@@ -1,0 +1,148 @@
+Joinway UI installs through the shadcn CLI. If your project already uses
+shadcn/ui, you only need to add the registry namespace — skip to
+[registry setup](/docs/registry-setup).
+
+## Requirements
+
+- Node.js 20.9 or newer
+- A Next.js project using the App Router
+- Tailwind CSS v4
+- TypeScript (the components are typed, and the prop types are exported)
+
+<Callout type="note">
+  The components themselves are framework-agnostic React. They will work in
+  Vite, Remix or Astro — the docs assume Next.js because that is what the
+  registry targets and what the AI prompt describes.
+</Callout>
+
+## Quick start
+
+<Steps>
+  <Step title="Create a Next.js app">
+
+    Skip this if you already have a project.
+
+    ```bash
+    pnpm create next-app@latest my-app --typescript --tailwind --eslint --app
+    cd my-app
+    ```
+
+  </Step>
+
+  <Step title="Initialise shadcn">
+
+    This creates `components.json` and the `cn` utility that every Joinway
+    component imports.
+
+    ```bash
+    pnpm dlx shadcn@latest init
+    ```
+
+    Answer the prompts however you like — Joinway components respect your
+    aliases and your base colour.
+
+  </Step>
+
+  <Step title="Register the @joinway namespace">
+
+    Add a `registries` block to `components.json`:
+
+    ```json title="components.json" {8-10}
+    {
+      "$schema": "https://ui.shadcn.com/schema.json",
+      "style": "new-york",
+      "rsc": true,
+      "tsx": true,
+      "tailwind": { "css": "app/globals.css", "baseColor": "neutral", "cssVariables": true },
+      "aliases": { "components": "@/components", "utils": "@/lib/utils", "ui": "@/components/ui" },
+      "registries": {
+        "@joinway": "https://ui.joinway.dev/r/{name}.json"
+      }
+    }
+    ```
+
+  </Step>
+
+  <Step title="Add the design tokens">
+
+    Joinway components read tokens such as `--primary`, `--muted-foreground`,
+    `--border-strong` and the motion variables. Copy them into your
+    `globals.css` — the full block is in [theming](/docs/theming).
+
+  </Step>
+
+  <Step title="Install a component">
+
+    <InstallTabs target="@joinway/magnetic-button" />
+
+    The CLI resolves dependencies, installs them with your package manager and
+    writes the component to `components/joinway/magnetic-button.tsx`.
+
+  </Step>
+
+  <Step title="Use it">
+
+    ```tsx title="app/page.tsx"
+    import { MagneticButton } from "@/components/joinway/magnetic-button"
+    import { ArrowRight } from "lucide-react"
+
+    export default function Page() {
+      return (
+        <MagneticButton size="lg">
+          Get started
+          <ArrowRight />
+        </MagneticButton>
+      )
+    }
+    ```
+
+  </Step>
+</Steps>
+
+## Installing without a namespace
+
+You do not have to edit `components.json` at all. Every registry item is a plain
+JSON file, so the CLI can take its URL directly:
+
+<InstallTabs target="https://ui.joinway.dev/r/spotlight-card.json" />
+
+This is the fastest way to try one component, and it is what the "Installation"
+tab on every component page shows as a fallback.
+
+## Installing manually
+
+If you would rather not run the CLI, every component page has a Code tab with
+the complete source and a copy button.
+
+<Steps>
+  <Step title="Install the dependencies">
+
+    Each component page lists them. For example, `MagneticButton` needs:
+
+    <DependencyTabs packages="motion @radix-ui/react-slot" />
+
+  </Step>
+
+  <Step title="Copy the source">
+
+    Paste it into `components/joinway/<name>.tsx`. The import of `cn` assumes
+    `@/lib/utils` — adjust it if your alias differs.
+
+  </Step>
+</Steps>
+
+## Verifying the install
+
+Run your type checker. Joinway components export their prop interfaces, so a
+missing dependency or a wrong alias surfaces immediately:
+
+```bash
+pnpm tsc --noEmit
+```
+
+<Callout type="tip">
+  Prefer to let an agent do this? Every component page has a **Copy prompt**
+  button that hands Cursor, Claude Code or Codex the dependencies, the target
+  path and the full source in one paste. See
+  [using components with AI](/docs/ai).
+</Callout>
