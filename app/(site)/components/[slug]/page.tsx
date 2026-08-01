@@ -1,3 +1,4 @@
+import type * as React from "react"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
@@ -126,7 +127,10 @@ export default async function ComponentPage({ params }: PageProps) {
           items={[
             { label: "Home", href: "/" },
             { label: "Components", href: "/components" },
-            { label: component.category, href: `/components?category=${encodeURIComponent(component.category)}` },
+            {
+              label: component.category,
+              href: `/components?category=${encodeURIComponent(component.category)}`,
+            },
             { label: component.title },
           ]}
           className="mb-5"
@@ -140,10 +144,8 @@ export default async function ComponentPage({ params }: PageProps) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-semibold tracking-tight">
-              {component.title}
-            </h1>
-            <p className="text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground">
+            <h1 className="text-3xl font-semibold tracking-tight">{component.title}</h1>
+            <p className="text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">
               {component.description}
             </p>
           </div>
@@ -187,7 +189,7 @@ export default async function ComponentPage({ params }: PageProps) {
             </Button>
           </div>
 
-          <p className="text-pretty leading-relaxed text-muted-foreground">
+          <p className="leading-relaxed text-pretty text-muted-foreground">
             {component.overview}
           </p>
         </header>
@@ -197,9 +199,7 @@ export default async function ComponentPage({ params }: PageProps) {
             Preview
           </h2>
           <ComponentTabs
-            preview={
-              <ComponentPreview slug={component.slug} title={component.title} />
-            }
+            preview={<ComponentPreview slug={component.slug} title={component.title} />}
             code={
               <CodeTabs
                 label={`${component.title} source files`}
@@ -249,8 +249,8 @@ export default async function ComponentPage({ params }: PageProps) {
                     Without configuring a namespace
                   </h3>
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    The registry item is a plain JSON file — point the CLI
-                    straight at its URL.
+                    The registry item is a plain JSON file — point the CLI straight at
+                    its URL.
                   </p>
                   <PackageManagerTabs
                     commands={shadcnCommands(registryUrl)}
@@ -299,15 +299,12 @@ export default async function ComponentPage({ params }: PageProps) {
               <div className="flex flex-col gap-4 pt-1">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
-                    A structured brief for Cursor, Claude Code, Codex or any
-                    other coding agent. It is generated from this component&apos;s
-                    metadata and its real source file, so it can never describe a
-                    prop that does not exist.
+                    A structured brief for Cursor, Claude Code, Codex or any other
+                    coding agent. It is generated from this component&apos;s metadata
+                    and its real source file, so it can never describe a prop that does
+                    not exist.
                   </p>
-                  <CopyPromptButton
-                    prompt={prompt}
-                    componentName={component.title}
-                  />
+                  <CopyPromptButton prompt={prompt} componentName={component.title} />
                 </div>
                 <CodeBlock
                   code={prompt}
@@ -323,8 +320,8 @@ export default async function ComponentPage({ params }: PageProps) {
 
         <Section id="installation" title="Installation">
           <p>
-            Install {component.title} with the shadcn CLI. The registry item
-            resolves its own dependencies and writes the file to{" "}
+            Install {component.title} with the shadcn CLI. The registry item resolves
+            its own dependencies and writes the file to{" "}
             <code className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em]">
               {primary.target}
             </code>
@@ -426,7 +423,7 @@ export default async function ComponentPage({ params }: PageProps) {
                       key={entry.keys.join("-")}
                       className="border-b border-border align-top last:border-0"
                     >
-                      <th scope="row" className="whitespace-nowrap px-4 py-3 text-left">
+                      <th scope="row" className="px-4 py-3 text-left whitespace-nowrap">
                         <span className="flex flex-wrap gap-1">
                           {entry.keys.map((key) => (
                             <Kbd key={key}>{key}</Kbd>
@@ -443,8 +440,8 @@ export default async function ComponentPage({ params }: PageProps) {
             </div>
           ) : (
             <p className="text-muted-foreground">
-              {component.title} renders no interactive controls of its own, so it
-              adds nothing to the tab order.
+              {component.title} renders no interactive controls of its own, so it adds
+              nothing to the tab order.
             </p>
           )}
         </Section>
@@ -487,9 +484,13 @@ export default async function ComponentPage({ params }: PageProps) {
           className="mt-12"
           label="Component navigation"
           previous={
-            previous ? { title: previous.title, href: `/components/${previous.slug}` } : undefined
+            previous
+              ? { title: previous.title, href: `/components/${previous.slug}` }
+              : undefined
           }
-          next={next ? { title: next.title, href: `/components/${next.slug}` } : undefined}
+          next={
+            next ? { title: next.title, href: `/components/${next.slug}` } : undefined
+          }
         />
       </DocsShell>
     </>
