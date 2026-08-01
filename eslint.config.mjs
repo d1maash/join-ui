@@ -1,12 +1,7 @@
-import { dirname } from "node:path"
-import { fileURLToPath } from "node:url"
-import { FlatCompat } from "@eslint/eslintrc"
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals"
+import nextTypescript from "eslint-config-next/typescript"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const compat = new FlatCompat({ baseDirectory: __dirname })
-
+/** @type {import('eslint').Linter.Config[]} */
 const eslintConfig = [
   {
     ignores: [
@@ -14,11 +9,13 @@ const eslintConfig = [
       "node_modules/**",
       "public/r/**",
       "next-env.d.ts",
-      "pnpm-lock.yaml",
+      "registry.json",
     ],
   },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...nextCoreWebVitals,
+  ...nextTypescript,
   {
+    files: ["**/*.ts", "**/*.tsx"],
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",
