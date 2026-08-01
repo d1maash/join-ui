@@ -1,0 +1,227 @@
+Adding a component touches four files. Everything else — the catalog card, the
+sidebar entry, search, the registry item, the AI prompt, the sitemap — is
+derived.
+
+## Local setup
+
+```bash
+git clone https://github.com/joinway/ui.git
+cd ui
+pnpm install
+pnpm dev
+```
+
+## Adding a component
+
+<Steps>
+  <Step title="Write the component">
+
+    Create `registry/components/<slug>.tsx`. This file ships to other people's
+    projects, so it may only import from `react`, its declared npm
+    dependencies, and `@/lib/utils`.
+
+    ```tsx title="registry/components/glow-card.tsx"
+    "use client"
+
+    import * as React from "react"
+
+    import { cn } from "@/lib/utils"
+
+    export interface GlowCardProps extends React.ComponentPropsWithoutRef<"div"> {
+      intensity?: number
+    }
+
+    export function GlowCard({ intensity = 1, className, ...props }: GlowCardProps) {
+      return (
+        <div
+          className={cn("rounded-xl border border-border bg-card p-5", className)}
+          {...props}
+        />
+      )
+    }
+    ```
+
+    The house rules:
+
+    - Theme through tokens. **No `dark:` variants** — see [dark mode](/docs/dark-mode) for why.
+    - Accept and merge `className` through `cn`, always last.
+    - Export the props interface.
+    - Animate `transform` and `opacity` only, and handle `prefers-reduced-motion`.
+    - Mark `"use client"` only if the component genuinely needs state, refs, effects or browser APIs.
+
+  </Step>
+
+  <Step title="Write a preview">
+
+    Create `components/previews/<slug>-preview.tsx` with a default export. This
+    one never leaves the site, so it may import anything.
+
+    ```tsx title="components/previews/glow-card-preview.tsx"
+    "use client"
+
+    import { GlowCard } from "@/registry/components/glow-card"
+
+    export default function GlowCardPreview() {
+      return <GlowCard className="max-w-sm">Preview content</GlowCard>
+    }
+    ```
+
+    Register it so it code-splits:
+
+    ```tsx title="components/previews/registry.tsx"
+    "glow-card": dynamic(() => import("./glow-card-preview"), {
+      loading: PreviewSkeleton,
+    }),
+    ```
+
+    <Callout type="note">
+      Previews must not use `dark:` variants either — they render inside the
+      theme island that the preview toolbar controls.
+    </Callout>
+
+  </Step>
+
+  <Step title="Describe it">
+
+    Add one entry to `lib/registry/components.ts`. This is the single source of
+    truth: the component page, catalog card, search index, sidebar link,
+    registry item and AI prompt are all projected from it.
+
+    ```ts title="lib/registry/components.ts"
+    defineComponent({
+      name: "GlowCard",
+      slug: "glow-card",
+      title: "Glow Card",
+      description: "A card with a soft animated glow.",
+      overview: "Two to four sentences. Reused on the page and in the AI prompt.",
+      category: "Cards",
+      tags: ["card", "glow"],
+      status: "new",
+      featured: false,
+      dependencies: [],
+      registryDependencies: ["utils"],
+      files: [uiFile("glow-card")],
+      accessibility: ["Decorative layers are aria-hidden and pointer-events-none."],
+      keyboard: [],
+      props: [
+        {
+          name: "GlowCard",
+          props: [
+            {
+              name: "intensity",
+              type: "number",
+              defaultValue: "1",
+              description: "Glow strength.",
+            },
+          ],
+        },
+      ],
+      usage: `import { GlowCard } from "@/components/joinway/glow-card"
+
+    export function Example() {
+      return <GlowCard>Content</GlowCard>
+    }`,
+      customization: [],
+      related: ["spotlight-card"],
+      since: "2026-08-02",
+    })
+    ```
+
+    `installCommand` is derived by `defineComponent` — never write it by hand.
+
+  </Step>
+
+  <Step title="Validate and build">
+
+    ```bash
+    pnpm registry:validate
+    pnpm registry:build
+    pnpm check
+    ```
+
+    Validation fails loudly if the file does not exist, the preview is not
+    registered, `related` points at an unknown slug, the slug is not kebab-case,
+    or the description is longer than 160 characters.
+
+  </Step>
+</Steps>
+
+## Adding a documentation page
+
+Two files, again derived from one source.
+
+<Steps>
+  <Step title="Add the MDX">
+
+    Create `content/docs/<slug>.mdx`. No frontmatter — the title and description
+    live in the navigation.
+
+  </Step>
+
+  <Step title="Register it">
+
+    ```ts title="lib/docs/nav.ts"
+    {
+      title: "Guides",
+      items: [
+        item("my-page", "My page", "One-line description for search and metadata."),
+      ],
+    }
+    ```
+
+    That entry drives the sidebar, breadcrumbs, previous/next links, the search
+    index, the sitemap and `generateStaticParams`.
+
+  </Step>
+</Steps>
+
+### Available MDX components
+
+| Component | Use |
+| --- | --- |
+| `<Callout type="note \| tip \| warning \| success">` | Highlighted aside |
+| `<Steps>` / `<Step title="…">` | Numbered walkthrough |
+| `<CardGroup>` / `<Card title href>` | Linkable card grid |
+| `<InstallTabs target="@joinway/name" />` | shadcn add, per package manager |
+| `<DependencyTabs packages="motion clsx" />` | npm install, per package manager |
+| `<ComponentPreview slug title />` | Live preview |
+| `<Kbd>` / `<Badge>` | Inline key and status chips |
+
+Fenced blocks support a title, highlighted lines and line numbers:
+
+````text
+```tsx title="button.tsx" {2,5-7} showLineNumbers
+```
+````
+
+## Customising the AI prompt
+
+The prompt is generated from metadata. To override it wholesale, set `prompt` on
+the component — see [using components with AI](/docs/ai#overriding-the-prompt).
+
+## Before you open a pull request
+
+- `pnpm check` passes — validation, types and lint.
+- `pnpm build` succeeds.
+- The component works with a keyboard alone.
+- It behaves correctly with Reduce Motion enabled at the OS level.
+- Both preview themes look right, at all three preview widths.
+- No `dark:` variants in `registry/` or `components/previews/`.
+- No `any`, and no `TODO` left in place of an implementation.
+
+## Publishing the registry
+
+`prebuild` regenerates `public/r/` before every production build, so deploying
+the site publishes the registry:
+
+```bash
+pnpm build
+```
+
+Consumers then install from your domain:
+
+```bash
+pnpm dlx shadcn@latest add https://your-domain.com/r/glow-card.json
+```
+
+Self-hosting details are in [registry setup](/docs/registry-setup).

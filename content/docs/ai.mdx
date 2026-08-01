@@ -1,0 +1,174 @@
+Every component page has a **Copy prompt** button. It puts a complete,
+structured brief on your clipboard — ready to paste into Cursor, Claude Code,
+Codex, or any other coding agent.
+
+## Why not just paste the code
+
+Pasting a component into an agent gives it the *what* but none of the
+*constraints*. It does not know which dependencies to install, where the file
+belongs, that your project uses a `cn` utility, that the component must not
+introduce `dark:` variants, or that it should leave the rest of your codebase
+alone.
+
+The generated prompt carries all of that, so the agent's first attempt is
+usually the correct one.
+
+## What the prompt contains
+
+<CardGroup columns={2}>
+  <Card title="Stack and conventions" description="App Router, React 19, strict TypeScript, Tailwind v4 tokens, shadcn conventions." />
+  <Card title="Install path and dependencies" description="The exact target file and the npm packages to add first." />
+  <Card title="Every supported prop" description="Name, type, default and description — projected from the same metadata that renders the props table." />
+  <Card title="Accessibility and motion rules" description="The ARIA attributes and reduced-motion behaviour that must survive any edit." />
+  <Card title="Guard rails" description="Do not modify unrelated files. Do not replace configuration. Keep strict mode passing." />
+  <Card title="The full source" description="The complete component file, exactly as the CLI would install it." />
+</CardGroup>
+
+## Shape of the output
+
+````text
+Add the MagneticButton component to my existing Next.js application.
+
+Project stack:
+- Next.js (App Router)
+- React 19 with Server Components
+- TypeScript in strict mode
+- Tailwind CSS v4 with CSS-variable design tokens
+- shadcn/ui conventions (open code, `cn` utility, `components.json`)
+
+Requirements:
+- Install all required dependencies: motion, @radix-ui/react-slot.
+- Place the component at components/joinway/magnetic-button.tsx.
+- Use the project's existing `cn` utility from `@/lib/utils` and its existing
+  design tokens. Do not introduce new hard-coded colours.
+- Preserve dark mode support. The component must theme through CSS variables
+  only — do not add `dark:` variants.
+- Preserve keyboard navigation and every ARIA attribute below.
+- Respect `prefers-reduced-motion: reduce`.
+- Keep TypeScript strict mode passing. Export the prop types.
+- Do not modify unrelated files.
+- Return a summary of created and modified files.
+
+Component behavior:
+…
+
+Supported props:
+- variant: "primary" | "secondary" | "outline" | "ghost" — default: "primary". …
+
+Accessibility requirements:
+- Renders a real `button` element, so Enter, Space and form submission work. …
+
+Animation requirements:
+- Animate compositor-friendly properties (transform, opacity) only. …
+
+Implementation:
+File: components/joinway/magnetic-button.tsx
+
+```tsx
+"use client"
+…
+```
+````
+
+## How it is generated
+
+The prompt is assembled on the server from the component's metadata plus the
+real file on disk — never from a hand-written copy:
+
+```ts title="lib/prompts/build-prompt.ts"
+export function buildComponentPrompt({ component, sources }: BuildPromptOptions) {
+  if (component.prompt) return component.prompt
+  // …projects metadata + source into the template
+}
+```
+
+Two consequences worth naming:
+
+1. **The prompt cannot describe a prop that does not exist.** Props, dependencies
+   and accessibility notes come from the same records that render the props
+   table on the page.
+2. **The source is never stale.** It is read from `registry/components/` at
+   build time, so it matches what the CLI installs, byte for byte.
+
+## Overriding the prompt
+
+Some components need instructions the template cannot infer — a migration note,
+a warning about a conflicting library. Set `prompt` on the metadata and it
+replaces the generated text entirely:
+
+```ts title="lib/registry/components.ts" {6}
+defineComponent({
+  name: "MagneticButton",
+  slug: "magnetic-button",
+  // …
+  prompt: `Add the MagneticButton component…
+
+Extra context this component needs.`,
+})
+```
+
+Use it sparingly. A hand-written prompt is one more thing that can drift from
+the implementation, which is exactly what the generated path avoids.
+
+## Working with agents
+
+<Steps>
+  <Step title="Copy the prompt">
+
+    Open any component page and press **Copy prompt**. The Prompt tab shows the
+    exact text first if you would rather read it.
+
+  </Step>
+
+  <Step title="Paste it into your agent">
+
+    Cursor, Claude Code, Codex, Windsurf — anything that can read a prompt and
+    write files. No extra context is needed; the brief is self-contained.
+
+  </Step>
+
+  <Step title="Let it install and wire up">
+
+    The agent installs the dependencies, writes the file, and reports what it
+    created. Then ask for the integration you actually want:
+
+    > Use MagneticButton for the primary call to action in the hero, keeping the
+    > existing copy and href.
+
+  </Step>
+
+  <Step title="Verify">
+
+    ```bash
+    pnpm tsc --noEmit && pnpm lint
+    ```
+
+  </Step>
+</Steps>
+
+## Prefer the CLI when you can
+
+If the agent has terminal access, installing is faster and less error-prone than
+writing the file from a prompt:
+
+<InstallTabs target="@joinway/magnetic-button" />
+
+The prompt says as much — it ends with the equivalent CLI command and tells the
+agent to prefer it when the project already uses shadcn. Reach for **Copy
+prompt** when the agent cannot run commands, when you want the component adapted
+rather than copied verbatim, or when you are working somewhere the registry is
+not reachable.
+
+## Machine-readable metadata
+
+Agents that can fetch URLs do not need the clipboard at all. Every registry item
+is self-describing JSON:
+
+```bash
+curl https://ui.joinway.dev/r/magnetic-button.json
+```
+
+It carries the title, description, dependencies, `registryDependencies`, target
+path, full source, and a `meta` block with status and release date. The index at
+`/r/registry.json` lists every component, which is enough for an agent to
+discover the catalog on its own.
