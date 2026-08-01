@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Github } from "lucide-react"
+import { GitHubIcon } from "@/components/icons"
 
 import { DocsMobileNav } from "@/components/docs/docs-mobile-nav"
 import { Logo } from "@/components/docs/logo"
@@ -53,7 +53,7 @@ export function DocsHeader() {
               rel="noreferrer noopener"
               aria-label={`${siteConfig.name} on GitHub (opens in a new tab)`}
             >
-              <Github aria-hidden="true" />
+              <GitHubIcon aria-hidden="true" className="size-4" />
             </a>
           </Button>
           <ThemeToggle />
