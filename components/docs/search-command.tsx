@@ -52,6 +52,14 @@ export function SearchCommand({ index }: SearchCommandProps) {
   const [query, setQuery] = React.useState("")
   const [recent, setRecent] = React.useState<string[]>([])
 
+  // Reading history is a side effect of *opening*, so it belongs in the
+  // handlers rather than in an effect that watches `open`.
+  const changeOpen = React.useCallback((next: boolean) => {
+    setOpen(next)
+    if (next) setRecent(readRecent())
+    else setQuery("")
+  }, [])
+
   React.useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       const isShortcut = event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)
@@ -61,16 +69,11 @@ export function SearchCommand({ index }: SearchCommandProps) {
         !(event.target instanceof HTMLTextAreaElement)
       if (!isShortcut && !isSlash) return
       event.preventDefault()
-      setOpen((value) => !value)
+      changeOpen(!open)
     }
     document.addEventListener("keydown", handler)
     return () => document.removeEventListener("keydown", handler)
-  }, [])
-
-  React.useEffect(() => {
-    if (open) setRecent(readRecent())
-    else setQuery("")
-  }, [open])
+  }, [changeOpen, open])
 
   const results = React.useMemo(
     () => searchIndex(index, query, 14),
@@ -96,7 +99,7 @@ export function SearchCommand({ index }: SearchCommandProps) {
     } catch {
       // Private mode or storage disabled — history is a nicety, not a requirement.
     }
-    setOpen(false)
+    changeOpen(false)
     router.push(entry.href)
   }
 
@@ -108,7 +111,7 @@ export function SearchCommand({ index }: SearchCommandProps) {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => changeOpen(true)}
         className={cn(
           "group flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-card text-muted-foreground",
           "transition-colors duration-[var(--duration-fast)] hover:border-border-strong hover:text-foreground",
@@ -125,7 +128,7 @@ export function SearchCommand({ index }: SearchCommandProps) {
         <span className="sr-only md:hidden">Search the documentation</span>
       </button>
 
-      <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Root open={open} onOpenChange={changeOpen}>
         <AnimatePresence>
           {open ? (
             <Dialog.Portal forceMount>

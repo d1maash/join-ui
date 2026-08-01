@@ -3,13 +3,14 @@
 import * as React from "react"
 
 import { CopyButton } from "@/components/docs/copy-button"
+import { useStoredPreference } from "@/lib/hooks"
 import { PACKAGE_MANAGERS, type PackageManager } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 const STORAGE_KEY = "joinway-package-manager"
 
-function isPackageManager(value: string | null): value is PackageManager {
-  return value !== null && (PACKAGE_MANAGERS as readonly string[]).includes(value)
+function isPackageManager(value: string): value is PackageManager {
+  return (PACKAGE_MANAGERS as readonly string[]).includes(value)
 }
 
 export interface PackageManagerTabsClientProps {
@@ -34,28 +35,15 @@ export function PackageManagerTabsClient({
   className,
   label = "Package manager",
 }: PackageManagerTabsClientProps) {
-  const [active, setActive] = React.useState<PackageManager>("pnpm")
+  // Shared store, so every switcher on the page — and in every other tab —
+  // stays on the same package manager.
+  const [active, select] = useStoredPreference<PackageManager>(
+    STORAGE_KEY,
+    "pnpm",
+    isPackageManager
+  )
   const listRef = React.useRef<HTMLDivElement>(null)
   const baseId = React.useId()
-
-  React.useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY)
-    if (isPackageManager(stored)) setActive(stored)
-
-    // Keep every switcher on the page in sync, including across tabs.
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY && isPackageManager(event.newValue)) {
-        setActive(event.newValue)
-      }
-    }
-    window.addEventListener("storage", onStorage)
-    return () => window.removeEventListener("storage", onStorage)
-  }, [])
-
-  const select = (next: PackageManager) => {
-    setActive(next)
-    window.localStorage.setItem(STORAGE_KEY, next)
-  }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     const current = PACKAGE_MANAGERS.indexOf(active)

@@ -6,6 +6,7 @@ import { LayoutGrid, List, Search, X } from "lucide-react"
 
 import { ComponentCard } from "@/components/docs/component-card"
 import { Button } from "@/components/ui/button"
+import { useStoredPreference } from "@/lib/hooks"
 import type { CatalogItem } from "@/lib/registry/catalog"
 import { cn } from "@/lib/utils"
 import { COMPONENT_CATEGORIES, type ComponentCategory } from "@/types/registry"
@@ -21,6 +22,10 @@ type FacetId = (typeof FACETS)[number]["id"]
 type Layout = "grid" | "list"
 
 const LAYOUT_KEY = "joinway-catalog-layout"
+
+function isLayout(value: string): value is Layout {
+  return value === "grid" || value === "list"
+}
 
 function matchesFacet(item: CatalogItem, facet: FacetId): boolean {
   switch (facet) {
@@ -79,13 +84,12 @@ export function ComponentCatalog({ items }: ComponentCatalogProps) {
 
   const [query, setQuery] = React.useState("")
   const [facets, setFacets] = React.useState<FacetId[]>([])
-  const [layout, setLayout] = React.useState<Layout>("grid")
+  const [layout, changeLayout] = useStoredPreference<Layout>(
+    LAYOUT_KEY,
+    "grid",
+    isLayout
+  )
   const inputRef = React.useRef<HTMLInputElement>(null)
-
-  React.useEffect(() => {
-    const stored = window.localStorage.getItem(LAYOUT_KEY)
-    if (stored === "grid" || stored === "list") setLayout(stored)
-  }, [])
 
   const setCategory = (category: ComponentCategory | "All") => {
     const params = new URLSearchParams(searchParams.toString())
@@ -93,11 +97,6 @@ export function ComponentCatalog({ items }: ComponentCatalogProps) {
     else params.set("category", category)
     const next = params.toString()
     router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false })
-  }
-
-  const changeLayout = (next: Layout) => {
-    setLayout(next)
-    window.localStorage.setItem(LAYOUT_KEY, next)
   }
 
   const toggleFacet = (facet: FacetId) => {

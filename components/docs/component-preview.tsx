@@ -182,6 +182,7 @@ export function ComponentPreview({
           style={{ maxWidth: WIDTHS[width].max }}
           className="flex w-full items-center justify-center transition-[max-width] duration-[var(--duration-base)] ease-[var(--ease-out-soft)]"
         >
+          {/* eslint-disable-next-line react-hooks/static-components -- `previewRegistry` is a module-level constant map; the component identity for a given slug never changes between renders. */}
           <Preview />
         </div>
       </div>

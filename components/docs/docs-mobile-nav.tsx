@@ -24,11 +24,15 @@ export interface DocsMobileNavProps {
 export function DocsMobileNav({ sections }: DocsMobileNavProps) {
   const [open, setOpen] = React.useState(false)
   const pathname = usePathname()
+  const [lastPathname, setLastPathname] = React.useState(pathname)
 
-  // Close after a route change completes, including browser back/forward.
-  React.useEffect(() => {
+  // Close on navigation, including browser back/forward. Adjusting state during
+  // render is React's documented answer here — an effect would paint the drawer
+  // over the new page for one frame first.
+  if (lastPathname !== pathname) {
+    setLastPathname(pathname)
     setOpen(false)
-  }, [pathname])
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>

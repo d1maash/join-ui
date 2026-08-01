@@ -1,10 +1,10 @@
 "use client"
 
-import * as React from "react"
 import { useTheme } from "next-themes"
 import { Monitor, Moon, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { useIsHydrated } from "@/lib/hooks"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,9 +28,7 @@ const OPTIONS = [
  */
 export function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => setMounted(true), [])
+  const mounted = useIsHydrated()
 
   const Icon = !mounted ? Sun : resolvedTheme === "dark" ? Moon : Sun
 

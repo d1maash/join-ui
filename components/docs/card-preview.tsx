@@ -22,11 +22,14 @@ export interface CardPreviewProps {
  * own link is the only thing users can reach.
  */
 export function CardPreview({ slug, className, scale = 0.62 }: CardPreviewProps) {
-  const containerRef = React.useRef<HTMLDivElement>(null)
   const [shouldRender, setShouldRender] = React.useState(false)
 
-  React.useEffect(() => {
-    const node = containerRef.current
+  /*
+   * A ref callback rather than an effect: React 19 supports returning a cleanup
+   * from one, and it keeps the observer setup tied to the node's lifetime
+   * instead of the component's.
+   */
+  const observeVisibility = React.useCallback((node: HTMLDivElement | null) => {
     if (!node) return
     if (typeof IntersectionObserver === "undefined") {
       setShouldRender(true)
@@ -49,7 +52,7 @@ export function CardPreview({ slug, className, scale = 0.62 }: CardPreviewProps)
 
   return (
     <div
-      ref={containerRef}
+      ref={observeVisibility}
       inert
       aria-hidden="true"
       className={cn(
@@ -62,6 +65,7 @@ export function CardPreview({ slug, className, scale = 0.62 }: CardPreviewProps)
           style={{ transform: `scale(${scale})`, width: `${100 / scale}%` }}
           className="flex origin-center items-center justify-center px-6"
         >
+          {/* eslint-disable-next-line react-hooks/static-components -- `previewRegistry` is a module-level constant map; the component identity for a given slug never changes between renders. */}
           <Preview />
         </div>
       ) : (
