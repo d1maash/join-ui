@@ -6,7 +6,14 @@ import { cache } from "react"
 
 import type { ComponentMetadata } from "@/types/registry"
 
-const projectRoot = process.cwd()
+/**
+ * Statically scoped root for every read in this module.
+ *
+ * Keeping the base directory constant is what lets Next's file tracer bound the
+ * dependency set to `registry/` — an unscoped `path.join(process.cwd(), x)`
+ * makes it conservatively trace the entire project into the build output.
+ */
+const REGISTRY_ROOT = path.join(process.cwd(), "registry")
 
 export interface SourceFile {
   /** Repository-relative path. */
@@ -33,7 +40,15 @@ const LANGUAGE_BY_EXTENSION: Record<string, string> = {
  * the source in MDX or in a generated constant that could drift.
  */
 export const readSourceFile = cache(async (relativePath: string): Promise<string> => {
-  const absolute = path.join(projectRoot, relativePath)
+  // Metadata stores repo-relative paths (`registry/components/foo.tsx`); reads
+  // are re-anchored under REGISTRY_ROOT and may never escape it.
+  const withinRegistry = relativePath.replace(/^registry\//, "")
+  const absolute = path.join(REGISTRY_ROOT, withinRegistry)
+
+  if (!absolute.startsWith(`${REGISTRY_ROOT}${path.sep}`)) {
+    throw new Error(`Refusing to read outside the registry: ${relativePath}`)
+  }
+
   return fs.readFile(absolute, "utf8")
 })
 
