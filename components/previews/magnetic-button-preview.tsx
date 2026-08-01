@@ -1,7 +1,8 @@
 "use client"
 
-import { ArrowRight, Download, Github } from "lucide-react"
+import { ArrowRight, Download } from "lucide-react"
 
+import { GitHubIcon } from "@/components/icons"
 import { MagneticButton } from "@/registry/components/magnetic-button"
 
 export default function MagneticButtonPreview() {
@@ -12,7 +13,7 @@ export default function MagneticButtonPreview() {
         <ArrowRight />
       </MagneticButton>
       <MagneticButton variant="outline" size="lg">
-        <Github />
+        <GitHubIcon />
         Star on GitHub
       </MagneticButton>
       <MagneticButton variant="ghost" strength={0.5} radius={90}>
