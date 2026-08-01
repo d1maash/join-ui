@@ -20,8 +20,10 @@ export interface FloatingDockItem {
   active?: boolean
 }
 
-export interface FloatingDockProps
-  extends Omit<React.ComponentPropsWithoutRef<"nav">, "onChange"> {
+export interface FloatingDockProps extends Omit<
+  React.ComponentPropsWithoutRef<"nav">,
+  "onChange"
+> {
   items: FloatingDockItem[]
   /** Base icon size in pixels. */
   baseSize?: number
@@ -156,9 +158,9 @@ function DockIcon({
       <span
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute -top-9 whitespace-nowrap rounded-md border border-border bg-popover px-2 py-1 text-xs font-medium text-popover-foreground shadow-[var(--shadow-raised)]",
+          "pointer-events-none absolute -top-9 rounded-md border border-border bg-popover px-2 py-1 text-xs font-medium whitespace-nowrap text-popover-foreground shadow-[var(--shadow-raised)]",
           "opacity-0 transition-opacity duration-[var(--duration-fast)]",
-          "group-hover:opacity-100 group-focus-within:opacity-100"
+          "group-focus-within:opacity-100 group-hover:opacity-100"
         )}
       >
         {item.label}

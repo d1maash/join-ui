@@ -59,8 +59,10 @@ export function BentoGrid({
   )
 }
 
-export interface BentoGridItemProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "title"> {
+export interface BentoGridItemProps extends Omit<
+  React.ComponentPropsWithoutRef<"div">,
+  "title"
+> {
   colSpan?: keyof typeof COL_SPAN
   rowSpan?: keyof typeof ROW_SPAN
   /** Renders a heading, body copy and icon in the house style. */

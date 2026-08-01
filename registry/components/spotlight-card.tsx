@@ -4,8 +4,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-export interface SpotlightCardProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface SpotlightCardProps extends React.ComponentPropsWithoutRef<"div"> {
   /** Diameter of the light pool, in pixels. */
   spotlightSize?: number
   /** Any CSS color. Defaults to a translucent tint of the primary token. */
@@ -106,7 +105,7 @@ export const SpotlightCard = React.forwardRef<HTMLDivElement, SpotlightCardProps
         className={cn(
           "group relative isolate overflow-hidden rounded-xl border border-border bg-card text-card-foreground",
           "shadow-[var(--shadow-subtle)] transition-shadow duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
-          "hover:shadow-[var(--shadow-raised)] focus-within:shadow-[var(--shadow-raised)]",
+          "focus-within:shadow-[var(--shadow-raised)] hover:shadow-[var(--shadow-raised)]",
           className
         )}
         {...props}

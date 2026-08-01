@@ -12,7 +12,11 @@ const projectRoot = process.cwd()
 
 /** Registry item without file contents — used for the index. */
 export type RegistryIndexItem = Omit<RegistryItem, "$schema" | "files"> & {
-  files: Array<{ path: string; type: RegistryItem["files"][number]["type"]; target: string }>
+  files: Array<{
+    path: string
+    type: RegistryItem["files"][number]["type"]
+    target: string
+  }>
 }
 
 function categorySlug(category: string): string {

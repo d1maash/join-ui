@@ -98,7 +98,10 @@ export const mdxComponents = {
   h4: heading(4),
 
   p: ({ className, ...props }: React.ComponentPropsWithoutRef<"p">) => (
-    <p className={cn("my-4 leading-[1.75] text-muted-foreground", className)} {...props} />
+    <p
+      className={cn("my-4 leading-[1.75] text-muted-foreground", className)}
+      {...props}
+    />
   ),
 
   a: ({ href = "", className, ...props }: React.ComponentPropsWithoutRef<"a">) => {
@@ -144,10 +147,13 @@ export const mdxComponents = {
     <li className={cn("leading-[1.75] [&>ul]:my-2", className)} {...props} />
   ),
 
-  blockquote: ({ className, ...props }: React.ComponentPropsWithoutRef<"blockquote">) => (
+  blockquote: ({
+    className,
+    ...props
+  }: React.ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
       className={cn(
-        "my-5 border-l-2 border-primary/40 pl-4 italic text-muted-foreground",
+        "my-5 border-l-2 border-primary/40 pl-4 text-muted-foreground italic",
         className
       )}
       {...props}

@@ -116,7 +116,8 @@ export function ComponentPreview({
                     aria-label={WIDTHS[key].label}
                     onClick={() => setWidth(key)}
                     className={cn(
-                      width === key && "bg-card text-foreground shadow-[var(--shadow-subtle)]"
+                      width === key &&
+                        "bg-card text-foreground shadow-[var(--shadow-subtle)]"
                     )}
                   >
                     <Icon aria-hidden="true" />

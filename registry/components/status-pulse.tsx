@@ -16,40 +16,38 @@ const PULSE_CSS = `
 `
 
 export type StatusPulseTone =
-  | "operational"
-  | "degraded"
-  | "outage"
-  | "maintenance"
-  | "idle"
+  "operational" | "degraded" | "outage" | "maintenance" | "idle"
 
-const TONES: Record<StatusPulseTone, { dot: string; text: string; defaultLabel: string }> =
-  {
-    operational: {
-      dot: "bg-success",
-      text: "text-success",
-      defaultLabel: "All systems operational",
-    },
-    degraded: {
-      dot: "bg-warning",
-      text: "text-warning",
-      defaultLabel: "Degraded performance",
-    },
-    outage: {
-      dot: "bg-destructive",
-      text: "text-destructive",
-      defaultLabel: "Major outage",
-    },
-    maintenance: {
-      dot: "bg-primary",
-      text: "text-primary",
-      defaultLabel: "Under maintenance",
-    },
-    idle: {
-      dot: "bg-muted-foreground",
-      text: "text-muted-foreground",
-      defaultLabel: "Idle",
-    },
-  }
+const TONES: Record<
+  StatusPulseTone,
+  { dot: string; text: string; defaultLabel: string }
+> = {
+  operational: {
+    dot: "bg-success",
+    text: "text-success",
+    defaultLabel: "All systems operational",
+  },
+  degraded: {
+    dot: "bg-warning",
+    text: "text-warning",
+    defaultLabel: "Degraded performance",
+  },
+  outage: {
+    dot: "bg-destructive",
+    text: "text-destructive",
+    defaultLabel: "Major outage",
+  },
+  maintenance: {
+    dot: "bg-primary",
+    text: "text-primary",
+    defaultLabel: "Under maintenance",
+  },
+  idle: {
+    dot: "bg-muted-foreground",
+    text: "text-muted-foreground",
+    defaultLabel: "Idle",
+  },
+}
 
 const SIZES = {
   sm: { dot: "size-1.5", text: "text-xs", gap: "gap-1.5", pad: "px-2 py-1" },
@@ -57,8 +55,10 @@ const SIZES = {
   lg: { dot: "size-2.5", text: "text-sm", gap: "gap-2.5", pad: "px-3 py-2" },
 } as const
 
-export interface StatusPulseProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "children"> {
+export interface StatusPulseProps extends Omit<
+  React.ComponentPropsWithoutRef<"div">,
+  "children"
+> {
   tone?: StatusPulseTone
   /** Overrides the tone's default label. */
   label?: React.ReactNode
@@ -125,7 +125,8 @@ export function StatusPulse({
             data-joinway-status-ring=""
             aria-hidden="true"
             style={{
-              animation: "joinway-status-pulse 2s var(--ease-out-soft, ease-out) infinite",
+              animation:
+                "joinway-status-pulse 2s var(--ease-out-soft, ease-out) infinite",
             }}
             className={cn("absolute rounded-full", sizeStyles.dot, toneStyles.dot)}
           />

@@ -28,8 +28,8 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-              {siteConfig.tagline} {stats.total} components across{" "}
-              {stats.categories} categories, MIT licensed.
+              {siteConfig.tagline} {stats.total} components across {stats.categories}{" "}
+              categories, MIT licensed.
             </p>
             <a
               href={siteConfig.links.github}
@@ -73,8 +73,8 @@ export function SiteFooter() {
 
         <div className="mt-10 flex flex-col gap-2 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>
-            Built with Next.js, Tailwind CSS v4 and Motion. Open code — you own
-            what you install.
+            Built with Next.js, Tailwind CSS v4 and Motion. Open code — you own what you
+            install.
           </p>
           <p>
             <a
@@ -99,7 +99,7 @@ function FooterColumn({
 }) {
   return (
     <nav aria-label={title} className="flex flex-col gap-2.5">
-      <h2 className="text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
+      <h2 className="text-[0.6875rem] font-medium tracking-wider text-muted-foreground uppercase">
         {title}
       </h2>
       <ul className="flex flex-col gap-2">

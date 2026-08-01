@@ -76,9 +76,7 @@ export function CardPreview({ slug, className, scale = 0.62 }: CardPreviewProps)
       )}
 
       {/* Softens the crop so scaled demos do not look cut off. */}
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-background to-transparent"
-      />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-background to-transparent" />
     </div>
   )
 }

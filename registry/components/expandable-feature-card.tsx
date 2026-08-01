@@ -5,8 +5,10 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
-export interface ExpandableFeatureCardProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "title" | "onChange"> {
+export interface ExpandableFeatureCardProps extends Omit<
+  React.ComponentPropsWithoutRef<"div">,
+  "title" | "onChange"
+> {
   title: React.ReactNode
   description: React.ReactNode
   icon?: React.ReactNode
@@ -94,9 +96,7 @@ export function ExpandableFeatureCard({
         ) : null}
 
         <span className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="text-[0.9375rem] font-semibold tracking-tight">
-            {title}
-          </span>
+          <span className="text-[0.9375rem] font-semibold tracking-tight">{title}</span>
           <span className="text-sm leading-relaxed text-muted-foreground">
             {description}
           </span>

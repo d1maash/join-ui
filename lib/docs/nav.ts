@@ -31,8 +31,16 @@ export const docsNav: DocsNavSection[] = [
     items: [
       item("introduction", "Introduction", "What Joinway UI is and how it is built."),
       item("installation", "Installation", "Add Joinway UI to a new or existing app."),
-      item("project-setup", "Project setup", "Directory layout, aliases and conventions."),
-      item("tailwind-setup", "Tailwind setup", "Tailwind CSS v4 tokens and the dark variant."),
+      item(
+        "project-setup",
+        "Project setup",
+        "Directory layout, aliases and conventions."
+      ),
+      item(
+        "tailwind-setup",
+        "Tailwind setup",
+        "Tailwind CSS v4 tokens and the dark variant."
+      ),
       item("shadcn-setup", "shadcn setup", "components.json and the CLI."),
       item("registry-setup", "Registry setup", "Consume or self-host the registry."),
     ],
@@ -47,8 +55,17 @@ export const docsNav: DocsNavSection[] = [
   {
     title: "Guides",
     items: [
-      item("accessibility", "Accessibility", "The WCAG 2.2 AA baseline every component meets."),
-      item("ai", "Using components with AI", "Copy Prompt, and how the prompt is built.", "New"),
+      item(
+        "accessibility",
+        "Accessibility",
+        "The WCAG 2.2 AA baseline every component meets."
+      ),
+      item(
+        "ai",
+        "Using components with AI",
+        "Copy Prompt, and how the prompt is built.",
+        "New"
+      ),
       item("contributing", "Contributing", "Add a component end to end."),
     ],
   },

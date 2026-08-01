@@ -93,9 +93,7 @@ export default async function DocsPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <DocsShell
-        aside={toc.length > 0 ? <TableOfContents entries={toc} /> : undefined}
-      >
+      <DocsShell aside={toc.length > 0 ? <TableOfContents entries={toc} /> : undefined}>
         <DocsBreadcrumbs
           items={[
             { label: "Docs", href: "/docs" },
@@ -108,7 +106,7 @@ export default async function DocsPage({ params }: PageProps) {
         <article className="max-w-3xl">
           <header className="mb-8 flex flex-col gap-2">
             <h1 className="text-3xl font-semibold tracking-tight">{page.title}</h1>
-            <p className="text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground">
+            <p className="text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">
               {page.description}
             </p>
           </header>
@@ -129,7 +127,9 @@ export default async function DocsPage({ params }: PageProps) {
         <PreviousNextNavigation
           className="mt-14 max-w-3xl"
           label="Documentation navigation"
-          previous={previous ? { title: previous.title, href: previous.href } : undefined}
+          previous={
+            previous ? { title: previous.title, href: previous.href } : undefined
+          }
           next={next ? { title: next.title, href: next.href } : undefined}
         />
       </DocsShell>

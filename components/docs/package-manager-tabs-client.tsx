@@ -59,9 +59,7 @@ export function PackageManagerTabsClient({
     const next = PACKAGE_MANAGERS[index]
     if (!next) return
     select(next)
-    listRef.current
-      ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
-      [index]?.focus()
+    listRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[index]?.focus()
   }
 
   const panelId = `${baseId}-panel`
@@ -73,7 +71,7 @@ export function PackageManagerTabsClient({
         className
       )}
     >
-      <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/50 pl-1.5 pr-1.5">
+      <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/50 pr-1.5 pl-1.5">
         <div
           ref={listRef}
           role="tablist"

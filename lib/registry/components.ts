@@ -91,7 +91,8 @@ export const components: ComponentMetadata[] = [
           {
             name: "...props",
             type: "React.ComponentPropsWithoutRef<'button'>",
-            description: "All native button attributes, including `disabled` and `type`.",
+            description:
+              "All native button attributes, including `disabled` and `type`.",
           },
         ],
       },
@@ -275,7 +276,7 @@ export function Example() {
     registryDependencies: ["utils"],
     files: [uiFile("morphing-tabs")],
     accessibility: [
-      "Implements the WAI-ARIA tabs pattern: `role=\"tablist\"`, `role=\"tab\"` and `aria-selected` on every tab.",
+      'Implements the WAI-ARIA tabs pattern: `role="tablist"`, `role="tab"` and `aria-selected` on every tab.',
       "Roving `tabindex` — only the selected tab is in the tab sequence, so `Tab` moves past the whole group.",
       "Arrow keys move between tabs and skip disabled ones; `Home` and `End` jump to the ends.",
       "`aria-controls` links each tab to its panel when `panelId` is provided, and `MorphingTabsPanel` sets `aria-labelledby` back.",
@@ -314,7 +315,8 @@ export function Example() {
           {
             name: "defaultValue",
             type: "string",
-            description: "Uncontrolled initial selection. Defaults to the first enabled tab.",
+            description:
+              "Uncontrolled initial selection. Defaults to the first enabled tab.",
           },
           {
             name: "onValueChange",
@@ -355,9 +357,15 @@ export function Example() {
       },
       {
         name: "MorphingTabsPanel",
-        description: "Optional animated panel. Bring your own if you need custom transitions.",
+        description:
+          "Optional animated panel. Bring your own if you need custom transitions.",
         props: [
-          { name: "value", type: "string", required: true, description: "Panel's tab value." },
+          {
+            name: "value",
+            type: "string",
+            required: true,
+            description: "Panel's tab value.",
+          },
           {
             name: "activeValue",
             type: "string",
@@ -666,7 +674,7 @@ export function Example() {
       "Radix Dialog provides a focus trap, restores focus to the trigger on close, and marks background content inert.",
       "`Escape` closes the palette, and a click on the overlay dismisses it.",
       "The dialog has an accessible name from a visually hidden `Dialog.Title`, announced on open.",
-      "cmdk maintains `aria-selected` on the active option and `role=\"listbox\"` semantics for results.",
+      'cmdk maintains `aria-selected` on the active option and `role="listbox"` semantics for results.',
       "Selection is announced by moving DOM focus into the input with `aria-activedescendant` semantics from cmdk.",
       "The reduced-motion path removes the scale transition but keeps every behaviour.",
     ],
@@ -693,7 +701,8 @@ export function Example() {
           {
             name: "open",
             type: "boolean",
-            description: "Controlled visibility. Omit to let the component own its state.",
+            description:
+              "Controlled visibility. Omit to let the component own its state.",
           },
           {
             name: "onOpenChange",
@@ -779,7 +788,8 @@ export function Example() {
       },
       {
         title: "Add a hint bar",
-        description: "The footer is a plain node — put shortcut legends or counts there.",
+        description:
+          "The footer is a plain node — put shortcut legends or counts there.",
         code: `<AnimatedCommandMenu
   groups={groups}
   footer={
@@ -813,7 +823,7 @@ export function Example() {
     accessibility: [
       "Rendered as a `nav` landmark with an accessible name from `label`.",
       "Each item is a real `a` or `button` with an `aria-label`, so the icon-only design still has a name.",
-      "The active item sets `aria-current=\"page\"`.",
+      'The active item sets `aria-current="page"`.',
       "Labels appear on keyboard focus as well as hover via `group-focus-within`, so nothing is hover-only.",
       "Tooltips are `aria-hidden` to avoid announcing the name twice.",
       "On coarse pointers the dock drops magnification and renders 40px targets that meet WCAG 2.2 target-size guidance.",
@@ -914,7 +924,7 @@ export function Example() {
       "The readable text is server-rendered, so it is present for crawlers and for users without JavaScript.",
       "`prefers-reduced-motion: reduce` renders the final text immediately with no animation.",
       "No flashing: characters change at frame rate but luminance stays constant, staying clear of WCAG 2.3.1 thresholds.",
-      "`trigger=\"hover\"` is an enhancement — the text is fully readable before any interaction.",
+      '`trigger="hover"` is an enhancement — the text is fully readable before any interaction.',
     ],
     keyboard: [],
     props: [
@@ -925,7 +935,8 @@ export function Example() {
             name: "text",
             type: "string",
             required: true,
-            description: "The final, readable string. Always exposed to assistive technology.",
+            description:
+              "The final, readable string. Always exposed to assistive technology.",
           },
           {
             name: "characters",
@@ -995,7 +1006,8 @@ export function Example() {
     name: "ExpandableFeatureCard",
     slug: "expandable-feature-card",
     title: "Expandable Feature Card",
-    description: "A feature tile that grows to reveal detail instead of navigating away.",
+    description:
+      "A feature tile that grows to reveal detail instead of navigating away.",
     overview:
       "ExpandableFeatureCard turns a marketing tile into a progressive-disclosure control. The entire header is one button carrying `aria-expanded` and `aria-controls`, and the revealed content is a labelled region, so the relationship survives in the accessibility tree rather than living only in the animation. Height animates from `auto` through Motion and collapses to an instant reveal under reduced motion.",
     category: "Marketing",
@@ -1007,8 +1019,8 @@ export function Example() {
     files: [uiFile("expandable-feature-card")],
     accessibility: [
       "The header is a single `button` with `aria-expanded` and `aria-controls` pointing at the panel.",
-      "The panel is a `role=\"region\"` labelled by the header, so it is reachable from a landmark list.",
-      "A visually hidden \"Show more\" / \"Show less\" string gives the toggle an unambiguous name.",
+      'The panel is a `role="region"` labelled by the header, so it is reachable from a landmark list.',
+      'A visually hidden "Show more" / "Show less" string gives the toggle an unambiguous name.',
       "The chevron is `aria-hidden` — state is conveyed by `aria-expanded`, not by rotation.",
       "Works controlled or uncontrolled, so it can be driven from an accordion group without breaking semantics.",
       "Reduced motion removes the height transition and reveals content immediately.",
@@ -1236,8 +1248,8 @@ export function Example() {
     accessibility: [
       "Uses a real `<label htmlFor>` — the floating position is styling only, so the field always has a programmatic name.",
       "Hint, error and counter nodes are linked through `aria-describedby`.",
-      "`aria-invalid` is set when `error` is present, and the message carries `role=\"alert\"`.",
-      "The message region is `aria-live=\"polite\"` for hints and assertive for errors, so validation is announced without moving focus.",
+      '`aria-invalid` is set when `error` is present, and the message carries `role="alert"`.',
+      'The message region is `aria-live="polite"` for hints and assertive for errors, so validation is announced without moving focus.',
       "Error state is signalled by text and an icon-free message, never by border colour alone.",
       "The placeholder only appears once the label has floated, so it never overlaps the label text.",
       "Works controlled or uncontrolled, so it drops into React Hook Form or a plain `<form>` unchanged.",
@@ -1279,7 +1291,8 @@ export function Example() {
             name: "showCounter",
             type: "boolean",
             defaultValue: "false",
-            description: "Show a live `length / maxLength` counter. Requires `maxLength`.",
+            description:
+              "Show a live `length / maxLength` counter. Requires `maxLength`.",
           },
           {
             name: "containerClassName",
@@ -1289,7 +1302,8 @@ export function Example() {
           {
             name: "...props",
             type: "React.ComponentPropsWithoutRef<'input'>",
-            description: "All native input attributes, including `type` and `required`.",
+            description:
+              "All native input attributes, including `type` and `required`.",
           },
         ],
       },
@@ -1345,7 +1359,8 @@ export function Example() {
     name: "StatusPulse",
     slug: "status-pulse",
     title: "Status Pulse",
-    description: "A live status indicator with an expanding ring and a real text label.",
+    description:
+      "A live status indicator with an expanding ring and a real text label.",
     overview:
       "StatusPulse is the small piece every dashboard and status page ends up rewriting: a coloured dot, an expanding ring, and a label. It refuses to encode meaning in colour alone — the label is always rendered as text — and when `live` is set the wrapper becomes a polite status region so a change from operational to degraded is announced without interrupting the user.",
     category: "Feedback",
@@ -1357,7 +1372,7 @@ export function Example() {
     files: [uiFile("status-pulse")],
     accessibility: [
       "Meaning is never colour-only — the textual label is always rendered.",
-      "`role=\"status\"` with `aria-live=\"polite\"` announces changes without interrupting; set `live={false}` when many indicators share a page.",
+      '`role="status"` with `aria-live="polite"` announces changes without interrupting; set `live={false}` when many indicators share a page.',
       "The dot and ring are `aria-hidden`.",
       "The ring pulses at 0.5 Hz, well under the WCAG 2.3.1 three-flashes threshold.",
       "`prefers-reduced-motion: reduce` replaces the pulse with a static halo.",
@@ -1460,7 +1475,7 @@ export function Example() {
     accessibility: [
       "The final value is rendered on the server, so the correct number is in the DOM before any animation runs.",
       "Trend direction is carried by an arrow glyph and the signed percentage, not by colour alone.",
-      "The sparkline is `role=\"img\"` with an `aria-label` describing the period it covers.",
+      'The sparkline is `role="img"` with an `aria-label` describing the period it covers.',
       "`prefers-reduced-motion: reduce` skips the count-up and shows the final figure immediately.",
       "Figures use `tabular-nums`, so counting does not shift the layout.",
     ],
@@ -1469,14 +1484,24 @@ export function Example() {
       {
         name: "MetricCard",
         props: [
-          { name: "label", type: "string", required: true, description: "Metric name." },
+          {
+            name: "label",
+            type: "string",
+            required: true,
+            description: "Metric name.",
+          },
           {
             name: "value",
             type: "number",
             required: true,
             description: "Final value. Counts up when the card enters the viewport.",
           },
-          { name: "prefix", type: "string", defaultValue: '""', description: "e.g. `$`." },
+          {
+            name: "prefix",
+            type: "string",
+            defaultValue: '""',
+            description: "e.g. `$`.",
+          },
           {
             name: "suffix",
             type: "string",
@@ -1492,7 +1517,8 @@ export function Example() {
           {
             name: "delta",
             type: "number",
-            description: "Period-over-period change in percent. The sign drives the trend.",
+            description:
+              "Period-over-period change in percent. The sign drives the trend.",
           },
           {
             name: "deltaLabel",
@@ -1619,7 +1645,11 @@ export function Example() {
             defaultValue: "1",
             description: "Rows the tile spans at `md` and up.",
           },
-          { name: "title", type: "React.ReactNode", description: "Rendered as an `h3`." },
+          {
+            name: "title",
+            type: "React.ReactNode",
+            description: "Rendered as an `h3`.",
+          },
           {
             name: "description",
             type: "React.ReactNode",

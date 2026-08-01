@@ -5,8 +5,10 @@ import { animate, useInView, useReducedMotion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
-export interface MetricCardProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "children" | "prefix"> {
+export interface MetricCardProps extends Omit<
+  React.ComponentPropsWithoutRef<"div">,
+  "children" | "prefix"
+> {
   label: string
   /** Final numeric value. Counts up when the card scrolls into view. */
   value: number
@@ -95,12 +97,14 @@ export function MetricCard({
       )}
       {...props}
     >
-      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      <p className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
         {label}
       </p>
 
       <p className="flex items-baseline gap-1 text-3xl font-semibold tracking-tight tabular-nums">
-        {prefix ? <span className="text-xl text-muted-foreground">{prefix}</span> : null}
+        {prefix ? (
+          <span className="text-xl text-muted-foreground">{prefix}</span>
+        ) : null}
         {/* Server-rendered final value; the effect animates it afterwards. */}
         <span ref={numberRef}>{format(value)}</span>
         {suffix ? (

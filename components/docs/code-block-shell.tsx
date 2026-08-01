@@ -46,13 +46,13 @@ export function CodeBlockShell({
       )}
     >
       {title ? (
-        <figcaption className="flex items-center justify-between gap-2 border-b border-border bg-muted/50 py-1.5 pl-4 pr-1.5">
+        <figcaption className="flex items-center justify-between gap-2 border-b border-border bg-muted/50 py-1.5 pr-1.5 pl-4">
           <span className="truncate font-mono text-xs text-muted-foreground">
             {title}
           </span>
           <div className="flex shrink-0 items-center gap-1">
             {language ? (
-              <span className="hidden font-mono text-[0.6875rem] uppercase text-muted-foreground/70 sm:inline">
+              <span className="hidden font-mono text-[0.6875rem] text-muted-foreground/70 uppercase sm:inline">
                 {language}
               </span>
             ) : null}
@@ -60,7 +60,7 @@ export function CodeBlockShell({
           </div>
         </figcaption>
       ) : copy ? (
-        <div className="absolute right-1.5 top-1.5 z-10 opacity-0 transition-opacity duration-[var(--duration-fast)] focus-within:opacity-100 group-hover:opacity-100">
+        <div className="absolute top-1.5 right-1.5 z-10 opacity-0 transition-opacity duration-[var(--duration-fast)] group-hover:opacity-100 focus-within:opacity-100">
           <CopyButton
             value={code}
             label="Copy code"

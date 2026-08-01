@@ -28,10 +28,7 @@ export function PreviousNextNavigation({
   if (!previous && !next) return null
 
   return (
-    <nav
-      aria-label={label}
-      className={cn("grid gap-3 sm:grid-cols-2", className)}
-    >
+    <nav aria-label={label} className={cn("grid gap-3 sm:grid-cols-2", className)}>
       {previous ? (
         <Link
           href={previous.href}

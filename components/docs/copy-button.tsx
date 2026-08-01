@@ -76,7 +76,10 @@ export function CopyButton({
       {...props}
     >
       {copied ? (
-        <Check aria-hidden="true" className="animate-[scale-in_var(--duration-fast)_var(--ease-spring)]" />
+        <Check
+          aria-hidden="true"
+          className="animate-[scale-in_var(--duration-fast)_var(--ease-spring)]"
+        />
       ) : (
         <Copy aria-hidden="true" />
       )}

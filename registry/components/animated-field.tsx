@@ -4,8 +4,10 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-export interface AnimatedFieldProps
-  extends Omit<React.ComponentPropsWithoutRef<"input">, "size"> {
+export interface AnimatedFieldProps extends Omit<
+  React.ComponentPropsWithoutRef<"input">,
+  "size"
+> {
   /** Visible label. Floats above the value once the field is filled or focused. */
   label: string
   /** Helper text below the field. */
@@ -62,9 +64,7 @@ export const AnimatedField = React.forwardRef<HTMLInputElement, AnimatedFieldPro
     const counterId = `${reactId}-counter`
 
     const [focused, setFocused] = React.useState(false)
-    const [internalValue, setInternalValue] = React.useState(
-      String(defaultValue ?? "")
-    )
+    const [internalValue, setInternalValue] = React.useState(String(defaultValue ?? ""))
     const currentValue = value !== undefined ? String(value) : internalValue
     const filled = currentValue.length > 0
 
@@ -143,7 +143,7 @@ export const AnimatedField = React.forwardRef<HTMLInputElement, AnimatedFieldPro
                 onChange?.(event)
               }}
               className={cn(
-                "h-14 w-full bg-transparent px-3 pb-1.5 pt-6 text-sm text-foreground outline-none",
+                "h-14 w-full bg-transparent px-3 pt-6 pb-1.5 text-sm text-foreground outline-none",
                 "placeholder:text-muted-foreground/70 disabled:cursor-not-allowed",
                 className
               )}
@@ -165,7 +165,7 @@ export const AnimatedField = React.forwardRef<HTMLInputElement, AnimatedFieldPro
           {showCounter && maxLength ? (
             <span
               id={counterId}
-              className="shrink-0 pr-3 font-mono text-[0.6875rem] tabular-nums text-muted-foreground"
+              className="shrink-0 pr-3 font-mono text-[0.6875rem] text-muted-foreground tabular-nums"
             >
               {currentValue.length}/{maxLength}
             </span>

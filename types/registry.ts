@@ -24,12 +24,7 @@ export const COMPONENT_CATEGORIES = [
 
 export type ComponentCategory = (typeof COMPONENT_CATEGORIES)[number]
 
-export const COMPONENT_STATUSES = [
-  "stable",
-  "new",
-  "updated",
-  "experimental",
-] as const
+export const COMPONENT_STATUSES = ["stable", "new", "updated", "experimental"] as const
 
 export type ComponentStatus = (typeof COMPONENT_STATUSES)[number]
 

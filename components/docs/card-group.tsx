@@ -65,7 +65,7 @@ export function DocsCard({
         {href ? (
           <ArrowUpRight
             aria-hidden="true"
-            className="ml-auto size-4 shrink-0 text-muted-foreground transition-transform duration-[var(--duration-base)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            className="ml-auto size-4 shrink-0 text-muted-foreground transition-transform duration-[var(--duration-base)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
           />
         ) : null}
       </div>
@@ -98,12 +98,7 @@ export function DocsCard({
 
   if (external) {
     return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noreferrer noopener"
-        className={interactive}
-      >
+      <a href={href} target="_blank" rel="noreferrer noopener" className={interactive}>
         {body}
         <span className="sr-only">(opens in a new tab)</span>
       </a>

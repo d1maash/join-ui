@@ -3,10 +3,7 @@
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
-import {
-  StatusPulse,
-  type StatusPulseTone,
-} from "@/registry/components/status-pulse"
+import { StatusPulse, type StatusPulseTone } from "@/registry/components/status-pulse"
 
 const TONES: StatusPulseTone[] = [
   "operational",

@@ -63,7 +63,7 @@ export function TableOfContents({
 
   return (
     <nav aria-label={title} className={cn("text-sm", className)}>
-      <p className="mb-3 text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
+      <p className="mb-3 text-[0.6875rem] font-medium tracking-wider text-muted-foreground uppercase">
         {title}
       </p>
       <ul className="flex flex-col gap-0.5 border-l border-border">

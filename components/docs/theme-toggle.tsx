@@ -38,7 +38,9 @@ export function ThemeToggle() {
         <Button
           variant="ghost"
           size="icon"
-          aria-label={mounted ? `Theme: ${theme ?? "system"}. Change theme.` : "Change theme"}
+          aria-label={
+            mounted ? `Theme: ${theme ?? "system"}. Change theme.` : "Change theme"
+          }
         >
           <Icon aria-hidden="true" className={mounted ? undefined : "opacity-0"} />
         </Button>

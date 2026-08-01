@@ -35,7 +35,7 @@ export function DocsSidebar({
       <ul className="flex flex-col gap-6">
         {sections.map((section) => (
           <li key={section.title}>
-            <h2 className="mb-1.5 px-2 text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
+            <h2 className="mb-1.5 px-2 text-[0.6875rem] font-medium tracking-wider text-muted-foreground uppercase">
               {section.title}
             </h2>
             <ul className="flex flex-col gap-px">

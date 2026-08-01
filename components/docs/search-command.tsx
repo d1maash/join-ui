@@ -62,7 +62,8 @@ export function SearchCommand({ index }: SearchCommandProps) {
 
   React.useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      const isShortcut = event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)
+      const isShortcut =
+        event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)
       const isSlash =
         event.key === "/" &&
         !(event.target instanceof HTMLInputElement) &&
@@ -75,10 +76,7 @@ export function SearchCommand({ index }: SearchCommandProps) {
     return () => document.removeEventListener("keydown", handler)
   }, [changeOpen, open])
 
-  const results = React.useMemo(
-    () => searchIndex(index, query, 14),
-    [index, query]
-  )
+  const results = React.useMemo(() => searchIndex(index, query, 14), [index, query])
   const sections = React.useMemo(() => groupResults(results), [results])
 
   const recentEntries = React.useMemo(
@@ -146,7 +144,7 @@ export function SearchCommand({ index }: SearchCommandProps) {
                 asChild
                 forceMount
                 aria-describedby={undefined}
-                className="fixed left-1/2 top-[10vh] z-50 w-[min(38rem,calc(100vw-2rem))] -translate-x-1/2"
+                className="fixed top-[10vh] left-1/2 z-50 w-[min(38rem,calc(100vw-2rem))] -translate-x-1/2"
               >
                 <motion.div
                   initial={
@@ -200,8 +198,8 @@ export function SearchCommand({ index }: SearchCommandProps) {
                         <div className="flex flex-col items-center gap-1 px-4 py-10 text-center">
                           <p className="text-sm font-medium">Search everything</p>
                           <p className="text-xs text-muted-foreground">
-                            Components, guides and categories — by name, description
-                            or tag.
+                            Components, guides and categories — by name, description or
+                            tag.
                           </p>
                         </div>
                       ) : null}
@@ -209,7 +207,7 @@ export function SearchCommand({ index }: SearchCommandProps) {
                       {showRecent ? (
                         <Command.Group
                           heading="Recent"
-                          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[0.6875rem] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-foreground"
+                          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[0.6875rem] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:uppercase"
                         >
                           {recentEntries.map((entry) => (
                             <ResultRow
@@ -226,7 +224,7 @@ export function SearchCommand({ index }: SearchCommandProps) {
                         <Command.Group
                           key={section.group}
                           heading={section.group}
-                          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[0.6875rem] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-foreground"
+                          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[0.6875rem] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:uppercase"
                         >
                           {section.entries.map((entry) => (
                             <ResultRow

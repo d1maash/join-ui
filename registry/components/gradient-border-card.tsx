@@ -13,8 +13,7 @@ const BORDER_CSS = `
 }
 `
 
-export interface GradientBorderCardProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface GradientBorderCardProps extends React.ComponentPropsWithoutRef<"div"> {
   /** Border thickness in pixels. */
   borderWidth?: number
   /** Seconds per rotation. */

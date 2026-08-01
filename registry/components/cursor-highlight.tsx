@@ -5,8 +5,7 @@ import { motion, useReducedMotion, useSpring } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
-export interface CursorHighlightProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface CursorHighlightProps extends React.ComponentPropsWithoutRef<"div"> {
   /**
    * `snap` locks the highlight onto the nearest `[data-highlight]` descendant.
    * `follow` trails a soft circle under the pointer.
@@ -100,9 +99,7 @@ export function CursorHighlight({
     if (frameRef.current !== 0) return
     const { clientX, clientY } = event
     const target =
-      event.target instanceof Element
-        ? event.target.closest("[data-highlight]")
-        : null
+      event.target instanceof Element ? event.target.closest("[data-highlight]") : null
     frameRef.current = requestAnimationFrame(() => {
       frameRef.current = 0
       place(target, { clientX, clientY })
@@ -148,7 +145,7 @@ export function CursorHighlight({
           filter: mode === "follow" ? `blur(${Math.round(size / 6)}px)` : undefined,
         }}
         className={cn(
-          "pointer-events-none absolute left-0 top-0 -z-10",
+          "pointer-events-none absolute top-0 left-0 -z-10",
           mode === "snap"
             ? "border border-primary/25 bg-primary-soft"
             : "bg-primary/25",

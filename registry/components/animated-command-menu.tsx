@@ -110,12 +110,16 @@ export function AnimatedCommandMenu({
               asChild
               forceMount
               aria-describedby={undefined}
-              className="fixed left-1/2 top-[12vh] z-50 w-[min(40rem,calc(100vw-2rem))] -translate-x-1/2"
+              className="fixed top-[12vh] left-1/2 z-50 w-[min(40rem,calc(100vw-2rem))] -translate-x-1/2"
             >
               <motion.div
-                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97, y: -8 }}
+                initial={
+                  reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97, y: -8 }
+                }
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98, y: -6 }}
+                exit={
+                  reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98, y: -6 }
+                }
                 transition={
                   reduceMotion
                     ? { duration: 0 }
@@ -151,7 +155,7 @@ export function AnimatedCommandMenu({
                       <Command.Group
                         key={group.heading}
                         heading={group.heading}
-                        className="mb-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[0.6875rem] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-foreground"
+                        className="mb-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[0.6875rem] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:uppercase"
                       >
                         {group.items.map((item) => (
                           <Command.Item

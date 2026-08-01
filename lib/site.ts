@@ -7,9 +7,7 @@ export const siteConfig = {
   tagline: "Motion-first React components you actually own.",
   description:
     "An open-code catalog of accessible, animated React components for Next.js. Install through the shadcn CLI, copy the source, or hand a ready-made prompt to your AI coding agent.",
-  url:
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-    "https://ui.joinway.dev",
+  url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://ui.joinway.dev",
   ogImage: "/opengraph-image",
   author: "Joinway",
   links: {

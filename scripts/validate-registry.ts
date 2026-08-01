@@ -63,11 +63,16 @@ const metadataSchema = z.object({
   featured: z.boolean(),
   dependencies: z.array(z.string().min(1)),
   registryDependencies: z.array(z.string().min(1)),
-  files: z.array(z.object({ path: z.string(), target: z.string(), type: fileTypeSchema })).min(1),
+  files: z
+    .array(z.object({ path: z.string(), target: z.string(), type: fileTypeSchema }))
+    .min(1),
   installCommand: z.string().min(1),
   accessibility: z.array(z.string().min(1)).min(1),
   keyboard: z.array(
-    z.object({ keys: z.array(z.string().min(1)).min(1), description: z.string().min(1) })
+    z.object({
+      keys: z.array(z.string().min(1)).min(1),
+      description: z.string().min(1),
+    })
   ),
   props: z
     .array(
@@ -146,9 +151,7 @@ export async function validateRegistry(): Promise<string[]> {
     }
 
     if (!previews.has(component.slug)) {
-      issues.push(
-        `${label}: no preview registered in components/previews/registry.tsx`
-      )
+      issues.push(`${label}: no preview registered in components/previews/registry.tsx`)
     }
 
     if (component.installCommand.includes("undefined")) {

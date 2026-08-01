@@ -67,7 +67,7 @@ export function SkipToContent() {
   return (
     <Link
       href="#main-content"
-      className="sr-only z-50 focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:rounded-lg focus:border focus:border-border focus:bg-popover focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:shadow-[var(--shadow-overlay)]"
+      className="sr-only z-50 focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:rounded-lg focus:border focus:border-border focus:bg-popover focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:shadow-[var(--shadow-overlay)]"
     >
       Skip to content
     </Link>

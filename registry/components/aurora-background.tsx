@@ -25,8 +25,7 @@ const AURORA_CSS = `
 }
 `
 
-export interface AuroraBackgroundProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface AuroraBackgroundProps extends React.ComponentPropsWithoutRef<"div"> {
   intensity?: "subtle" | "medium" | "vivid"
   /** Seconds for one full drift cycle. Higher is calmer. */
   speed?: number
@@ -38,10 +37,7 @@ export interface AuroraBackgroundProps
   asLayer?: boolean
 }
 
-const INTENSITY: Record<
-  NonNullable<AuroraBackgroundProps["intensity"]>,
-  number
-> = {
+const INTENSITY: Record<NonNullable<AuroraBackgroundProps["intensity"]>, number> = {
   subtle: 0.28,
   medium: 0.48,
   vivid: 0.72,
@@ -115,12 +111,22 @@ export function AuroraBackground({
       {layer(
         "joinway-aurora-a",
         "radial-gradient(circle, var(--brand-from) 0%, transparent 70%)",
-        { insetInlineStart: "-10%", insetBlockStart: "-25%", width: "70%", aspectRatio: "1" }
+        {
+          insetInlineStart: "-10%",
+          insetBlockStart: "-25%",
+          width: "70%",
+          aspectRatio: "1",
+        }
       )}
       {layer(
         "joinway-aurora-b",
         "radial-gradient(circle, var(--brand-via) 0%, transparent 70%)",
-        { insetInlineEnd: "-15%", insetBlockStart: "-10%", width: "62%", aspectRatio: "1" }
+        {
+          insetInlineEnd: "-15%",
+          insetBlockStart: "-10%",
+          width: "62%",
+          aspectRatio: "1",
+        }
       )}
       {layer(
         "joinway-aurora-c",

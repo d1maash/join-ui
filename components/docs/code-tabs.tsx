@@ -37,10 +37,7 @@ export function CodeTabs({
   if (!first) return null
 
   return (
-    <Tabs
-      defaultValue={defaultValue ?? first.value}
-      className={cn("my-4", className)}
-    >
+    <Tabs defaultValue={defaultValue ?? first.value} className={cn("my-4", className)}>
       <TabsList aria-label={label}>
         {items.map((item) => (
           <TabsTrigger key={item.value} value={item.value}>

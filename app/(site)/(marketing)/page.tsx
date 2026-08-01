@@ -13,7 +13,10 @@ import {
 
 import { ComponentCard } from "@/components/docs/component-card"
 import { ComponentPreview } from "@/components/docs/component-preview"
-import { PackageManagerTabs, shadcnCommands } from "@/components/docs/package-manager-tabs"
+import {
+  PackageManagerTabs,
+  shadcnCommands,
+} from "@/components/docs/package-manager-tabs"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -90,7 +93,7 @@ export default function HomePage() {
         <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 py-20 text-center sm:px-6 sm:py-28">
           <Link
             href="/docs/ai"
-            className="group flex items-center gap-2 rounded-full border border-border bg-card/80 py-1 pl-1 pr-3 text-xs backdrop-blur-sm transition-colors hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="group flex items-center gap-2 rounded-full border border-border bg-card/80 py-1 pr-3 pl-1 text-xs backdrop-blur-sm transition-colors hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <Badge variant="primary" className="rounded-full">
               New
@@ -104,7 +107,7 @@ export default function HomePage() {
             />
           </Link>
 
-          <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl md:text-6xl">
             <TextScramble
               as="span"
               text="Motion-first components"
@@ -114,10 +117,10 @@ export default function HomePage() {
             <span className="text-brand-gradient block">you actually own</span>
           </h1>
 
-          <p className="max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {stats.total} accessible, animated React components for Next.js.
-            Install them with the shadcn CLI, copy the source, or hand the
-            generated prompt to your coding agent.
+          <p className="max-w-xl text-base leading-relaxed text-pretty text-muted-foreground sm:text-lg">
+            {stats.total} accessible, animated React components for Next.js. Install
+            them with the shadcn CLI, copy the source, or hand the generated prompt to
+            your coding agent.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -135,19 +138,19 @@ export default function HomePage() {
           <dl className="mt-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">
               <dt>Components</dt>
-              <dd className="font-medium tabular-nums text-foreground">
+              <dd className="font-medium text-foreground tabular-nums">
                 {stats.total}
               </dd>
             </div>
             <div className="flex items-center gap-1.5">
               <dt>Categories</dt>
-              <dd className="font-medium tabular-nums text-foreground">
+              <dd className="font-medium text-foreground tabular-nums">
                 {stats.categories}
               </dd>
             </div>
             <div className="flex items-center gap-1.5">
               <dt>Zero-dependency</dt>
-              <dd className="font-medium tabular-nums text-foreground">
+              <dd className="font-medium text-foreground tabular-nums">
                 {stats.zeroDependency}
               </dd>
             </div>
@@ -166,13 +169,13 @@ export default function HomePage() {
               >
                 Install straight into your project
               </h2>
-              <p className="text-pretty leading-relaxed text-muted-foreground">
+              <p className="leading-relaxed text-pretty text-muted-foreground">
                 Joinway UI is a shadcn-compatible registry. Point the CLI at the{" "}
                 <code className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em]">
                   {siteConfig.namespace}
                 </code>{" "}
-                namespace and it resolves dependencies, writes the files and
-                leaves the rest of your codebase alone.
+                namespace and it resolves dependencies, writes the files and leaves the
+                rest of your codebase alone.
               </p>
               <div className="flex flex-wrap gap-3 pt-1">
                 <Button asChild variant="secondary" size="sm">
@@ -309,12 +312,11 @@ export default function HomePage() {
                 >
                   Hand the whole component to your agent
                 </h2>
-                <p className="text-pretty leading-relaxed text-muted-foreground">
-                  One button copies a structured brief: the stack, the install
-                  path, dependencies, every supported prop, the accessibility and
-                  motion requirements, and the complete source. Built from the
-                  same metadata as this page, so it can never describe a prop
-                  that does not exist.
+                <p className="leading-relaxed text-pretty text-muted-foreground">
+                  One button copies a structured brief: the stack, the install path,
+                  dependencies, every supported prop, the accessibility and motion
+                  requirements, and the complete source. Built from the same metadata as
+                  this page, so it can never describe a prop that does not exist.
                 </p>
                 <div className="flex flex-wrap gap-3 pt-1">
                   <Button asChild variant="secondary" size="sm">
@@ -393,13 +395,13 @@ function SectionHeading({
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex max-w-2xl flex-col gap-1.5">
-        <p className="text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
+        <p className="text-[0.6875rem] font-medium tracking-wider text-primary uppercase">
           {eyebrow}
         </p>
         <h2 id={id} className="text-2xl font-semibold tracking-tight">
           {title}
         </h2>
-        <p className="text-pretty leading-relaxed text-muted-foreground">
+        <p className="leading-relaxed text-pretty text-muted-foreground">
           {description}
         </p>
       </div>

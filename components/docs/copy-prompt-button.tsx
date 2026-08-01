@@ -9,8 +9,10 @@ import { SimpleTooltip } from "@/components/ui/tooltip"
 import { copyToClipboard } from "@/lib/clipboard"
 import { cn } from "@/lib/utils"
 
-export interface CopyPromptButtonProps
-  extends Omit<ButtonProps, "children" | "onClick"> {
+export interface CopyPromptButtonProps extends Omit<
+  ButtonProps,
+  "children" | "onClick"
+> {
   /** The fully assembled prompt. Built server-side from component metadata. */
   prompt: string
   /** Component title, used in the toast and the accessible name. */

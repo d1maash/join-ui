@@ -18,8 +18,7 @@ type MagneticButtonSize = "sm" | "md" | "lg"
 const VARIANTS: Record<MagneticButtonVariant, string> = {
   primary: "bg-primary text-primary-foreground hover:brightness-110",
   secondary: "bg-secondary text-secondary-foreground hover:bg-muted",
-  outline:
-    "border border-border-strong bg-transparent text-foreground hover:bg-muted",
+  outline: "border border-border-strong bg-transparent text-foreground hover:bg-muted",
   ghost: "bg-transparent text-foreground hover:bg-muted",
 }
 
@@ -29,8 +28,7 @@ const SIZES: Record<MagneticButtonSize, string> = {
   lg: "h-12 gap-2.5 px-6 text-[0.9375rem]",
 }
 
-export interface MagneticButtonProps
-  extends React.ComponentPropsWithoutRef<"button"> {
+export interface MagneticButtonProps extends React.ComponentPropsWithoutRef<"button"> {
   /** Render the child element instead of a `button` (e.g. a Next.js `Link`). */
   asChild?: boolean
   variant?: MagneticButtonVariant
@@ -57,132 +55,131 @@ export interface MagneticButtonProps
  * is throttled to one frame, and is skipped entirely under
  * `prefers-reduced-motion: reduce`.
  */
-export const MagneticButton = React.forwardRef<
-  HTMLButtonElement,
-  MagneticButtonProps
->(function MagneticButton(
-  {
-    asChild = false,
-    variant = "primary",
-    size = "md",
-    strength = 0.32,
-    radius = 120,
-    labelStrength = 0.45,
-    className,
-    wrapperClassName,
-    children,
-    disabled,
-    ...props
-  },
-  forwardedRef
-) {
-  const wrapperRef = React.useRef<HTMLSpanElement>(null)
-  const reduceMotion = useReducedMotion()
+export const MagneticButton = React.forwardRef<HTMLButtonElement, MagneticButtonProps>(
+  function MagneticButton(
+    {
+      asChild = false,
+      variant = "primary",
+      size = "md",
+      strength = 0.32,
+      radius = 120,
+      labelStrength = 0.45,
+      className,
+      wrapperClassName,
+      children,
+      disabled,
+      ...props
+    },
+    forwardedRef
+  ) {
+    const wrapperRef = React.useRef<HTMLSpanElement>(null)
+    const reduceMotion = useReducedMotion()
 
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const spring = { stiffness: 240, damping: 20, mass: 0.35 }
-  const springX = useSpring(x, spring)
-  const springY = useSpring(y, spring)
-  const labelX = useTransform(springX, (value) => value * labelStrength)
-  const labelY = useTransform(springY, (value) => value * labelStrength)
+    const x = useMotionValue(0)
+    const y = useMotionValue(0)
+    const spring = { stiffness: 240, damping: 20, mass: 0.35 }
+    const springX = useSpring(x, spring)
+    const springY = useSpring(y, spring)
+    const labelX = useTransform(springX, (value) => value * labelStrength)
+    const labelY = useTransform(springY, (value) => value * labelStrength)
 
-  const active = !reduceMotion && !disabled && strength > 0
+    const active = !reduceMotion && !disabled && strength > 0
 
-  React.useEffect(() => {
-    const node = wrapperRef.current
-    if (!node || !active) {
-      x.set(0)
-      y.set(0)
-      return
-    }
+    React.useEffect(() => {
+      const node = wrapperRef.current
+      if (!node || !active) {
+        x.set(0)
+        y.set(0)
+        return
+      }
 
-    let nearViewport = false
-    let frame = 0
+      let nearViewport = false
+      let frame = 0
 
-    const reset = () => {
-      x.set(0)
-      y.set(0)
-    }
+      const reset = () => {
+        x.set(0)
+        y.set(0)
+      }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0]
-        nearViewport = entry?.isIntersecting ?? false
-        if (!nearViewport) reset()
-      },
-      { rootMargin: "160px" }
-    )
-    observer.observe(node)
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0]
+          nearViewport = entry?.isIntersecting ?? false
+          if (!nearViewport) reset()
+        },
+        { rootMargin: "160px" }
+      )
+      observer.observe(node)
 
-    const handlePointerMove = (event: PointerEvent) => {
-      if (!nearViewport || frame !== 0) return
-      frame = window.requestAnimationFrame(() => {
-        frame = 0
-        const rect = node.getBoundingClientRect()
-        // Subtract the live offset so the rest position stays the reference.
-        const centerX = rect.left + rect.width / 2 - x.get()
-        const centerY = rect.top + rect.height / 2 - y.get()
-        const deltaX = event.clientX - centerX
-        const deltaY = event.clientY - centerY
-        const distance = Math.hypot(deltaX, deltaY)
+      const handlePointerMove = (event: PointerEvent) => {
+        if (!nearViewport || frame !== 0) return
+        frame = window.requestAnimationFrame(() => {
+          frame = 0
+          const rect = node.getBoundingClientRect()
+          // Subtract the live offset so the rest position stays the reference.
+          const centerX = rect.left + rect.width / 2 - x.get()
+          const centerY = rect.top + rect.height / 2 - y.get()
+          const deltaX = event.clientX - centerX
+          const deltaY = event.clientY - centerY
+          const distance = Math.hypot(deltaX, deltaY)
 
-        if (distance > radius) {
-          reset()
-          return
-        }
+          if (distance > radius) {
+            reset()
+            return
+          }
 
-        const falloff = 1 - distance / radius
-        x.set(deltaX * strength * falloff)
-        y.set(deltaY * strength * falloff)
-      })
-    }
+          const falloff = 1 - distance / radius
+          x.set(deltaX * strength * falloff)
+          y.set(deltaY * strength * falloff)
+        })
+      }
 
-    window.addEventListener("pointermove", handlePointerMove, { passive: true })
-    window.addEventListener("blur", reset)
-    document.addEventListener("pointerleave", reset)
+      window.addEventListener("pointermove", handlePointerMove, { passive: true })
+      window.addEventListener("blur", reset)
+      document.addEventListener("pointerleave", reset)
 
-    return () => {
-      observer.disconnect()
-      window.removeEventListener("pointermove", handlePointerMove)
-      window.removeEventListener("blur", reset)
-      document.removeEventListener("pointerleave", reset)
-      if (frame !== 0) window.cancelAnimationFrame(frame)
-    }
-  }, [active, radius, strength, x, y])
+      return () => {
+        observer.disconnect()
+        window.removeEventListener("pointermove", handlePointerMove)
+        window.removeEventListener("blur", reset)
+        document.removeEventListener("pointerleave", reset)
+        if (frame !== 0) window.cancelAnimationFrame(frame)
+      }
+    }, [active, radius, strength, x, y])
 
-  const Comp = asChild ? Slot : "button"
+    const Comp = asChild ? Slot : "button"
 
-  return (
-    <motion.span
-      ref={wrapperRef}
-      style={active ? { x: springX, y: springY } : undefined}
-      className={cn("inline-flex", wrapperClassName)}
-    >
-      <Comp
-        ref={forwardedRef}
-        disabled={asChild ? undefined : disabled}
-        data-disabled={disabled ? "" : undefined}
-        className={cn(
-          "relative inline-flex cursor-pointer select-none items-center justify-center rounded-lg font-medium",
-          "transition-[background-color,color,filter] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-          "disabled:pointer-events-none disabled:opacity-50",
-          "data-disabled:pointer-events-none data-disabled:opacity-50",
-          "[&_svg]:size-4 [&_svg]:shrink-0",
-          VARIANTS[variant],
-          SIZES[size],
-          className
-        )}
-        {...props}
+    return (
+      <motion.span
+        ref={wrapperRef}
+        style={active ? { x: springX, y: springY } : undefined}
+        className={cn("inline-flex", wrapperClassName)}
       >
-        <motion.span
-          style={active ? { x: labelX, y: labelY } : undefined}
-          className="pointer-events-none inline-flex items-center justify-center gap-[inherit]"
+        <Comp
+          ref={forwardedRef}
+          disabled={asChild ? undefined : disabled}
+          data-disabled={disabled ? "" : undefined}
+          className={cn(
+            "relative inline-flex cursor-pointer items-center justify-center rounded-lg font-medium select-none",
+            "transition-[background-color,color,filter] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+            "disabled:pointer-events-none disabled:opacity-50",
+            "data-disabled:pointer-events-none data-disabled:opacity-50",
+            "[&_svg]:size-4 [&_svg]:shrink-0",
+            VARIANTS[variant],
+            SIZES[size],
+            className
+          )}
+          {...props}
         >
-          {children}
-        </motion.span>
-      </Comp>
-    </motion.span>
-  )
-})
+          <motion.span
+            style={active ? { x: labelX, y: labelY } : undefined}
+            className="pointer-events-none inline-flex items-center justify-center gap-[inherit]"
+          >
+            {children}
+          </motion.span>
+        </Comp>
+      </motion.span>
+    )
+  }
+)

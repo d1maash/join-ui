@@ -55,17 +55,17 @@ export function PropsTable({ groups, className }: PropsTableProps) {
                 {group.props.map((prop) => (
                   <tr
                     key={prop.name}
-                    className="border-b border-border last:border-0 align-top"
+                    className="border-b border-border align-top last:border-0"
                   >
                     <th
                       scope="row"
-                      className="whitespace-nowrap px-4 py-3 text-left font-normal"
+                      className="px-4 py-3 text-left font-normal whitespace-nowrap"
                     >
                       <code className="font-mono text-[0.8125rem] font-medium text-foreground">
                         {prop.name}
                       </code>
                       {prop.required ? (
-                        <span className="ml-1.5 align-middle text-[0.625rem] font-medium uppercase tracking-wide text-destructive">
+                        <span className="ml-1.5 align-middle text-[0.625rem] font-medium tracking-wide text-destructive uppercase">
                           required
                         </span>
                       ) : null}
@@ -105,7 +105,7 @@ export function PropsTable({ groups, className }: PropsTableProps) {
                     {prop.name}
                   </code>
                   {prop.required ? (
-                    <span className="text-[0.625rem] font-medium uppercase tracking-wide text-destructive">
+                    <span className="text-[0.625rem] font-medium tracking-wide text-destructive uppercase">
                       required
                     </span>
                   ) : null}
@@ -116,8 +116,7 @@ export function PropsTable({ groups, className }: PropsTableProps) {
                   </code>
                   {prop.defaultValue ? (
                     <p className="text-xs text-muted-foreground">
-                      Default:{" "}
-                      <code className="font-mono">{prop.defaultValue}</code>
+                      Default: <code className="font-mono">{prop.defaultValue}</code>
                     </p>
                   ) : null}
                   <p className="text-sm text-muted-foreground">{prop.description}</p>

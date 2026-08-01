@@ -38,7 +38,7 @@ export const DropdownMenuItem = React.forwardRef<
     <DropdownMenuPrimitive.Item
       ref={ref}
       className={cn(
-        "relative flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none",
+        "relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none select-none",
         "transition-colors duration-[var(--duration-instant)]",
         "focus:bg-muted focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         "[&_svg]:size-4 [&_svg]:shrink-0",
@@ -59,7 +59,7 @@ export const DropdownMenuRadioItem = React.forwardRef<
     <DropdownMenuPrimitive.RadioItem
       ref={ref}
       className={cn(
-        "relative flex cursor-pointer select-none items-center gap-2 rounded-md py-1.5 pl-2 pr-7 text-sm outline-none",
+        "relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-7 pl-2 text-sm outline-none select-none",
         "transition-colors duration-[var(--duration-instant)]",
         "focus:bg-muted focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         "[&_svg]:size-4 [&_svg]:shrink-0",
@@ -84,7 +84,7 @@ export function DropdownMenuLabel({
   return (
     <div
       className={cn(
-        "px-2 py-1.5 text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground",
+        "px-2 py-1.5 text-[0.6875rem] font-medium tracking-wider text-muted-foreground uppercase",
         className
       )}
       {...props}

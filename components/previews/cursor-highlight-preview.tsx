@@ -15,8 +15,12 @@ const ITEMS = [
 export default function CursorHighlightPreview() {
   return (
     <div className="w-full max-w-sm">
-      <CursorHighlight padding={4} radius={10} className="rounded-xl border border-border bg-card p-2">
-        <p className="px-3 pb-2 pt-1 text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
+      <CursorHighlight
+        padding={4}
+        radius={10}
+        className="rounded-xl border border-border bg-card p-2"
+      >
+        <p className="px-3 pt-1 pb-2 text-[0.6875rem] font-medium tracking-wider text-muted-foreground uppercase">
           Workspace
         </p>
         <nav aria-label="Workspace sections" className="flex flex-col">
@@ -34,8 +38,8 @@ export default function CursorHighlightPreview() {
         </nav>
       </CursorHighlight>
       <p className="mt-3 text-center text-xs text-muted-foreground">
-        Point at an item — or press <kbd className="font-mono">Tab</kbd> to walk
-        through them.
+        Point at an item — or press <kbd className="font-mono">Tab</kbd> to walk through
+        them.
       </p>
     </div>
   )

@@ -10,8 +10,10 @@ const DEFAULT_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ<>-_/\\[]{}=+*^?#%$&"
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect
 
-export interface TextScrambleProps
-  extends Omit<React.ComponentPropsWithoutRef<"span">, "children"> {
+export interface TextScrambleProps extends Omit<
+  React.ComponentPropsWithoutRef<"span">,
+  "children"
+> {
   /** The final, readable string. Always exposed to assistive technology. */
   text: string
   /** Pool the scrambler draws noise characters from. */
@@ -75,9 +77,7 @@ export function TextScramble({
     const node = nodeRef.current
     if (!node || runToken === 0) return
 
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     if (prefersReduced || characters.length === 0) {
       node.textContent = text
       return

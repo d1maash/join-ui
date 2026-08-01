@@ -36,10 +36,10 @@ export default function ComponentsPage() {
 
       <header className="mb-8 flex max-w-2xl flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">Components</h1>
-        <p className="text-pretty leading-relaxed text-muted-foreground">
-          {stats.total} components across {stats.categories} categories. Every
-          preview runs the same source the CLI installs, and every page ships a
-          ready-made prompt for your coding agent.
+        <p className="leading-relaxed text-pretty text-muted-foreground">
+          {stats.total} components across {stats.categories} categories. Every preview
+          runs the same source the CLI installs, and every page ships a ready-made
+          prompt for your coding agent.
         </p>
       </header>
 

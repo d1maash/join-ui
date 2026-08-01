@@ -49,9 +49,7 @@ export interface CategorySummary {
 
 export function getCategorySummaries(): CategorySummary[] {
   return COMPONENT_CATEGORIES.map((name) => {
-    const inCategory = allComponents.filter(
-      (component) => component.category === name
-    )
+    const inCategory = allComponents.filter((component) => component.category === name)
     return {
       name,
       slug: name.toLowerCase().replace(/\s+/g, "-"),
@@ -67,7 +65,10 @@ export function getCategorySummaries(): CategorySummary[] {
  */
 export function getTraits(component: ComponentMetadata): ComponentTrait[] {
   const traits: ComponentTrait[] = []
-  if (component.dependencies.includes("motion") || component.tags.includes("animated")) {
+  if (
+    component.dependencies.includes("motion") ||
+    component.tags.includes("animated")
+  ) {
     traits.push("animated")
   }
   if (component.accessibility.length > 0) traits.push("accessible")
@@ -75,10 +76,7 @@ export function getTraits(component: ComponentMetadata): ComponentTrait[] {
   return traits
 }
 
-export function hasTrait(
-  component: ComponentMetadata,
-  trait: ComponentTrait
-): boolean {
+export function hasTrait(component: ComponentMetadata, trait: ComponentTrait): boolean {
   return getTraits(component).includes(trait)
 }
 
@@ -99,7 +97,10 @@ export function getSiblings(slug: string): {
  * Related components: explicit links first, then same-category fallbacks so the
  * section is never empty.
  */
-export function getRelated(component: ComponentMetadata, limit = 3): ComponentMetadata[] {
+export function getRelated(
+  component: ComponentMetadata,
+  limit = 3
+): ComponentMetadata[] {
   const explicit = getComponents(component.related)
   if (explicit.length >= limit) return explicit.slice(0, limit)
 

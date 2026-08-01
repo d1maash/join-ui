@@ -31,7 +31,7 @@ export const TabsTrigger = React.forwardRef<
     <TabsPrimitive.Trigger
       ref={ref}
       className={cn(
-        "inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1.5 text-[0.8125rem] font-medium text-muted-foreground",
+        "inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-[0.8125rem] font-medium whitespace-nowrap text-muted-foreground",
         "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
         "hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         "disabled:pointer-events-none disabled:opacity-50",

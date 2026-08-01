@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import type { ComponentStatus } from "@/types/registry"
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1 whitespace-nowrap rounded-md border px-1.5 py-0.5 text-[0.6875rem] font-medium leading-4",
+  "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[0.6875rem] leading-4 font-medium whitespace-nowrap",
   {
     variants: {
       variant: {
@@ -26,8 +26,7 @@ const badgeVariants = cva(
 )
 
 export interface BadgeProps
-  extends React.ComponentPropsWithoutRef<"span">,
-    VariantProps<typeof badgeVariants> {}
+  extends React.ComponentPropsWithoutRef<"span">, VariantProps<typeof badgeVariants> {}
 
 export function Badge({ className, variant, size, ...props }: BadgeProps) {
   return <span className={cn(badgeVariants({ variant, size }), className)} {...props} />

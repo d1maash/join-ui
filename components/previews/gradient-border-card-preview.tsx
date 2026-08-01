@@ -11,7 +11,7 @@ export default function GradientBorderCardPreview() {
     <div className="grid w-full max-w-2xl gap-4 sm:grid-cols-2">
       <GradientBorderCard innerClassName="flex h-full flex-col gap-4 p-6">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <p className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
             Pro
           </p>
           <p className="mt-1 text-2xl font-semibold tracking-tight">

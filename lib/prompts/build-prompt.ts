@@ -22,8 +22,7 @@ function bullets(items: string[]): string {
 function formatProps(component: ComponentMetadata): string {
   return component.props
     .map((group) => {
-      const header =
-        component.props.length > 1 ? `${group.name}:\n` : ""
+      const header = component.props.length > 1 ? `${group.name}:\n` : ""
       const rows = group.props
         .map((prop) => {
           const required = prop.required ? " (required)" : ""
@@ -60,7 +59,8 @@ export function buildComponentPrompt({
 }: BuildPromptOptions): string {
   if (component.prompt) return component.prompt
 
-  const primaryTarget = component.files[0]?.target ?? `${siteConfig.installTarget}/${component.slug}.tsx`
+  const primaryTarget =
+    component.files[0]?.target ?? `${siteConfig.installTarget}/${component.slug}.tsx`
   const registryUrl = `${siteUrl}/r/${component.slug}.json`
 
   const dependencies =

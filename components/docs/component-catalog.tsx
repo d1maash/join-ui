@@ -77,8 +77,7 @@ export function ComponentCatalog({ items }: ComponentCatalogProps) {
 
   const categoryParam = searchParams.get("category")
   const activeCategory: ComponentCategory | "All" =
-    categoryParam &&
-    (COMPONENT_CATEGORIES as readonly string[]).includes(categoryParam)
+    categoryParam && (COMPONENT_CATEGORIES as readonly string[]).includes(categoryParam)
       ? (categoryParam as ComponentCategory)
       : "All"
 
@@ -143,7 +142,7 @@ export function ComponentCatalog({ items }: ComponentCatalogProps) {
         <div className="relative flex-1">
           <Search
             aria-hidden="true"
-            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
           />
           <input
             ref={inputRef}
@@ -154,7 +153,7 @@ export function ComponentCatalog({ items }: ComponentCatalogProps) {
             aria-label="Search components"
             aria-describedby="catalog-result-count"
             className={cn(
-              "h-10 w-full rounded-lg border border-input bg-card pl-9 pr-3 text-sm outline-none",
+              "h-10 w-full rounded-lg border border-input bg-card pr-3 pl-9 text-sm outline-none",
               "placeholder:text-muted-foreground",
               "transition-colors duration-[var(--duration-fast)]",
               "focus-visible:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"

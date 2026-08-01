@@ -16,8 +16,10 @@ export interface MorphingTabItem {
   panelId?: string
 }
 
-export interface MorphingTabsProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "onChange" | "defaultValue"> {
+export interface MorphingTabsProps extends Omit<
+  React.ComponentPropsWithoutRef<"div">,
+  "onChange" | "defaultValue"
+> {
   items: MorphingTabItem[]
   /** Controlled selection. */
   value?: string
@@ -147,7 +149,7 @@ export function MorphingTabs({
             disabled={item.disabled}
             onClick={() => select(item.value)}
             className={cn(
-              "relative inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-lg font-medium",
+              "relative inline-flex cursor-pointer items-center justify-center rounded-lg font-medium whitespace-nowrap",
               "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
               "disabled:pointer-events-none disabled:opacity-40",
@@ -184,7 +186,7 @@ export function MorphingTabs({
             ) : null}
             {item.label}
             {item.badge ? (
-              <span className="ml-0.5 rounded-full bg-muted px-1.5 py-px text-[0.6875rem] font-medium tabular-nums text-muted-foreground">
+              <span className="ml-0.5 rounded-full bg-muted px-1.5 py-px text-[0.6875rem] font-medium text-muted-foreground tabular-nums">
                 {item.badge}
               </span>
             ) : null}
