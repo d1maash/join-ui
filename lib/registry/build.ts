@@ -83,16 +83,8 @@ export function buildSourceRegistry(): Registry {
     $schema: REGISTRY_SCHEMA,
     name: siteConfig.registryName,
     homepage: siteConfig.url,
-    items: components.map((component) => ({
-      ...baseItem(component),
-      files: component.files.map((file) => ({
-        path: file.path,
-        type: file.type,
-        target: file.target,
-        content: "",
-      })),
-      ...(component.cssVars ? { cssVars: component.cssVars } : {}),
-    })),
+    // Same shape as an index entry — the CLI inlines file contents itself.
+    items: components.map(toIndexItem),
   }
 }
 

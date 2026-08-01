@@ -35,8 +35,7 @@
         {
           "path": "registry/components/magnetic-button.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/magnetic-button.tsx",
-          "content": ""
+          "target": "components/joinway/magnetic-button.tsx"
         }
       ]
     },
@@ -69,8 +68,7 @@
         {
           "path": "registry/components/spotlight-card.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/spotlight-card.tsx",
-          "content": ""
+          "target": "components/joinway/spotlight-card.tsx"
         }
       ]
     },
@@ -105,8 +103,7 @@
         {
           "path": "registry/components/morphing-tabs.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/morphing-tabs.tsx",
-          "content": ""
+          "target": "components/joinway/morphing-tabs.tsx"
         }
       ]
     },
@@ -139,8 +136,7 @@
         {
           "path": "registry/components/aurora-background.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/aurora-background.tsx",
-          "content": ""
+          "target": "components/joinway/aurora-background.tsx"
         }
       ]
     },
@@ -173,8 +169,7 @@
         {
           "path": "registry/components/gradient-border-card.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/gradient-border-card.tsx",
-          "content": ""
+          "target": "components/joinway/gradient-border-card.tsx"
         }
       ]
     },
@@ -212,8 +207,7 @@
         {
           "path": "registry/components/animated-command-menu.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/animated-command-menu.tsx",
-          "content": ""
+          "target": "components/joinway/animated-command-menu.tsx"
         }
       ]
     },
@@ -248,8 +242,7 @@
         {
           "path": "registry/components/floating-dock.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/floating-dock.tsx",
-          "content": ""
+          "target": "components/joinway/floating-dock.tsx"
         }
       ]
     },
@@ -282,8 +275,7 @@
         {
           "path": "registry/components/text-scramble.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/text-scramble.tsx",
-          "content": ""
+          "target": "components/joinway/text-scramble.tsx"
         }
       ]
     },
@@ -318,8 +310,7 @@
         {
           "path": "registry/components/expandable-feature-card.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/expandable-feature-card.tsx",
-          "content": ""
+          "target": "components/joinway/expandable-feature-card.tsx"
         }
       ]
     },
@@ -354,8 +345,7 @@
         {
           "path": "registry/components/cursor-highlight.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/cursor-highlight.tsx",
-          "content": ""
+          "target": "components/joinway/cursor-highlight.tsx"
         }
       ]
     },
@@ -388,8 +378,7 @@
         {
           "path": "registry/components/animated-field.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/animated-field.tsx",
-          "content": ""
+          "target": "components/joinway/animated-field.tsx"
         }
       ]
     },
@@ -422,8 +411,7 @@
         {
           "path": "registry/components/status-pulse.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/status-pulse.tsx",
-          "content": ""
+          "target": "components/joinway/status-pulse.tsx"
         }
       ]
     },
@@ -458,8 +446,7 @@
         {
           "path": "registry/components/metric-card.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/metric-card.tsx",
-          "content": ""
+          "target": "components/joinway/metric-card.tsx"
         }
       ]
     },
@@ -492,8 +479,7 @@
         {
           "path": "registry/components/bento-grid.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/bento-grid.tsx",
-          "content": ""
+          "target": "components/joinway/bento-grid.tsx"
         }
       ]
     }

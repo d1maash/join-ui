@@ -144,9 +144,18 @@ export interface RegistryItem {
   docs?: string
 }
 
+/**
+ * Source registry (`registry.json` at the repo root) — the input format for
+ * `shadcn build`. File bodies are deliberately absent here: the CLI reads them
+ * from `path` on disk and inlines them into the published items itself.
+ */
 export interface Registry {
   $schema: string
   name: string
   homepage: string
-  items: Array<Omit<RegistryItem, "$schema">>
+  items: Array<
+    Omit<RegistryItem, "$schema" | "files"> & {
+      files: Array<{ path: string; type: RegistryFileType; target: string }>
+    }
+  >
 }
