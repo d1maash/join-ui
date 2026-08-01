@@ -12,47 +12,20 @@ export const TooltipTrigger = TooltipPrimitive.Trigger
 export const TooltipContent = React.forwardRef<
   React.ComponentRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(function TooltipContent({ className, sideOffset = 6, children, ...props }, ref) {
+>(function TooltipContent({ className, sideOffset = 6, ...props }, ref) {
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         ref={ref}
         sideOffset={sideOffset}
         className={cn(
-          "z-50 overflow-hidden rounded-md border border-border bg-popover px-2 py-1 text-xs font-medium text-popover-foreground shadow-[var(--shadow-raised)]",
-          "data-[state=delayed-open]:animate-[scale-in_var(--duration-fast)_var(--ease-out-soft)]",
+          "z-50 border border-foreground bg-foreground px-2 py-1",
+          "font-mono text-[0.6875rem] tracking-[0.08em] text-background",
+          "data-[state=delayed-open]:animate-fade-in",
           className
         )}
         {...props}
-      >
-        {children}
-      </TooltipPrimitive.Content>
+      />
     </TooltipPrimitive.Portal>
   )
 })
-
-/**
- * Convenience wrapper for the common case: a single trigger with a text label.
- * Renders its own `Provider` so callers do not need a global one — Radix
- * tooltips only need a provider for shared open/close delays.
- */
-export function SimpleTooltip({
-  label,
-  children,
-  side = "top",
-  delayDuration = 250,
-}: {
-  label: React.ReactNode
-  children: React.ReactNode
-  side?: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>["side"]
-  delayDuration?: number
-}) {
-  return (
-    <TooltipProvider delayDuration={delayDuration}>
-      <Tooltip>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
-        <TooltipContent side={side}>{label}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  )
-}

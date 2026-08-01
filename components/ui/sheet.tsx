@@ -23,15 +23,16 @@ export const SheetContent = React.forwardRef<
       <DialogPrimitive.Overlay
         className={cn(
           "fixed inset-0 z-50 bg-foreground/25 backdrop-blur-[2px]",
-          "data-[state=open]:animate-[fade-in_var(--duration-fast)_var(--ease-out-soft)]"
+          "data-[state=open]:animate-fade-in"
         )}
       />
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed inset-y-0 z-50 flex w-[min(20rem,85vw)] flex-col border-border bg-background shadow-[var(--shadow-overlay)]",
+          "fixed inset-y-0 z-50 flex w-[19rem] max-w-[85vw] flex-col bg-background",
           side === "left" ? "left-0 border-r" : "right-0 border-l",
-          "data-[state=open]:animate-[fade-in_var(--duration-base)_var(--ease-out-soft)]",
+          "border-foreground",
+          "data-[state=open]:animate-fade-in",
           className
         )}
         {...props}
@@ -39,13 +40,14 @@ export const SheetContent = React.forwardRef<
         {children}
         <DialogPrimitive.Close
           className={cn(
-            "absolute top-3 right-3 flex size-8 cursor-pointer items-center justify-center rounded-md text-muted-foreground",
-            "transition-colors hover:bg-muted hover:text-foreground",
+            "absolute top-3 right-3 flex size-8 cursor-pointer items-center justify-center",
+            "border border-transparent text-muted-foreground transition-colors",
+            "hover:border-border hover:text-foreground",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           )}
         >
-          <X className="size-4" aria-hidden="true" />
-          <span className="sr-only">Close navigation</span>
+          <X aria-hidden="true" className="size-4" />
+          <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>
     </DialogPrimitive.Portal>

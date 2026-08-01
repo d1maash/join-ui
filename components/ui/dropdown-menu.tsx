@@ -2,13 +2,11 @@
 
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
-import { Check } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
 export const DropdownMenu = DropdownMenuPrimitive.Root
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
-export const DropdownMenuGroup = DropdownMenuPrimitive.Group
 
 export const DropdownMenuContent = React.forwardRef<
   React.ComponentRef<typeof DropdownMenuPrimitive.Content>,
@@ -20,8 +18,8 @@ export const DropdownMenuContent = React.forwardRef<
         ref={ref}
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-[9rem] overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-[var(--shadow-overlay)]",
-          "data-[state=open]:animate-[scale-in_var(--duration-fast)_var(--ease-out-soft)]",
+          "z-50 min-w-[9rem] border border-foreground bg-popover p-0",
+          "data-[state=open]:animate-fade-in",
           className
         )}
         {...props}
@@ -38,56 +36,14 @@ export const DropdownMenuItem = React.forwardRef<
     <DropdownMenuPrimitive.Item
       ref={ref}
       className={cn(
-        "relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none select-none",
-        "transition-colors duration-[var(--duration-instant)]",
-        "focus:bg-muted focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        "[&_svg]:size-4 [&_svg]:shrink-0",
+        "flex cursor-pointer items-center gap-2 border-b border-border px-3 py-2 text-sm last:border-b-0",
+        "outline-none select-none",
+        "focus:bg-foreground focus:text-background",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-40",
+        "[&_svg]:size-3.5 [&_svg]:shrink-0",
         className
       )}
       {...props}
     />
   )
 })
-
-export const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
-
-export const DropdownMenuRadioItem = React.forwardRef<
-  React.ComponentRef<typeof DropdownMenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
->(function DropdownMenuRadioItem({ className, children, ...props }, ref) {
-  return (
-    <DropdownMenuPrimitive.RadioItem
-      ref={ref}
-      className={cn(
-        "relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-7 pl-2 text-sm outline-none select-none",
-        "transition-colors duration-[var(--duration-instant)]",
-        "focus:bg-muted focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        "[&_svg]:size-4 [&_svg]:shrink-0",
-        className
-      )}
-      {...props}
-    >
-      {children}
-      <span className="absolute right-2 flex size-3.5 items-center justify-center">
-        <DropdownMenuPrimitive.ItemIndicator>
-          <Check className="size-3.5 text-primary" aria-hidden="true" />
-        </DropdownMenuPrimitive.ItemIndicator>
-      </span>
-    </DropdownMenuPrimitive.RadioItem>
-  )
-})
-
-export function DropdownMenuLabel({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
-  return (
-    <div
-      className={cn(
-        "px-2 py-1.5 text-[0.6875rem] font-medium tracking-wider text-muted-foreground uppercase",
-        className
-      )}
-      {...props}
-    />
-  )
-}

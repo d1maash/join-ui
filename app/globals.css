@@ -3,6 +3,11 @@
 /*
  * Joinway UI — design tokens
  * ---------------------------------------------------------------------------
+ * A strictly achromatic system: every colour token has zero chroma, so the
+ * interface can only ever render in black, white and the grey ramp between
+ * them. Meaning is carried by weight, rule thickness, spacing and type size —
+ * never by hue.
+ *
  * Theming is driven entirely by CSS custom properties. Nothing in the
  * `registry/` components uses a `dark:` utility, which is what makes the
  * per-preview theme islands (a forced-light preview inside a dark page, and
@@ -14,127 +19,116 @@
 
 :root,
 .light {
+  /* Grey ramp — the only palette in the system. */
+  --grey-0: oklch(1 0 0);
+  --grey-50: oklch(0.975 0 0);
+  --grey-100: oklch(0.95 0 0);
+  --grey-200: oklch(0.9 0 0);
+  --grey-300: oklch(0.82 0 0);
+  --grey-400: oklch(0.68 0 0);
+  --grey-500: oklch(0.55 0 0);
+  --grey-600: oklch(0.44 0 0);
+  --grey-700: oklch(0.32 0 0);
+  --grey-800: oklch(0.22 0 0);
+  --grey-900: oklch(0.13 0 0);
+  --grey-1000: oklch(0 0 0);
+
   /* Surfaces */
-  --background: oklch(0.994 0.002 250);
-  --foreground: oklch(0.185 0.014 258);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.185 0.014 258);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.185 0.014 258);
-  --muted: oklch(0.966 0.004 255);
-  --muted-foreground: oklch(0.508 0.016 258);
-  --subtle: oklch(0.978 0.003 255);
+  --background: var(--grey-0);
+  --foreground: var(--grey-1000);
+  --card: var(--grey-0);
+  --card-foreground: var(--grey-1000);
+  --popover: var(--grey-0);
+  --popover-foreground: var(--grey-1000);
+  --muted: var(--grey-100);
+  --muted-foreground: var(--grey-600);
+  --subtle: var(--grey-50);
 
-  /* Lines */
-  --border: oklch(0.912 0.006 258);
-  --border-strong: oklch(0.858 0.008 258);
-  --input: oklch(0.912 0.006 258);
-  --ring: oklch(0.58 0.113 174);
+  /* Rules. `--border` is the hairline; `--border-strong` is the ink rule. */
+  --border: var(--grey-200);
+  --border-strong: var(--grey-1000);
+  --input: var(--grey-300);
+  --ring: var(--grey-1000);
 
-  /* Brand */
-  --primary: oklch(0.556 0.108 174);
-  --primary-foreground: oklch(0.99 0.012 174);
-  --primary-soft: oklch(0.947 0.032 174);
-  --accent: oklch(0.712 0.142 62);
-  --accent-foreground: oklch(0.23 0.06 62);
-  --accent-soft: oklch(0.958 0.038 72);
-  --secondary: oklch(0.966 0.004 255);
-  --secondary-foreground: oklch(0.245 0.016 258);
-  --destructive: oklch(0.577 0.212 27.3);
-  --destructive-foreground: oklch(0.985 0.01 27);
-  --success: oklch(0.6 0.132 155);
-  --warning: oklch(0.72 0.15 75);
+  /* Emphasis. Inverted ink is the only "accent" the system has. */
+  --primary: var(--grey-1000);
+  --primary-foreground: var(--grey-0);
+  --primary-soft: var(--grey-100);
+  --accent: var(--grey-1000);
+  --accent-foreground: var(--grey-0);
+  --accent-soft: var(--grey-100);
+  --secondary: var(--grey-100);
+  --secondary-foreground: var(--grey-1000);
 
-  /* Signature gradient */
-  --brand-from: oklch(0.63 0.13 176);
-  --brand-via: oklch(0.72 0.15 148);
-  --brand-to: oklch(0.76 0.15 106);
+  /*
+   * Status is achromatic by design. Components must pair these with an icon
+   * and a text label — colour alone never carries the meaning here.
+   */
+  --destructive: var(--grey-1000);
+  --destructive-foreground: var(--grey-0);
+  --success: var(--grey-700);
+  --warning: var(--grey-700);
 
-  /* Decorative */
-  --grid-line: oklch(0.185 0.014 258 / 0.055);
-  --glow: oklch(0.63 0.13 176 / 0.18);
-  --code-bg: oklch(0.978 0.003 255);
-  --selection: oklch(0.63 0.13 176 / 0.22);
+  --code-bg: var(--grey-50);
+  --selection: oklch(0 0 0 / 0.14);
 
-  /* Shape */
-  --radius: 0.625rem;
-  --radius-xs: calc(var(--radius) - 0.375rem);
-  --radius-sm: calc(var(--radius) - 0.25rem);
-  --radius-md: calc(var(--radius) - 0.125rem);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 0.375rem);
-  --radius-2xl: calc(var(--radius) + 0.75rem);
-
-  /* Elevation */
-  --shadow-subtle: 0 1px 2px -1px oklch(0.185 0.014 258 / 0.08);
-  --shadow-raised:
-    0 1px 2px -1px oklch(0.185 0.014 258 / 0.06),
-    0 4px 12px -4px oklch(0.185 0.014 258 / 0.08);
-  --shadow-floating:
-    0 2px 4px -2px oklch(0.185 0.014 258 / 0.06),
-    0 12px 32px -8px oklch(0.185 0.014 258 / 0.12);
-  --shadow-overlay:
-    0 4px 8px -4px oklch(0.185 0.014 258 / 0.08),
-    0 24px 56px -12px oklch(0.185 0.014 258 / 0.18);
-  --shadow-glow: 0 0 0 1px oklch(0.63 0.13 176 / 0.22), 0 8px 28px -8px var(--glow);
+  /* Shape — square by default. Swiss grids do not round their corners. */
+  --radius: 0rem;
 
   /* Motion */
-  --duration-instant: 90ms;
-  --duration-fast: 160ms;
-  --duration-base: 240ms;
-  --duration-slow: 420ms;
-  --duration-slower: 720ms;
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dark {
-  --background: oklch(0.162 0.011 258);
-  --foreground: oklch(0.958 0.004 250);
-  --card: oklch(0.198 0.013 258);
-  --card-foreground: oklch(0.958 0.004 250);
-  --popover: oklch(0.208 0.013 258);
-  --popover-foreground: oklch(0.958 0.004 250);
-  --muted: oklch(0.238 0.013 258);
-  --muted-foreground: oklch(0.688 0.013 258);
-  --subtle: oklch(0.185 0.012 258);
+  --grey-0: oklch(0 0 0);
+  --grey-50: oklch(0.09 0 0);
+  --grey-100: oklch(0.14 0 0);
+  --grey-200: oklch(0.22 0 0);
+  --grey-300: oklch(0.3 0 0);
+  --grey-400: oklch(0.42 0 0);
+  --grey-500: oklch(0.55 0 0);
+  --grey-600: oklch(0.68 0 0);
+  --grey-700: oklch(0.79 0 0);
+  --grey-800: oklch(0.88 0 0);
+  --grey-900: oklch(0.95 0 0);
+  --grey-1000: oklch(1 0 0);
 
-  --border: oklch(0.292 0.013 258);
-  --border-strong: oklch(0.358 0.015 258);
-  --input: oklch(0.292 0.013 258);
-  --ring: oklch(0.78 0.13 174);
+  --background: var(--grey-0);
+  --foreground: var(--grey-1000);
+  --card: var(--grey-0);
+  --card-foreground: var(--grey-1000);
+  --popover: var(--grey-50);
+  --popover-foreground: var(--grey-1000);
+  --muted: var(--grey-100);
+  --muted-foreground: var(--grey-600);
+  --subtle: var(--grey-50);
 
-  --primary: oklch(0.79 0.132 174);
-  --primary-foreground: oklch(0.185 0.045 174);
-  --primary-soft: oklch(0.3 0.05 174);
-  --accent: oklch(0.79 0.135 68);
-  --accent-foreground: oklch(0.2 0.05 62);
-  --accent-soft: oklch(0.31 0.055 68);
-  --secondary: oklch(0.248 0.013 258);
-  --secondary-foreground: oklch(0.94 0.005 250);
-  --destructive: oklch(0.68 0.19 24);
-  --destructive-foreground: oklch(0.16 0.04 24);
-  --success: oklch(0.75 0.14 158);
-  --warning: oklch(0.82 0.14 78);
+  --border: var(--grey-200);
+  --border-strong: var(--grey-1000);
+  --input: var(--grey-300);
+  --ring: var(--grey-1000);
 
-  --brand-from: oklch(0.79 0.13 176);
-  --brand-via: oklch(0.83 0.15 150);
-  --brand-to: oklch(0.88 0.15 108);
+  --primary: var(--grey-1000);
+  --primary-foreground: var(--grey-0);
+  --primary-soft: var(--grey-100);
+  --accent: var(--grey-1000);
+  --accent-foreground: var(--grey-0);
+  --accent-soft: var(--grey-100);
+  --secondary: var(--grey-100);
+  --secondary-foreground: var(--grey-1000);
 
-  --grid-line: oklch(0.958 0.004 250 / 0.05);
-  --glow: oklch(0.79 0.132 174 / 0.22);
-  --code-bg: oklch(0.185 0.012 258);
-  --selection: oklch(0.79 0.132 174 / 0.26);
+  --destructive: var(--grey-1000);
+  --destructive-foreground: var(--grey-0);
+  --success: var(--grey-700);
+  --warning: var(--grey-700);
 
-  --shadow-subtle: 0 1px 2px -1px oklch(0 0 0 / 0.5);
-  --shadow-raised:
-    0 1px 2px -1px oklch(0 0 0 / 0.5), 0 4px 12px -4px oklch(0 0 0 / 0.45);
-  --shadow-floating:
-    0 2px 4px -2px oklch(0 0 0 / 0.5), 0 12px 32px -8px oklch(0 0 0 / 0.55);
-  --shadow-overlay:
-    0 4px 8px -4px oklch(0 0 0 / 0.55), 0 24px 56px -12px oklch(0 0 0 / 0.7);
-  --shadow-glow: 0 0 0 1px oklch(0.79 0.132 174 / 0.28), 0 8px 28px -8px var(--glow);
+  --code-bg: var(--grey-50);
+  --selection: oklch(1 0 0 / 0.18);
 }
 
 @theme inline {
@@ -163,43 +157,43 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
   --color-warning: var(--warning);
-  --color-brand-from: var(--brand-from);
-  --color-brand-via: var(--brand-via);
-  --color-brand-to: var(--brand-to);
   --color-code-bg: var(--code-bg);
 
-  --radius-xs: var(--radius-xs);
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
-  --radius-2xl: var(--radius-2xl);
+  --color-grey-0: var(--grey-0);
+  --color-grey-50: var(--grey-50);
+  --color-grey-100: var(--grey-100);
+  --color-grey-200: var(--grey-200);
+  --color-grey-300: var(--grey-300);
+  --color-grey-400: var(--grey-400);
+  --color-grey-500: var(--grey-500);
+  --color-grey-600: var(--grey-600);
+  --color-grey-700: var(--grey-700);
+  --color-grey-800: var(--grey-800);
+  --color-grey-900: var(--grey-900);
+  --color-grey-1000: var(--grey-1000);
 
-  --shadow-subtle: var(--shadow-subtle);
-  --shadow-raised: var(--shadow-raised);
-  --shadow-floating: var(--shadow-floating);
-  --shadow-overlay: var(--shadow-overlay);
-  --shadow-glow: var(--shadow-glow);
+  /* Square corners across the board; `rounded-full` is left untouched for pips. */
+  --radius-xs: 0rem;
+  --radius-sm: 0rem;
+  --radius-md: 0rem;
+  --radius-lg: 0rem;
+  --radius-xl: 0rem;
+  --radius-2xl: 0rem;
+  --radius-3xl: 0rem;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
 
   --ease-out-soft: var(--ease-out-soft);
   --ease-in-out-soft: var(--ease-in-out-soft);
-  --ease-spring: var(--ease-spring);
 
   --animate-fade-up: fade-up var(--duration-slow) var(--ease-out-soft) both;
   --animate-fade-in: fade-in var(--duration-base) var(--ease-out-soft) both;
-  --animate-scale-in: scale-in var(--duration-fast) var(--ease-out-soft) both;
-  --animate-shimmer: shimmer 2.4s linear infinite;
-  --animate-aurora: aurora 18s ease-in-out infinite alternate;
-  --animate-border-spin: border-spin 5s linear infinite;
-  --animate-pulse-ring: pulse-ring 2s var(--ease-out-soft) infinite;
 
   @keyframes fade-up {
     from {
       opacity: 0;
-      transform: translate3d(0, 10px, 0);
+      transform: translate3d(0, 8px, 0);
     }
     to {
       opacity: 1;
@@ -212,54 +206,6 @@
     }
     to {
       opacity: 1;
-    }
-  }
-  @keyframes scale-in {
-    from {
-      opacity: 0;
-      transform: scale(0.97);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  @keyframes shimmer {
-    from {
-      background-position: 200% 0;
-    }
-    to {
-      background-position: -200% 0;
-    }
-  }
-  @keyframes aurora {
-    0% {
-      transform: translate3d(-6%, -4%, 0) scale(1);
-    }
-    50% {
-      transform: translate3d(5%, 3%, 0) scale(1.12);
-    }
-    100% {
-      transform: translate3d(-3%, 5%, 0) scale(1.04);
-    }
-  }
-  @keyframes border-spin {
-    to {
-      --joinway-angle: 360deg;
-    }
-  }
-  @keyframes pulse-ring {
-    0% {
-      transform: scale(0.85);
-      opacity: 0.7;
-    }
-    70% {
-      transform: scale(1.9);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(1.9);
-      opacity: 0;
     }
   }
 }
@@ -288,19 +234,15 @@
     background-color: var(--selection);
   }
 
+  /* A square, high-contrast focus rectangle — consistent with the grid. */
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
-    border-radius: var(--radius-xs);
+    border-radius: 0;
   }
 
-  /* Only ever show focus rings for keyboard users. */
   :focus:not(:focus-visible) {
     outline: none;
-  }
-
-  [data-slot="scroll-area-viewport"] > div {
-    display: block !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -319,42 +261,48 @@
 }
 
 @layer components {
-  /* Calm page backdrop: hairline grid + one soft brand bloom. */
-  .backdrop-grid {
-    background-image:
-      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 78%);
+  /*
+   * Swiss grid scaffolding. Column rules are drawn as real 1px children rather
+   * than as a background image, so they inherit `--border` and stay crisp at
+   * any zoom level.
+   */
+  .grid-rules {
+    display: grid;
+    grid-template-columns: repeat(var(--rule-columns, 4), minmax(0, 1fr));
+    pointer-events: none;
   }
 
-  .text-brand-gradient {
-    background-image: linear-gradient(
-      100deg,
-      var(--brand-from),
-      var(--brand-via) 45%,
-      var(--brand-to)
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  .grid-rules > span {
+    border-left: 1px solid var(--border);
   }
 
-  .rule-fade {
-    background: linear-gradient(
-      to right,
-      transparent,
-      var(--border-strong) 20%,
-      var(--border-strong) 80%,
-      transparent
-    );
+  .grid-rules > span:first-child {
+    border-left-color: transparent;
+  }
+
+  /* Uppercase micro-label used for section eyebrows and table headers. */
+  .label-caps {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Numeric counter set in mono, as used in Swiss editorial layouts. */
+  .numeral {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
   }
 }
 
 /*
  * Shiki dual-theme output. `defaultColor: false` emits both `--shiki-light`
  * and `--shiki-dark` custom properties per token so a single HTML payload
- * serves both themes with no client-side re-highlighting.
+ * serves both themes with no client-side re-highlighting. Both themes are
+ * achromatic — syntax is differentiated by luminance and italics only.
  */
 .shiki,
 .shiki span {
@@ -383,8 +331,8 @@
 }
 
 .shiki .line.highlighted {
-  background-color: color-mix(in oklab, var(--primary) 12%, transparent);
-  border-left-color: var(--primary);
+  background-color: var(--muted);
+  border-left-color: var(--foreground);
 }
 
 .shiki[data-line-numbers] code {

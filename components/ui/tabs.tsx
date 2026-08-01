@@ -7,6 +7,12 @@ import { cn } from "@/lib/utils"
 
 export const Tabs = TabsPrimitive.Root
 
+/**
+ * Tab bar.
+ *
+ * The active tab is marked by a 2px ink rule along the bottom edge, in the
+ * manner of a printed index — no pill, no fill, no shadow.
+ */
 export const TabsList = React.forwardRef<
   React.ComponentRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
@@ -15,7 +21,7 @@ export const TabsList = React.forwardRef<
     <TabsPrimitive.List
       ref={ref}
       className={cn(
-        "inline-flex items-center gap-1 rounded-lg border border-border bg-muted/60 p-1",
+        "flex items-stretch gap-6 border-b border-border",
         className
       )}
       {...props}
@@ -31,12 +37,13 @@ export const TabsTrigger = React.forwardRef<
     <TabsPrimitive.Trigger
       ref={ref}
       className={cn(
-        "inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-[0.8125rem] font-medium whitespace-nowrap text-muted-foreground",
-        "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
-        "hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-        "disabled:pointer-events-none disabled:opacity-50",
-        "data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-[var(--shadow-subtle)]",
-        "[&_svg]:size-3.5 [&_svg]:shrink-0",
+        "relative -mb-px cursor-pointer border-b-2 border-transparent pb-2.5",
+        "font-mono text-[0.6875rem] tracking-[0.12em] uppercase",
+        "text-muted-foreground transition-colors duration-[var(--duration-fast)]",
+        "hover:text-foreground",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "disabled:pointer-events-none disabled:opacity-40",
+        "data-[state=active]:border-foreground data-[state=active]:text-foreground",
         className
       )}
       {...props}
@@ -52,7 +59,7 @@ export const TabsContent = React.forwardRef<
     <TabsPrimitive.Content
       ref={ref}
       className={cn(
-        "mt-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className
       )}
       {...props}

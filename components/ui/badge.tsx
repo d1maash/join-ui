@@ -5,20 +5,26 @@ import { cn } from "@/lib/utils"
 import type { ComponentStatus } from "@/types/registry"
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[0.6875rem] leading-4 font-medium whitespace-nowrap",
+  cn(
+    "inline-flex items-center gap-1.5 border font-mono uppercase whitespace-nowrap select-none",
+    "tracking-[0.1em]",
+    "[&_svg]:pointer-events-none [&_svg]:shrink-0"
+  ),
   {
     variants: {
       variant: {
-        neutral: "border-border bg-muted text-muted-foreground",
-        outline: "border-border bg-transparent text-muted-foreground",
-        primary: "border-primary/25 bg-primary-soft text-primary",
-        accent: "border-accent/30 bg-accent-soft text-accent-foreground",
-        success: "border-success/30 bg-success/10 text-success",
-        destructive: "border-destructive/30 bg-destructive/10 text-destructive",
+        /** Filled ink — the loudest label available. */
+        primary: "border-foreground bg-foreground text-background",
+        /** Hairline box — the default. */
+        neutral: "border-border bg-background text-muted-foreground",
+        /** Ink rule, transparent fill — one step above neutral. */
+        outline: "border-foreground bg-transparent text-foreground",
+        /** Flat grey block, no rule — the quietest label. */
+        muted: "border-transparent bg-muted text-muted-foreground",
       },
       size: {
-        sm: "px-1.5 py-0.5 text-[0.6875rem]",
-        md: "px-2 py-1 text-xs",
+        sm: "h-5 px-1.5 text-[0.5625rem]",
+        md: "h-6 px-2 text-[0.625rem]",
       },
     },
     defaultVariants: { variant: "neutral", size: "sm" },
@@ -32,24 +38,19 @@ export function Badge({ className, variant, size, ...props }: BadgeProps) {
   return <span className={cn(badgeVariants({ variant, size }), className)} {...props} />
 }
 
-const STATUS_VARIANT: Record<
-  ComponentStatus,
-  NonNullable<VariantProps<typeof badgeVariants>["variant"]>
-> = {
+/**
+ * Registry status.
+ *
+ * With hue unavailable, the four states are separated by fill weight and are
+ * always spelled out in words — never abbreviated to a coloured dot.
+ */
+const STATUS_VARIANT: Record<ComponentStatus, BadgeProps["variant"]> = {
   stable: "neutral",
   new: "primary",
-  updated: "accent",
-  experimental: "outline",
+  updated: "outline",
+  experimental: "muted",
 }
 
-const STATUS_LABEL: Record<ComponentStatus, string> = {
-  stable: "Stable",
-  new: "New",
-  updated: "Updated",
-  experimental: "Experimental",
-}
-
-/** Status chip driven by registry metadata, so labels never drift. */
 export function StatusBadge({
   status,
   className,
@@ -57,10 +58,7 @@ export function StatusBadge({
 }: { status: ComponentStatus } & Omit<BadgeProps, "variant" | "children">) {
   return (
     <Badge variant={STATUS_VARIANT[status]} className={className} {...props}>
-      {status === "experimental" ? (
-        <span aria-hidden="true" className="size-1 rounded-full bg-current" />
-      ) : null}
-      {STATUS_LABEL[status]}
+      {status}
     </Badge>
   )
 }
