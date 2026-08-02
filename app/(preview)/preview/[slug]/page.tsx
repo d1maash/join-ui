@@ -3,9 +3,9 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
-import { ComponentPreview } from "@/components/docs/component-preview"
-import { LogoMark } from "@/components/docs/logo"
-import { ThemeToggle } from "@/components/docs/theme-toggle"
+import { ComponentPreview } from "@/components/site/component-preview"
+import { LogoMark } from "@/components/site/logo"
+import { ThemeToggle } from "@/components/site/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { allComponents, getComponent } from "@/lib/registry"
 import { siteConfig } from "@/lib/site"
@@ -54,14 +54,14 @@ export default async function FullPreviewPage({ params }: PageProps) {
         </Button>
 
         <div className="ml-auto flex items-center gap-3">
-          <span className="hidden text-sm text-muted-foreground sm:inline">
+          <span className="label-caps hidden text-muted-foreground sm:inline">
             {component.title}
           </span>
           <ThemeToggle />
           <Link
             href="/"
             aria-label={`${siteConfig.name} home`}
-            className="rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+            className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
           >
             <LogoMark className="size-6" />
           </Link>

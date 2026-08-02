@@ -13,15 +13,15 @@ Add the namespace to `components.json`:
 }
 ```
 
-`{name}` is substituted by the CLI, so `@joinway/status-pulse` resolves to
-`https://ui.joinway.dev/r/status-pulse.json`.
+`{name}` is substituted by the CLI, so `@joinway/<component>` resolves to
+`https://ui.joinway.dev/r/<component>.json`.
 
-<InstallTabs target="@joinway/status-pulse" />
+<InstallTabs target="@joinway/<component>" />
 
 Or skip the namespace entirely:
 
 ```bash
-pnpm dlx shadcn@latest add https://ui.joinway.dev/r/status-pulse.json
+pnpm dlx shadcn@latest add https://ui.joinway.dev/r/<component>.json
 ```
 
 ## Endpoints
@@ -36,27 +36,30 @@ can read them from any project.
 
 ## Anatomy of an item
 
-```json title="public/r/status-pulse.json"
+Every item has the same shape. This is what one would look like for a
+hypothetical `glow-card`:
+
+```json title="public/r/glow-card.json"
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "status-pulse",
+  "name": "glow-card",
   "type": "registry:ui",
-  "title": "Status Pulse",
-  "description": "A live status indicator with an expanding ring and a real text label.",
+  "title": "Glow Card",
+  "description": "A bounded panel that raises its rule on hover.",
   "author": "Joinway",
   "dependencies": [],
   "registryDependencies": ["utils"],
   "files": [
     {
-      "path": "registry/components/status-pulse.tsx",
+      "path": "registry/components/glow-card.tsx",
       "type": "registry:ui",
-      "target": "components/joinway/status-pulse.tsx",
+      "target": "components/joinway/glow-card.tsx",
       "content": "\"use client\"\n\nimport * as React from \"react\"\n…"
     }
   ],
-  "categories": ["feedback", "status", "indicator"],
-  "docs": "https://ui.joinway.dev/components/status-pulse",
-  "meta": { "status": "stable", "since": "2026-05-30", "featured": false }
+  "categories": ["cards", "layout"],
+  "docs": "https://ui.joinway.dev/components/glow-card",
+  "meta": { "status": "stable", "since": "2026-08-02", "featured": false }
 }
 ```
 
@@ -74,11 +77,15 @@ pnpm registry:build
 ```
 
 ```text
-✓ Registry built — 14 items, 74.8 kB of source
+✓ Registry built — 0 items, 0.0 kB of source
   registry.json
   public/r/registry.json
-  public/r/*.json (14 files)
+  public/r/*.json (0 files)
 ```
+
+The catalog is empty while the component set is rebuilt from scratch, so the
+counts above are what you will see today. They track `lib/registry/components.ts`
+exactly — one entry there is one item here.
 
 The build refuses to emit anything until validation passes:
 
@@ -94,7 +101,7 @@ Validation covers the things a schema alone cannot:
 - `related` points only at slugs that exist, and never at itself;
 - the generated item still parses as a valid registry item, with non-empty file contents.
 
-<Callout type="note">
+<Callout variant="note">
   `registry:build` runs automatically as `prebuild`, so a production build
   cannot ship a registry that disagrees with the source.
 </Callout>

@@ -6,6 +6,12 @@ export const alt = `${siteConfig.name} — ${siteConfig.tagline}`
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
+/**
+ * Social card.
+ *
+ * Ink on paper, laid out on the same rule grid as the site: a hairline frame,
+ * one horizontal division and type doing all of the work.
+ */
 export default function OpengraphImage() {
   return new ImageResponse(
     <div
@@ -15,27 +21,25 @@ export default function OpengraphImage() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: 72,
-        backgroundColor: "#191a1f",
-        backgroundImage:
-          "radial-gradient(circle at 12% 6%, rgba(56,196,178,0.30), transparent 46%), radial-gradient(circle at 88% 92%, rgba(163,214,88,0.20), transparent 44%)",
-        color: "#f4f4f6",
+        padding: 64,
+        backgroundColor: "#ffffff",
+        color: "#000000",
+        border: "12px solid #000000",
+        fontFamily: "sans-serif",
       }}
     >
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
           style={{
-            width: 46,
-            height: 46,
-            borderRadius: 13,
-            border: "2px solid rgba(244,244,246,0.22)",
+            width: 44,
+            height: 44,
+            border: "3px solid #000000",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginRight: 16,
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: 700,
-            color: "#5ed6bd",
           }}
         >
           J
@@ -43,28 +47,40 @@ export default function OpengraphImage() {
         <div style={{ display: "flex", fontSize: 26, fontWeight: 600 }}>
           {siteConfig.name}
         </div>
+        <div
+          style={{
+            display: "flex",
+            marginLeft: "auto",
+            fontSize: 20,
+            letterSpacing: 3,
+            textTransform: "uppercase",
+            color: "#5c5c5c",
+          }}
+        >
+          Component registry
+        </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div
           style={{
             display: "flex",
-            fontSize: 68,
+            fontSize: 86,
             fontWeight: 700,
-            lineHeight: 1.1,
-            letterSpacing: -2,
-            maxWidth: 900,
+            lineHeight: 1.0,
+            letterSpacing: -3,
+            maxWidth: 940,
           }}
         >
-          Motion-first components you actually own
+          Components you actually own
         </div>
         <div
           style={{
             display: "flex",
-            marginTop: 22,
+            marginTop: 26,
             fontSize: 27,
             lineHeight: 1.4,
-            color: "rgba(244,244,246,0.66)",
+            color: "#5c5c5c",
             maxWidth: 820,
           }}
         >
@@ -77,8 +93,10 @@ export default function OpengraphImage() {
         style={{
           display: "flex",
           alignItems: "center",
+          borderTop: "2px solid #000000",
+          paddingTop: 22,
           fontSize: 22,
-          color: "rgba(244,244,246,0.5)",
+          color: "#3a3a3a",
         }}
       >
         <div style={{ display: "flex" }}>

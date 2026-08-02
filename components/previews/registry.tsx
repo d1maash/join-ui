@@ -1,0 +1,26 @@
+"use client"
+
+import type { ReactNode } from "react"
+
+/**
+ * Demo lookup for the live previews.
+ *
+ * Each entry maps a registry slug to a function that renders its demo. Storing
+ * render functions rather than component types keeps `ComponentPreview` from
+ * instantiating a component value it received at runtime, and leaves the entry
+ * free to pass props or wrap the demo in a stage.
+ *
+ * Load demos through `next/dynamic` so a catalog page only downloads what is
+ * actually on screen, and so a demo that measures layout on mount can opt out
+ * of server rendering.
+ *
+ * The map is empty while the registry is rebuilt from scratch;
+ * `ComponentPreview` renders an explicit empty state for any missing slug, and
+ * `pnpm registry:validate` fails for any component without an entry here.
+ */
+export const previews: Record<string, () => ReactNode> = {}
+
+export function renderPreview(slug: string): ReactNode | null {
+  const render = previews[slug]
+  return render ? render() : null
+}

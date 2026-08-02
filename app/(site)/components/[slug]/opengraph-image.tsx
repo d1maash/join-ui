@@ -35,27 +35,25 @@ export default async function ComponentOpengraphImage({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: 72,
-        backgroundColor: "#191a1f",
-        backgroundImage:
-          "radial-gradient(circle at 85% 10%, rgba(56,196,178,0.26), transparent 45%), radial-gradient(circle at 10% 95%, rgba(163,214,88,0.16), transparent 42%)",
-        color: "#f4f4f6",
+        padding: 64,
+        backgroundColor: "#ffffff",
+        color: "#000000",
+        border: "12px solid #000000",
+        fontFamily: "sans-serif",
       }}
     >
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
           style={{
-            width: 42,
-            height: 42,
-            borderRadius: 12,
-            border: "2px solid rgba(244,244,246,0.22)",
+            width: 40,
+            height: 40,
+            border: "3px solid #000000",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginRight: 14,
-            fontSize: 24,
+            fontSize: 22,
             fontWeight: 700,
-            color: "#5ed6bd",
           }}
         >
           J
@@ -66,12 +64,12 @@ export default async function ComponentOpengraphImage({
         <div
           style={{
             display: "flex",
-            marginLeft: 18,
-            padding: "6px 14px",
-            borderRadius: 999,
-            border: "1px solid rgba(244,244,246,0.2)",
+            marginLeft: "auto",
+            border: "2px solid #000000",
+            padding: "5px 14px",
             fontSize: 19,
-            color: "rgba(244,244,246,0.7)",
+            letterSpacing: 2,
+            textTransform: "uppercase",
           }}
         >
           {category}
@@ -82,10 +80,10 @@ export default async function ComponentOpengraphImage({
         <div
           style={{
             display: "flex",
-            fontSize: 76,
+            fontSize: 84,
             fontWeight: 700,
-            letterSpacing: -2.5,
-            lineHeight: 1.05,
+            letterSpacing: -3,
+            lineHeight: 1.0,
             maxWidth: 960,
           }}
         >
@@ -94,10 +92,10 @@ export default async function ComponentOpengraphImage({
         <div
           style={{
             display: "flex",
-            marginTop: 22,
+            marginTop: 24,
             fontSize: 28,
             lineHeight: 1.4,
-            color: "rgba(244,244,246,0.66)",
+            color: "#5c5c5c",
             maxWidth: 900,
           }}
         >
@@ -109,8 +107,10 @@ export default async function ComponentOpengraphImage({
         style={{
           display: "flex",
           alignItems: "center",
+          borderTop: "2px solid #000000",
+          paddingTop: 22,
           fontSize: 21,
-          color: "rgba(244,244,246,0.5)",
+          color: "#3a3a3a",
         }}
       >
         <div style={{ display: "flex" }}>

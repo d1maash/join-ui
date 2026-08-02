@@ -2,35 +2,32 @@ import type * as React from "react"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ExternalLink, Maximize2, Package, Puzzle } from "lucide-react"
+import { ExternalLink, Maximize2 } from "lucide-react"
 
-import { CodeBlock } from "@/components/docs/code-block"
-import { CodeTabs } from "@/components/docs/code-tabs"
-import { ComponentCard } from "@/components/docs/component-card"
-import { ComponentPreview } from "@/components/docs/component-preview"
-import { ComponentTabs } from "@/components/docs/component-tabs"
-import { CopyButton } from "@/components/docs/copy-button"
-import { CopyPromptButton } from "@/components/docs/copy-prompt-button"
-import { DocsBreadcrumbs } from "@/components/docs/docs-breadcrumbs"
-import { DocsShell } from "@/components/docs/docs-shell"
-import {
-  dependencyCommands,
-  PackageManagerTabs,
-  shadcnCommands,
-} from "@/components/docs/package-manager-tabs"
-import { PreviousNextNavigation } from "@/components/docs/prev-next-navigation"
-import { PropsTable } from "@/components/docs/props-table"
-import { TableOfContents } from "@/components/docs/table-of-contents"
+import { Breadcrumbs } from "@/components/site/breadcrumbs"
+import { CodeBlock } from "@/components/site/code-block"
+import { CodeTabs } from "@/components/site/code-tabs"
+import { ComponentCard } from "@/components/site/component-card"
+import { ComponentPreview } from "@/components/site/component-preview"
+import { ComponentTabs } from "@/components/site/component-tabs"
+import { CopyButton } from "@/components/site/copy-button"
+import { CopyPromptButton } from "@/components/site/copy-prompt-button"
+import { PackageManagerTabs } from "@/components/site/package-manager-tabs"
+import { PrevNextNavigation } from "@/components/site/prev-next"
+import { PropsTable } from "@/components/site/props-table"
+import { DocsShell } from "@/components/site/shell"
+import { TableOfContents } from "@/components/site/table-of-contents"
 import { Badge, StatusBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Kbd } from "@/components/ui/kbd"
+import { dependencyCommands, shadcnCommands } from "@/lib/commands"
+import type { TocEntry } from "@/lib/mdx/source"
 import { buildComponentPrompt } from "@/lib/prompts/build-prompt"
 import { allComponents, getComponent, getRelated, getSiblings } from "@/lib/registry"
 import { toCatalogItem } from "@/lib/registry/catalog"
 import { getComponentSources } from "@/lib/registry/source"
 import { siteConfig } from "@/lib/site"
 import { formatDate } from "@/lib/utils"
-import type { TocEntry } from "@/lib/mdx/source"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -123,7 +120,7 @@ export default async function ComponentPage({ params }: PageProps) {
       />
 
       <DocsShell aside={<TableOfContents entries={TOC} />}>
-        <DocsBreadcrumbs
+        <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
             { label: "Components", href: "/components" },
@@ -133,19 +130,21 @@ export default async function ComponentPage({ params }: PageProps) {
             },
             { label: component.title },
           ]}
-          className="mb-5"
+          className="mb-8"
         />
 
-        <header className="flex flex-col gap-4">
+        <header className="flex flex-col gap-5 border-b border-border pb-8">
           <div className="flex flex-wrap items-center gap-1.5">
             <Badge variant="outline">{component.category}</Badge>
             <StatusBadge status={component.status} />
-            <Badge variant="neutral">Added {formatDate(component.since)}</Badge>
+            <Badge variant="muted">Added {formatDate(component.since)}</Badge>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-semibold tracking-tight">{component.title}</h1>
-            <p className="text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">
+          <div className="flex flex-col gap-3">
+            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.03em]">
+              {component.title}
+            </h1>
+            <p className="max-w-2xl text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">
               {component.description}
             </p>
           </div>
@@ -189,12 +188,12 @@ export default async function ComponentPage({ params }: PageProps) {
             </Button>
           </div>
 
-          <p className="leading-relaxed text-pretty text-muted-foreground">
+          <p className="max-w-2xl leading-relaxed text-pretty text-muted-foreground">
             {component.overview}
           </p>
         </header>
 
-        <section aria-labelledby="preview" className="mt-10 scroll-mt-24">
+        <section aria-labelledby="preview" className="mt-8 scroll-mt-24">
           <h2 id="preview" className="sr-only">
             Preview
           </h2>
@@ -219,72 +218,61 @@ export default async function ComponentPage({ params }: PageProps) {
               />
             }
             installation={
-              <div className="flex flex-col gap-6 pt-1">
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-[0.9375rem] font-semibold tracking-tight">
-                    With the CLI
-                  </h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    Requires the {siteConfig.namespace} namespace in your{" "}
-                    <code className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em]">
-                      components.json
-                    </code>{" "}
-                    — see{" "}
-                    <Link
-                      href="/docs/registry-setup"
-                      className="font-medium text-primary underline underline-offset-4"
-                    >
-                      registry setup
-                    </Link>
-                    .
-                  </p>
+              <div className="flex flex-col gap-8">
+                <InstallStep
+                  title="With the CLI"
+                  description={
+                    <>
+                      Requires the {siteConfig.namespace} namespace in your{" "}
+                      <Code>components.json</Code> — see{" "}
+                      <Link
+                        href="/docs/registry-setup"
+                        className="font-medium text-foreground underline underline-offset-4"
+                      >
+                        registry setup
+                      </Link>
+                      .
+                    </>
+                  }
+                >
                   <PackageManagerTabs
                     commands={shadcnCommands(registryTarget)}
                     label="Install with the shadcn CLI"
                   />
-                </div>
+                </InstallStep>
 
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-[0.9375rem] font-semibold tracking-tight">
-                    Without configuring a namespace
-                  </h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    The registry item is a plain JSON file — point the CLI straight at
-                    its URL.
-                  </p>
+                <InstallStep
+                  title="Without configuring a namespace"
+                  description="The registry item is a plain JSON file — point the CLI straight at its URL."
+                >
                   <PackageManagerTabs
                     commands={shadcnCommands(registryUrl)}
                     label="Install from a URL"
                   />
-                </div>
+                </InstallStep>
 
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-[0.9375rem] font-semibold tracking-tight">
-                    Manually
-                  </h3>
-                  {component.dependencies.length > 0 ? (
-                    <>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
+                <InstallStep
+                  title="Manually"
+                  description={
+                    component.dependencies.length > 0 ? (
+                      <>
                         Install the dependencies, then copy the source into{" "}
-                        <code className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em]">
-                          {primary.target}
-                        </code>
-                        .
-                      </p>
-                      <PackageManagerTabs
-                        commands={dependencyCommands(component.dependencies)}
-                        label="Install dependencies"
-                      />
-                    </>
-                  ) : (
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      No dependencies to install. Copy the source into{" "}
-                      <code className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em]">
-                        {primary.target}
-                      </code>{" "}
-                      and you are done.
-                    </p>
-                  )}
+                        <Code>{primary.target}</Code>.
+                      </>
+                    ) : (
+                      <>
+                        No dependencies to install. Copy the source into{" "}
+                        <Code>{primary.target}</Code> and you are done.
+                      </>
+                    )
+                  }
+                >
+                  {component.dependencies.length > 0 ? (
+                    <PackageManagerTabs
+                      commands={dependencyCommands(component.dependencies)}
+                      label="Install dependencies"
+                    />
+                  ) : null}
                   <CodeBlock
                     code={primary.content}
                     language={primary.language}
@@ -292,11 +280,11 @@ export default async function ComponentPage({ params }: PageProps) {
                     collapsible
                     collapsedHeight={280}
                   />
-                </div>
+                </InstallStep>
               </div>
             }
             prompt={
-              <div className="flex flex-col gap-4 pt-1">
+              <div className="flex flex-col gap-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
                     A structured brief for Cursor, Claude Code, Codex or any other
@@ -321,11 +309,7 @@ export default async function ComponentPage({ params }: PageProps) {
         <Section id="installation" title="Installation">
           <p>
             Install {component.title} with the shadcn CLI. The registry item resolves
-            its own dependencies and writes the file to{" "}
-            <code className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em]">
-              {primary.target}
-            </code>
-            .
+            its own dependencies and writes the file to <Code>{primary.target}</Code>.
           </p>
           <PackageManagerTabs
             commands={shadcnCommands(registryTarget)}
@@ -342,56 +326,24 @@ export default async function ComponentPage({ params }: PageProps) {
         </Section>
 
         <Section id="dependencies" title="Dependencies">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-xl border border-border bg-card p-4">
-              <h3 className="flex items-center gap-2 text-sm font-semibold">
-                <Package aria-hidden="true" className="size-4 text-muted-foreground" />
-                npm packages
-              </h3>
-              {component.dependencies.length > 0 ? (
-                <ul className="mt-3 flex flex-wrap gap-1.5">
-                  {component.dependencies.map((dependency) => (
-                    <li key={dependency}>
-                      <Badge variant="neutral" size="md" className="font-mono">
-                        {dependency}
-                      </Badge>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  None — this component only needs React and Tailwind.
-                </p>
-              )}
-            </div>
-
-            <div className="rounded-xl border border-border bg-card p-4">
-              <h3 className="flex items-center gap-2 text-sm font-semibold">
-                <Puzzle aria-hidden="true" className="size-4 text-muted-foreground" />
-                Registry items
-              </h3>
-              {component.registryDependencies.length > 0 ? (
-                <ul className="mt-3 flex flex-wrap gap-1.5">
-                  {component.registryDependencies.map((dependency) => (
-                    <li key={dependency}>
-                      <Badge variant="neutral" size="md" className="font-mono">
-                        {dependency}
-                      </Badge>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-2 text-sm text-muted-foreground">None.</p>
-              )}
-              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-                Installed automatically by the CLI when they are missing.
-              </p>
-            </div>
+          <div className="grid sm:grid-cols-2">
+            <DependencyPanel
+              title="npm packages"
+              items={component.dependencies}
+              emptyMessage="None — this component only needs React and Tailwind."
+            />
+            <DependencyPanel
+              title="Registry items"
+              items={component.registryDependencies}
+              emptyMessage="None."
+              note="Installed automatically by the CLI when they are missing."
+              className="sm:-ml-px"
+            />
           </div>
         </Section>
 
         <Section id="accessibility" title="Accessibility">
-          <ul className="flex list-disc flex-col gap-2 pl-5 text-muted-foreground marker:text-border-strong">
+          <ul className="flex list-disc flex-col gap-2 pl-5 marker:text-border-strong">
             {component.accessibility.map((note) => (
               <li key={note} className="leading-[1.75]">
                 {note}
@@ -402,17 +354,17 @@ export default async function ComponentPage({ params }: PageProps) {
 
         <Section id="keyboard" title="Keyboard interactions">
           {component.keyboard.length > 0 ? (
-            <div className="overflow-hidden rounded-xl border border-border">
+            <div className="overflow-x-auto border border-border">
               <table className="w-full border-collapse text-left text-sm">
                 <caption className="sr-only">
                   Keyboard interactions for {component.title}
                 </caption>
                 <thead>
-                  <tr className="border-b border-border bg-muted/50">
-                    <th scope="col" className="px-4 py-2.5 font-medium">
+                  <tr className="border-b border-border">
+                    <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
                       Key
                     </th>
-                    <th scope="col" className="px-4 py-2.5 font-medium">
+                    <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
                       Behaviour
                     </th>
                   </tr>
@@ -421,7 +373,7 @@ export default async function ComponentPage({ params }: PageProps) {
                   {component.keyboard.map((entry) => (
                     <tr
                       key={entry.keys.join("-")}
-                      className="border-b border-border align-top last:border-0"
+                      className="border-b border-border align-top last:border-b-0"
                     >
                       <th scope="row" className="px-4 py-3 text-left whitespace-nowrap">
                         <span className="flex flex-wrap gap-1">
@@ -439,7 +391,7 @@ export default async function ComponentPage({ params }: PageProps) {
               </table>
             </div>
           ) : (
-            <p className="text-muted-foreground">
+            <p>
               {component.title} renders no interactive controls of its own, so it adds
               nothing to the tab order.
             </p>
@@ -447,15 +399,13 @@ export default async function ComponentPage({ params }: PageProps) {
         </Section>
 
         <Section id="customization" title="Customization">
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-8">
             {component.customization.map((example) => (
-              <div key={example.title} className="flex flex-col gap-1.5">
-                <h3 className="text-[0.9375rem] font-semibold tracking-tight">
+              <div key={example.title} className="flex flex-col gap-2">
+                <h3 className="text-[0.9375rem] font-semibold tracking-tight text-foreground">
                   {example.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {example.description}
-                </p>
+                <p className="text-sm leading-relaxed">{example.description}</p>
                 <CodeBlock
                   code={example.code}
                   language={example.language ?? "tsx"}
@@ -466,21 +416,23 @@ export default async function ComponentPage({ params }: PageProps) {
           </div>
         </Section>
 
-        <Section id="related" title="Related components">
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((item) => (
-              <li key={item.slug} className="flex">
-                <ComponentCard
-                  item={toCatalogItem(item)}
-                  layout="list"
-                  className="w-full"
-                />
-              </li>
-            ))}
-          </ul>
-        </Section>
+        {related.length > 0 ? (
+          <Section id="related" title="Related components">
+            <ul className="grid sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((item) => (
+                <li key={item.slug} className="flex">
+                  <ComponentCard
+                    item={toCatalogItem(item)}
+                    layout="list"
+                    className="-mt-px -ml-px w-full"
+                  />
+                </li>
+              ))}
+            </ul>
+          </Section>
+        ) : null}
 
-        <PreviousNextNavigation
+        <PrevNextNavigation
           className="mt-12"
           label="Component navigation"
           previous={
@@ -497,6 +449,14 @@ export default async function ComponentPage({ params }: PageProps) {
   )
 }
 
+function Code({ children }: { children: React.ReactNode }) {
+  return (
+    <code className="border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
+      {children}
+    </code>
+  )
+}
+
 function Section({
   id,
   title,
@@ -509,14 +469,70 @@ function Section({
   return (
     <section
       aria-labelledby={id}
-      className="mt-10 scroll-mt-24 border-t border-border pt-8"
+      className="mt-12 scroll-mt-24 border-t border-border pt-8"
     >
-      <h2 id={id} className="mb-4 text-xl font-semibold tracking-tight">
+      <h2 id={id} className="mb-5 text-xl font-semibold tracking-tight">
         {title}
       </h2>
-      <div className="flex flex-col gap-3 leading-[1.75] text-muted-foreground">
+      <div className="flex flex-col gap-4 leading-[1.75] text-muted-foreground">
         {children}
       </div>
     </section>
+  )
+}
+
+function InstallStep({
+  title,
+  description,
+  children,
+}: {
+  title: string
+  description: React.ReactNode
+  children: React.ReactNode
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1.5">
+        <h3 className="text-[0.9375rem] font-semibold tracking-tight">{title}</h3>
+        <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+      </div>
+      {children}
+    </div>
+  )
+}
+
+function DependencyPanel({
+  title,
+  items,
+  emptyMessage,
+  note,
+  className,
+}: {
+  title: string
+  items: string[]
+  emptyMessage: string
+  note?: string
+  className?: string
+}) {
+  return (
+    <div className={`border border-border p-4 ${className ?? ""}`}>
+      <h3 className="label-caps text-muted-foreground">{title}</h3>
+      {items.length > 0 ? (
+        <ul className="mt-3 flex flex-wrap gap-1.5">
+          {items.map((item) => (
+            <li key={item}>
+              <Badge variant="neutral" size="md" className="normal-case">
+                {item}
+              </Badge>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-3 text-sm text-muted-foreground">{emptyMessage}</p>
+      )}
+      {note ? (
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{note}</p>
+      ) : null}
+    </div>
   )
 }

@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-import { Logo } from "@/components/docs/logo"
+import { Logo } from "@/components/site/logo"
 import { Button } from "@/components/ui/button"
 
 export default function NotFound() {
@@ -11,15 +11,17 @@ export default function NotFound() {
       </div>
       <main
         id="main-content"
-        className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-24 text-center"
+        className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col justify-center px-4 py-24 sm:px-6"
       >
-        <p className="font-mono text-sm text-muted-foreground">404</p>
-        <h1 className="text-3xl font-semibold tracking-tight">Page not found</h1>
-        <p className="max-w-md leading-relaxed text-pretty text-muted-foreground">
+        <p className="label-caps mb-6 text-muted-foreground">Error 404</p>
+        <h1 className="text-[clamp(2.5rem,7vw,5rem)] leading-[0.95] font-semibold tracking-[-0.035em]">
+          Page not found
+        </h1>
+        <p className="mt-6 max-w-md leading-relaxed text-pretty text-muted-foreground">
           That page does not exist. It may have been renamed, or the component you are
           looking for lives under a different slug.
         </p>
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-8 flex flex-wrap items-center gap-3">
           <Button asChild>
             <Link href="/components">Browse components</Link>
           </Button>

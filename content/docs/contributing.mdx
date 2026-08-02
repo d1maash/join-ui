@@ -34,7 +34,7 @@ pnpm dev
     export function GlowCard({ intensity = 1, className, ...props }: GlowCardProps) {
       return (
         <div
-          className={cn("rounded-xl border border-border bg-card p-5", className)}
+          className={cn("border border-border bg-card p-5", className)}
           {...props}
         />
       )
@@ -44,6 +44,10 @@ pnpm dev
     The house rules:
 
     - Theme through tokens. **No `dark:` variants** — see [dark mode](/docs/dark-mode) for why.
+    - No literal colours, and no chroma. If a value cannot be expressed as a token or a grey, it does not belong — see [theming](/docs/theming).
+    - No gradients and no shadows. Separation is drawn with a rule.
+    - Square corners. The radius scale is zero, so do not reach for `rounded-*` to get a shape back.
+    - Never let colour be the only carrier of state: pair it with a glyph and a label.
     - Accept and merge `className` through `cn`, always last.
     - Export the props interface.
     - Animate `transform` and `opacity` only, and handle `prefers-reduced-motion`.
@@ -66,15 +70,24 @@ pnpm dev
     }
     ```
 
-    Register it so it code-splits:
+    Register it so it code-splits. The map holds render functions, not
+    component types — `previews` is a `Record<string, () => ReactNode>`, and
+    `renderPreview(slug)` calls the entry:
 
     ```tsx title="components/previews/registry.tsx"
-    "glow-card": dynamic(() => import("./glow-card-preview"), {
-      loading: PreviewSkeleton,
-    }),
+    const GlowCardPreview = dynamic(() => import("./glow-card-preview"))
+
+    export const previews: Record<string, () => ReactNode> = {
+      "glow-card": () => <GlowCardPreview />,
+    }
     ```
 
-    <Callout type="note">
+    Storing a function rather than a component keeps the preview frame from
+    instantiating a value it received at runtime, and leaves the entry free to
+    pass props or wrap the demo in a stage. A slug with no entry renders an
+    explicit empty state rather than failing.
+
+    <Callout variant="note">
       Previews must not use `dark:` variants either — they render inside the
       theme island that the preview toolbar controls.
     </Callout>
@@ -95,7 +108,7 @@ pnpm dev
       description: "A card with a soft animated glow.",
       overview: "Two to four sentences. Reused on the page and in the AI prompt.",
       category: "Cards",
-      tags: ["card", "glow"],
+      tags: ["card", "surface"],
       status: "new",
       featured: false,
       dependencies: [],
@@ -122,12 +135,14 @@ pnpm dev
       return <GlowCard>Content</GlowCard>
     }`,
       customization: [],
-      related: ["spotlight-card"],
+      related: [],
       since: "2026-08-02",
     })
     ```
 
     `installCommand` is derived by `defineComponent` — never write it by hand.
+    `related` takes slugs of other components and is validated, so leave it
+    empty until the components it would point at exist.
 
   </Step>
 
@@ -179,13 +194,19 @@ Two files, again derived from one source.
 
 | Component | Use |
 | --- | --- |
-| `<Callout type="note \| tip \| warning \| success">` | Highlighted aside |
+| `<Callout variant="note \| tip \| warning \| danger">` | Highlighted aside |
 | `<Steps>` / `<Step title="…">` | Numbered walkthrough |
-| `<CardGroup>` / `<Card title href>` | Linkable card grid |
+| `<CardGroup columns={2 \| 3}>` / `<Card title href>` | Linkable card grid; the blurb is the child, not a prop |
 | `<InstallTabs target="@joinway/name" />` | shadcn add, per package manager |
 | `<DependencyTabs packages="motion clsx" />` | npm install, per package manager |
-| `<ComponentPreview slug title />` | Live preview |
+| `<PackageManagerTabs commands={…} />` | Any other per-manager command |
+| `<ComponentPreview slug title minHeight />` | Live preview |
+| `<CodeBlock code language title />` | Highlighted code outside a fence |
 | `<Kbd>` / `<Badge>` | Inline key and status chips |
+
+`Callout` signals severity with an icon and a spelled-out label, and thickens
+its left rule for the two serious variants. Nothing about it depends on hue, so
+do not add a variant expecting a colour.
 
 Fenced blocks support a title, highlighted lines and line numbers:
 
@@ -205,8 +226,11 @@ the component — see [using components with AI](/docs/ai#overriding-the-prompt)
 - `pnpm build` succeeds.
 - The component works with a keyboard alone.
 - It behaves correctly with Reduce Motion enabled at the OS level.
-- Both preview themes look right, at all three preview widths.
+- Both preview themes look right — check with the sun and moon buttons on the
+  preview frame, not just by switching the site theme.
 - No `dark:` variants in `registry/` or `components/previews/`.
+- No hard-coded colours, no gradients, no shadows, no `rounded-*` used to
+  reintroduce a radius.
 - No `any`, and no `TODO` left in place of an implementation.
 
 ## Publishing the registry

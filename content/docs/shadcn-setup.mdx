@@ -49,7 +49,7 @@ The fields Joinway actually depends on:
 | `rsc` | Controls whether the CLI keeps the `"use client"` directive |
 | `registries` | Maps the `@joinway` namespace to the item URL template |
 
-<Callout type="warning">
+<Callout variant="warning">
   With `cssVariables: false` the CLI rewrites colours into literal utility
   classes. Joinway components would still render, but theme switching and the
   per-preview theme islands would stop working. Leave it on.
@@ -75,27 +75,27 @@ component's `rounded-lg`.
 
 ## Adding components
 
-By namespace:
+By namespace, substituting the slug from the [catalog](/components):
 
-<InstallTabs target="@joinway/morphing-tabs" />
+<InstallTabs target="@joinway/<component>" />
 
 Several at once:
 
 ```bash
-pnpm dlx shadcn@latest add @joinway/spotlight-card @joinway/metric-card
+pnpm dlx shadcn@latest add @joinway/<first> @joinway/<second>
 ```
 
 By URL, with no namespace configured:
 
 ```bash
-pnpm dlx shadcn@latest add https://ui.joinway.dev/r/morphing-tabs.json
+pnpm dlx shadcn@latest add https://ui.joinway.dev/r/<component>.json
 ```
 
 Mixed with shadcn's own registry — namespaced and bare names resolve
 independently:
 
 ```bash
-pnpm dlx shadcn@latest add button dialog @joinway/floating-dock
+pnpm dlx shadcn@latest add button dialog @joinway/<component>
 ```
 
 ## What the CLI does
@@ -111,8 +111,8 @@ pnpm dlx shadcn@latest add button dialog @joinway/floating-dock
   <Step title="Resolves registryDependencies">
 
     Joinway items depend on `utils`, which resolves against shadcn's own
-    registry. A namespaced dependency such as `@joinway/aurora-background`
-    resolves against yours.
+    registry. A dependency written with the `@joinway` prefix resolves against
+    the namespace you configured instead.
 
   </Step>
 

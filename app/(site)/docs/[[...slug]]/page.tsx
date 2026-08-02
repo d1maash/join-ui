@@ -4,11 +4,11 @@ import { MDXRemote } from "next-mdx-remote/rsc"
 import rehypeSlug from "rehype-slug"
 import remarkGfm from "remark-gfm"
 
-import { DocsBreadcrumbs } from "@/components/docs/docs-breadcrumbs"
-import { DocsShell } from "@/components/docs/docs-shell"
-import { mdxComponents } from "@/components/docs/mdx-components"
-import { PreviousNextNavigation } from "@/components/docs/prev-next-navigation"
-import { TableOfContents } from "@/components/docs/table-of-contents"
+import { Breadcrumbs } from "@/components/site/breadcrumbs"
+import { mdxComponents } from "@/components/site/mdx-components"
+import { PrevNextNavigation } from "@/components/site/prev-next"
+import { DocsShell } from "@/components/site/shell"
+import { TableOfContents } from "@/components/site/table-of-contents"
 import {
   DOCS_INDEX_SLUG,
   docsSlugs,
@@ -94,18 +94,20 @@ export default async function DocsPage({ params }: PageProps) {
       />
 
       <DocsShell aside={toc.length > 0 ? <TableOfContents entries={toc} /> : undefined}>
-        <DocsBreadcrumbs
+        <Breadcrumbs
           items={[
             { label: "Docs", href: "/docs" },
             ...(section ? [{ label: section.title }] : []),
             { label: page.title },
           ]}
-          className="mb-5"
+          className="mb-8"
         />
 
         <article className="max-w-3xl">
-          <header className="mb-8 flex flex-col gap-2">
-            <h1 className="text-3xl font-semibold tracking-tight">{page.title}</h1>
+          <header className="mb-10 flex flex-col gap-3 border-b border-border pb-8">
+            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.03em]">
+              {page.title}
+            </h1>
             <p className="text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">
               {page.description}
             </p>
@@ -124,7 +126,7 @@ export default async function DocsPage({ params }: PageProps) {
           />
         </article>
 
-        <PreviousNextNavigation
+        <PrevNextNavigation
           className="mt-14 max-w-3xl"
           label="Documentation navigation"
           previous={
