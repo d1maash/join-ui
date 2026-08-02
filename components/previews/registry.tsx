@@ -1,5 +1,6 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import type { ReactNode } from "react"
 
 /**
@@ -14,11 +15,14 @@ import type { ReactNode } from "react"
  * actually on screen, and so a demo that measures layout on mount can opt out
  * of server rendering.
  *
- * The map is empty while the registry is rebuilt from scratch;
  * `ComponentPreview` renders an explicit empty state for any missing slug, and
  * `pnpm registry:validate` fails for any component without an entry here.
  */
-export const previews: Record<string, () => ReactNode> = {}
+const StatusTimelinePreview = dynamic(() => import("./status-timeline-preview"))
+
+export const previews: Record<string, () => ReactNode> = {
+  "status-timeline": () => <StatusTimelinePreview />,
+}
 
 export function renderPreview(slug: string): ReactNode | null {
   const render = previews[slug]

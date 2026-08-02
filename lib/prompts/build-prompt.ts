@@ -92,7 +92,7 @@ Project stack:
 Requirements:
 - Install all required dependencies: ${dependencies}.
 - Place the component at ${primaryTarget}.
-- Use the project's existing \`cn\` utility from \`@/lib/utils\` and its existing design tokens (background, foreground, card, muted, border, primary, accent, destructive, radius). Do not introduce new hard-coded colours.
+- Use the project's existing \`cn\` utility from \`@/lib/utils\` and its existing design tokens (background, foreground, card, muted, border, primary, accent, destructive, radius, plus the component colour families info, positive, caution and critical — each with a \`-soft\` tint and a \`-foreground\`, as in \`bg-info-soft text-info\`). Round corners with the \`rounded-soft-sm\` / \`rounded-soft\` / \`rounded-soft-lg\` scale; the plain \`rounded-*\` scale is pinned to zero. Do not introduce new hard-coded colours.
 - Preserve dark mode support. The component must theme through CSS variables only — do not add \`dark:\` variants, so it keeps working inside a forced-theme preview.
 - Preserve keyboard navigation and every ARIA attribute in the implementation below.
 - Respect \`prefers-reduced-motion: reduce\`.

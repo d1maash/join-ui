@@ -3,9 +3,10 @@ install and import from — it is a registry that writes real source files into
 your repository, which you then own outright.
 
 If you have used shadcn/ui, the model will be familiar. What Joinway adds is a
-strictly achromatic design system, a focus on motion that stays cheap,
-accessibility that is designed in rather than retrofitted, and a per-component
-prompt built for coding agents.
+two-layer design system — an achromatic interface wrapped around components that
+carry colour through tokens — a focus on motion that stays cheap, accessibility
+that is designed in rather than retrofitted, and a per-component prompt built
+for coding agents.
 
 <Callout variant="note">
   The catalog is currently empty. The design system was rebuilt from the ground
@@ -41,17 +42,25 @@ usually the trade you want.
 
 ## Design principles
 
-### Colour is not a channel
+### Colour is a token, never a literal
 
-The palette is achromatic. Every colour token is declared with zero chroma, so
-the interface renders in black, white and the greys between them and nothing
-else. There are no gradients, no shadow tokens, and `--radius` is `0rem`.
+The palette splits in two. The chrome — navigation, type, rules, buttons, the
+documentation itself — is achromatic: every one of its tokens is declared with
+zero chroma, so the frame renders in black, white and the greys between them and
+nothing else. There are no gradients, no shadow tokens, and `--radius` is
+`0rem`.
 
-Removing the easy signal forces the hard one. Hierarchy comes from weight, rule
-thickness, size and spacing; a destructive control is the one set in inverted
-ink; a warning is an aside with a thicker rule, an icon and the word written
-out. It also closes off the most common accessibility failure there is, because
-no component can lean on red-versus-green when neither exists. See
+Components are allowed hue, because they are the product rather than the frame.
+They take it from four semantic families — `--info`, `--positive`, `--caution`
+and `--critical` — rather than from a literal colour or Tailwind's built-in
+palette, which is what keeps a component retintable in one place, and it is why
+components round through `rounded-soft*` while the chrome stays square.
+
+The hard signal is still the one that carries. Hierarchy comes from weight, rule
+thickness, size and spacing; a destructive control in the interface is the one
+set in inverted ink; a warning is an aside with a thicker rule, an icon and the
+word written out. No component leans on red-versus-green, because every state it
+draws in colour is also drawn as a glyph and spelled out. See
 [theming](/docs/theming).
 
 ### Motion is a cost, not a decoration
@@ -107,16 +116,16 @@ real.
 | Highlighting | Shiki at build time, with achromatic themes |
 | Content | MDX |
 
-Syntax highlighting is worth a note. Off-the-shelf Shiki themes are built around
-hue, which would be the one place colour leaked back in, so the site ships its
-own pair — `swiss-light` and `swiss-dark` — that encode the same information
-with luminance, weight and italics instead.
+Syntax highlighting is worth a note. Code blocks are chrome, and off-the-shelf
+Shiki themes are built around hue, so the site ships its own pair —
+`swiss-light` and `swiss-dark` — that encode the same information with
+luminance, weight and italics instead.
 
 ## Where to go next
 
 <CardGroup columns={2}>
   <Card title="Installation" href="/docs/installation">Add Joinway UI to a new or existing Next.js app.</Card>
   <Card title="Registry setup" href="/docs/registry-setup">Wire up the @joinway namespace, or self-host the registry.</Card>
-  <Card title="Theming" href="/docs/theming">The grey ramp, the semantic tokens, and what replaces colour.</Card>
+  <Card title="Theming" href="/docs/theming">The grey ramp, the semantic tokens, and the four component colour families.</Card>
   <Card title="Using components with AI" href="/docs/ai">What the copied prompt contains and why.</Card>
 </CardGroup>

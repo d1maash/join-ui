@@ -4,28 +4,38 @@ project.
 
 ## The principle
 
-The palette is achromatic. Every colour token is declared in `oklch` with a
-chroma of exactly zero, so the interface can only ever render in black, white
-and the grey ramp between them. A token with chroma in it is a bug, not a
-variation.
+The system has two layers, and they follow different rules. The chrome —
+navigation, sidebar, buttons, documentation type, code blocks, catalog cards —
+is achromatic. Every one of its colour tokens is declared in `oklch` with a
+chroma of exactly zero, so the frame can only ever render in black, white and
+the grey ramp between them.
 
-That constraint moves the work somewhere more durable. Meaning is carried by
-weight, rule thickness, size and spacing — never by hue. A destructive control
-is not red; it is the one control set in inverted ink. A warning is not amber;
-it is an aside with a thicker left rule, an icon, and the word spelled out.
+The components are the exception, and it is deliberate. They are the product
+rather than the frame, so they carry hue: a status chip, a progress marker, a
+chart series. They read it from four semantic families — `--info`,
+`--positive`, `--caution` and `--critical` — never from a literal colour, which
+is what keeps a component retintable in one place and consistent with the ones
+beside it. A hard-coded hex is still a bug.
+
+Inside the chrome the older discipline holds, and it is the more durable one.
+Meaning there is carried by weight, rule thickness, size and spacing. A
+destructive control in the interface is not red; it is the one control set in
+inverted ink. A warning is not amber; it is an aside with a thicker left rule,
+an icon, and the word spelled out.
 
 Two consequences are worth stating up front, because they are what most people
 expect to find and will not:
 
 - There are no gradients in the system and no elevation tokens. Depth is drawn
   with hairlines, not with shadow.
-- `--radius` is `0rem` and every step of the radius scale resolves to zero.
-  Corners are square.
+- `--radius` is `0rem` and every step of the chrome radius scale resolves to
+  zero. Site surfaces have square corners; components round through the
+  separate `rounded-soft*` scale below.
 
 ## The grey ramp
 
-The ramp is the only palette. Twelve steps, from paper to ink, and every
-semantic token below is an alias onto one of them.
+The ramp is the whole of the chrome's palette. Twelve steps, from paper to ink,
+and every achromatic token below is an alias onto one of them.
 
 ```css title="app/globals.css"
 :root,
@@ -95,7 +105,7 @@ the semantic names, so retuning the ramp retunes the whole interface.
   --code-bg: var(--grey-50);
   --selection: oklch(0 0 0 / 0.14);
 
-  /* Shape — square by default. Swiss grids do not round their corners. */
+  /* Shape — the chrome is square. Swiss grids do not round their corners. */
   --radius: 0rem;
 
   /* Motion */
@@ -111,11 +121,49 @@ the semantic names, so retuning the ramp retunes the whole interface.
 Then map them onto utilities with `@theme inline` — see
 [Tailwind setup](/docs/tailwind-setup).
 
+## The component palette
+
+Four families carry hue, and each is three tokens with the same shape. `--X` is
+the ink: a solid fill, and the colour of text and icons sitting on the tint.
+`--X-soft` is that tint, used as a background. `--X-foreground` is whatever sits
+on top of the solid `--X` fill.
+
+```css title="app/globals.css"
+:root,
+.light {
+  --info: oklch(0.5 0.17 253); /* in progress, informational */
+  --info-soft: oklch(0.965 0.022 253);
+  --info-foreground: oklch(0.99 0.005 253);
+  /* …and the same three for --positive, --caution and --critical. */
+}
+```
+
+`--positive` is green and reads as success or complete, `--caution` is amber and
+reads as a warning, `--critical` is red and covers error, blocked, and anything
+destructive happening inside a component. The pre-existing `--destructive`,
+`--success` and `--warning` tokens are unchanged and still achromatic — they
+belong to the chrome, and a component should reach for the families instead.
+
+Every family is declared twice, once in `:root, .light` and once in `.dark`, so
+a component never needs a `dark:` variant to pick the right hue. That is not
+housekeeping: it is what keeps the per-preview theme islands working, and it
+remains a hard rule. See [dark mode](/docs/dark-mode).
+
+All twelve are registered in `@theme inline`, so they arrive as ordinary
+utilities:
+
+```tsx
+<span className="inline-flex items-center gap-1.5 rounded-soft-sm bg-info-soft px-2 py-1 text-info">
+  <Loader2 aria-hidden="true" className="size-3.5" />
+  In progress
+</span>
+```
+
 ## Token reference
 
 | Token | Purpose |
 | --- | --- |
-| `--grey-0` … `--grey-1000` | The ramp. Everything else aliases onto it |
+| `--grey-0` … `--grey-1000` | The ramp. Every achromatic token aliases onto it |
 | `--background` / `--foreground` | Page surface and body text |
 | `--card` / `--card-foreground` | Panel surfaces, bounded by a rule rather than raised |
 | `--popover` / `--popover-foreground` | Floating surfaces — menus, dialogs |
@@ -128,18 +176,23 @@ Then map them onto utilities with `@theme inline` — see
 | `--primary` / `--primary-foreground` | Inverted-ink emphasis; the primary action |
 | `--primary-soft` | Flat fill for a selected or held state |
 | `--secondary` / `--secondary-foreground` | Quiet fill with normal ink on top |
-| `--destructive` / `--success` / `--warning` | Status, achromatic |
+| `--destructive` / `--success` / `--warning` | Chrome status, achromatic |
+| `--info` / `--info-soft` / `--info-foreground` | Component hue: in progress, informational |
+| `--positive` / `--positive-soft` / `--positive-foreground` | Component hue: success, complete |
+| `--caution` / `--caution-soft` / `--caution-foreground` | Component hue: warning |
+| `--critical` / `--critical-soft` / `--critical-foreground` | Component hue: error, blocked, destructive |
 | `--code-bg` | Code block and inline code fill |
 | `--selection` | Text selection wash, the one token using alpha |
-| `--radius` | Base radius. `0rem`; the derived scale is zero throughout |
+| `--radius` | Base radius for the chrome. `0rem`; the derived scale is zero throughout |
+| `--radius-soft-sm` / `--radius-soft` / `--radius-soft-lg` | The component radius scale — a tag, a control, a card |
 | `--duration-*` / `--ease-*` | Motion timing |
 
 ## Status without colour
 
-`--destructive`, `--success` and `--warning` are deliberately achromatic. They
-resolve to ink and to `--grey-700`, which means they are indistinguishable from
-each other on luminance alone in some contexts. That is intentional, and it
-carries one hard requirement:
+`--destructive`, `--success` and `--warning` belong to the chrome and are
+deliberately achromatic. They resolve to ink and to `--grey-700`, which means
+they are indistinguishable from each other on luminance alone in some contexts.
+That is intentional, and it carries one hard requirement:
 
 <Callout variant="warning">
   A status token is never sufficient on its own. Pair it with an icon **and** a
@@ -147,10 +200,14 @@ carries one hard requirement:
   communicate must communicate in words instead.
 </Callout>
 
-In practice this is the rule that already satisfies WCAG 1.4.1 — the palette
-simply removes the option of getting it wrong. A component that renders a state
-does so with a glyph and a label, and uses weight or an ink rule to raise its
-priority:
+A component using `--critical` or `--positive` is under exactly the same
+obligation. The hue is an accelerator, not the message: a chip in
+`--critical-soft` and one in `--positive-soft` differ by hue and very little
+else, and the component layer no longer removes the option of getting this
+wrong the way the chrome's palette does. WCAG 1.4.1 is satisfied by the glyph
+and the label, never by the fill. So a component that renders a state draws it
+with a glyph and spells it out, and uses weight, an ink rule or a tint to raise
+its priority:
 
 ```tsx
 <p className="flex items-center gap-2 text-foreground">
@@ -161,7 +218,7 @@ priority:
 
 ## Shape and motion
 
-There is one shape token and it is zero:
+The chrome has one shape token and it is zero:
 
 ```css
 :root {
@@ -170,9 +227,12 @@ There is one shape token and it is zero:
 ```
 
 The Tailwind scale (`--radius-xs` through `--radius-3xl`) is pinned to zero as
-well, so `rounded-lg` on a component is a no-op rather than a surprise.
-`rounded-full` is left alone, because a pip or an avatar is a circle rather than
-a rounded rectangle.
+well, so `rounded-lg` on a site surface is a no-op rather than a surprise.
+Components round through a scale of their own — `--radius-soft-sm` for a tag,
+`--radius-soft` for a control and `--radius-soft-lg` for a card, reached as
+`rounded-soft-sm`, `rounded-soft` and `rounded-soft-lg`. `rounded-full` is left
+alone in both layers, because a pip or an avatar is a circle rather than a
+rounded rectangle.
 
 Durations and easings are tokens for the same reason colours are — so timing
 stays consistent across components you installed months apart:
@@ -183,9 +243,9 @@ className="transition-colors duration-[var(--duration-fast)] ease-[var(--ease-ou
 
 ## Retuning the ramp
 
-Rebranding here is not a hue change; there is no hue. It is a change of contrast
-and of where the greys sit. Edit the ramp, leave the semantic layer alone, and
-every component moves with it:
+Rebranding the chrome is not a hue change; there is no hue in it. It is a change
+of contrast and of where the greys sit. Edit the ramp, leave the semantic layer
+alone, and every surface moves with it:
 
 ```css title="app/globals.css"
 :root {
@@ -198,9 +258,11 @@ every component moves with it:
 ```
 
 <Callout variant="tip">
-  Keep chroma at zero. If you do add hue, add it to the ramp only, never to an
-  individual component — and re-check every contrast pair in the table below,
-  because a tinted grey is almost never as light as it looks.
+  Keep the ramp achromatic. Retinting belongs to the component layer instead:
+  override `--info`, `--positive`, `--caution` and `--critical` — with their
+  `-soft` and `-foreground` partners, in both themes — and leave the greys
+  alone. Re-check every contrast pair after either kind of change, because a
+  tint is almost never as light as it looks.
 </Callout>
 
 ## Scoped themes
