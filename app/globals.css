@@ -3,16 +3,24 @@
 /*
  * Joinway UI — design tokens
  * ---------------------------------------------------------------------------
- * A strictly achromatic system: every colour token has zero chroma, so the
- * interface can only ever render in black, white and the grey ramp between
- * them. Meaning is carried by weight, rule thickness, spacing and type size —
- * never by hue.
+ * Two layers, with different rules.
+ *
+ * The chrome — everything the site itself is built from — is achromatic. Its
+ * tokens all have zero chroma, so navigation, type, rules and buttons render
+ * only in black, white and the grey ramp between them.
+ *
+ * The component palette below it does carry hue. Registry components are the
+ * product, not the frame, so they are free to use colour: a status chip, a
+ * progress marker, a chart series. They read the `--info` / `--positive` /
+ * `--caution` / `--critical` families rather than literal colours, which is
+ * what keeps a component retintable and consistent with its neighbours.
  *
  * Theming is driven entirely by CSS custom properties. Nothing in the
  * `registry/` components uses a `dark:` utility, which is what makes the
  * per-preview theme islands (a forced-light preview inside a dark page, and
  * vice versa) work: the nearest `.light` / `.dark` ancestor simply re-declares
- * the variables, and custom-property inheritance does the rest.
+ * the variables, and custom-property inheritance does the rest. Every hue is
+ * therefore declared twice, once per theme.
  */
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -72,7 +80,31 @@
   --code-bg: var(--grey-50);
   --selection: oklch(0 0 0 / 0.14);
 
-  /* Shape — square by default. Swiss grids do not round their corners. */
+  /*
+   * Component palette — the one layer with hue in it.
+   *
+   * Each family is three tokens: the ink used for a solid fill and for text on
+   * a tint, a light tint for that background, and the colour that sits on top
+   * of the solid fill. Components pair them with a glyph and a label anyway, so
+   * the meaning survives for anyone who cannot separate the hues.
+   */
+  --info: oklch(0.5 0.17 253);
+  --info-soft: oklch(0.965 0.022 253);
+  --info-foreground: oklch(0.99 0.005 253);
+
+  --positive: oklch(0.5 0.13 158);
+  --positive-soft: oklch(0.965 0.03 158);
+  --positive-foreground: oklch(0.99 0.008 158);
+
+  --caution: oklch(0.53 0.13 68);
+  --caution-soft: oklch(0.965 0.04 78);
+  --caution-foreground: oklch(0.99 0.008 68);
+
+  --critical: oklch(0.52 0.19 23);
+  --critical-soft: oklch(0.965 0.025 23);
+  --critical-foreground: oklch(0.99 0.006 23);
+
+  /* Shape — the chrome is square. Swiss grids do not round their corners. */
   --radius: 0rem;
 
   /* Motion */
@@ -129,6 +161,27 @@
 
   --code-bg: var(--grey-50);
   --selection: oklch(1 0 0 / 0.18);
+
+  /*
+   * The hues invert their roles rather than their values: the ink lightens so
+   * it reads on a dark surface, the tint darkens, and the colour that sits on
+   * a solid fill becomes dark ink.
+   */
+  --info: oklch(0.76 0.14 253);
+  --info-soft: oklch(0.255 0.058 253);
+  --info-foreground: oklch(0.16 0.04 253);
+
+  --positive: oklch(0.78 0.14 158);
+  --positive-soft: oklch(0.25 0.05 158);
+  --positive-foreground: oklch(0.16 0.035 158);
+
+  --caution: oklch(0.82 0.14 80);
+  --caution-soft: oklch(0.26 0.05 68);
+  --caution-foreground: oklch(0.17 0.035 68);
+
+  --critical: oklch(0.72 0.17 23);
+  --critical-soft: oklch(0.26 0.07 23);
+  --critical-foreground: oklch(0.16 0.04 23);
 }
 
 @theme inline {
@@ -159,6 +212,19 @@
   --color-warning: var(--warning);
   --color-code-bg: var(--code-bg);
 
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-foreground: var(--info-foreground);
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+  --color-positive-foreground: var(--positive-foreground);
+  --color-caution: var(--caution);
+  --color-caution-soft: var(--caution-soft);
+  --color-caution-foreground: var(--caution-foreground);
+  --color-critical: var(--critical);
+  --color-critical-soft: var(--critical-soft);
+  --color-critical-foreground: var(--critical-foreground);
+
   --color-grey-0: var(--grey-0);
   --color-grey-50: var(--grey-50);
   --color-grey-100: var(--grey-100);
@@ -172,7 +238,10 @@
   --color-grey-900: var(--grey-900);
   --color-grey-1000: var(--grey-1000);
 
-  /* Square corners across the board; `rounded-full` is left untouched for pips. */
+  /*
+   * The chrome's scale is pinned to zero, so `rounded-lg` on a site surface is
+   * a no-op rather than a surprise. `rounded-full` is left untouched for pips.
+   */
   --radius-xs: 0rem;
   --radius-sm: 0rem;
   --radius-md: 0rem;
@@ -180,6 +249,14 @@
   --radius-xl: 0rem;
   --radius-2xl: 0rem;
   --radius-3xl: 0rem;
+
+  /*
+   * Components round through this scale instead — `rounded-soft-lg` for a card,
+   * `rounded-soft` for a control, `rounded-soft-sm` for a tag.
+   */
+  --radius-soft-sm: 0.375rem;
+  --radius-soft: 0.625rem;
+  --radius-soft-lg: 1rem;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
