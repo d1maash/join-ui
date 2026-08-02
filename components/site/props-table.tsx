@@ -3,8 +3,8 @@ import type { PropGroup } from "@/types/registry"
 /**
  * Props reference.
  *
- * Required props are marked with an asterisk and a visually hidden word —
- * with no colour available, the marker has to carry its own label.
+ * Required props are marked with an asterisk and a visually hidden word — the
+ * site chrome is achromatic, so the marker has to carry its own label.
  */
 export function PropsTable({ groups }: { groups: PropGroup[] }) {
   if (groups.length === 0) {

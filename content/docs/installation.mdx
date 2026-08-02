@@ -72,9 +72,12 @@ shadcn/ui, you only need to add the registry namespace — skip to
     them into your `globals.css`; the full block is in
     [theming](/docs/theming).
 
-    The palette is achromatic, so nothing here will fight a brand colour you
-    already have. It also means a component that arrives looking flat and
-    square is behaving correctly.
+    A component that uses colour also reads one of the four hue families —
+    `--info`, `--positive`, `--caution`, `--critical` — and rounds through the
+    `--radius-soft*` scale. Those arrive on their own: the registry item
+    declares them, so the CLI appends the ones a component needs, in both
+    themes, the first time you install it. Nothing is hard-coded, so
+    retinting a component to your brand is an override rather than a fork.
 
   </Step>
 
