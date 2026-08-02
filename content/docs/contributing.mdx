@@ -44,9 +44,9 @@ pnpm dev
     The house rules:
 
     - Theme through tokens. **No `dark:` variants** — see [dark mode](/docs/dark-mode) for why.
-    - No literal colours, and no chroma. If a value cannot be expressed as a token or a grey, it does not belong — see [theming](/docs/theming).
+    - Colour is welcome, but only through the `--info` / `--positive` / `--caution` / `--critical` families. No literal colours and nothing from Tailwind's built-in palette — see [theming](/docs/theming).
     - No gradients and no shadows. Separation is drawn with a rule.
-    - Square corners. The radius scale is zero, so do not reach for `rounded-*` to get a shape back.
+    - Round through `rounded-soft-sm`, `rounded-soft` and `rounded-soft-lg`. The chrome scale is still zero, so a plain `rounded-*` is a no-op.
     - Never let colour be the only carrier of state: pair it with a glyph and a label.
     - Accept and merge `className` through `cn`, always last.
     - Export the props interface.
@@ -229,8 +229,8 @@ the component — see [using components with AI](/docs/ai#overriding-the-prompt)
 - Both preview themes look right — check with the sun and moon buttons on the
   preview frame, not just by switching the site theme.
 - No `dark:` variants in `registry/` or `components/previews/`.
-- No hard-coded colours, no gradients, no shadows, no `rounded-*` used to
-  reintroduce a radius.
+- No hard-coded colours, no gradients, no shadows. Hue comes from the four
+  token families, and corners round through `rounded-soft*`.
 - No `any`, and no `TODO` left in place of an implementation.
 
 ## Publishing the registry

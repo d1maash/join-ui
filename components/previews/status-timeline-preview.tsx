@@ -3,11 +3,11 @@
 import * as React from "react"
 import { MapPin, Package, RefreshCw, ShoppingBag, Star, Truck } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import {
   StatusTimeline,
   type StatusTimelineStep,
 } from "@/registry/components/status-timeline"
+import { cn } from "@/lib/utils"
 
 const DELIVERY: StatusTimelineStep[] = [
   {
@@ -60,6 +60,18 @@ const PIPELINE: StatusTimelineStep[] = [
   { id: "deploy", title: "Deploy", state: "pending" },
 ]
 
+const ONBOARDING: StatusTimelineStep[] = [
+  { id: "account", title: "Account created", state: "complete" },
+  { id: "workspace", title: "Workspace configured", state: "complete" },
+  {
+    id: "review",
+    title: "Identity review",
+    description: "Usually clears within an hour.",
+    state: "waiting",
+  },
+  { id: "invite", title: "Invite your team", state: "pending" },
+]
+
 export default function StatusTimelinePreview() {
   const [active, setActive] = React.useState(2)
   const done = active >= DELIVERY.length
@@ -69,7 +81,7 @@ export default function StatusTimelinePreview() {
       <div className="grid gap-10 lg:grid-cols-2">
         <Panel
           caption="Driven by activeStep"
-          description="One index decides everything: earlier steps read as complete, the rest as pending."
+          description="One index decides everything: earlier steps go green, the one in flight turns blue and pulses, the rest stay grey."
         >
           <StatusTimeline
             label="Delivery"
@@ -81,19 +93,14 @@ export default function StatusTimelinePreview() {
                 <span className="font-mono text-xs text-muted-foreground tabular-nums">
                   {Math.min(active + 1, DELIVERY.length)} / {DELIVERY.length}
                 </span>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    disabled={done}
-                    onClick={() => setActive((step) => step + 1)}
-                  >
+                <div className="flex items-center gap-1.5">
+                  <Pill onClick={() => setActive((step) => step + 1)} disabled={done}>
                     Advance
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setActive(0)}>
-                    <RefreshCw aria-hidden="true" />
+                  </Pill>
+                  <Pill tone="quiet" onClick={() => setActive(0)}>
+                    <RefreshCw aria-hidden="true" className="size-3.5" />
                     Reset
-                  </Button>
+                  </Pill>
                 </div>
               </div>
             }
@@ -102,7 +109,7 @@ export default function StatusTimelinePreview() {
 
         <Panel
           caption="Finished, with an action"
-          description="Past the last index every step is complete and the header chip follows along."
+          description="Past the last index every step is complete, and the header chip goes green with it."
         >
           <StatusTimeline
             label="Delivery"
@@ -110,10 +117,10 @@ export default function StatusTimelinePreview() {
             activeStep={DELIVERY.length}
             className="max-w-md"
             footer={
-              <Button variant="secondary" size="sm" className="w-full">
-                <Star aria-hidden="true" />
+              <Pill tone="positive" className="w-full justify-center">
+                <Star aria-hidden="true" className="size-3.5" />
                 Rate this delivery
-              </Button>
+              </Pill>
             }
           />
         </Panel>
@@ -132,19 +139,28 @@ export default function StatusTimelinePreview() {
         />
       </Panel>
 
-      <Panel
-        caption='Per-step state, variant="plain"'
-        description="Set state on a step to break out of the sequence — here a failed run, with the card chrome and header dropped."
-      >
-        <StatusTimeline
-          steps={PIPELINE}
-          size="sm"
-          variant="plain"
-          showHeader={false}
-          label="Pipeline"
-          className="max-w-md"
-        />
-      </Panel>
+      <div className="grid gap-10 lg:grid-cols-2">
+        <Panel
+          caption='state: "waiting"'
+          description="Amber for a step that is neither moving nor broken — an approval, a review, a queue."
+        >
+          <StatusTimeline label="Onboarding" steps={ONBOARDING} className="max-w-md" />
+        </Panel>
+
+        <Panel
+          caption='state: "blocked", variant="plain"'
+          description="Red for a step that failed, with the card and header dropped so the list can sit in a surface you own."
+        >
+          <StatusTimeline
+            steps={PIPELINE}
+            size="sm"
+            variant="plain"
+            showHeader={false}
+            label="Pipeline"
+            className="max-w-md"
+          />
+        </Panel>
+      </div>
     </div>
   )
 }
@@ -168,5 +184,37 @@ function Panel({
       </div>
       {children}
     </div>
+  )
+}
+
+/** Rounded, tinted control — the site's own buttons are square and achromatic. */
+function Pill({
+  tone = "neutral",
+  className,
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<"button"> & {
+  tone?: "neutral" | "quiet" | "positive"
+}) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium",
+        "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "disabled:pointer-events-none disabled:opacity-40",
+        tone === "neutral" &&
+          "bg-info-soft text-info hover:bg-info hover:text-info-foreground",
+        tone === "quiet" &&
+          "text-muted-foreground hover:bg-muted hover:text-foreground",
+        tone === "positive" &&
+          "bg-positive-soft text-positive hover:bg-positive hover:text-positive-foreground",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
   )
 }

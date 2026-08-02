@@ -44,7 +44,11 @@ Requirements:
 - Place the component at components/joinway/<component>.tsx.
 - Use the project's existing `cn` utility from `@/lib/utils` and its existing
   design tokens (background, foreground, card, muted, border, primary, accent,
-  destructive, radius). Do not introduce new hard-coded colours.
+  destructive, radius, plus the component colour families info, positive,
+  caution and critical — each with a `-soft` tint and a `-foreground`, as in
+  `bg-info-soft text-info`). Round corners with the `rounded-soft-sm` /
+  `rounded-soft` / `rounded-soft-lg` scale; the plain `rounded-*` scale is
+  pinned to zero. Do not introduce new hard-coded colours.
 - Preserve dark mode support. The component must theme through CSS variables
   only — do not add `dark:` variants, so it keeps working inside a forced-theme
   preview.
@@ -88,9 +92,10 @@ File: components/joinway/<component>.tsx
 ````
 
 The "do not introduce new hard-coded colours" line is doing more work than it
-looks. The design system is achromatic and token-driven, so an agent that
-invents a colour is the single most common way an edit ends up visibly off —
-naming the tokens explicitly is what keeps it aliasing onto the existing ramp.
+looks. The design system is token-driven, and the hue a component is allowed
+lives in four named families, so an agent that invents a colour is the single
+most common way an edit ends up visibly off — naming the tokens explicitly is
+what keeps it on-system.
 
 ## How it is generated
 

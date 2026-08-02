@@ -41,11 +41,14 @@ after the transition finishes rather than mid-flight.
 
 ## Colour and contrast
 
-No component conveys meaning through colour alone. In this design system that is
-not a guideline being followed carefully — it is the only option available. The
-palette is achromatic, every token has zero chroma, and `--destructive`,
-`--success` and `--warning` all resolve to greys. There is no red to fall back
-on.
+No component conveys meaning through colour alone. The chrome could not do
+otherwise if it tried — its palette is achromatic, and `--destructive`,
+`--success` and `--warning` all resolve to greys, so there is no red there to
+fall back on. Components can: they carry hue through the `--info`, `--positive`,
+`--caution` and `--critical` families, which makes this a requirement met
+deliberately rather than one the palette used to enforce for free. WCAG 1.4.1 is
+satisfied by the glyph and the text label, never by the fill, and a component
+that skips either of them fails however right it looks.
 
 So state is spelled out. The patterns every component follows:
 

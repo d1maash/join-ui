@@ -9,8 +9,10 @@ delete what you do not need.
 
 - **Real registry** — `/r/registry.json` plus one installable item per component
 - **Copy Prompt** — a structured, agent-ready brief on every component page
-- **Achromatic design system** — black, white and a grey ramp; no colour, no
-  gradients, no shadows, square corners
+- **Two-layer design system** — an achromatic chrome (black, white and a grey
+  ramp; no gradients, no shadows, square corners) around components that take
+  their hue from the `--info` / `--positive` / `--caution` / `--critical` token
+  families and round through `rounded-soft*`
 - **WCAG 2.2 AA** baseline, with reduced-motion fallbacks throughout
 - **Fully static** — every route prerendered, no runtime services
 

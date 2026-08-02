@@ -24,11 +24,20 @@ export const components: ComponentMetadata[] = [
     slug: "status-timeline",
     title: "Status Timeline",
     description:
-      "A step tracker for orders, deployments and onboarding, where each state is carried by fill, glyph and label at once.",
+      "A colour-coded step tracker for orders, deployments and onboarding, with a pulsing marker on the step in flight.",
     overview:
-      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps read as complete, later ones as pending — or pin a state per step to describe a run that stalled. It lays out vertically as a tracking card or horizontally as a wizard header, and every state is announced in text as well as drawn, so it survives the achromatic palette.",
+      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue and pulses, the rest stay grey — or pin a state per step to describe a run that is waiting on someone or has failed outright. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
     category: "Data Display",
-    tags: ["timeline", "stepper", "progress", "status", "order", "tracker", "steps"],
+    tags: [
+      "timeline",
+      "stepper",
+      "progress",
+      "status",
+      "order",
+      "tracker",
+      "steps",
+      "delivery",
+    ],
     status: "new",
     featured: true,
     dependencies: ["motion", "lucide-react"],
@@ -37,10 +46,12 @@ export const components: ComponentMetadata[] = [
     accessibility: [
       "Steps render as an ordered list, so assistive technology reports both position and total.",
       'The step in flight carries `aria-current="step"`.',
-      "Every step appends a visually hidden state label — “Completed”, “In progress”, “Not started”, “Blocked” — so the marker's fill is never the only signal.",
+      "Colour is never the only signal, which is what satisfies WCAG 1.4.1: every state also has its own glyph — a tick, a pip, a clock, a cross — and appends a visually hidden label reading “Completed”, “In progress”, “Waiting”, “Not started” or “Blocked”.",
+      "A blocked step additionally shifts its title to the critical hue, so the failure is findable without reading every marker.",
       "The list is named by the header eyebrow through `aria-labelledby`, or by `label` when the header is hidden.",
-      "Markers, connectors and the pulse ring are `aria-hidden` and non-interactive; only content you pass to `footer` enters the tab order.",
+      "Markers, trails and the pulse ring are `aria-hidden` and non-interactive; only content you pass to `footer` enters the tab order.",
       "Step reveals and the pulse animate `transform` and `opacity` only, and stop entirely under `prefers-reduced-motion`.",
+      "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
     ],
     keyboard: [],
     props: [
@@ -141,9 +152,9 @@ export const components: ComponentMetadata[] = [
           },
           {
             name: "state",
-            type: '"complete" | "current" | "pending" | "blocked"',
+            type: '"complete" | "current" | "waiting" | "pending" | "blocked"',
             description:
-              "Pins the state instead of deriving it from activeStep. Use blocked for a step that failed.",
+              "Pins the state instead of deriving it from activeStep, and picks the hue: green for complete, blue for current, amber for waiting, grey for pending, red for blocked.",
           },
           {
             name: "icon",
@@ -189,9 +200,9 @@ export function Example() {
 />`,
       },
       {
-        title: "Pin a step that failed",
+        title: "Pin a step that failed, or one that is waiting",
         description:
-          "A state on the step wins over the one derived from activeStep, so a stalled run can be described exactly. The header chip picks up the blocked state on its own.",
+          "A state on the step wins over the one derived from activeStep, so a run that stalled can be described exactly. Blocked turns the marker and the title red; waiting turns the marker amber for something that is neither moving nor broken, like an approval sitting in a queue. Either way the header chip picks the state up on its own.",
         code: `<StatusTimeline
   label="Pipeline"
   steps={[
@@ -204,6 +215,20 @@ export function Example() {
       state: "blocked",
     },
     { id: "deploy", title: "Deploy", state: "pending" },
+  ]}
+/>
+
+<StatusTimeline
+  label="Onboarding"
+  steps={[
+    { id: "account", title: "Account created", state: "complete" },
+    {
+      id: "review",
+      title: "Identity review",
+      description: "Usually clears within an hour.",
+      state: "waiting",
+    },
+    { id: "invite", title: "Invite your team", state: "pending" },
   ]}
 />`,
       },
@@ -227,7 +252,7 @@ export function Example() {
         title: "Sit inside your own container",
         description:
           "The plain variant removes the rule, background and padding, and the header can go with it — useful inside a drawer or an existing card.",
-        code: `<div className="border border-border p-6">
+        code: `<div className="rounded-soft-lg border border-border p-6">
   <h3 className="mb-4 text-sm font-medium">Onboarding</h3>
   <StatusTimeline
     variant="plain"
@@ -242,20 +267,95 @@ export function Example() {
       {
         title: "Add an action below the steps",
         description:
-          "Anything passed to footer renders below a rule. It is the only part of the component that can take focus.",
+          "Anything passed to footer renders below a rule. It is the only part of the component that can take focus, so it is where a call to action belongs.",
         code: `<StatusTimeline
   label="Delivery"
   activeStep={steps.length}
   steps={steps}
   footer={
-    <Button variant="secondary" size="sm" className="w-full">
-      <Star aria-hidden="true" />
+    <button
+      type="button"
+      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-positive-soft px-3 py-1.5 text-xs font-medium text-positive"
+    >
+      <Star aria-hidden="true" className="size-3.5" />
       Rate this delivery
-    </Button>
+    </button>
   }
 />`,
       },
+      {
+        title: "Retint the states",
+        description:
+          "The states read the component palette rather than literal colours, so a brand hue is a token override — no props to thread and no variants to add. Redeclare a family in both themes and every step, chip and trail follows.",
+        language: "css",
+        code: `/* app/globals.css */
+:root,
+.light {
+  /* A violet in-flight state instead of the default blue. */
+  --info: oklch(0.5 0.19 292);
+  --info-soft: oklch(0.965 0.025 292);
+  --info-foreground: oklch(0.99 0.005 292);
+}
+
+.dark {
+  --info: oklch(0.76 0.15 292);
+  --info-soft: oklch(0.255 0.06 292);
+  --info-foreground: oklch(0.16 0.04 292);
+}`,
+      },
     ],
+    /**
+     * Shipped with the registry item so `shadcn add` writes the palette into the
+     * consumer's `globals.css`. Both themes are declared, which is what lets the
+     * component avoid `dark:` variants entirely.
+     */
+    cssVars: {
+      theme: {
+        "color-info": "var(--info)",
+        "color-info-soft": "var(--info-soft)",
+        "color-info-foreground": "var(--info-foreground)",
+        "color-positive": "var(--positive)",
+        "color-positive-soft": "var(--positive-soft)",
+        "color-positive-foreground": "var(--positive-foreground)",
+        "color-caution": "var(--caution)",
+        "color-caution-soft": "var(--caution-soft)",
+        "color-caution-foreground": "var(--caution-foreground)",
+        "color-critical": "var(--critical)",
+        "color-critical-soft": "var(--critical-soft)",
+        "color-critical-foreground": "var(--critical-foreground)",
+        "radius-soft-sm": "0.375rem",
+        "radius-soft": "0.625rem",
+        "radius-soft-lg": "1rem",
+      },
+      light: {
+        info: "oklch(0.5 0.17 253)",
+        "info-soft": "oklch(0.965 0.022 253)",
+        "info-foreground": "oklch(0.99 0.005 253)",
+        positive: "oklch(0.5 0.13 158)",
+        "positive-soft": "oklch(0.965 0.03 158)",
+        "positive-foreground": "oklch(0.99 0.008 158)",
+        caution: "oklch(0.53 0.13 68)",
+        "caution-soft": "oklch(0.965 0.04 78)",
+        "caution-foreground": "oklch(0.99 0.008 68)",
+        critical: "oklch(0.52 0.19 23)",
+        "critical-soft": "oklch(0.965 0.025 23)",
+        "critical-foreground": "oklch(0.99 0.006 23)",
+      },
+      dark: {
+        info: "oklch(0.76 0.14 253)",
+        "info-soft": "oklch(0.255 0.058 253)",
+        "info-foreground": "oklch(0.16 0.04 253)",
+        positive: "oklch(0.78 0.14 158)",
+        "positive-soft": "oklch(0.25 0.05 158)",
+        "positive-foreground": "oklch(0.16 0.035 158)",
+        caution: "oklch(0.82 0.14 80)",
+        "caution-soft": "oklch(0.26 0.05 68)",
+        "caution-foreground": "oklch(0.17 0.035 68)",
+        critical: "oklch(0.72 0.17 23)",
+        "critical-soft": "oklch(0.26 0.07 23)",
+        "critical-foreground": "oklch(0.16 0.04 23)",
+      },
+    },
     related: [],
     since: "2026-08-02",
   }),

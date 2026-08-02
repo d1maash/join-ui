@@ -1,12 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { Check, X } from "lucide-react"
+import { Check, Clock, X } from "lucide-react"
 import { motion, useReducedMotion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
-export type StatusTimelineState = "complete" | "current" | "pending" | "blocked"
+export type StatusTimelineState =
+  "complete" | "current" | "waiting" | "pending" | "blocked"
 
 export interface StatusTimelineStep {
   /** Stable identity for the rendered list item. */
@@ -22,40 +23,87 @@ export interface StatusTimelineStep {
 }
 
 /**
- * Spelled out next to every step so the state never rests on the marker's fill
- * alone. Visually hidden where the marker already reads unambiguously.
+ * Spelled out next to every step. Hue alone never carries the state — this is
+ * the label a screen reader announces, and the one that keeps the component
+ * legible for anyone who cannot separate green from red.
  */
 const STATE_LABEL: Record<StatusTimelineState, string> = {
   complete: "Completed",
   current: "In progress",
+  waiting: "Waiting",
   pending: "Not started",
   blocked: "Blocked",
 }
 
+/**
+ * One hue per state, taken from the component palette rather than a literal
+ * colour, so a consumer can retint the whole family in `globals.css`.
+ */
+const TONES: Record<
+  StatusTimelineState,
+  { marker: string; title: string; trail: string; chip: string; chipIcon: string }
+> = {
+  complete: {
+    marker: "border-positive/25 bg-positive-soft text-positive",
+    title: "text-foreground",
+    trail: "bg-positive/35",
+    chip: "bg-positive-soft text-positive",
+    chipIcon: "bg-positive text-positive-foreground",
+  },
+  current: {
+    marker: "border-info bg-info text-info-foreground",
+    title: "text-foreground",
+    trail: "bg-border",
+    chip: "bg-info-soft text-info",
+    chipIcon: "bg-info text-info-foreground",
+  },
+  waiting: {
+    marker: "border-caution/25 bg-caution-soft text-caution",
+    title: "text-foreground",
+    trail: "bg-border",
+    chip: "bg-caution-soft text-caution",
+    chipIcon: "bg-caution text-caution-foreground",
+  },
+  pending: {
+    marker: "border-dashed border-border bg-background text-muted-foreground",
+    title: "text-muted-foreground",
+    trail: "bg-border",
+    chip: "bg-muted text-muted-foreground",
+    chipIcon: "bg-muted-foreground/25 text-muted-foreground",
+  },
+  blocked: {
+    marker: "border-critical/25 bg-critical-soft text-critical",
+    title: "text-critical",
+    trail: "bg-border",
+    chip: "bg-critical-soft text-critical",
+    chipIcon: "bg-critical text-critical-foreground",
+  },
+}
+
 const MICRO_LABEL =
-  "font-mono text-[0.6875rem] leading-none font-medium tracking-[0.12em] uppercase"
+  "font-mono text-[0.6875rem] leading-none font-medium tracking-[0.08em] uppercase"
 
 const SIZES = {
   sm: {
-    marker: "size-6",
+    marker: "size-7",
     glyph: "size-3",
-    pip: "size-1",
+    pip: "size-1.5",
     title: "text-[0.8125rem]",
     meta: "text-[0.6875rem]",
     trail: "pb-4",
-    columnGap: "gap-2.5",
-    contentOffset: "pt-0.5",
-    padding: "p-3",
+    columnGap: "gap-3",
+    contentOffset: "pt-1.5",
+    padding: "p-3.5",
   },
   md: {
-    marker: "size-8",
-    glyph: "size-3.5",
-    pip: "size-1.5",
+    marker: "size-9",
+    glyph: "size-4",
+    pip: "size-2",
     title: "text-sm",
     meta: "text-xs",
     trail: "pb-6",
-    columnGap: "gap-3",
-    contentOffset: "pt-1",
+    columnGap: "gap-3.5",
+    contentOffset: "pt-2",
     padding: "p-4",
   },
 } as const
@@ -76,7 +124,7 @@ export interface StatusTimelineProps extends Omit<
   label?: string
   /** Header chip copy. Derived from the resolved steps when omitted. */
   status?: string
-  /** `plain` drops the card rule and padding so the list sits in your own layout. */
+  /** `plain` drops the card, so the list can sit in a surface you own. */
   variant?: "card" | "plain"
   showHeader?: boolean
   /** Rendered below a rule — an action, a note, a summary row. */
@@ -87,8 +135,10 @@ export interface StatusTimelineProps extends Omit<
  * A step tracker for anything that moves through a fixed sequence: an order
  * being fulfilled, a deployment, an onboarding checklist.
  *
- * State is carried by the marker's fill, a glyph and a text label together, so
- * the component reads the same in the achromatic palette as it would in colour.
+ * Each state gets its own hue — green behind a finished step, blue on the one
+ * in flight, amber on one that is waiting, red on one that failed — and each
+ * hue is backed by a glyph and a text label, so nothing depends on being able
+ * to tell the colours apart.
  */
 export function StatusTimeline({
   steps,
@@ -117,12 +167,13 @@ export function StatusTimeline({
   }))
 
   const summary = summarise(resolved)
+  const summaryTone = TONES[summary.state]
 
   return (
     <div
       className={cn(
         "w-full text-foreground",
-        chrome && "border border-border bg-card",
+        chrome && "rounded-soft-lg border border-border bg-card",
         className
       )}
       {...props}
@@ -131,29 +182,42 @@ export function StatusTimeline({
         <div
           className={cn(
             "flex items-center gap-3",
-            chrome ? "border-b border-border px-4 py-2.5" : "pb-3"
+            chrome ? "border-b border-border px-4 py-3" : "pb-3.5"
           )}
         >
-          <span id={labelId} className={cn(MICRO_LABEL, "text-muted-foreground")}>
+          <span
+            id={labelId}
+            className={cn(
+              MICRO_LABEL,
+              "rounded-full border border-border px-2.5 py-1.5 text-muted-foreground"
+            )}
+          >
             {label}
           </span>
+
           <span
             aria-hidden="true"
             className="min-w-4 flex-1 border-t border-dashed border-border"
           />
+
           <span
             className={cn(
-              "flex shrink-0 items-center gap-1.5 border px-2 py-1",
-              summary.state === "pending"
-                ? "border-border text-muted-foreground"
-                : "border-foreground text-foreground"
+              "flex shrink-0 items-center gap-1.5 rounded-full py-1 pr-2.5 pl-1",
+              summaryTone.chip
             )}
           >
-            <StateGlyph
-              state={summary.state}
-              className={scale.glyph}
-              pipClassName={scale.pip}
-            />
+            <span
+              className={cn(
+                "flex size-5 items-center justify-center rounded-full",
+                summaryTone.chipIcon
+              )}
+            >
+              <StateGlyph
+                state={summary.state}
+                className="size-3"
+                pipClassName="size-1.5"
+              />
+            </span>
             <span className={MICRO_LABEL}>{status ?? summary.label}</span>
           </span>
         </div>
@@ -170,7 +234,7 @@ export function StatusTimeline({
       >
         {resolved.map((step, index) => {
           const isLast = index === resolved.length - 1
-          const filled = step.state === "complete"
+          const tone = TONES[step.state]
 
           return (
             <motion.li
@@ -185,7 +249,9 @@ export function StatusTimeline({
               }}
               className={cn(
                 "flex min-w-0",
-                horizontal ? cn("flex-col gap-2", !isLast && "flex-1") : scale.columnGap
+                horizontal
+                  ? cn("flex-col gap-2.5", !isLast && "flex-1")
+                  : scale.columnGap
               )}
             >
               <div
@@ -197,7 +263,7 @@ export function StatusTimeline({
                 <Marker
                   state={step.state}
                   icon={step.icon}
-                  className={scale.marker}
+                  className={cn(scale.marker, tone.marker)}
                   glyphClassName={scale.glyph}
                   pipClassName={scale.pip}
                   animate={!reduceMotion}
@@ -219,8 +285,9 @@ export function StatusTimeline({
                       transformOrigin: horizontal ? "left center" : "top center",
                     }}
                     className={cn(
-                      filled ? "bg-foreground" : "bg-border",
-                      horizontal ? "h-px flex-1" : "my-2 min-h-3 w-px flex-1"
+                      "rounded-full",
+                      tone.trail,
+                      horizontal ? "h-0.5 flex-1" : "my-2 min-h-3 w-0.5 flex-1"
                     )}
                   />
                 ) : null}
@@ -235,7 +302,7 @@ export function StatusTimeline({
                         "flex-1 items-baseline gap-3",
                         scale.contentOffset,
                         // Spacing lives on the content so the marker column
-                        // stretches over it and the connector reaches the next step.
+                        // stretches over it and the trail reaches the next step.
                         !isLast && scale.trail
                       )
                 )}
@@ -245,7 +312,7 @@ export function StatusTimeline({
                     className={cn(
                       scale.title,
                       "font-medium tracking-tight",
-                      step.state === "pending" && "text-muted-foreground"
+                      tone.title
                     )}
                   >
                     {step.title}
@@ -280,7 +347,7 @@ export function StatusTimeline({
       </ol>
 
       {footer ? (
-        <div className={cn(chrome ? "border-t border-border px-4 py-3" : "pt-3")}>
+        <div className={cn(chrome ? "border-t border-border px-4 py-3" : "pt-3.5")}>
           {footer}
         </div>
       ) : null}
@@ -306,11 +373,7 @@ function Marker({
   return (
     <span
       className={cn(
-        "relative flex shrink-0 items-center justify-center border",
-        state === "complete" && "border-foreground bg-foreground text-background",
-        state === "current" && "border-foreground bg-background text-foreground",
-        state === "blocked" && "border-foreground bg-background text-foreground",
-        state === "pending" && "border-border bg-background text-muted-foreground",
+        "relative flex shrink-0 items-center justify-center rounded-full border",
         className
       )}
     >
@@ -335,9 +398,9 @@ function Marker({
       {state === "current" && animate ? (
         <motion.span
           aria-hidden="true"
-          className="pointer-events-none absolute -inset-px border border-foreground"
-          initial={{ opacity: 0.45, scale: 1 }}
-          animate={{ opacity: 0, scale: 1.6 }}
+          className="pointer-events-none absolute -inset-0.5 rounded-full border-2 border-info"
+          initial={{ opacity: 0.4, scale: 1 }}
+          animate={{ opacity: 0, scale: 1.5 }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
         />
       ) : null}
@@ -360,12 +423,15 @@ function StateGlyph({
   if (state === "blocked") {
     return <X aria-hidden="true" className={cn("shrink-0", className)} />
   }
+  if (state === "waiting") {
+    return <Clock aria-hidden="true" className={cn("shrink-0", className)} />
+  }
   return (
     <span
       aria-hidden="true"
       className={cn(
-        "shrink-0",
-        state === "current" ? "bg-foreground" : "bg-border",
+        "shrink-0 rounded-full",
+        state === "current" ? "bg-current" : "bg-border",
         pipClassName
       )}
     />
@@ -379,6 +445,9 @@ function summarise(steps: Array<{ state: StatusTimelineState }>): {
 } {
   if (steps.some((step) => step.state === "blocked")) {
     return { state: "blocked", label: STATE_LABEL.blocked }
+  }
+  if (steps.some((step) => step.state === "waiting")) {
+    return { state: "waiting", label: STATE_LABEL.waiting }
   }
   if (steps.length > 0 && steps.every((step) => step.state === "complete")) {
     return { state: "complete", label: STATE_LABEL.complete }
