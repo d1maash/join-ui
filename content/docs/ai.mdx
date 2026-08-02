@@ -16,18 +16,21 @@ usually the correct one.
 ## What the prompt contains
 
 <CardGroup columns={2}>
-  <Card title="Stack and conventions" description="App Router, React 19, strict TypeScript, Tailwind v4 tokens, shadcn conventions." />
-  <Card title="Install path and dependencies" description="The exact target file and the npm packages to add first." />
-  <Card title="Every supported prop" description="Name, type, default and description — projected from the same metadata that renders the props table." />
-  <Card title="Accessibility and motion rules" description="The ARIA attributes and reduced-motion behaviour that must survive any edit." />
-  <Card title="Guard rails" description="Do not modify unrelated files. Do not replace configuration. Keep strict mode passing." />
-  <Card title="The full source" description="The complete component file, exactly as the CLI would install it." />
+  <Card title="Stack and conventions" href="/docs/project-setup">App Router, React 19, strict TypeScript, Tailwind v4 tokens, shadcn conventions.</Card>
+  <Card title="Install path and dependencies" href="/docs/installation">The exact target file and the npm packages to add first.</Card>
+  <Card title="Every supported prop" href="/docs/contributing">Name, type, default and description — projected from the same metadata that renders the props table.</Card>
+  <Card title="Accessibility and motion rules" href="/docs/accessibility">The ARIA attributes and reduced-motion behaviour that must survive any edit.</Card>
+  <Card title="Guard rails" href="/docs/ai#shape-of-the-output">Do not modify unrelated files. Do not replace configuration. Keep strict mode passing.</Card>
+  <Card title="The full source" href="/docs/registry-setup">The complete component file, exactly as the CLI would install it.</Card>
 </CardGroup>
 
 ## Shape of the output
 
+Placeholders below stand in for the component you copied it from; the real
+prompt has the name, the target path and the props filled in.
+
 ````text
-Add the MagneticButton component to my existing Next.js application.
+Add the <ComponentName> component to my existing Next.js application.
 
 Project stack:
 - Next.js (App Router)
@@ -37,38 +40,57 @@ Project stack:
 - shadcn/ui conventions (open code, `cn` utility, `components.json`)
 
 Requirements:
-- Install all required dependencies: motion, @radix-ui/react-slot.
-- Place the component at components/joinway/magnetic-button.tsx.
+- Install all required dependencies: <packages>.
+- Place the component at components/joinway/<component>.tsx.
 - Use the project's existing `cn` utility from `@/lib/utils` and its existing
-  design tokens. Do not introduce new hard-coded colours.
+  design tokens (background, foreground, card, muted, border, primary, accent,
+  destructive, radius). Do not introduce new hard-coded colours.
 - Preserve dark mode support. The component must theme through CSS variables
-  only — do not add `dark:` variants.
-- Preserve keyboard navigation and every ARIA attribute below.
+  only — do not add `dark:` variants, so it keeps working inside a forced-theme
+  preview.
+- Preserve keyboard navigation and every ARIA attribute in the implementation
+  below.
 - Respect `prefers-reduced-motion: reduce`.
 - Keep TypeScript strict mode passing. Export the prop types.
+- Mark the file `"use client"` only if the implementation below does.
 - Do not modify unrelated files.
+- Do not replace existing project configuration unless it is genuinely required.
 - Return a summary of created and modified files.
 
 Component behavior:
 …
 
 Supported props:
-- variant: "primary" | "secondary" | "outline" | "ghost" — default: "primary". …
+- <prop>: <type> — default: <value>. …
 
 Accessibility requirements:
-- Renders a real `button` element, so Enter, Space and form submission work. …
+- …
+
+Keyboard interactions:
+- …
 
 Animation requirements:
 - Animate compositor-friendly properties (transform, opacity) only. …
 
+Integration notes:
+- Category: <category>
+- Registry item: https://ui.joinway.dev/r/<component>.json
+- Equivalent CLI install: pnpm dlx shadcn@latest add @joinway/<component>
+
 Implementation:
-File: components/joinway/magnetic-button.tsx
+
+File: components/joinway/<component>.tsx
 
 ```tsx
 "use client"
 …
 ```
 ````
+
+The "do not introduce new hard-coded colours" line is doing more work than it
+looks. The design system is achromatic and token-driven, so an agent that
+invents a colour is the single most common way an edit ends up visibly off —
+naming the tokens explicitly is what keeps it aliasing onto the existing ramp.
 
 ## How it is generated
 
@@ -98,10 +120,10 @@ replaces the generated text entirely:
 
 ```ts title="lib/registry/components.ts" {6}
 defineComponent({
-  name: "MagneticButton",
-  slug: "magnetic-button",
+  name: "GlowCard",
+  slug: "glow-card",
   // …
-  prompt: `Add the MagneticButton component…
+  prompt: `Add the GlowCard component…
 
 Extra context this component needs.`,
 })
@@ -132,8 +154,8 @@ the implementation, which is exactly what the generated path avoids.
     The agent installs the dependencies, writes the file, and reports what it
     created. Then ask for the integration you actually want:
 
-    > Use MagneticButton for the primary call to action in the hero, keeping the
-    > existing copy and href.
+    > Use the component you just installed for the primary call to action in the
+    > hero, keeping the existing copy and href.
 
   </Step>
 
@@ -151,7 +173,7 @@ the implementation, which is exactly what the generated path avoids.
 If the agent has terminal access, installing is faster and less error-prone than
 writing the file from a prompt:
 
-<InstallTabs target="@joinway/magnetic-button" />
+<InstallTabs target="@joinway/<component>" />
 
 The prompt says as much — it ends with the equivalent CLI command and tells the
 agent to prefer it when the project already uses shadcn. Reach for **Copy
@@ -165,7 +187,7 @@ Agents that can fetch URLs do not need the clipboard at all. Every registry item
 is self-describing JSON:
 
 ```bash
-curl https://ui.joinway.dev/r/magnetic-button.json
+curl https://ui.joinway.dev/r/<component>.json
 ```
 
 It carries the title, description, dependencies, `registryDependencies`, target

@@ -3,16 +3,24 @@ install and import from — it is a registry that writes real source files into
 your repository, which you then own outright.
 
 If you have used shadcn/ui, the model will be familiar. What Joinway adds is a
-focus on motion that stays cheap, accessibility that is designed in rather than
-retrofitted, and a per-component prompt built for coding agents.
+strictly achromatic design system, a focus on motion that stays cheap,
+accessibility that is designed in rather than retrofitted, and a per-component
+prompt built for coding agents.
+
+<Callout variant="note">
+  The catalog is currently empty. The design system was rebuilt from the ground
+  up and the components are being written against it one at a time — everything
+  described on this page is in place and working, but there is nothing to
+  install yet.
+</Callout>
 
 ## What you get
 
 <CardGroup columns={2}>
-  <Card title="Open code" description="The CLI writes .tsx files into your project. Read them, edit them, delete what you do not need." />
-  <Card title="A real registry" description="Namespaced, schema-valid registry items installable by name or by URL from any project." />
-  <Card title="Copy Prompt" description="One button copies a structured brief — props, a11y rules and full source — for Cursor, Claude Code or Codex." href="/docs/ai" />
-  <Card title="WCAG 2.2 AA baseline" description="Keyboard paths, focus management, live regions and reduced-motion fallbacks in every component." href="/docs/accessibility" />
+  <Card title="Open code" href="/docs/installation">The CLI writes .tsx files into your project. Read them, edit them, delete what you do not need.</Card>
+  <Card title="A real registry" href="/docs/registry-setup">Namespaced, schema-valid registry items installable by name or by URL from any project.</Card>
+  <Card title="Copy Prompt" href="/docs/ai">One button copies a structured brief — props, a11y rules and full source — for Cursor, Claude Code or Codex.</Card>
+  <Card title="WCAG 2.2 AA baseline" href="/docs/accessibility">Keyboard paths, focus management, live regions and reduced-motion fallbacks in every component.</Card>
 </CardGroup>
 
 ## Why open code
@@ -32,6 +40,19 @@ reinstall it. For UI — the layer that diverges from upstream fastest — that 
 usually the trade you want.
 
 ## Design principles
+
+### Colour is not a channel
+
+The palette is achromatic. Every colour token is declared with zero chroma, so
+the interface renders in black, white and the greys between them and nothing
+else. There are no gradients, no shadow tokens, and `--radius` is `0rem`.
+
+Removing the easy signal forces the hard one. Hierarchy comes from weight, rule
+thickness, size and spacing; a destructive control is the one set in inverted
+ink; a warning is an aside with a thicker rule, an icon and the word written
+out. It also closes off the most common accessibility failure there is, because
+no component can lean on red-versus-green when neither exists. See
+[theming](/docs/theming).
 
 ### Motion is a cost, not a decoration
 
@@ -69,7 +90,7 @@ real.
 
 ## The stack
 
-<Callout type="note">
+<Callout variant="note">
   These are the versions the components are written against. They are all
   current stable releases, and nothing here depends on a paid service.
 </Callout>
@@ -83,14 +104,19 @@ real.
 | Primitives | Radix UI |
 | Animation | Motion for React |
 | Icons | Lucide |
-| Highlighting | Shiki, at build time |
+| Highlighting | Shiki at build time, with achromatic themes |
 | Content | MDX |
+
+Syntax highlighting is worth a note. Off-the-shelf Shiki themes are built around
+hue, which would be the one place colour leaked back in, so the site ships its
+own pair — `swiss-light` and `swiss-dark` — that encode the same information
+with luminance, weight and italics instead.
 
 ## Where to go next
 
 <CardGroup columns={2}>
-  <Card title="Installation" description="Add Joinway UI to a new or existing Next.js app." href="/docs/installation" />
-  <Card title="Registry setup" description="Wire up the @joinway namespace, or self-host the registry." href="/docs/registry-setup" />
-  <Card title="Browse components" description="Fourteen components across twelve categories." href="/components" />
-  <Card title="Using components with AI" description="What the copied prompt contains and why." href="/docs/ai" />
+  <Card title="Installation" href="/docs/installation">Add Joinway UI to a new or existing Next.js app.</Card>
+  <Card title="Registry setup" href="/docs/registry-setup">Wire up the @joinway namespace, or self-host the registry.</Card>
+  <Card title="Theming" href="/docs/theming">The grey ramp, the semantic tokens, and what replaces colour.</Card>
+  <Card title="Using components with AI" href="/docs/ai">What the copied prompt contains and why.</Card>
 </CardGroup>

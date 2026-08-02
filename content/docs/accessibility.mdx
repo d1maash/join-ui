@@ -5,10 +5,10 @@ yourself.
 ## What every component guarantees
 
 <CardGroup columns={2}>
-  <Card title="Real semantics" description="Buttons are buttons, links are links, tab lists implement the WAI-ARIA tabs pattern. No div soup with click handlers." />
-  <Card title="Nothing hover-only" description="Anything reachable with a pointer is reachable with a keyboard. Spotlights follow focus; dock labels appear on focus-within." />
-  <Card title="Visible focus" description="A 2px outline in --ring at a 2px offset, never removed — only ever replaced with something at least as visible." />
-  <Card title="Reduced motion" description="Every animation degrades to a static, fully functional state. No component loses capability when motion is turned down." />
+  <Card title="Real semantics" href="#keyboard-support">Buttons are buttons, links are links, tab lists implement the WAI-ARIA tabs pattern. No div soup with click handlers.</Card>
+  <Card title="Nothing hover-only" href="#keyboard-support">Anything reachable with a pointer is reachable with a keyboard. Any effect that follows the pointer follows focus too.</Card>
+  <Card title="Visible focus" href="#focus">A 2px outline in --ring at a 2px offset, never removed — only ever replaced with something at least as visible.</Card>
+  <Card title="Reduced motion" href="#motion">Every animation degrades to a static, fully functional state. No component loses capability when motion is turned down.</Card>
 </CardGroup>
 
 ## Focus
@@ -21,7 +21,7 @@ for:
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
-  border-radius: var(--radius-xs);
+  border-radius: 0;
 }
 
 :focus:not(:focus-visible) {
@@ -29,23 +29,35 @@ for:
 }
 ```
 
-Components that portal content — `AnimatedCommandMenu` and the mobile drawer —
+`--ring` is pure ink in both themes, so the rectangle is the highest-contrast
+mark on the page — which is the whole point of a focus indicator, and is what
+lets it stay a plain square outline instead of a glow.
+
+Components that portal content — command palettes, dialogs, the mobile drawer —
 use Radix Dialog, which traps focus while open, marks the background inert, and
-restores focus to the trigger on close. The exit animation is driven with
-`forceMount` inside `AnimatePresence` so focus returns only after the transition
-finishes, not mid-flight.
+restores focus to the trigger on close. Where an exit animation is involved it
+is driven with `forceMount` inside `AnimatePresence`, so focus returns only
+after the transition finishes rather than mid-flight.
 
 ## Colour and contrast
 
-No component conveys meaning through colour alone.
+No component conveys meaning through colour alone. In this design system that is
+not a guideline being followed carefully — it is the only option available. The
+palette is achromatic, every token has zero chroma, and `--destructive`,
+`--success` and `--warning` all resolve to greys. There is no red to fall back
+on.
 
-- `StatusPulse` always renders a text label next to the dot.
-- `MetricCard` shows an arrow glyph and a signed percentage, not just red or green.
-- `AnimatedField` puts the error in a text message, not only in the border colour.
-- `MorphingTabs` marks selection with `aria-selected`, not just the moving indicator.
+So state is spelled out. The patterns every component follows:
 
-Body copy clears 4.5:1 and UI borders clear 3:1 in both themes. The contrast
-table is in [theming](/docs/theming).
+- A status indicator renders a text label beside the mark, never a bare dot.
+- A delta shows a direction glyph and a signed figure, not a colour swing.
+- A field error is a message in text, not just a heavier boundary.
+- A selected tab or item carries `aria-selected` or `aria-current`, not only a
+  moving indicator.
+
+Body copy clears 4.5:1 by a wide margin in both themes, and the focus ring and
+emphasis rules are pure ink. The full contrast table — including which rules are
+deliberately *not* trying to meet 3:1 — is in [theming](/docs/theming#contrast).
 
 ## Motion
 
@@ -71,11 +83,12 @@ const reduceMotion = useReducedMotion()
 const active = !reduceMotion && !disabled
 ```
 
-`MagneticButton` never attaches its pointer listener under reduced motion.
-`TextScramble` renders the final string immediately. `MetricCard` shows the
-final figure without counting. `AuroraBackground` and `GradientBorderCard` ship
-a `prefers-reduced-motion` query inside their own stylesheet, so they stay
-static even in a project without the global rule.
+The rule that follows from this: reduced motion skips the work rather than
+speeding it up. A component that tracks the pointer does not attach the listener
+at all. A component that animates a value renders the final value immediately. A
+component with a decorative background stops at its resting frame — and where
+that background is its own stylesheet, it carries a `prefers-reduced-motion`
+query itself, so it stays static even in a project without the global rule.
 
 Nothing flashes more than three times per second, so WCAG 2.3.1 is not engaged
 by any component here.
@@ -83,15 +96,15 @@ by any component here.
 ## Keyboard support
 
 Every component page has a Keyboard interactions table generated from its
-metadata. The recurring patterns:
+metadata. The patterns those tables draw from:
 
-| Component | Behaviour |
+| Pattern | Behaviour |
 | --- | --- |
-| `MorphingTabs` | Roving `tabindex`; arrows move and select, `Home`/`End` jump, disabled tabs skipped |
-| `AnimatedCommandMenu` | <Kbd>⌘</Kbd><Kbd>K</Kbd> toggles, arrows navigate, <Kbd>↵</Kbd> runs, <Kbd>Esc</Kbd> closes |
-| `ExpandableFeatureCard` | <Kbd>↵</Kbd> / <Kbd>Space</Kbd> on the header toggles `aria-expanded` |
-| `FloatingDock` | Plain tab order; labels appear on focus |
-| `CursorHighlight` | Highlight follows `focusin` as well as the pointer |
+| Tab list | Roving `tabindex`; arrows move and select, <Kbd>Home</Kbd>/<Kbd>End</Kbd> jump, disabled tabs skipped |
+| Command palette | <Kbd>⌘</Kbd><Kbd>K</Kbd> toggles, arrows navigate, <Kbd>↵</Kbd> runs, <Kbd>Esc</Kbd> closes |
+| Disclosure | <Kbd>↵</Kbd> / <Kbd>Space</Kbd> on the header toggles `aria-expanded` |
+| Toolbar or dock | Plain tab order; labels appear on focus, not only on hover |
+| Pointer-tracking effect | Follows `focusin` as well as the pointer |
 
 A tab list uses roving `tabindex` deliberately: <Kbd>Tab</Kbd> should move past
 the whole group in one press, not through every tab.
@@ -107,23 +120,24 @@ Status changes reach assistive technology without stealing focus:
 </span>
 ```
 
-`StatusPulse` wraps itself in `role="status"` when `live` is set — and lets you
-turn that off with `live={false}` for dense tables, where dozens of live regions
-would produce a stream of interruptions. `AnimatedField` announces errors
-assertively and hints politely.
+A component that reports a changing state wraps itself in `role="status"`, and
+exposes a prop to turn that off — in a dense table, dozens of live regions
+produce a stream of interruptions rather than information. Errors are announced
+assertively; hints and confirmations are announced politely.
 
 ## Touch targets
 
 Interactive controls are at least 24 by 24 CSS pixels, which is the WCAG 2.2
-Target Size (Minimum) threshold. `FloatingDock` drops magnification entirely on
-coarse pointers and renders 40px targets, because a control that grows under the
-cursor is meaningless on a touchscreen.
+Target Size (Minimum) threshold. Anything that magnifies under the cursor drops
+that behaviour entirely on coarse pointers and renders a fixed 40px target
+instead, because a control that grows as you approach it is meaningless on a
+touchscreen.
 
 ## What is still your job
 
 Inheriting accessible components is not the same as shipping an accessible page.
 
-<Callout type="warning">
+<Callout variant="warning">
   These four are outside any component's control and are the most common
   failures in practice.
 </Callout>
@@ -131,8 +145,8 @@ Inheriting accessible components is not the same as shipping an accessible page.
 1. **Heading order.** Component headings are `h3`. Give them an `h2` section to
    sit under, and only one `h1` per page.
 2. **Accessible names.** Icon-only triggers need an `aria-label` that says what
-   they do. `FloatingDock` requires `label` on every item for exactly this
-   reason.
+   they do. Components that render icon-only items require a `label` on each one
+   for exactly this reason.
 3. **Language and landmarks.** Set `lang` on `html`, provide a skip link, and
    make sure each page has one `main`.
 4. **Real content.** An accessible card with an unlabelled image or a link

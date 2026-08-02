@@ -12,11 +12,11 @@ app/
     docs/[[...slug]]/        # /docs and /docs/[slug]
   (preview)/preview/[slug]/  # bare full-page previews
   layout.tsx                 # html, fonts, theme provider, toaster
-  globals.css                # design tokens
+  globals.css                # design tokens — the grey ramp and everything on it
   opengraph-image.tsx        # site-wide social card
   sitemap.ts / robots.ts
 components/
-  docs/                      # documentation chrome
+  site/                      # documentation chrome
   previews/                  # one live demo per component
   ui/                        # local shadcn-style primitives
 content/
@@ -27,6 +27,8 @@ lib/
   search/                    # local search index and scorer
   docs/                      # navigation and sidebar trees
   mdx/                       # MDX loading, TOC extraction, rehype plugin
+  highlight.ts               # Shiki, one highlighter for the whole build
+  shiki-theme.ts             # achromatic syntax themes
 registry/
   components/                # the components the CLI ships
 public/
@@ -44,16 +46,23 @@ Four kinds of code live in this repository, and they are deliberately kept
 apart:
 
 <CardGroup columns={2}>
-  <Card title="registry/components/" description="What users install. No imports from the docs site — these files must compile inside somebody else's project." />
-  <Card title="components/previews/" description="Demos of registry components. They may import from anywhere, because they never leave this site." />
-  <Card title="components/docs/" description="Documentation chrome: code blocks, tabs, copy buttons, the catalog. Never shipped by the registry." />
-  <Card title="components/ui/" description="Local primitives used by the docs. Deliberately separate from registry components." />
+  <Card title="registry/components/" href="/docs/contributing">What users install. No imports from the docs site — these files must compile inside somebody else's project.</Card>
+  <Card title="components/previews/" href="/docs/contributing">Demos of registry components. They may import from anywhere, because they never leave this site.</Card>
+  <Card title="components/site/" href="/docs/contributing">Documentation chrome: code blocks, tabs, copy buttons, the catalog. Never shipped by the registry.</Card>
+  <Card title="components/ui/" href="/docs/contributing">Local primitives used by the docs. Deliberately separate from registry components.</Card>
 </CardGroup>
 
-<Callout type="warning">
+<Callout variant="warning">
   A file in `registry/components/` may only import from `react`, its declared
   npm dependencies, and `@/lib/utils`. Anything else would break the moment the
   CLI copies it into a project that does not have it.
+</Callout>
+
+<Callout variant="note">
+  `registry/components/` is empty at the moment — the component set is being
+  rebuilt from scratch against the current design system. The pipeline around it
+  is unchanged, so the first new component only has to follow
+  [contributing](/docs/contributing).
 </Callout>
 
 ## Path aliases
@@ -133,7 +142,7 @@ handle that instead of asserting it away.
 | `pnpm lint` | ESLint |
 | `pnpm check` | Validate, typecheck and lint in one pass |
 
-<Callout type="note">
+<Callout variant="note">
   `public/r/` is generated and git-ignored. `prebuild` regenerates it, so a
   production build can never ship a registry that disagrees with the source.
 </Callout>

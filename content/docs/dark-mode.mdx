@@ -59,20 +59,34 @@ a preview on this site render in light mode while the page around it stays dark.
 
   <Step title="Declare the dark tokens">
 
+    Dark mode inverts the grey ramp. Because the semantic tokens are aliases
+    onto that ramp, almost none of them need restating — `--foreground` is
+    `--grey-1000` in both themes, and `--grey-1000` is what changes.
+
     ```css title="app/globals.css"
     .dark {
-      --background: oklch(0.162 0.011 258);
-      --foreground: oklch(0.958 0.004 250);
-      --card: oklch(0.198 0.013 258);
-      --muted: oklch(0.238 0.013 258);
-      --muted-foreground: oklch(0.688 0.013 258);
-      --border: oklch(0.292 0.013 258);
-      --border-strong: oklch(0.358 0.015 258);
-      --primary: oklch(0.79 0.132 174);
-      --primary-foreground: oklch(0.185 0.045 174);
-      --primary-soft: oklch(0.3 0.05 174);
+      --grey-0: oklch(0 0 0);
+      --grey-50: oklch(0.09 0 0);
+      --grey-100: oklch(0.14 0 0);
+      --grey-200: oklch(0.22 0 0);
+      --grey-300: oklch(0.3 0 0);
+      --grey-400: oklch(0.42 0 0);
+      --grey-500: oklch(0.55 0 0);
+      --grey-600: oklch(0.68 0 0);
+      --grey-700: oklch(0.79 0 0);
+      --grey-800: oklch(0.88 0 0);
+      --grey-900: oklch(0.95 0 0);
+      --grey-1000: oklch(1 0 0);
+
+      /* The two aliases that genuinely differ between themes. */
+      --popover: var(--grey-50);
+      --selection: oklch(1 0 0 / 0.18);
     }
     ```
+
+    The ramp is not a mirror image of the light one. Dark surfaces need their
+    low steps spaced further apart than a straight inversion would give, or the
+    first three greys collapse into one flat black.
 
   </Step>
 </Steps>
@@ -107,7 +121,7 @@ The `dark:` variant matches on `.dark *`, and `html.dark` is still an ancestor.
 The button renders dark inside a light island. CSS has no "nearest ancestor
 wins" selector, so there is no clean way to fix this at the variant level.
 
-<Callout type="warning">
+<Callout variant="warning">
   If you add a `dark:` utility to a component, it will look right on a normal
   page and wrong inside any scoped-theme island. Reach for a token instead.
 </Callout>
@@ -118,7 +132,7 @@ Because of the above, scoping a theme is one class:
 
 ```tsx
 <div className="dark" style={{ colorScheme: "dark" }}>
-  <MetricCard label="Revenue" value={48250} prefix="$" />
+  <YourComponent />
 </div>
 ```
 
@@ -126,12 +140,12 @@ Because of the above, scoping a theme is one class:
 browser to render native scrollbars, form controls and autofill in the matching
 theme.
 
-This is exactly how the preview toolbar on every component page works:
-
-<ComponentPreview slug="status-pulse" title="Status Pulse" minHeight="18rem" />
-
-Switch the preview to light while the site is dark (or the reverse) using the
-sun icon in the toolbar.
+This is exactly how the preview frame on every component page works. Its stage
+carries `.light` or `.dark` when you press the sun or moon button in the
+toolbar, and the demo inside re-resolves its tokens against that wrapper while
+the rest of the page keeps the site theme. No demo re-renders and no stylesheet
+is swapped — the only thing that changed is which ancestor declares the
+variables.
 
 ## Building a theme toggle
 
@@ -174,4 +188,8 @@ level expect an app to follow it.
 - Set `themeColor` for both schemes in your Next.js `viewport` export.
 - Re-check `--muted-foreground` contrast in dark mode; it is the token most
   often left too dim.
-- Dark surfaces need larger, softer shadows to read as elevated at all.
+- Check the low end of the ramp on a real screen. `--background`,
+  `--subtle` and `--muted` sit within a few percent of each other in dark mode,
+  and a panel that is legible on a laptop can vanish on a dim display.
+- Remember that separation is drawn, not lit. With no shadow tokens in the
+  system, a surface that needs to read as distinct needs a rule around it.

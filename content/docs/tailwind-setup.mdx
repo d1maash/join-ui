@@ -49,29 +49,65 @@ that distinction matters.
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
+  --color-popover: var(--popover);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-subtle: var(--subtle);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-soft: var(--primary-soft);
+  --color-secondary: var(--secondary);
   --color-accent: var(--accent);
   --color-destructive: var(--destructive);
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-code-bg: var(--code-bg);
 
-  --radius-lg: var(--radius);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 ```
 
-<Callout type="tip">
+The grey ramp is mapped the same way, which is what gives you `bg-grey-100` and
+`text-grey-600` for the rare case where a semantic name would be a lie:
+
+```css title="app/globals.css"
+@theme inline {
+  --color-grey-0: var(--grey-0);
+  --color-grey-100: var(--grey-100);
+  /* … through to --color-grey-1000 */
+}
+```
+
+<Callout variant="tip">
   The `inline` keyword matters. Without it Tailwind copies the value at build
   time; with it, the utility emits `var(--primary)` and follows the token at
   runtime — which is exactly what theme switching needs.
 </Callout>
+
+## Radius
+
+Every step of the scale is pinned to zero, so a stray `rounded-lg` in an edit
+does nothing rather than breaking the grid:
+
+```css title="app/globals.css"
+@theme inline {
+  --radius-xs: 0rem;
+  --radius-sm: 0rem;
+  --radius-md: 0rem;
+  --radius-lg: 0rem;
+  --radius-xl: 0rem;
+  --radius-2xl: 0rem;
+  --radius-3xl: 0rem;
+}
+```
+
+`rounded-full` is deliberately left alone: a pip or an avatar is a circle, not a
+rounded rectangle.
 
 ## Motion tokens
 
@@ -80,14 +116,13 @@ components:
 
 ```css title="app/globals.css"
 :root {
-  --duration-instant: 90ms;
-  --duration-fast: 160ms;
-  --duration-base: 240ms;
-  --duration-slow: 420ms;
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 ```
 
@@ -133,5 +168,6 @@ const COL_SPAN = { 1: "md:col-span-1", 2: "md:col-span-2" } as const
 <div className={COL_SPAN[span]} />
 ```
 
-Every Joinway component uses the second form. `BentoGrid` is the clearest
-example.
+Every Joinway component uses the second form. Any component that takes a numeric
+layout prop — a span, a column count, a size step — resolves it through a
+lookup table of complete class names for exactly this reason.

@@ -7,11 +7,16 @@ Components are not imported from a package. The shadcn CLI writes real `.tsx`
 files into your project, which you then own outright — read them, edit them,
 delete what you do not need.
 
-- **14 components** across 12 categories
 - **Real registry** — `/r/registry.json` plus one installable item per component
 - **Copy Prompt** — a structured, agent-ready brief on every component page
+- **Achromatic design system** — black, white and a grey ramp; no colour, no
+  gradients, no shadows, square corners
 - **WCAG 2.2 AA** baseline, with reduced-motion fallbacks throughout
-- **Fully static** — 61 prerendered routes, no runtime services
+- **Fully static** — every route prerendered, no runtime services
+
+The catalog is currently empty: the registry pipeline, documentation, search
+index and JSON endpoints are all in place, and components appear across every
+surface as soon as they are added to `lib/registry/components.ts`.
 
 ---
 
@@ -93,7 +98,7 @@ types/
 | ---------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `registry/components/` | Ships to other people's projects. May only import `react`, its declared npm dependencies, and `@/lib/utils`. |
 | `components/previews/` | Demos. Never leave this site, so they may import anything.                                                   |
-| `components/docs/`     | Documentation chrome. Never shipped by the registry.                                                         |
+| `components/site/`     | Documentation chrome. Never shipped by the registry.                                                         |
 | `components/ui/`       | Local primitives for the docs. Deliberately separate from registry components.                               |
 
 ---
@@ -121,7 +126,7 @@ export interface GlowCardProps extends React.ComponentPropsWithoutRef<"div"> {
 export function GlowCard({ intensity = 1, className, ...props }: GlowCardProps) {
   return (
     <div
-      className={cn("rounded-xl border border-border bg-card p-5", className)}
+      className={cn("border border-border bg-card p-5", className)}
       {...props}
     />
   )
@@ -154,7 +159,11 @@ export default function GlowCardPreview() {
 Register it in `components/previews/registry.tsx` so it code-splits:
 
 ```tsx
-"glow-card": dynamic(() => import("./glow-card-preview"), { loading: PreviewSkeleton }),
+const GlowCardPreview = dynamic(() => import("./glow-card-preview"))
+
+export const previews: Record<string, () => ReactNode> = {
+  "glow-card": () => <GlowCardPreview />,
+}
 ```
 
 ### 3. Describe it
@@ -180,7 +189,7 @@ defineComponent({
   props: [{ name: "GlowCard", props: [/* … */] }],
   usage: `import { GlowCard } from "@/components/joinway/glow-card"`,
   customization: [],
-  related: ["spotlight-card"],
+  related: [],
   since: "2026-08-02",
 })
 ```

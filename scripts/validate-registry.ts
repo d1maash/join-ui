@@ -109,6 +109,9 @@ async function exists(relativePath: string): Promise<boolean> {
  * The preview map is a Client Component module, so it cannot be imported here.
  * Reading the registered slugs out of its source keeps the check honest without
  * dragging React into the script.
+ *
+ * Entries are `"<slug>": () => <Demo />`, so the arrow is part of the pattern —
+ * matching the key alone would also pick up slugs mentioned in comments.
  */
 async function getRegisteredPreviews(): Promise<Set<string>> {
   const source = await fs.readFile(
@@ -116,7 +119,7 @@ async function getRegisteredPreviews(): Promise<Set<string>> {
     "utf8"
   )
   const slugs = new Set<string>()
-  for (const match of source.matchAll(/"([a-z0-9-]+)":\s*dynamic\(/g)) {
+  for (const match of source.matchAll(/"([a-z0-9-]+)":\s*\(\)\s*=>/g)) {
     const slug = match[1]
     if (slug) slugs.add(slug)
   }

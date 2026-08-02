@@ -9,7 +9,7 @@ shadcn/ui, you only need to add the registry namespace — skip to
 - Tailwind CSS v4
 - TypeScript (the components are typed, and the prop types are exported)
 
-<Callout type="note">
+<Callout variant="note">
   The components themselves are framework-agnostic React. They will work in
   Vite, Remix or Astro — the docs assume Next.js because that is what the
   registry targets and what the AI prompt describes.
@@ -39,7 +39,8 @@ shadcn/ui, you only need to add the registry namespace — skip to
     ```
 
     Answer the prompts however you like — Joinway components respect your
-    aliases and your base colour.
+    aliases. `neutral` is the closest base colour to the tokens you will add in
+    the next step, so it is the least surprising answer there.
 
   </Step>
 
@@ -65,36 +66,41 @@ shadcn/ui, you only need to add the registry namespace — skip to
 
   <Step title="Add the design tokens">
 
-    Joinway components read tokens such as `--primary`, `--muted-foreground`,
-    `--border-strong` and the motion variables. Copy them into your
-    `globals.css` — the full block is in [theming](/docs/theming).
+    Joinway components read the grey ramp and the semantic tokens built on it —
+    `--background`, `--foreground`, `--muted-foreground`, `--border`,
+    `--border-strong`, `--primary`, `--radius` and the motion variables. Copy
+    them into your `globals.css`; the full block is in
+    [theming](/docs/theming).
+
+    The palette is achromatic, so nothing here will fight a brand colour you
+    already have. It also means a component that arrives looking flat and
+    square is behaving correctly.
 
   </Step>
 
   <Step title="Install a component">
 
-    <InstallTabs target="@joinway/magnetic-button" />
+    Substitute the slug you want from the [catalog](/components):
+
+    <InstallTabs target="@joinway/<component>" />
 
     The CLI resolves dependencies, installs them with your package manager and
-    writes the component to `components/joinway/magnetic-button.tsx`.
+    writes the component to `components/joinway/<component>.tsx`.
 
   </Step>
 
   <Step title="Use it">
 
     ```tsx title="app/page.tsx"
-    import { MagneticButton } from "@/components/joinway/magnetic-button"
-    import { ArrowRight } from "lucide-react"
+    import { YourComponent } from "@/components/joinway/your-component"
 
     export default function Page() {
-      return (
-        <MagneticButton size="lg">
-          Get started
-          <ArrowRight />
-        </MagneticButton>
-      )
+      return <YourComponent>Get started</YourComponent>
     }
     ```
+
+    Import paths follow the slug, and every component exports its props
+    interface alongside it.
 
   </Step>
 </Steps>
@@ -104,10 +110,11 @@ shadcn/ui, you only need to add the registry namespace — skip to
 You do not have to edit `components.json` at all. Every registry item is a plain
 JSON file, so the CLI can take its URL directly:
 
-<InstallTabs target="https://ui.joinway.dev/r/spotlight-card.json" />
+<InstallTabs target="https://ui.joinway.dev/r/<component>.json" />
 
 This is the fastest way to try one component, and it is what the "Installation"
-tab on every component page shows as a fallback.
+tab on every component page shows as a fallback — with the real slug already
+filled in.
 
 ## Installing manually
 
@@ -117,9 +124,10 @@ the complete source and a copy button.
 <Steps>
   <Step title="Install the dependencies">
 
-    Each component page lists them. For example, `MagneticButton` needs:
+    Each component page lists its own. Many need nothing at all; the ones that
+    animate typically want:
 
-    <DependencyTabs packages="motion @radix-ui/react-slot" />
+    <DependencyTabs packages="motion" />
 
   </Step>
 
@@ -140,7 +148,7 @@ missing dependency or a wrong alias surfaces immediately:
 pnpm tsc --noEmit
 ```
 
-<Callout type="tip">
+<Callout variant="tip">
   Prefer to let an agent do this? Every component page has a **Copy prompt**
   button that hands Cursor, Claude Code or Codex the dependencies, the target
   path and the full source in one paste. See

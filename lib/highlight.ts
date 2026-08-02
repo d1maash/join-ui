@@ -2,6 +2,8 @@ import "server-only"
 
 import { createHighlighter, type Highlighter } from "shiki"
 
+import { swissDark, swissLight } from "@/lib/shiki-theme"
+
 export const SUPPORTED_LANGUAGES = [
   "tsx",
   "typescript",
@@ -49,7 +51,7 @@ let highlighterPromise: Promise<Highlighter> | null = null
 
 function getHighlighter(): Promise<Highlighter> {
   highlighterPromise ??= createHighlighter({
-    themes: ["github-light", "github-dark"],
+    themes: [swissLight, swissDark],
     langs: [...SUPPORTED_LANGUAGES],
   })
   return highlighterPromise
@@ -78,7 +80,7 @@ export async function highlightCode(
 
   return highlighter.codeToHtml(code.replace(/\n$/, ""), {
     lang,
-    themes: { light: "github-light", dark: "github-dark" },
+    themes: { light: "swiss-light", dark: "swiss-dark" },
     defaultColor: false,
     transformers: [
       {

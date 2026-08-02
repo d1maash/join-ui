@@ -2,59 +2,109 @@ Everything visual in Joinway UI resolves through CSS custom properties. Change a
 token and every component follows — including the ones already installed in your
 project.
 
-## The token set
+## The principle
 
-Copy this into `app/globals.css`. Values are `oklch`, which keeps perceptual
-lightness consistent when you shift hue.
+The palette is achromatic. Every colour token is declared in `oklch` with a
+chroma of exactly zero, so the interface can only ever render in black, white
+and the grey ramp between them. A token with chroma in it is a bug, not a
+variation.
+
+That constraint moves the work somewhere more durable. Meaning is carried by
+weight, rule thickness, size and spacing — never by hue. A destructive control
+is not red; it is the one control set in inverted ink. A warning is not amber;
+it is an aside with a thicker left rule, an icon, and the word spelled out.
+
+Two consequences are worth stating up front, because they are what most people
+expect to find and will not:
+
+- There are no gradients in the system and no elevation tokens. Depth is drawn
+  with hairlines, not with shadow.
+- `--radius` is `0rem` and every step of the radius scale resolves to zero.
+  Corners are square.
+
+## The grey ramp
+
+The ramp is the only palette. Twelve steps, from paper to ink, and every
+semantic token below is an alias onto one of them.
+
+```css title="app/globals.css"
+:root,
+.light {
+  --grey-0: oklch(1 0 0);
+  --grey-50: oklch(0.975 0 0);
+  --grey-100: oklch(0.95 0 0);
+  --grey-200: oklch(0.9 0 0);
+  --grey-300: oklch(0.82 0 0);
+  --grey-400: oklch(0.68 0 0);
+  --grey-500: oklch(0.55 0 0);
+  --grey-600: oklch(0.44 0 0);
+  --grey-700: oklch(0.32 0 0);
+  --grey-800: oklch(0.22 0 0);
+  --grey-900: oklch(0.13 0 0);
+  --grey-1000: oklch(0 0 0);
+}
+```
+
+In `oklch` the first component is perceptual lightness, so the steps are evenly
+spaced to the eye rather than evenly spaced in bytes. Dark mode inverts the
+ramp — `--grey-0` becomes black, `--grey-1000` becomes white — which is why the
+semantic layer below barely changes between themes. See
+[dark mode](/docs/dark-mode).
+
+## Semantic tokens
+
+Nothing outside this block should reference `--grey-*` directly. Components read
+the semantic names, so retuning the ramp retunes the whole interface.
 
 ```css title="app/globals.css"
 :root,
 .light {
   /* Surfaces */
-  --background: oklch(0.994 0.002 250);
-  --foreground: oklch(0.185 0.014 258);
-  --card: oklch(1 0 0);
-  --popover: oklch(1 0 0);
-  --muted: oklch(0.966 0.004 255);
-  --muted-foreground: oklch(0.508 0.016 258);
+  --background: var(--grey-0);
+  --foreground: var(--grey-1000);
+  --card: var(--grey-0);
+  --card-foreground: var(--grey-1000);
+  --popover: var(--grey-0);
+  --popover-foreground: var(--grey-1000);
+  --muted: var(--grey-100);
+  --muted-foreground: var(--grey-600);
+  --subtle: var(--grey-50);
 
-  /* Lines */
-  --border: oklch(0.912 0.006 258);
-  --border-strong: oklch(0.858 0.008 258);
-  --input: oklch(0.912 0.006 258);
-  --ring: oklch(0.58 0.113 174);
+  /* Rules. `--border` is the hairline; `--border-strong` is the ink rule. */
+  --border: var(--grey-200);
+  --border-strong: var(--grey-1000);
+  --input: var(--grey-300);
+  --ring: var(--grey-1000);
 
-  /* Brand */
-  --primary: oklch(0.556 0.108 174);
-  --primary-foreground: oklch(0.99 0.012 174);
-  --primary-soft: oklch(0.947 0.032 174);
-  --accent: oklch(0.712 0.142 62);
-  --destructive: oklch(0.577 0.212 27.3);
-  --success: oklch(0.6 0.132 155);
-  --warning: oklch(0.72 0.15 75);
+  /* Emphasis. Inverted ink is the only "accent" the system has. */
+  --primary: var(--grey-1000);
+  --primary-foreground: var(--grey-0);
+  --primary-soft: var(--grey-100);
+  --accent: var(--grey-1000);
+  --accent-foreground: var(--grey-0);
+  --accent-soft: var(--grey-100);
+  --secondary: var(--grey-100);
+  --secondary-foreground: var(--grey-1000);
 
-  /* Signature gradient */
-  --brand-from: oklch(0.63 0.13 176);
-  --brand-via: oklch(0.72 0.15 148);
-  --brand-to: oklch(0.76 0.15 106);
+  /* Status — achromatic by design. See below. */
+  --destructive: var(--grey-1000);
+  --destructive-foreground: var(--grey-0);
+  --success: var(--grey-700);
+  --warning: var(--grey-700);
 
-  /* Shape */
-  --radius: 0.625rem;
+  --code-bg: var(--grey-50);
+  --selection: oklch(0 0 0 / 0.14);
 
-  /* Elevation */
-  --shadow-subtle: 0 1px 2px -1px oklch(0.185 0.014 258 / 0.08);
-  --shadow-raised: 0 1px 2px -1px oklch(0.185 0.014 258 / 0.06), 0 4px 12px -4px oklch(0.185 0.014 258 / 0.08);
-  --shadow-floating: 0 2px 4px -2px oklch(0.185 0.014 258 / 0.06), 0 12px 32px -8px oklch(0.185 0.014 258 / 0.12);
-  --shadow-overlay: 0 4px 8px -4px oklch(0.185 0.014 258 / 0.08), 0 24px 56px -12px oklch(0.185 0.014 258 / 0.18);
+  /* Shape — square by default. Swiss grids do not round their corners. */
+  --radius: 0rem;
 
   /* Motion */
-  --duration-instant: 90ms;
-  --duration-fast: 160ms;
-  --duration-base: 240ms;
-  --duration-slow: 420ms;
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 ```
 
@@ -65,69 +115,108 @@ Then map them onto utilities with `@theme inline` — see
 
 | Token | Purpose |
 | --- | --- |
+| `--grey-0` … `--grey-1000` | The ramp. Everything else aliases onto it |
 | `--background` / `--foreground` | Page surface and body text |
-| `--card` / `--card-foreground` | Raised surfaces |
+| `--card` / `--card-foreground` | Panel surfaces, bounded by a rule rather than raised |
 | `--popover` / `--popover-foreground` | Floating surfaces — menus, dialogs |
-| `--muted` / `--muted-foreground` | Recessed fills and secondary text |
-| `--border` | Default hairline |
-| `--border-strong` | Hover and emphasis borders |
-| `--ring` | Focus outline colour |
-| `--primary` / `--primary-foreground` | Brand actions |
-| `--primary-soft` | Tinted brand fill for selected states |
-| `--accent` | Secondary highlight |
-| `--destructive` / `--success` / `--warning` | Status colours |
-| `--brand-from` / `--brand-via` / `--brand-to` | Gradient ramp |
-| `--radius` | Base radius; the scale is derived from it |
-| `--shadow-*` | Four elevation steps |
+| `--muted` / `--muted-foreground` | Recessed fill and secondary text |
+| `--subtle` | The quietest fill; asides, table zebra, code chrome |
+| `--border` | Structural hairline |
+| `--border-strong` | Ink rule for emphasis, hover and selected states |
+| `--input` | Form control boundary |
+| `--ring` | Focus outline |
+| `--primary` / `--primary-foreground` | Inverted-ink emphasis; the primary action |
+| `--primary-soft` | Flat fill for a selected or held state |
+| `--secondary` / `--secondary-foreground` | Quiet fill with normal ink on top |
+| `--destructive` / `--success` / `--warning` | Status, achromatic |
+| `--code-bg` | Code block and inline code fill |
+| `--selection` | Text selection wash, the one token using alpha |
+| `--radius` | Base radius. `0rem`; the derived scale is zero throughout |
 | `--duration-*` / `--ease-*` | Motion timing |
 
-## Rebranding
+## Status without colour
 
-Change the hue on the brand tokens and everything moves together — buttons,
-focus rings, the aurora, the gradient border, selected tabs:
+`--destructive`, `--success` and `--warning` are deliberately achromatic. They
+resolve to ink and to `--grey-700`, which means they are indistinguishable from
+each other on luminance alone in some contexts. That is intentional, and it
+carries one hard requirement:
 
-```css title="app/globals.css"
-:root {
-  --primary: oklch(0.55 0.19 275);
-  --ring: oklch(0.58 0.19 275);
-  --primary-soft: oklch(0.95 0.04 275);
-  --brand-from: oklch(0.62 0.19 275);
-  --brand-via: oklch(0.66 0.18 305);
-  --brand-to: oklch(0.74 0.15 340);
-}
-```
-
-<Callout type="tip">
-  Keep the lightness values and change only the hue and chroma. The palette was
-  balanced against `--background` and `--foreground` for contrast; shifting
-  lightness is what usually breaks it.
+<Callout variant="warning">
+  A status token is never sufficient on its own. Pair it with an icon **and** a
+  spelled-out text label. Anything that would have relied on red-versus-green to
+  communicate must communicate in words instead.
 </Callout>
 
-## Radius
+In practice this is the rule that already satisfies WCAG 1.4.1 — the palette
+simply removes the option of getting it wrong. A component that renders a state
+does so with a glyph and a label, and uses weight or an ink rule to raise its
+priority:
 
-The scale is derived, so one value reshapes the whole system:
+```tsx
+<p className="flex items-center gap-2 text-foreground">
+  <AlertTriangle aria-hidden="true" className="size-4" />
+  <span className="font-medium">Payment failed</span>
+</p>
+```
+
+## Shape and motion
+
+There is one shape token and it is zero:
 
 ```css
 :root {
-  --radius: 0.25rem;   /* sharp, technical */
-  /* --radius: 0.625rem;  default */
-  /* --radius: 1rem;      soft, consumer */
+  --radius: 0rem;
 }
 ```
+
+The Tailwind scale (`--radius-xs` through `--radius-3xl`) is pinned to zero as
+well, so `rounded-lg` on a component is a no-op rather than a surprise.
+`rounded-full` is left alone, because a pip or an avatar is a circle rather than
+a rounded rectangle.
+
+Durations and easings are tokens for the same reason colours are — so timing
+stays consistent across components you installed months apart:
+
+```tsx
+className="transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]"
+```
+
+## Retuning the ramp
+
+Rebranding here is not a hue change; there is no hue. It is a change of contrast
+and of where the greys sit. Edit the ramp, leave the semantic layer alone, and
+every component moves with it:
+
+```css title="app/globals.css"
+:root {
+  /* A softer ramp: paper instead of white, graphite instead of black. */
+  --grey-0: oklch(0.98 0 0);
+  --grey-1000: oklch(0.18 0 0);
+  --grey-200: oklch(0.88 0 0);
+  --grey-600: oklch(0.46 0 0);
+}
+```
+
+<Callout variant="tip">
+  Keep chroma at zero. If you do add hue, add it to the ramp only, never to an
+  individual component — and re-check every contrast pair in the table below,
+  because a tinted grey is almost never as light as it looks.
+</Callout>
 
 ## Scoped themes
 
 Tokens are inherited custom properties, so any subtree can override them. This
-is a supported pattern, not a hack:
+is a supported pattern, not a hack — inverting a section is a token swap:
 
 ```tsx
 <section
   style={{
-    "--primary": "oklch(0.62 0.19 25)",
-    "--primary-soft": "oklch(0.95 0.05 25)",
+    "--background": "var(--grey-1000)",
+    "--foreground": "var(--grey-0)",
+    "--border": "var(--grey-700)",
   } as React.CSSProperties}
 >
-  <MagneticButton>Danger zone</MagneticButton>
+  <YourComponent>Inverted panel</YourComponent>
 </section>
 ```
 
@@ -140,28 +229,35 @@ Every component merges `className` last through `cn`, so `twMerge` resolves the
 conflict in your favour:
 
 ```tsx
-<SpotlightCard className="rounded-3xl border-primary/40 bg-transparent">
-  …
-</SpotlightCard>
+<YourComponent className="border-border-strong bg-subtle p-8" />
 ```
 
-Components with more than one surface expose a second hook rather than making
-you fight selectors:
+Where a component owns more than one surface, it exposes a second class hook
+rather than making you fight selectors:
 
 ```tsx
-<GradientBorderCard className="rounded-3xl" innerClassName="rounded-[1.4rem] p-8" />
-<CursorHighlight highlightClassName="border-2 border-accent bg-transparent" />
+<YourComponent className="border-border-strong" innerClassName="bg-subtle p-8" />
 ```
 
 ## Contrast
 
-The default palette clears WCAG 2.2 AA in both themes:
+The ramp is built around pure black on pure white, so the headline pairs are at
+the top of the scale in both themes:
 
 | Pair | Light | Dark |
 | --- | --- | --- |
-| `--foreground` on `--background` | 15.8:1 | 14.6:1 |
-| `--muted-foreground` on `--background` | 5.1:1 | 5.4:1 |
-| `--primary-foreground` on `--primary` | 6.9:1 | 8.2:1 |
+| `--foreground` on `--background` | 21:1 | 21:1 |
+| `--primary-foreground` on `--primary` | 21:1 | 21:1 |
+| `--muted-foreground` on `--background` | 7.8:1 | 7.3:1 |
+| `--muted-foreground` on `--muted` | 6.7:1 | 6.9:1 |
 
-If you retune the palette, re-check `--muted-foreground` first. It carries most
-of the body copy and sits closest to the 4.5:1 threshold.
+`--muted-foreground` is the one to watch. It carries most of the body copy and
+it is the token people lighten first when a page feels heavy; it has roughly
+three steps of headroom above 4.5:1 and no more.
+
+Note what the rules are and are not doing. `--border-strong` and `--ring` are
+pure ink, so any boundary that has to be perceivable — focus rings, selected
+states, the outline of a control — clears 3:1 with room to spare. `--border` is
+a structural hairline at around 1.3:1 and is not trying to meet that threshold.
+Where a boundary is the only thing identifying an interactive control, reach for
+`--border-strong`.

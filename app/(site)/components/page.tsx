@@ -1,13 +1,13 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 
+import { Breadcrumbs } from "@/components/site/breadcrumbs"
 import {
   ComponentCatalog,
   ComponentCatalogFallback,
-} from "@/components/docs/component-catalog"
-import { DocsBreadcrumbs } from "@/components/docs/docs-breadcrumbs"
-import { getCatalogItems } from "@/lib/registry/catalog"
+} from "@/components/site/component-catalog"
 import { getRegistryStats } from "@/lib/registry"
+import { getCatalogItems } from "@/lib/registry/catalog"
 import { siteConfig } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -29,17 +29,19 @@ export default function ComponentsPage() {
 
   return (
     <main id="main-content" className="mx-auto max-w-[100rem] px-4 py-10 sm:px-6">
-      <DocsBreadcrumbs
+      <Breadcrumbs
         items={[{ label: "Home", href: "/" }, { label: "Components" }]}
-        className="mb-6"
+        className="mb-8"
       />
 
-      <header className="mb-8 flex max-w-2xl flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Components</h1>
-        <p className="leading-relaxed text-pretty text-muted-foreground">
-          {stats.total} components across {stats.categories} categories. Every preview
-          runs the same source the CLI installs, and every page ships a ready-made
-          prompt for your coding agent.
+      <header className="mb-8 grid gap-6 lg:grid-cols-12">
+        <h1 className="text-[clamp(2rem,5vw,3.5rem)] leading-[1] font-semibold tracking-[-0.03em] lg:col-span-7">
+          Components
+        </h1>
+        <p className="max-w-xl self-end leading-relaxed text-pretty text-muted-foreground lg:col-span-5">
+          {stats.total === 0
+            ? "The catalog is empty while the registry is rebuilt. Every page, filter and search entry below is generated from the registry metadata, so components appear here the moment they are added."
+            : `${stats.total} components across ${stats.categories} categories. Every preview runs the same source the CLI installs, and every page ships a ready-made prompt for your coding agent.`}
         </p>
       </header>
 
