@@ -66,24 +66,24 @@ a preview on this site render in light mode while the page around it stays dark.
 
     ```css title="app/globals.css"
     .dark {
-      --grey-0: oklch(0.205 0.009 280); /* #16171b — the page */
-      --grey-50: oklch(0.238 0.011 280);
-      --grey-100: oklch(0.268 0.013 280);
-      --grey-200: oklch(0.305 0.014 280);
-      --grey-300: oklch(0.35 0.016 280); /* the hairline */
-      --grey-400: oklch(0.425 0.017 280);
-      --grey-500: oklch(0.535 0.017 280);
-      --grey-600: oklch(0.645 0.016 281);
-      --grey-700: oklch(0.755 0.013 282); /* secondary text */
-      --grey-800: oklch(0.85 0.01 284);
-      --grey-900: oklch(0.925 0.007 286);
-      --grey-1000: oklch(0.972 0.004 288); /* the ink */
+      --grey-0: oklch(0.192 0.004 60); /* #161412 — the page */
+      --grey-50: oklch(0.238 0.005 60); /* #211e1c — cards */
+      --grey-100: oklch(0.272 0.005 60); /* #292624 — popovers */
+      --grey-200: oklch(0.294 0.006 58);
+      --grey-300: oklch(0.34 0.006 58); /* the hairline */
+      --grey-400: oklch(0.42 0.007 56);
+      --grey-500: oklch(0.53 0.008 56);
+      --grey-600: oklch(0.64 0.008 58);
+      --grey-700: oklch(0.75 0.007 60); /* #b1adaa — secondary text */
+      --grey-800: oklch(0.85 0.006 62);
+      --grey-900: oklch(0.92 0.005 65);
+      --grey-1000: oklch(0.965 0.004 70); /* #f5f3f1 — the ink */
 
       /* The aliases that genuinely differ between themes. */
       --card: var(--grey-50);
       --popover: var(--grey-100);
       --subtle: var(--grey-50);
-      --selection: oklch(0.645 0.168 275 / 0.3);
+      --selection: oklch(0.965 0.004 70 / 0.16);
     }
     ```
 
@@ -93,20 +93,23 @@ a preview on this site render in light mode while the page around it stays dark.
     steps spaced further apart than a straight inversion would give, or the
     first three collapse into one flat block.
 
-    It stops well short of black. `--grey-0` resolves to `#16171b`, not
-    `#0d0e11` and certainly not `#000000` — on a large surface pure black reads
-    as a hole punched through the screen, and a hairline drawn on it reads as a
-    scratch. The ink end stops short of white for the same reason, at `#f5f5f8`.
+    It stops well short of black. `--grey-0` resolves to `#161412`, not
+    `#000000` — on a large surface pure black reads as a hole punched through
+    the screen, and a hairline drawn on it reads as a scratch. The ink end stops
+    short of white for the same reason, at `#f5f3f1`.
 
-    It leans cool where the light ramp leans warm — hue `280` against hue `85`.
-    That is deliberate rather than an oversight: warm dark neutrals go muddy at
-    these lightness values, and the cool cast sits better under the same indigo
-    accent that both themes share.
+    It keeps the light ramp's warmth. The hue angle drops from `76` to `60` and
+    the chroma roughly halves, which is enough to stay warm without going muddy
+    — dark neutrals hold far less chroma before they read as brown. A cooler
+    slate would have been easier, but the two themes would then feel like two
+    different products.
 
     The `--card` and `--popover` aliases flip because the rule they encode is
     directional, not absolute: *a raised surface sits one step above the page*.
     In the light theme that step is upward into white; here it is upward out of
-    the deepest slate.
+    the deepest charcoal. It is the same cue in both, and with no accent colour
+    in the system it is what marks an active sidebar row, a selected tab and a
+    card as raised.
 
   </Step>
 </Steps>

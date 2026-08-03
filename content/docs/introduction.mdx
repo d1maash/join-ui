@@ -3,10 +3,10 @@ install and import from — it is a registry that writes real source files into
 your repository, which you then own outright.
 
 If you have used shadcn/ui, the model will be familiar. What Joinway adds is a
-two-layer design system — a soft neutral interface carrying one brand hue,
-wrapped around components that carry their own — a focus on motion that stays
-cheap, accessibility that is designed in rather than retrofitted, and a
-per-component prompt built for coding agents.
+two-layer design system — a soft, entirely neutral interface wrapped around
+components that carry hue through tokens — a focus on motion that stays cheap,
+accessibility that is designed in rather than retrofitted, and a per-component
+prompt built for coding agents.
 
 <Callout variant="note">
   The catalog is currently empty. The design system was rebuilt from the ground
@@ -45,27 +45,30 @@ usually the trade you want.
 ### Colour is a token, never a literal
 
 The palette splits in two. The chrome — navigation, type, rules, buttons, the
-documentation itself — runs on a soft neutral ramp plus one brand indigo. The
-ramp is not greyscale: it carries a trace of warmth in the light theme so a page
-reads as paper, and cools toward slate in the dark one. Neither end of either
-ramp is pure black or pure white, so the strongest pair the interface can draw
-is about 17:1 rather than 21:1. That is the deliberate cost of a surface that
-reads as paper instead of as a light source.
+documentation itself — is neutral and has no brand hue in it at all. The ramp is
+not greyscale either: it carries a trace of warmth, so the page resolves to
+`#f4efea` rather than to white and the ink to `#1d1714` rather than to black.
+The strongest pair the interface can draw is 15.5:1 rather than 21:1, which is
+the deliberate cost of a surface that reads as paper instead of as a light
+source.
 
-The indigo does everything an accent has to do — the primary action, links, the
-current page, focus, selection — and nothing else in the chrome competes with
-it, which is what keeps it meaning *this is the thing*.
+Emphasis is carried by ink, by material and by space rather than by an accent.
+The primary action is the one filled dark shape in a view; a card, an active
+sidebar row and a selected tab are all the same move — a white surface lifted
+off the warm page by a hairline and the faintest shadow. An accent was tried
+here and removed: pick one and it ends up on the link, the active row, the
+inline code span, the chip, the step number and the focus ring, at which point
+it has stopped meaning anything.
 
 Components are allowed hue of their own, because they are the product rather
 than the frame. They take it from four semantic families — `--info`,
 `--positive`, `--caution` and `--critical` — rather than from a literal colour
 or Tailwind's built-in palette, which is what keeps a component retintable in
-one place.
+one place. It is held at low chroma, because next to a chrome with no hue in it
+a saturated chip reads as a different website rather than as emphasis.
 
-Having hue available in both layers removes a guard rail that a greyscale chrome
-enforced for free, so the rule it enforced is now explicit: no component leans
-on red-versus-green, because every state it draws in colour is also drawn as a
-glyph and spelled out in words. See [theming](/docs/theming).
+No component leans on red-versus-green: every state it draws in colour is also
+drawn as a glyph and spelled out in words. See [theming](/docs/theming).
 
 ### Motion is a cost, not a decoration
 
@@ -131,6 +134,6 @@ over the same neutral base as everything else.
 <CardGroup columns={2}>
   <Card title="Installation" href="/docs/installation">Add Joinway UI to a new or existing Next.js app.</Card>
   <Card title="Registry setup" href="/docs/registry-setup">Wire up the @joinway namespace, or self-host the registry.</Card>
-  <Card title="Theming" href="/docs/theming">The neutral and brand ramps, the semantic tokens, and the four component colour families.</Card>
+  <Card title="Theming" href="/docs/theming">The neutral ramp, the semantic tokens, and the four component colour families.</Card>
   <Card title="Using components with AI" href="/docs/ai">What the copied prompt contains and why.</Card>
 </CardGroup>

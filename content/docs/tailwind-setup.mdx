@@ -54,6 +54,7 @@ that distinction matters.
   --color-muted-foreground: var(--muted-foreground);
   --color-subtle: var(--subtle);
   --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -75,19 +76,14 @@ that distinction matters.
 }
 ```
 
-Both ramps are mapped the same way, which is what gives you `bg-grey-100`,
-`text-grey-800` and `border-brand-200` for the rare case where a semantic name
-would be a lie:
+The ramp is mapped the same way, which is what gives you `bg-grey-100` and
+`text-grey-800` for the rare case where a semantic name would be a lie:
 
 ```css title="app/globals.css"
 @theme inline {
   --color-grey-0: var(--grey-0);
   --color-grey-100: var(--grey-100);
   /* … through to --color-grey-1000 */
-
-  --color-brand-50: var(--brand-50);
-  --color-brand-100: var(--brand-100);
-  /* … through to --color-brand-900 */
 }
 ```
 
@@ -134,7 +130,6 @@ default:
   --shadow-sm: var(--elevation-sm);
   --shadow-md: var(--elevation-md);
   --shadow-lg: var(--elevation-lg);
-  --shadow-ring: var(--elevation-ring); /* the soft focus halo */
 }
 ```
 

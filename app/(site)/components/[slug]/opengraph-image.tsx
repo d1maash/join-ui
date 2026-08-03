@@ -18,10 +18,10 @@ export function generateStaticParams() {
  * as hex — the same set the site-wide card uses. Keep both in sync with
  * `globals.css`.
  */
-const PAPER = "#f6f2ec"
-const INK = "#2a2420"
-const MUTED = "#6b625a"
-const HAIRLINE = "#e4ded6"
+const PAPER = "#f4efea"
+const INK = "#1d1714"
+const MUTED = "#625a54"
+const HAIRLINE = "#e2dcd6"
 
 export default async function ComponentOpengraphImage({
   params,

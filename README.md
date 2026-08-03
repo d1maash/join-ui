@@ -9,10 +9,11 @@ delete what you do not need.
 
 - **Real registry** — `/r/registry.json` plus one installable item per component
 - **Copy Prompt** — a structured, agent-ready brief on every component page
-- **Two-layer design system** — a soft neutral chrome (warm paper in light, cool
-  slate in dark, one indigo accent, real radius and elevation scales; neither
-  ramp reaches pure black or pure white) around components that take their hue
-  from the `--info` / `--positive` / `--caution` / `--critical` token families
+- **Two-layer design system** — an entirely neutral chrome (warm paper in light,
+  warm charcoal in dark, emphasis by ink and elevation rather than by an accent;
+  neither ramp reaches pure black or pure white) around components that take
+  their hue from the `--info` / `--positive` / `--caution` / `--critical` token
+  families
 - **WCAG 2.2 AA** baseline, with reduced-motion fallbacks throughout
 - **Fully static** — every route prerendered, no runtime services
 

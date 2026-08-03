@@ -28,9 +28,10 @@ for:
 }
 ```
 
-`--ring` is the brand indigo in both themes. It clears 3:1 against every surface
-in the system, and because it is the one hue the chrome uses for emphasis, a
-focus ring never has to compete with a decorative colour for attention.
+`--ring` is near-ink in both themes and clears 3:1 against every surface in the
+system. Because the chrome carries no decorative colour at all, a focus ring
+never has to compete with one for attention — it is reliably the highest
+contrast thing on the page.
 
 There is deliberately no `border-radius` in that rule. An `outline` already
 follows whatever radius the element has, so the ring wraps a rounded button and
@@ -64,12 +65,12 @@ So state is spelled out. The patterns every component follows:
 - A selected tab or item carries `aria-selected` or `aria-current`, not only a
   moving indicator.
 
-Body copy clears 4.5:1 in both themes — 6.5:1 in light and 8.2:1 in dark — and
-the focus ring and emphasis rules clear 3:1. The tightest pairs in the system
-are the four component inks on their own tints, which sit just under half a step
-above 4.5:1 in the light theme; if you deepen one of those tints, deepen its ink
-in the same commit. The full contrast table — including which rules are
-deliberately *not* trying to meet 3:1 — is in [theming](/docs/theming#contrast).
+Body copy clears 4.5:1 in both themes — 5.9:1 in light and 8.2:1 in dark — and
+the focus ring and emphasis rules clear 3:1. The tightest pair in the system is
+`--caution` on `--caution-soft` at 4.9:1; if you deepen one of those tints,
+deepen its ink in the same commit. The full contrast table — including which
+boundaries are deliberately *not* trying to meet 3:1 — is in
+[theming](/docs/theming#contrast).
 
 ## Motion
 

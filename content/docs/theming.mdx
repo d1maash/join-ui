@@ -6,110 +6,82 @@ project.
 
 The system has two layers, and they follow different rules. The chrome —
 navigation, sidebar, buttons, documentation type, code blocks, catalog cards —
-runs on a soft neutral ramp plus a single brand hue. The ramp is not pure
-greyscale: in the light theme it carries a trace of warmth so a page reads as
-paper rather than as a lit panel, and in the dark theme it cools toward slate so
-a large surface recedes instead of punching a hole.
+is neutral. It has no brand hue at all.
 
-Neither end of either ramp is pure black or pure white. The strongest pair the
-interface can draw is soft ink on soft paper — around 17:1, which is a
-comfortable reading contrast rather than a maximal one. Nothing in the chrome
-reaches for `#000` or `#fff`, and that single decision is most of what separates
-this from a high-contrast editorial system.
+That is a decision rather than an omission, and it is worth stating plainly
+because the obvious alternative is worse. Pick an accent, and it immediately
+wants to be everywhere: the link, the active row, the inline code span, the
+selected chip, the step number, the focus ring. Each one is defensible on its
+own and the result is a page where the colour has stopped meaning anything,
+because everything has it. What is left reads as decoration.
 
-The brand hue is one indigo, and it does everything an accent has to do: the
-primary action, links, the current page, focus, selection, the marker on a list.
-Everything else stays neutral, which is what keeps indigo meaning *this is the
-thing* rather than merely decorating.
+So emphasis here is carried by three things that do not have that failure mode:
 
-The components are the exception, and it is deliberate. They are the product
-rather than the frame, so they carry their own hue: a status chip, a progress
-marker, a chart series. They read it from four semantic families — `--info`,
-`--positive`, `--caution` and `--critical` — never from a literal colour, which
-is what keeps a component retintable in one place and consistent with the ones
-beside it. A hard-coded hex is still a bug.
+- **Ink.** The filled dark shape is the loudest thing available, and there is
+  usually one of it per view.
+- **Material.** The page is warm off-white and a panel is white sitting one step
+  above it, on a hairline and the faintest shadow. That step is what makes a
+  card a card, an active sidebar row active, and a selected tab selected.
+- **Space.**
 
-Two things are worth stating up front, because both changed:
+Neither end of either ramp is a pure value. The strongest pair the interface can
+draw is 15.5:1, soft ink on warm paper — a comfortable reading contrast rather
+than a maximal one. Nothing in the chrome reaches for `#000` or `#fff`, and that
+is most of what separates this from a high-contrast editorial system.
 
-- The chrome rounds. `--radius` is `0.625rem` and the whole Tailwind radius
-  scale resolves to real values, so `rounded-lg` on a site surface does what you
-  expect.
-- There are elevation tokens. Raised surfaces — cards, menus, popovers, the
-  search dialog — sit on a wide, low-opacity shadow tinted with the theme's own
-  ink rather than with black.
+Hue is reserved for the places where it *is* the information: the four semantic
+families below, used by registry components for a status chip or a progress
+marker, by the two serious callout variants, and by syntax highlighting. Even
+there it is held at low chroma and never allowed to carry the meaning alone.
 
 ## The neutral ramp
 
-The ramp is the chrome's whole neutral palette. Twelve steps, from paper to ink,
-and every neutral token below is an alias onto one of them.
+Twelve steps, from white to ink, and every neutral token below is an alias onto
+one of them.
 
 ```css title="app/globals.css"
 :root,
 .light {
-  --grey-0: oklch(1 0 0);
-  --grey-50: oklch(0.988 0.0025 85); /* the page */
-  --grey-100: oklch(0.972 0.004 85);
-  --grey-200: oklch(0.951 0.005 85);
-  --grey-300: oklch(0.916 0.006 83); /* the hairline */
-  --grey-400: oklch(0.86 0.008 80);
-  --grey-500: oklch(0.74 0.01 78);
-  --grey-600: oklch(0.6 0.012 74);
-  --grey-700: oklch(0.474 0.013 70); /* secondary text */
-  --grey-800: oklch(0.37 0.014 66);
-  --grey-900: oklch(0.28 0.015 62);
-  --grey-1000: oklch(0.205 0.015 58); /* the ink */
+  --grey-0: oklch(1 0 0); /* #ffffff — cards, popovers */
+  --grey-50: oklch(0.978 0.005 78); /* #faf7f4 */
+  --grey-100: oklch(0.955 0.009 76); /* #f4efea — the page */
+  --grey-200: oklch(0.928 0.011 74); /* #ece6df */
+  --grey-300: oklch(0.898 0.011 72); /* #e2dcd6 — the hairline */
+  --grey-400: oklch(0.845 0.012 70); /* #d1cbc4 */
+  --grey-500: oklch(0.73 0.012 66); /* #ada6a0 */
+  --grey-600: oklch(0.6 0.013 62); /* #867f78 */
+  --grey-700: oklch(0.472 0.014 58); /* #625a54 — secondary text */
+  --grey-800: oklch(0.36 0.014 54); /* #433b36 */
+  --grey-900: oklch(0.27 0.013 50); /* #2c2521 */
+  --grey-1000: oklch(0.21 0.011 48); /* #1d1714 — the ink */
 }
 ```
 
 In `oklch` the first component is perceptual lightness, so the steps are evenly
-spaced to the eye rather than evenly spaced in bytes. The third is hue and the
-second is how much of it there is — here between `0.0025` and `0.015`, which is
-enough that `--grey-50` resolves to `#fcfbf9` instead of `#ffffff` and
-`--grey-1000` to `#1d1610` instead of `#000000`, and not enough that either
-reads as a colour.
+spaced to the eye rather than evenly spaced in bytes. The second is chroma and
+the third is hue — here between `0.005` and `0.014` at a warm angle, which is
+enough that the page resolves to `#f4efea` instead of `#f5f5f5` and the ink to
+`#1d1714` instead of `#000000`, and not enough that either reads as a colour.
 
-Dark mode does not negate this ramp; it substitutes a cooler one that runs the
-same direction. `--grey-0` is the page in both themes and `--grey-1000` is the
-ink in both, which is why the semantic layer barely changes between them. See
-[dark mode](/docs/dark-mode).
+That trace of warmth is doing most of the work. A greige page with white panels
+on it is soft in a way that a white page with grey panels is not, and it costs
+nothing structurally.
 
-## The brand ramp
-
-One hue, ten steps. The `600` and `700` are the two that clear text contrast on
-paper; the `50` and `100` are the tints behind a selected or held state.
-
-```css title="app/globals.css"
-:root,
-.light {
-  --brand-50: oklch(0.974 0.012 285);
-  --brand-100: oklch(0.944 0.026 283);
-  --brand-200: oklch(0.897 0.048 281);
-  --brand-300: oklch(0.822 0.083 279);
-  --brand-400: oklch(0.724 0.135 277);
-  --brand-500: oklch(0.63 0.176 275); /* the hue at full voice */
-  --brand-600: oklch(0.545 0.192 274); /* fills that carry light text */
-  --brand-700: oklch(0.468 0.166 274); /* text on the page */
-  --brand-800: oklch(0.392 0.13 274);
-  --brand-900: oklch(0.322 0.095 275);
-}
-```
-
-Rebranding is a change to this block and nothing else. Move the hue angle on all
-ten steps — `275` to `250` for a blue, to `160` for a green — and every accent,
-link, focus ring, active tab and selected row moves with it. Keep the lightness
-values where they are and the contrast results below stay valid.
+Dark mode does not negate this ramp; it substitutes a warmer-charcoal one that
+runs the same direction. `--grey-0` is the page in both themes and `--grey-1000`
+is the ink in both, which is why the semantic layer barely changes between them.
+See [dark mode](/docs/dark-mode).
 
 ## Semantic tokens
 
-Nothing outside this block should reference `--grey-*` or `--brand-*` directly.
-Components read the semantic names, so retuning either ramp retunes the whole
-interface.
+Nothing outside this block should reference `--grey-*` directly. Components read
+the semantic names, so retuning the ramp retunes the whole interface.
 
 ```css title="app/globals.css"
 :root,
 .light {
-  /* Surfaces. A card sits one step above the page. */
-  --background: var(--grey-50);
+  /* Surfaces. A card is white and sits one step above the page. */
+  --background: var(--grey-100);
   --foreground: var(--grey-1000);
   --card: var(--grey-0);
   --card-foreground: var(--grey-1000);
@@ -117,24 +89,25 @@ interface.
   --popover-foreground: var(--grey-1000);
   --muted: var(--grey-200);
   --muted-foreground: var(--grey-700);
-  --subtle: var(--grey-100);
+  --subtle: var(--grey-50);
 
-  /* Rules. `--border` is the hairline; `--border-strong` is the emphasis rule. */
-  --border: var(--grey-300);
-  --border-strong: var(--grey-600);
-  --input: var(--grey-500);
-  --ring: var(--brand-500);
+  /* Rules. Three weights, and each has one job. */
+  --border: var(--grey-300); /* the resting hairline */
+  --border-hover: var(--grey-400); /* the same hairline, on hover */
+  --border-strong: var(--grey-600); /* an emphasis rule; clears 3:1 */
+  --input: var(--grey-400);
+  --ring: var(--grey-900);
 
-  /* Emphasis. `--primary` is a fill; `--accent` is the same hue tuned for text. */
-  --primary: var(--brand-600);
-  --primary-hover: var(--brand-700);
-  --primary-foreground: oklch(0.99 0.005 275);
-  --primary-soft: var(--brand-50);
-  --accent: var(--brand-700);
-  --accent-foreground: oklch(0.99 0.005 275);
-  --accent-soft: var(--brand-50);
-  --accent-border: var(--brand-200);
-  --secondary: var(--grey-100);
+  /* Emphasis is ink. */
+  --primary: var(--grey-1000);
+  --primary-hover: var(--grey-900);
+  --primary-foreground: var(--grey-0);
+  --primary-soft: var(--grey-200);
+  --accent: var(--grey-1000);
+  --accent-foreground: var(--grey-0);
+  --accent-soft: var(--grey-200);
+  --accent-border: var(--grey-400);
+  --secondary: var(--grey-50);
   --secondary-foreground: var(--grey-900);
 
   /* Chrome status, aliased onto the component hue families. */
@@ -146,19 +119,23 @@ interface.
   --warning: var(--caution);
   --warning-soft: var(--caution-soft);
 
-  --code-bg: var(--grey-100);
-  --selection: oklch(0.63 0.176 275 / 0.18);
+  --code-bg: var(--grey-0);
+  --selection: oklch(0.21 0.011 48 / 0.12);
 
   --radius: 0.625rem;
 }
 ```
 
-The `--primary` / `--accent` split is the one pair worth understanding. Both are
-the brand hue; they differ in what they are *for*. `--primary` is a fill and is
-dark enough to carry light text on top of it. `--accent` is a step darker still
-and is the value you use when the hue is the text — a link, an active tab label,
-a list marker. Reaching for `--primary` as a text colour is how a link ends up
-just under 4.5:1.
+`--accent` and `--primary` both resolve to ink and differ only in intent:
+`--primary` is a fill, `--accent` is the same ink used as text or as a marker.
+They are kept separate because they are the pair you would repoint if you ever
+did want a brand hue — see [retuning](#retuning-the-ramp) — and because a
+component asking for one should not silently get the other.
+
+`--border-hover` exists for a small reason worth naming. A card's resting border
+and its hover border cannot be the same token, or the hover does nothing; with
+no accent to switch to, the hover is one step down the ramp plus a slightly
+deeper shadow.
 
 Then map them onto utilities with `@theme inline` — see
 [Tailwind setup](/docs/tailwind-setup).
@@ -173,22 +150,23 @@ on top of the solid `--X` fill.
 ```css title="app/globals.css"
 :root,
 .light {
-  --info: oklch(0.52 0.155 250); /* in progress, informational */
-  --info-soft: oklch(0.955 0.03 250);
-  --info-foreground: oklch(0.99 0.006 250);
+  --info: oklch(0.5 0.11 245); /* in progress, informational */
+  --info-soft: oklch(0.958 0.019 245);
+  --info-foreground: oklch(0.99 0.006 245);
   /* …and the same three for --positive, --caution and --critical. */
 }
 ```
 
 `--positive` is green and reads as success or complete, `--caution` is amber and
 reads as a warning, `--critical` is red and covers error, blocked, and anything
-destructive. Chroma is held well below where an off-the-shelf palette would put
-it — every ink lands between `0.12` and `0.17` — because a fill at full
-saturation vibrates against neutral text set beside it.
+destructive. Chroma is held between `0.095` and `0.145` on the inks and near
+nothing on the tints — well under where an off-the-shelf palette would put them.
+Against a chrome with no hue in it, a saturated chip does not read as
+emphatic, it reads as a different website.
 
-The chrome's `--destructive`, `--success` and `--warning` are now aliases onto
-these families rather than a separate greyscale set, so a destructive control in
-the interface and a `--critical` chip inside a component are the same red.
+The chrome's `--destructive`, `--success` and `--warning` are aliases onto these
+families, so a destructive control in the interface and a `--critical` chip
+inside a component are the same red.
 
 Every family is declared twice, once in `:root, .light` and once in `.dark`, so
 a component never needs a `dark:` variant to pick the right hue. That is not
@@ -209,40 +187,40 @@ utilities:
 
 | Token | Purpose |
 | --- | --- |
-| `--grey-0` … `--grey-1000` | The neutral ramp. Every neutral token aliases onto it |
-| `--brand-50` … `--brand-900` | The brand ramp. One hue; change it to rebrand |
+| `--grey-0` … `--grey-1000` | The ramp. Every neutral token aliases onto it |
 | `--background` / `--foreground` | Page surface and body text |
 | `--card` / `--card-foreground` | Panel surfaces, one step above the page |
 | `--popover` / `--popover-foreground` | Floating surfaces — menus, dialogs, toasts |
 | `--muted` / `--muted-foreground` | Recessed fill and secondary text |
-| `--subtle` | The quietest fill; asides, table headers, code chrome |
-| `--border` | Structural hairline |
+| `--subtle` | The quietest fill; asides, table headers |
+| `--border` | The resting hairline |
+| `--border-hover` | The same hairline one step down, for hover |
 | `--border-strong` | Emphasis rule, at or above 3:1 |
 | `--input` | Form control boundary |
 | `--ring` | Focus outline |
-| `--primary` / `--primary-foreground` | The one filled brand surface; the primary action |
+| `--primary` / `--primary-foreground` | The filled ink surface; the primary action |
 | `--primary-hover` | Its hover step |
 | `--primary-soft` | Flat tint for a selected or held state |
-| `--accent` / `--accent-foreground` | The brand hue tuned for text — links, active states |
-| `--accent-soft` / `--accent-border` | Tint and hairline for a brand-tinted surface |
+| `--accent` / `--accent-foreground` | The same ink, used as text or as a marker |
+| `--accent-soft` / `--accent-border` | Tint and hairline for a held surface |
 | `--secondary` / `--secondary-foreground` | Quiet fill with normal ink on top |
 | `--destructive` / `--success` / `--warning` | Chrome status; aliases onto the hue families |
 | `--info` / `--info-soft` / `--info-foreground` | Component hue: in progress, informational |
 | `--positive` / `--positive-soft` / `--positive-foreground` | Component hue: success, complete |
 | `--caution` / `--caution-soft` / `--caution-foreground` | Component hue: warning |
 | `--critical` / `--critical-soft` / `--critical-foreground` | Component hue: error, blocked, destructive |
-| `--code-bg` | Code block and inline code fill |
-| `--selection` | Text selection wash, in the brand hue |
+| `--code-bg` | Code block fill |
+| `--selection` | Text selection wash |
 | `--radius` | Base radius for the chrome, `0.625rem` |
 | `--radius-soft-sm` / `--radius-soft` / `--radius-soft-lg` | The component radius scale — a tag, a control, a card |
 | `--elevation-xs` … `--elevation-lg` | Shadow steps, reached as `shadow-xs` … `shadow-lg` |
-| `--elevation-ring` | The soft focus halo, reached as `shadow-ring` |
 | `--duration-*` / `--ease-*` | Motion timing |
 
 ## Colour is never the only channel
 
-Hue is now available in both layers, which removes a guard rail the old
-greyscale chrome enforced for free. The obligation it enforced still stands.
+Hue is available in the component layer, which removes a guard rail a fully
+greyscale system would enforce for free. The obligation it enforced still
+stands.
 
 <Callout variant="warning">
   A tint is an accelerator, not the message. A chip in `--critical-soft` and one
@@ -251,9 +229,11 @@ greyscale chrome enforced for free. The obligation it enforced still stands.
   1.4.1 is satisfied by the icon and the word, never by the fill.
 </Callout>
 
-This is why the callouts in these guides render an icon and the word *Warning*
-next to the amber, and why `StatusBadge` prints `stable` and `experimental`
-rather than showing a green and an amber dot:
+This is also why `StatusBadge` is neutral. Four registry states — `stable`,
+`new`, `updated`, `experimental` — were each given a hue at one point, and a
+catalog page of them turned into a colour chart in which no colour meant
+anything. The words were already doing the work. They are now separated by fill
+weight instead, and only `new` is worth interrupting a scan for:
 
 ```tsx
 <p className="flex items-center gap-2 text-critical">
@@ -265,12 +245,6 @@ rather than showing a green and an amber dot:
 ## Shape and elevation
 
 The chrome has a real radius scale, and the Tailwind steps resolve through it:
-
-```css
-:root {
-  --radius: 0.625rem;
-}
-```
 
 ```css title="app/globals.css"
 @theme inline {
@@ -286,19 +260,20 @@ The chrome has a real radius scale, and the Tailwind steps resolve through it:
 
 Components round through a scale of their own — `--radius-soft-sm`,
 `--radius-soft` and `--radius-soft-lg`, reached as `rounded-soft-sm`,
-`rounded-soft` and `rounded-soft-lg`. These are now aliases onto `sm`, `lg` and
-`xl` above, so anything already installed from the registry keeps rounding
-exactly as it did. `rounded-full` is untouched in both layers, because a pip or
-an avatar is a circle rather than a rounded rectangle.
+`rounded-soft` and `rounded-soft-lg`. These are aliases onto `sm`, `lg` and `xl`
+above, so anything already installed from the registry keeps rounding exactly as
+it did. `rounded-full` is untouched in both layers, because a pip or an avatar
+is a circle rather than a rounded rectangle.
 
-Elevation is four steps, and the shadow colour is the theme's ink rather than
-black — a raised surface should read as lit paper, not as a cut-out:
+Elevation is four steps and the shadow colour is the theme's ink rather than
+black, so a raised surface reads as lit paper instead of as a cut-out. Nothing
+in the chrome goes above `-md` except a portal:
 
 ```css
 :root {
-  --elevation-xs: 0 1px 2px -1px oklch(0.28 0.02 70 / 0.08);
+  --elevation-xs: 0 1px 2px -1px oklch(0.24 0.014 52 / 0.07);
   --elevation-sm:
-    0 1px 2px -1px oklch(0.28 0.02 70 / 0.07), 0 2px 6px -2px oklch(0.28 0.02 70 / 0.06);
+    0 1px 2px -1px oklch(0.24 0.014 52 / 0.06), 0 2px 6px -2px oklch(0.24 0.014 52 / 0.05);
   /* …-md and -lg widen the blur and deepen the opacity from there. */
 }
 ```
@@ -310,38 +285,44 @@ stays consistent across components you installed months apart:
 className="transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]"
 ```
 
-## Retuning the ramps
+## Retuning the ramp
 
-Softening or hardening the interface is a change to the two ends of the neutral
+Softening or hardening the interface is a change to a few steps of the neutral
 ramp. Edit those, leave the semantic layer alone, and every surface moves:
 
 ```css title="app/globals.css"
 :root {
   /* Cooler and flatter: a grey page, a graphite ink. */
-  --grey-50: oklch(0.985 0.002 260);
-  --grey-1000: oklch(0.24 0.012 265);
+  --grey-100: oklch(0.965 0.002 260);
   --grey-300: oklch(0.9 0.004 260);
+  --grey-1000: oklch(0.24 0.008 265);
 }
 ```
 
-Rebranding is a change to the hue angle on the brand ramp:
+If you do want a brand hue, add it at the emphasis tokens rather than across the
+ramp — that is the whole reason `--primary` and `--accent` are separate from
+`--foreground`:
 
 ```css title="app/globals.css"
 :root {
-  --brand-500: oklch(0.63 0.176 162); /* indigo → green */
-  --brand-600: oklch(0.545 0.15 162);
-  --brand-700: oklch(0.468 0.13 162);
-  /* …and the remaining seven steps at the same angle. */
+  --primary: oklch(0.545 0.192 274);
+  --primary-hover: oklch(0.468 0.166 274);
+  --primary-foreground: oklch(0.99 0.005 275);
+  --ring: oklch(0.63 0.176 275);
 }
 ```
 
-<Callout variant="tip">
-  Keep the neutral ramp's chroma under about `0.02`. Past that it stops reading
-  as a warm or cool neutral and starts competing with the brand hue, and the two
-  fight hardest exactly where they meet — a tinted card on a tinted page.
-  Re-check every contrast pair after either kind of change, because a tint is
-  almost never as light as it looks.
+<Callout variant="warning">
+  Repointing `--accent` as well is the step to think twice about. `--accent` is
+  read by links, active navigation, the current TOC entry, selected menu rows
+  and list markers, so changing it tints roughly a dozen surfaces at once. That
+  is the state this system was deliberately moved away from. Move `--primary`
+  first, live with it, and add `--accent` only if the page still needs it.
 </Callout>
+
+Keep the neutral ramp's chroma under about `0.02` either way. Past that it stops
+reading as a warm or cool neutral and starts competing with whatever hue the
+components carry.
 
 ## Scoped themes
 
@@ -369,14 +350,14 @@ Every component merges `className` last through `cn`, so `twMerge` resolves the
 conflict in your favour:
 
 ```tsx
-<YourComponent className="rounded-2xl border-accent-border bg-subtle p-8" />
+<YourComponent className="rounded-2xl border-border-strong bg-subtle p-8" />
 ```
 
 Where a component owns more than one surface, it exposes a second class hook
 rather than making you fight selectors:
 
 ```tsx
-<YourComponent className="border-accent-border" innerClassName="bg-subtle p-8" />
+<YourComponent className="border-border-strong" innerClassName="bg-subtle p-8" />
 ```
 
 ## Contrast
@@ -385,38 +366,38 @@ The headline pairs, measured against the resolved values above:
 
 | Pair | Light | Dark |
 | --- | --- | --- |
-| `--foreground` on `--background` | 17.3:1 | 16.5:1 |
-| `--muted-foreground` on `--background` | 6.5:1 | 8.2:1 |
-| `--muted-foreground` on `--muted` | 5.8:1 | 6.2:1 |
-| `--accent` on `--background` | 7.0:1 | 9.0:1 |
-| `--accent` on `--accent-soft` | 6.7:1 | 7.3:1 |
-| `--primary-foreground` on `--primary` | 5.1:1 | 7.2:1 |
-| `--border-strong` on `--background` | 3.8:1 | 3.5:1 |
+| `--foreground` on `--background` | 15.5:1 | 16.6:1 |
+| `--foreground` on `--card` | 17.7:1 | 15.0:1 |
+| `--muted-foreground` on `--background` | 5.9:1 | 8.2:1 |
+| `--muted-foreground` on `--card` | 6.8:1 | 7.4:1 |
+| `--muted-foreground` on `--muted` | 5.5:1 | 6.2:1 |
+| `--primary-foreground` on `--primary` | 17.7:1 | 16.6:1 |
+| `--border-strong` on `--background` | 3.5:1 | 3.5:1 |
 
-The headline pair is 17:1 rather than the 21:1 a black-on-white system gets, and
-that is the point — it is the deliberate cost of a page that is paper rather
+The headline pair is 15.5:1 rather than the 21:1 a black-on-white system gets,
+and that is the point — it is the deliberate cost of a page that is paper rather
 than a light source.
 
-`--muted-foreground` is still the token to watch. It carries most of the body
-copy and it is the one people lighten first when a page feels heavy; it has
-roughly two steps of headroom above 4.5:1 and no more.
+`--muted-foreground` is the token to watch. It carries most of the body copy and
+it is the one people lighten first when a page feels heavy; on the page
+background it has roughly two steps of headroom above 4.5:1 and no more.
 
 The four component families are tuned so their ink clears 4.5:1 against their
 own tint, which is the pairing that actually ships:
 
 | Pair | Light | Dark |
 | --- | --- | --- |
-| `--info` on `--info-soft` | 4.8:1 | 6.5:1 |
-| `--positive` on `--positive-soft` | 4.9:1 | 7.0:1 |
-| `--caution` on `--caution-soft` | 4.7:1 | 7.3:1 |
-| `--critical` on `--critical-soft` | 4.8:1 | 5.6:1 |
+| `--info` on `--info-soft` | 5.3:1 | 6.3:1 |
+| `--positive` on `--positive-soft` | 5.3:1 | 6.9:1 |
+| `--caution` on `--caution-soft` | 4.9:1 | 7.2:1 |
+| `--critical` on `--critical-soft` | 5.1:1 | 5.5:1 |
 
-The light column has under half a step of margin. If you deepen a `-soft` tint,
+`--caution` has the least margin of the four. If you deepen a `-soft` tint,
 deepen its ink in the same commit.
 
-Note what the rules are and are not doing. `--border-strong` and `--ring` clear
-3:1, so any boundary that has to be perceivable — focus rings, selected states,
-an emphasis rule — meets the non-text threshold. `--border` is a structural
-hairline at around 1.25:1 and is not trying to. Where a boundary is the only
+Two ratios in this system are deliberately low and are not failures. `--card`
+over `--background` is about 1.1:1 and `--border` on `--card` about 1.4:1 —
+neither is text, and both are doing the job a shadow and a hairline are supposed
+to do at a glance rather than under measurement. Where a boundary is the only
 thing identifying an interactive control, pair it with a fill or reach for
-`--border-strong`.
+`--border-strong`, which clears 3:1.
