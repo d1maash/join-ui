@@ -331,8 +331,10 @@ pnpm build
 (configured in `next.config.ts`), so the shadcn CLI can read it from any
 project. Any static host works, including an object store behind a CDN.
 
-Set `NEXT_PUBLIC_SITE_URL` for the deployment so canonical URLs, OG tags, the
-sitemap and the registry `docs` links point at the right origin:
+`lib/site.ts` already falls back to the production origin, so a deployment to
+`ui.join-way.com` needs no configuration. Set `NEXT_PUBLIC_SITE_URL` anywhere
+else — a preview deployment, a fork, a self-hosted registry — so canonical URLs,
+OG tags, the sitemap and the registry `docs` links point at that origin instead:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://ui.example.com pnpm build

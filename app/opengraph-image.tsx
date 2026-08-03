@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og"
 
+import { MARK } from "@/components/site/logo"
 import { siteConfig } from "@/lib/site"
 
 export const alt = `${siteConfig.name} — ${siteConfig.tagline}`
@@ -60,11 +61,25 @@ export default function OpengraphImage() {
             alignItems: "center",
             justifyContent: "center",
             marginRight: 16,
-            fontSize: 25,
-            fontWeight: 700,
           }}
         >
-          J
+          <svg viewBox={MARK.viewBox} width={32} height={32}>
+            <path
+              d={MARK.stems}
+              fill="none"
+              stroke={PAGE}
+              strokeWidth={MARK.stemsWidth}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d={MARK.middle}
+              fill="none"
+              stroke={PAGE}
+              strokeWidth={MARK.middleWidth}
+              strokeLinecap="round"
+            />
+          </svg>
         </div>
         <div style={{ display: "flex", fontSize: 26, fontWeight: 600 }}>
           {siteConfig.name}
