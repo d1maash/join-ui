@@ -3,7 +3,32 @@
   "version": "0.1.0",
   "private": true,
   "description": "Join UI — an open-code catalog of motion-first React components with a shadcn-compatible registry.",
+  "license": "MIT",
+  "author": "Join Way",
+  "homepage": "https://ui.join-way.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d1maash/join-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/d1maash/join-ui/issues"
+  },
+  "keywords": [
+    "react",
+    "nextjs",
+    "shadcn",
+    "shadcn-registry",
+    "tailwindcss",
+    "ui-components",
+    "design-system",
+    "motion",
+    "accessibility"
+  ],
   "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=20.9.0",
+    "pnpm": ">=10"
+  },
   "scripts": {
     "dev": "next dev",
     "prebuild": "pnpm registry:build",

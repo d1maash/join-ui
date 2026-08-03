@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Validate, typecheck, lint, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # `pnpm format:check` is deliberately not a gate yet — the tree is not
+      # Prettier-clean, and running it rewraps hand-set MDX prose.
+      - name: Validate registry, typecheck and lint
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
+
+      - name: Verify the generated registry is in sync
+        run: git diff --exit-code -- registry.json

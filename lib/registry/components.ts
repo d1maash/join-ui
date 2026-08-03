@@ -368,7 +368,7 @@ export function Example() {
       "A coil of pills that keeps one item in focus and lets the rest twist away, turned either by a timer or by the page scroll.",
     overview:
       "FocusStack draws a list as a receding stack: rank by rank the pills shrink, fade, blur and lean away from the middle, and the one in focus straightens out, comes back to full size and lifts off the page. Every one of those properties is a function of a single fractional number — the distance from a pill to the focused position — so nothing snaps between states and two pills can sit half-focused either side of the centre mid-turn. That number has two drivers, and they are the two variants. In auto mode a spring walks it along on a timer, the stack wraps end to end, and a pill can be clicked or arrowed into focus; the timer stops for a pointer, for a caret, for a stack scrolled out of view and for anyone who has asked for reduced motion. In scroll mode the number is mapped to the stack's own transit through the viewport instead, so the coil turns exactly as far as the reader scrolls it and nothing moves on its own.",
-    category: "Marketing",
+    category: "Data Display",
     tags: [
       "carousel",
       "stack",

@@ -1,7 +1,12 @@
 # Join UI
 
+[![CI](https://github.com/d1maash/join-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/d1maash/join-ui/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 An open-code catalog of motion-first React components for Next.js, with a
 shadcn-compatible registry and a generated AI prompt for every component.
+
+**[ui.join-way.com](https://ui.join-way.com)** — catalog, docs and registry.
 
 Components are not imported from a package. The shadcn CLI writes real `.tsx`
 files into your project, which you then own outright — read them, edit them,
@@ -397,6 +402,26 @@ catalog cards only mount their demo once the card approaches the viewport.
 
 ---
 
+## Contributing
+
+Contributions are welcome — components, fixes and documentation alike. Read
+[CONTRIBUTING.md](CONTRIBUTING.md) for the repository workflow, and
+[/docs/contributing](https://ui.join-way.com/docs/contributing) for the four
+files a component takes and the house rules it has to satisfy.
+
+For anything larger than a bug fix, open an issue first. A component that does
+not fit the design system is a painful thing to reject after it has been built.
+
+Participation is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
+Security problems go to [SECURITY.md](SECURITY.md) — privately, never as a
+public issue.
+
+---
+
 ## License
 
-MIT.
+[MIT](LICENSE) © Join Way and contributors.
+
+Components installed through the CLI become source files in your project. You
+own them: edit, rewrite or delete them, with no attribution required in your
+own product.

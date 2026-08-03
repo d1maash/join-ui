@@ -1,0 +1,36 @@
+name: Documentation
+description: Something in the docs is wrong, missing or unclear.
+labels: ["documentation"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The URL or the file under `content/docs/`.
+      placeholder: https://ui.join-way.com/docs/theming
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong
+      description: |
+        Quote the passage if it is an error. If something is missing, describe
+        what you were trying to do when you went looking for it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested wording
+      description: Optional, but a concrete replacement is the fastest path to a fix.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's [Code of Conduct](https://github.com/d1maash/join-ui/blob/main/CODE_OF_CONDUCT.md)
+          required: true

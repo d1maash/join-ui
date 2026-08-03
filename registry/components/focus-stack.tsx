@@ -373,8 +373,13 @@ function Row({
   const scaleValue = useTransform(distance, (d) =>
     Math.max(MIN_SCALE, 1 - Math.abs(d) * SCALE_STEP)
   )
+  /*
+   * Zero is reached at `ranks + 0.5`, which is at or before the wrap boundary
+   * at `count / 2` — so the frame in which an item leaves the top of the stack
+   * and reappears at the bottom is never a frame anyone can see.
+   */
   const opacity = useTransform(distance, (d) =>
-    Math.max(0, 1 - Math.abs(d) / (ranks + 0.6))
+    Math.max(0, 1 - Math.abs(d) / (ranks + 0.5))
   )
   /*
    * Unsigned, so both ends of the stack twist the same way and the focused pill
@@ -388,8 +393,8 @@ function Row({
   )
   const zIndex = useTransform(distance, (d) => 100 - Math.round(Math.abs(d) * 10))
   /* A pill faded out of the stack must not still be catching clicks. */
-  const pointerEvents = useTransform(distance, (d) =>
-    1 - Math.abs(d) / (ranks + 0.6) > 0.08 ? "auto" : "none"
+  const pointerEvents = useTransform(opacity, (value) =>
+    value > 0.08 ? "auto" : "none"
   )
 
   /** 1 at the centre, 0 a full rank away — the lift, and the second line. */
@@ -445,8 +450,13 @@ function Row({
     </>
   )
 
+  /*
+   * Deliberately not `overflow-hidden`: the lift is a shadow on a transparent
+   * child, and it is drawn outside the pill's border box. Clipping the pill
+   * would clip the only cue that the focused item is off the page.
+   */
   const pill = cn(
-    "relative flex h-full w-full items-center overflow-hidden rounded-full",
+    "relative flex h-full w-full items-center rounded-full",
     "border border-border/70 bg-card text-left",
     scale.pill
   )
