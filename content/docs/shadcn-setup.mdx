@@ -51,8 +51,9 @@ The fields Joinway actually depends on:
 
 <Callout variant="warning">
   With `cssVariables: false` the CLI rewrites colours into literal utility
-  classes. Joinway components would still render, but theme switching and the
-  per-preview theme islands would stop working. Leave it on.
+  classes. Joinway components would still render, but they would stop following
+  the tokens — so a component would be stuck in whichever theme it was compiled
+  against. Leave it on.
 </Callout>
 
 ## The cn utility

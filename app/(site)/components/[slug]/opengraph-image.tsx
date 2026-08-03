@@ -14,14 +14,15 @@ export function generateStaticParams() {
 /**
  * Per-component social card, generated at build time from registry metadata.
  *
- * Satori resolves no custom properties, so the light theme's tokens are inlined
+ * Satori resolves no custom properties, so the dark theme's tokens are inlined
  * as hex — the same set the site-wide card uses. Keep both in sync with
  * `globals.css`.
  */
-const PAPER = "#f4efea"
-const INK = "#1d1714"
-const MUTED = "#625a54"
-const HAIRLINE = "#e2dcd6"
+const PAGE = "#13110f"
+const INK = "#f5f3f1"
+const MUTED = "#b5b1ad"
+const HAIRLINE = "#3e3a37"
+const PANEL = "#1e1c1a"
 
 export default async function ComponentOpengraphImage({
   params,
@@ -45,7 +46,7 @@ export default async function ComponentOpengraphImage({
         flexDirection: "column",
         justifyContent: "space-between",
         padding: 68,
-        backgroundColor: PAPER,
+        backgroundColor: PAGE,
         color: INK,
         fontFamily: "sans-serif",
       }}
@@ -69,7 +70,7 @@ export default async function ComponentOpengraphImage({
             height: 42,
             borderRadius: 11,
             backgroundColor: INK,
-            color: "#ffffff",
+            color: PAGE,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -89,7 +90,7 @@ export default async function ComponentOpengraphImage({
             marginLeft: "auto",
             borderRadius: 999,
             border: `1px solid ${HAIRLINE}`,
-            backgroundColor: "#ffffff",
+            backgroundColor: PANEL,
             padding: "7px 18px",
             fontSize: 19,
             letterSpacing: 2,
@@ -134,7 +135,7 @@ export default async function ComponentOpengraphImage({
           alignItems: "center",
           borderRadius: 14,
           border: `1px solid ${HAIRLINE}`,
-          backgroundColor: "#ffffff",
+          backgroundColor: PANEL,
           padding: "20px 24px",
           fontSize: 21,
           color: MUTED,

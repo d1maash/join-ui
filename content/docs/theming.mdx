@@ -182,7 +182,7 @@ inside a component are the same red.
 
 Every family is declared twice, once in `:root, .light` and once in `.dark`, so
 a component never needs a `dark:` variant to pick the right hue. That is not
-housekeeping: it is what keeps the per-preview theme islands working, and it
+housekeeping: it is what makes a component portable into a light project, and it
 remains a hard rule. See [dark mode](/docs/dark-mode).
 
 All of them are registered in `@theme inline`, so they arrive as ordinary
@@ -379,21 +379,23 @@ The headline pairs, measured against the resolved values above:
 
 | Pair | Light | Dark |
 | --- | --- | --- |
-| `--foreground` on `--background` | 15.5:1 | 16.6:1 |
-| `--foreground` on `--card` | 17.7:1 | 15.0:1 |
-| `--muted-foreground` on `--background` | 5.9:1 | 8.2:1 |
-| `--muted-foreground` on `--card` | 6.8:1 | 7.4:1 |
-| `--muted-foreground` on `--muted` | 5.5:1 | 6.2:1 |
-| `--primary-foreground` on `--primary` | 17.7:1 | 16.6:1 |
-| `--border-strong` on `--background` | 3.5:1 | 3.5:1 |
+| `--foreground` on `--background` | 15.5:1 | 17.0:1 |
+| `--foreground` on `--card` | 17.7:1 | 15.4:1 |
+| `--muted-foreground` on `--background` | 5.9:1 | 8.8:1 |
+| `--muted-foreground` on `--card` | 6.8:1 | 8.0:1 |
+| `--muted-foreground` on `--muted` | 5.5:1 | 6.3:1 |
+| `--primary-foreground` on `--primary` | 17.7:1 | 17.0:1 |
+| `--border-strong` on `--background` | 3.5:1 | 3.8:1 |
 
-The headline pair is 15.5:1 rather than the 21:1 a black-on-white system gets,
-and that is the point — it is the deliberate cost of a page that is paper rather
-than a light source.
+The headline pair tops out around 17:1 rather than the 21:1 a black-on-white
+system gets, and that is the point — it is the deliberate cost of surfaces that
+stop short of both extremes.
 
 `--muted-foreground` is the token to watch. It carries most of the body copy and
-it is the one people lighten first when a page feels heavy; on the page
-background it has roughly two steps of headroom above 4.5:1 and no more.
+it is the one people lighten first when a page feels heavy; in the light theme
+it has roughly two steps of headroom above 4.5:1 and no more. The dark theme has
+more room, which is a trap rather than a licence — light text on a dark surface
+looks heavier than it measures, so the temptation there runs the other way.
 
 The four component families are tuned so their ink clears 4.5:1 against their
 own tint, which is the pairing that actually ships:

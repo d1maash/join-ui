@@ -1,5 +1,9 @@
-Dark mode is a token swap, not a second set of styles. That choice is what lets
-a preview on this site render in light mode while the page around it stays dark.
+Dark mode is a token swap, not a second set of styles.
+
+This site renders dark only and has no switcher — it sets `class="dark"` on
+`<html>` and stops there. This guide is for your project, which probably does
+need one, and for understanding why a Joinway component works in it without
+carrying a single `dark:` utility.
 
 ## Setup
 
@@ -66,17 +70,17 @@ a preview on this site render in light mode while the page around it stays dark.
 
     ```css title="app/globals.css"
     .dark {
-      --grey-0: oklch(0.192 0.004 60); /* #161412 — the page */
-      --grey-50: oklch(0.238 0.005 60); /* #211e1c — cards */
-      --grey-100: oklch(0.272 0.005 60); /* #292624 — popovers */
-      --grey-200: oklch(0.294 0.006 58);
-      --grey-300: oklch(0.34 0.006 58); /* the hairline */
-      --grey-400: oklch(0.42 0.007 56);
-      --grey-500: oklch(0.53 0.008 56);
-      --grey-600: oklch(0.64 0.008 58);
-      --grey-700: oklch(0.75 0.007 60); /* #b1adaa — secondary text */
-      --grey-800: oklch(0.85 0.006 62);
-      --grey-900: oklch(0.92 0.005 65);
+      --grey-0: oklch(0.178 0.004 58); /* #13110f — the page */
+      --grey-50: oklch(0.228 0.005 58); /* #1e1c1a — cards */
+      --grey-100: oklch(0.268 0.006 58); /* #282523 — popovers */
+      --grey-200: oklch(0.302 0.006 58);
+      --grey-300: oklch(0.352 0.007 58); /* the hairline */
+      --grey-400: oklch(0.435 0.008 56);
+      --grey-500: oklch(0.545 0.008 56);
+      --grey-600: oklch(0.655 0.008 58);
+      --grey-700: oklch(0.762 0.007 60); /* #b5b1ad — secondary text */
+      --grey-800: oklch(0.855 0.006 62);
+      --grey-900: oklch(0.923 0.005 65);
       --grey-1000: oklch(0.965 0.004 70); /* #f5f3f1 — the ink */
 
       /* The aliases that genuinely differ between themes. */
@@ -93,7 +97,7 @@ a preview on this site render in light mode while the page around it stays dark.
     steps spaced further apart than a straight inversion would give, or the
     first three collapse into one flat block.
 
-    It stops well short of black. `--grey-0` resolves to `#161412`, not
+    It stops well short of black. `--grey-0` resolves to `#13110f`, not
     `#000000` — on a large surface pure black reads as a hole punched through
     the screen, and a hairline drawn on it reads as a scratch. The ink end stops
     short of white for the same reason, at `#f5f3f1`.
@@ -163,12 +167,13 @@ Because of the above, scoping a theme is one class:
 browser to render native scrollbars, form controls and autofill in the matching
 theme.
 
-This is exactly how the preview frame on every component page works. Its stage
-carries `.light` or `.dark` when you press the sun or moon button in the
-toolbar, and the demo inside re-resolves its tokens against that wrapper while
-the rest of the page keeps the site theme. No demo re-renders and no stylesheet
-is swapped — the only thing that changed is which ancestor declares the
-variables.
+Nothing re-renders and no stylesheet is swapped — the only thing that changed is
+which ancestor declares the variables, and every utility inside follows.
+
+This site used to put a sun/moon switch on each component preview to show it off.
+That is gone along with the light theme, but the mechanism is the reason the
+constraint above is worth keeping: a component that themes purely through tokens
+drops into your light project and works, with no `dark:` branch to get wrong.
 
 ## Building a theme toggle
 

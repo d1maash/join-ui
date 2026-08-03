@@ -9,15 +9,16 @@ export const contentType = "image/png"
 /**
  * Social card.
  *
- * The design tokens do not reach Satori — it resolves no custom properties —
- * so the light theme's values are inlined here, resolved from `oklch` to hex.
- * They are the four the site uses: paper, ink, muted and the hairline. Keep
- * this in sync with `globals.css`.
+ * The design tokens do not reach Satori — it resolves no custom properties — so
+ * the dark theme's values are inlined here, resolved from `oklch` to hex. The
+ * site renders dark, and a social card that opened light would be the one
+ * surface that disagreed with it. Keep this in sync with `globals.css`.
  */
-const PAPER = "#f4efea"
-const INK = "#1d1714"
-const MUTED = "#625a54"
-const HAIRLINE = "#e2dcd6"
+const PAGE = "#13110f"
+const INK = "#f5f3f1"
+const MUTED = "#b5b1ad"
+const HAIRLINE = "#3e3a37"
+const PANEL = "#1e1c1a"
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -29,7 +30,7 @@ export default function OpengraphImage() {
         flexDirection: "column",
         justifyContent: "space-between",
         padding: 68,
-        backgroundColor: PAPER,
+        backgroundColor: PAGE,
         color: INK,
         fontFamily: "sans-serif",
       }}
@@ -54,7 +55,7 @@ export default function OpengraphImage() {
             height: 46,
             borderRadius: 12,
             backgroundColor: INK,
-            color: "#ffffff",
+            color: PAGE,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -74,7 +75,7 @@ export default function OpengraphImage() {
             marginLeft: "auto",
             borderRadius: 999,
             border: `1px solid ${HAIRLINE}`,
-            backgroundColor: "#ffffff",
+            backgroundColor: PANEL,
             padding: "8px 18px",
             fontSize: 19,
             letterSpacing: 3,
@@ -120,7 +121,7 @@ export default function OpengraphImage() {
           alignItems: "center",
           borderRadius: 14,
           border: `1px solid ${HAIRLINE}`,
-          backgroundColor: "#ffffff",
+          backgroundColor: PANEL,
           padding: "20px 24px",
           fontSize: 22,
           color: MUTED,

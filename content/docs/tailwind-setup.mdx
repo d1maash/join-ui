@@ -1,6 +1,5 @@
-Joinway UI targets Tailwind CSS v4. There is no `tailwind.config.ts` — the
-theme is declared in CSS, which is also what makes the per-preview theme islands
-possible.
+Joinway UI targets Tailwind CSS v4. There is no `tailwind.config.ts` — the theme
+is declared in CSS, which is also what lets any subtree redeclare it.
 
 ## Install
 
@@ -71,8 +70,8 @@ that distinction matters.
   --color-warning: var(--warning);
   --color-code-bg: var(--code-bg);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
 ```
 
@@ -90,7 +89,8 @@ The ramp is mapped the same way, which is what gives you `bg-grey-100` and
 <Callout variant="tip">
   The `inline` keyword matters. Without it Tailwind copies the value at build
   time; with it, the utility emits `var(--primary)` and follows the token at
-  runtime — which is exactly what theme switching needs.
+  runtime — which is what lets a scoped subtree re-resolve every utility by
+  redeclaring one variable.
 </Callout>
 
 ## Radius
