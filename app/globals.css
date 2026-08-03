@@ -5,15 +5,22 @@
  * ---------------------------------------------------------------------------
  * Two layers, with different rules.
  *
- * The chrome — everything the site itself is built from — is achromatic. Its
- * tokens all have zero chroma, so navigation, type, rules and buttons render
- * only in black, white and the grey ramp between them.
+ * The chrome — everything the site itself is built from — is neutral. It has
+ * no brand hue at all: emphasis is carried by ink, by a raised white surface,
+ * and by space. What makes it soft is not colour, it is the material. The page
+ * is a warm off-white, a panel is white sitting one step above it, corners are
+ * rounded, and every boundary is a hairline rather than a rule.
  *
- * The component palette below it does carry hue. Registry components are the
- * product, not the frame, so they are free to use colour: a status chip, a
- * progress marker, a chart series. They read the `--info` / `--positive` /
- * `--caution` / `--critical` families rather than literal colours, which is
- * what keeps a component retintable and consistent with its neighbours.
+ * That is the whole trick, and it is worth stating plainly because the obvious
+ * alternative is worse: tinting links, chips, active rows and inline code in
+ * one accent reads as decoration rather than as meaning, and it makes every
+ * page look the same from six feet away. Ink on warm paper does not.
+ *
+ * Hue is reserved for the places where it *is* the information — the four
+ * semantic families below, used by registry components for a status chip or a
+ * progress marker, by the callouts in these guides, and by syntax highlighting.
+ * Even there it is held at low chroma and never allowed to carry the meaning on
+ * its own.
  *
  * Theming is driven entirely by CSS custom properties. Nothing in the
  * `registry/` components uses a `dark:` utility, which is what makes the
@@ -27,85 +34,122 @@
 
 :root,
 .light {
-  /* Grey ramp — the only palette in the system. */
+  /*
+   * Neutral ramp — white at 0, ink at 1000.
+   *
+   * Chroma is tiny and warm throughout, so `--grey-100` resolves to a greige
+   * page rather than to grey, and `--grey-1000` to a soft brown-black rather
+   * than to `#000`. Neither end of the ramp is a pure value.
+   */
   --grey-0: oklch(1 0 0);
-  --grey-50: oklch(0.975 0 0);
-  --grey-100: oklch(0.95 0 0);
-  --grey-200: oklch(0.9 0 0);
-  --grey-300: oklch(0.82 0 0);
-  --grey-400: oklch(0.68 0 0);
-  --grey-500: oklch(0.55 0 0);
-  --grey-600: oklch(0.44 0 0);
-  --grey-700: oklch(0.32 0 0);
-  --grey-800: oklch(0.22 0 0);
-  --grey-900: oklch(0.13 0 0);
-  --grey-1000: oklch(0 0 0);
+  --grey-50: oklch(0.978 0.005 78);
+  --grey-100: oklch(0.955 0.009 76);
+  --grey-200: oklch(0.928 0.011 74);
+  --grey-300: oklch(0.898 0.011 72);
+  --grey-400: oklch(0.845 0.012 70);
+  --grey-500: oklch(0.73 0.012 66);
+  --grey-600: oklch(0.6 0.013 62);
+  --grey-700: oklch(0.472 0.014 58);
+  --grey-800: oklch(0.36 0.014 54);
+  --grey-900: oklch(0.27 0.013 50);
+  --grey-1000: oklch(0.21 0.011 48);
 
-  /* Surfaces */
-  --background: var(--grey-0);
+  /*
+   * Surfaces. The page is warm paper; a card is white and sits one step above
+   * it. That step is the system's only elevation cue that works at a glance,
+   * and it is why the page is not white itself.
+   */
+  --background: var(--grey-100);
   --foreground: var(--grey-1000);
   --card: var(--grey-0);
   --card-foreground: var(--grey-1000);
   --popover: var(--grey-0);
   --popover-foreground: var(--grey-1000);
-  --muted: var(--grey-100);
-  --muted-foreground: var(--grey-600);
+  --muted: var(--grey-200);
+  --muted-foreground: var(--grey-700);
   --subtle: var(--grey-50);
 
-  /* Rules. `--border` is the hairline; `--border-strong` is the ink rule. */
-  --border: var(--grey-200);
-  --border-strong: var(--grey-1000);
-  --input: var(--grey-300);
-  --ring: var(--grey-1000);
+  /* Rules. `--border` is the hairline; `--border-strong` is the emphasis rule. */
+  --border: var(--grey-300);
+  --border-hover: var(--grey-400);
+  --border-strong: var(--grey-600);
+  --input: var(--grey-400);
+  --ring: var(--grey-900);
 
-  /* Emphasis. Inverted ink is the only "accent" the system has. */
+  /*
+   * Emphasis is ink. `--primary` is the filled surface — the one solid dark
+   * shape on a page — and `--accent` is the same ink used as text or as a
+   * marker. `--accent-soft` is the neutral tint behind a held state; it is one
+   * step above the page so it stays visible on both paper and white.
+   */
   --primary: var(--grey-1000);
+  --primary-hover: var(--grey-900);
   --primary-foreground: var(--grey-0);
-  --primary-soft: var(--grey-100);
+  --primary-soft: var(--grey-200);
   --accent: var(--grey-1000);
   --accent-foreground: var(--grey-0);
-  --accent-soft: var(--grey-100);
-  --secondary: var(--grey-100);
-  --secondary-foreground: var(--grey-1000);
+  --accent-soft: var(--grey-200);
+  --accent-border: var(--grey-400);
+  --secondary: var(--grey-50);
+  --secondary-foreground: var(--grey-900);
 
   /*
-   * Status is achromatic by design. Components must pair these with an icon
-   * and a text label — colour alone never carries the meaning here.
+   * Chrome status shares the component hue families. These are the one part of
+   * the interface allowed colour, because a failed payment and a completed run
+   * are genuinely different things rather than differently-styled ones.
    */
-  --destructive: var(--grey-1000);
-  --destructive-foreground: var(--grey-0);
-  --success: var(--grey-700);
-  --warning: var(--grey-700);
+  --destructive: var(--critical);
+  --destructive-foreground: var(--critical-foreground);
+  --destructive-soft: var(--critical-soft);
+  --success: var(--positive);
+  --success-soft: var(--positive-soft);
+  --warning: var(--caution);
+  --warning-soft: var(--caution-soft);
 
-  --code-bg: var(--grey-50);
-  --selection: oklch(0 0 0 / 0.14);
+  --code-bg: var(--grey-0);
+  --selection: oklch(0.21 0.011 48 / 0.12);
 
   /*
-   * Component palette — the one layer with hue in it.
+   * Component palette.
    *
    * Each family is three tokens: the ink used for a solid fill and for text on
    * a tint, a light tint for that background, and the colour that sits on top
-   * of the solid fill. Components pair them with a glyph and a label anyway, so
+   * of the solid fill. Chroma is held low — between 0.11 and 0.16 on the inks,
+   * and barely there on the tints — so a chip reads as a quiet state rather
+   * than as a warning light. Components pair them with a glyph and a label, so
    * the meaning survives for anyone who cannot separate the hues.
    */
-  --info: oklch(0.5 0.17 253);
-  --info-soft: oklch(0.965 0.022 253);
-  --info-foreground: oklch(0.99 0.005 253);
+  --info: oklch(0.5 0.11 245);
+  --info-soft: oklch(0.958 0.019 245);
+  --info-foreground: oklch(0.99 0.006 245);
 
-  --positive: oklch(0.5 0.13 158);
-  --positive-soft: oklch(0.965 0.03 158);
-  --positive-foreground: oklch(0.99 0.008 158);
+  --positive: oklch(0.495 0.095 155);
+  --positive-soft: oklch(0.958 0.022 155);
+  --positive-foreground: oklch(0.99 0.008 155);
 
-  --caution: oklch(0.53 0.13 68);
-  --caution-soft: oklch(0.965 0.04 78);
-  --caution-foreground: oklch(0.99 0.008 68);
+  --caution: oklch(0.525 0.1 66);
+  --caution-soft: oklch(0.958 0.03 78);
+  --caution-foreground: oklch(0.99 0.008 66);
 
-  --critical: oklch(0.52 0.19 23);
-  --critical-soft: oklch(0.965 0.025 23);
-  --critical-foreground: oklch(0.99 0.006 23);
+  --critical: oklch(0.525 0.145 22);
+  --critical-soft: oklch(0.958 0.022 22);
+  --critical-foreground: oklch(0.99 0.006 22);
 
-  /* Shape — the chrome is square. Swiss grids do not round their corners. */
-  --radius: 0rem;
+  /* Shape. A rounded corner is the cheapest softness there is. */
+  --radius: 0.625rem;
+
+  /*
+   * Elevation. Shadows are wide, low-opacity and tinted with the theme's own
+   * ink rather than with black, so a raised surface reads as lit paper instead
+   * of as a cut-out. Nothing on this site goes above `-md` except a portal.
+   */
+  --elevation-xs: 0 1px 2px -1px oklch(0.24 0.014 52 / 0.07);
+  --elevation-sm:
+    0 1px 2px -1px oklch(0.24 0.014 52 / 0.06), 0 2px 6px -2px oklch(0.24 0.014 52 / 0.05);
+  --elevation-md:
+    0 2px 4px -2px oklch(0.24 0.014 52 / 0.06), 0 8px 20px -6px oklch(0.24 0.014 52 / 0.09);
+  --elevation-lg:
+    0 4px 8px -4px oklch(0.24 0.014 52 / 0.08), 0 18px 40px -12px oklch(0.24 0.014 52 / 0.13);
 
   /* Motion */
   --duration-instant: 80ms;
@@ -117,71 +161,94 @@
 }
 
 .dark {
-  --grey-0: oklch(0 0 0);
-  --grey-50: oklch(0.09 0 0);
-  --grey-100: oklch(0.14 0 0);
-  --grey-200: oklch(0.22 0 0);
-  --grey-300: oklch(0.3 0 0);
-  --grey-400: oklch(0.42 0 0);
-  --grey-500: oklch(0.55 0 0);
-  --grey-600: oklch(0.68 0 0);
-  --grey-700: oklch(0.79 0 0);
-  --grey-800: oklch(0.88 0 0);
-  --grey-900: oklch(0.95 0 0);
-  --grey-1000: oklch(1 0 0);
+  /*
+   * The dark ramp is warm charcoal rather than the light ramp negated.
+   * `--grey-0` is still the page and `--grey-1000` is still the ink, so every
+   * semantic alias below keeps its meaning; only the direction of travel flips.
+   * The darkest step stops well short of black, which is what keeps a large
+   * surface from looking like a hole and a hairline from looking like a
+   * scratch.
+   */
+  --grey-0: oklch(0.178 0.004 58); /* #13110f — the page */
+  --grey-50: oklch(0.228 0.005 58); /* #1e1c1a — cards */
+  --grey-100: oklch(0.268 0.006 58); /* #282523 — popovers */
+  --grey-200: oklch(0.302 0.006 58);
+  --grey-300: oklch(0.352 0.007 58); /* the hairline */
+  --grey-400: oklch(0.435 0.008 56);
+  --grey-500: oklch(0.545 0.008 56);
+  --grey-600: oklch(0.655 0.008 58);
+  --grey-700: oklch(0.762 0.007 60); /* #b5b1ad — secondary text */
+  --grey-800: oklch(0.855 0.006 62);
+  --grey-900: oklch(0.923 0.005 65);
+  --grey-1000: oklch(0.965 0.004 70); /* #f5f3f1 — the ink */
 
   --background: var(--grey-0);
   --foreground: var(--grey-1000);
-  --card: var(--grey-0);
+  --card: var(--grey-50);
   --card-foreground: var(--grey-1000);
-  --popover: var(--grey-50);
+  --popover: var(--grey-100);
   --popover-foreground: var(--grey-1000);
-  --muted: var(--grey-100);
-  --muted-foreground: var(--grey-600);
+  --muted: var(--grey-200);
+  --muted-foreground: var(--grey-700);
   --subtle: var(--grey-50);
 
-  --border: var(--grey-200);
-  --border-strong: var(--grey-1000);
-  --input: var(--grey-300);
-  --ring: var(--grey-1000);
+  --border: var(--grey-300);
+  --border-hover: var(--grey-400);
+  --border-strong: var(--grey-500);
+  --input: var(--grey-400);
+  --ring: var(--grey-900);
 
   --primary: var(--grey-1000);
+  --primary-hover: var(--grey-900);
   --primary-foreground: var(--grey-0);
-  --primary-soft: var(--grey-100);
+  --primary-soft: var(--grey-200);
   --accent: var(--grey-1000);
   --accent-foreground: var(--grey-0);
-  --accent-soft: var(--grey-100);
+  --accent-soft: var(--grey-200);
+  --accent-border: var(--grey-400);
   --secondary: var(--grey-100);
-  --secondary-foreground: var(--grey-1000);
+  --secondary-foreground: var(--grey-900);
 
-  --destructive: var(--grey-1000);
-  --destructive-foreground: var(--grey-0);
-  --success: var(--grey-700);
-  --warning: var(--grey-700);
+  --destructive: var(--critical);
+  --destructive-foreground: var(--critical-foreground);
+  --destructive-soft: var(--critical-soft);
+  --success: var(--positive);
+  --success-soft: var(--positive-soft);
+  --warning: var(--caution);
+  --warning-soft: var(--caution-soft);
 
   --code-bg: var(--grey-50);
-  --selection: oklch(1 0 0 / 0.18);
+  --selection: oklch(0.965 0.004 70 / 0.16);
 
   /*
    * The hues invert their roles rather than their values: the ink lightens so
    * it reads on a dark surface, the tint darkens, and the colour that sits on
    * a solid fill becomes dark ink.
    */
-  --info: oklch(0.76 0.14 253);
-  --info-soft: oklch(0.255 0.058 253);
-  --info-foreground: oklch(0.16 0.04 253);
+  --info: oklch(0.775 0.095 245);
+  --info-soft: oklch(0.315 0.045 245);
+  --info-foreground: oklch(0.18 0.035 245);
 
-  --positive: oklch(0.78 0.14 158);
-  --positive-soft: oklch(0.25 0.05 158);
-  --positive-foreground: oklch(0.16 0.035 158);
+  --positive: oklch(0.785 0.1 155);
+  --positive-soft: oklch(0.31 0.04 155);
+  --positive-foreground: oklch(0.18 0.03 155);
 
-  --caution: oklch(0.82 0.14 80);
-  --caution-soft: oklch(0.26 0.05 68);
-  --caution-foreground: oklch(0.17 0.035 68);
+  --caution: oklch(0.825 0.1 78);
+  --caution-soft: oklch(0.325 0.042 66);
+  --caution-foreground: oklch(0.19 0.03 66);
 
-  --critical: oklch(0.72 0.17 23);
-  --critical-soft: oklch(0.26 0.07 23);
-  --critical-foreground: oklch(0.16 0.04 23);
+  --critical: oklch(0.75 0.115 22);
+  --critical-soft: oklch(0.325 0.055 22);
+  --critical-foreground: oklch(0.18 0.035 22);
+
+  /*
+   * Shadows on charcoal cannot rely on darkening alone, so they are deeper and
+   * paired with a hairline on the raised surface itself.
+   */
+  --elevation-xs: 0 1px 2px -1px oklch(0 0 0 / 0.4);
+  --elevation-sm: 0 1px 2px -1px oklch(0 0 0 / 0.45), 0 2px 6px -2px oklch(0 0 0 / 0.35);
+  --elevation-md: 0 2px 4px -2px oklch(0 0 0 / 0.4), 0 8px 20px -6px oklch(0 0 0 / 0.5);
+  --elevation-lg: 0 4px 8px -4px oklch(0 0 0 / 0.45), 0 18px 40px -12px oklch(0 0 0 / 0.6);
 }
 
 @theme inline {
@@ -195,21 +262,27 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-subtle: var(--subtle);
   --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-soft: var(--primary-soft);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-border: var(--accent-border);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-soft: var(--destructive-soft);
   --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
   --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
   --color-code-bg: var(--code-bg);
 
   --color-info: var(--info);
@@ -239,33 +312,41 @@
   --color-grey-1000: var(--grey-1000);
 
   /*
-   * The chrome's scale is pinned to zero, so `rounded-lg` on a site surface is
-   * a no-op rather than a surprise. `rounded-full` is left untouched for pips.
+   * A real radius scale. `rounded-md` on a control and `rounded-xl` on a panel
+   * both resolve to something, so a surface can be softened without reaching
+   * for an arbitrary value.
    */
-  --radius-xs: 0rem;
-  --radius-sm: 0rem;
-  --radius-md: 0rem;
-  --radius-lg: 0rem;
-  --radius-xl: 0rem;
-  --radius-2xl: 0rem;
-  --radius-3xl: 0rem;
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+  --radius-3xl: 1.5rem;
 
   /*
-   * Components round through this scale instead — `rounded-soft-lg` for a card,
-   * `rounded-soft` for a control, `rounded-soft-sm` for a tag.
+   * The component scale is kept as an alias so anything already installed from
+   * the registry keeps rounding exactly as it did.
    */
-  --radius-soft-sm: 0.375rem;
-  --radius-soft: 0.625rem;
-  --radius-soft-lg: 1rem;
+  --radius-soft-sm: var(--radius-sm);
+  --radius-soft: var(--radius-lg);
+  --radius-soft-lg: var(--radius-xl);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+  --shadow-xs: var(--elevation-xs);
+  --shadow-sm: var(--elevation-sm);
+  --shadow-md: var(--elevation-md);
+  --shadow-lg: var(--elevation-lg);
+  --shadow-xl: var(--elevation-lg);
+
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
 
   --ease-out-soft: var(--ease-out-soft);
   --ease-in-out-soft: var(--ease-in-out-soft);
 
   --animate-fade-up: fade-up var(--duration-slow) var(--ease-out-soft) both;
   --animate-fade-in: fade-in var(--duration-base) var(--ease-out-soft) both;
+  --animate-pop-in: pop-in var(--duration-base) var(--ease-out-soft) both;
 
   @keyframes fade-up {
     from {
@@ -285,6 +366,16 @@
       opacity: 1;
     }
   }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 @layer base {
@@ -301,25 +392,46 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-feature-settings: "cv11", "ss01";
-    font-variant-ligatures: contextual;
     text-rendering: optimizeLegibility;
+    /*
+     * Antialiasing only, no `-moz-osx-font-smoothing: grayscale`. On a dark
+     * page grayscale smoothing thins light text until 400 reads as 300, which
+     * is most of why light-on-dark type looks weak.
+     */
     -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+   * Headings set their own tracking by size. Plex is a fairly narrow face
+   * already, so the blanket negative tracking a display font wants would close
+   * it up — only the largest sizes get any, and small headings get none.
+   */
+  h1,
+  h2 {
+    letter-spacing: -0.015em;
   }
 
   ::selection {
     background-color: var(--selection);
   }
 
-  /* A square, high-contrast focus rectangle — consistent with the grid. */
+  /*
+   * The ring follows whatever radius the element already has — `outline`
+   * inherits `border-radius` on its own, so nothing needs forcing here.
+   */
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
-    border-radius: 0;
   }
 
   :focus:not(:focus-visible) {
     outline: none;
+  }
+
+  /* Scrollbars, toned down to the ramp rather than the OS default. */
+  * {
+    scrollbar-color: var(--grey-300) transparent;
+    scrollbar-width: thin;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -339,9 +451,9 @@
 
 @layer components {
   /*
-   * Swiss grid scaffolding. Column rules are drawn as real 1px children rather
-   * than as a background image, so they inherit `--border` and stay crisp at
-   * any zoom level.
+   * Grid scaffolding. Column rules are drawn as real 1px children rather than
+   * as a background image, so they inherit `--border` and stay crisp at any
+   * zoom level.
    */
   .grid-rules {
     display: grid;
@@ -357,17 +469,21 @@
     border-left-color: transparent;
   }
 
-  /* Uppercase micro-label used for section eyebrows and table headers. */
+  /*
+   * Uppercase micro-label used for section eyebrows and table headers. Plex
+   * Mono is already a wide face, so this tracks looser than a proportional
+   * label would but tighter than the 0.12em a condensed one needs.
+   */
   .label-caps {
     font-family: var(--font-mono);
     font-size: 0.6875rem;
     line-height: 1;
     font-weight: 500;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
-  /* Numeric counter set in mono, as used in Swiss editorial layouts. */
+  /* Numeric counter set in mono, as used in editorial layouts. */
   .numeral {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
@@ -378,8 +494,7 @@
 /*
  * Shiki dual-theme output. `defaultColor: false` emits both `--shiki-light`
  * and `--shiki-dark` custom properties per token so a single HTML payload
- * serves both themes with no client-side re-highlighting. Both themes are
- * achromatic — syntax is differentiated by luminance and italics only.
+ * serves both themes with no client-side re-highlighting.
  */
 .shiki,
 .shiki span {
@@ -409,7 +524,7 @@
 
 .shiki .line.highlighted {
   background-color: var(--muted);
-  border-left-color: var(--foreground);
+  border-left-color: var(--border-strong);
 }
 
 .shiki[data-line-numbers] code {

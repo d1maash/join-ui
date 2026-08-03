@@ -3,8 +3,8 @@ import type { PropGroup } from "@/types/registry"
 /**
  * Props reference.
  *
- * Required props are marked with an asterisk and a visually hidden word — the
- * site chrome is achromatic, so the marker has to carry its own label.
+ * Required props are marked with an asterisk and a visually hidden word, so
+ * the marker never depends on its tint to be understood.
  */
 export function PropsTable({ groups }: { groups: PropGroup[] }) {
   if (groups.length === 0) {
@@ -24,11 +24,11 @@ export function PropsTable({ groups }: { groups: PropGroup[] }) {
             ) : null}
           </div>
 
-          <div className="overflow-x-auto border border-border">
+          <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-xs">
             <table className="w-full border-collapse text-left text-sm">
               <caption className="sr-only">Props for {group.name}</caption>
               <thead>
-                <tr className="border-b border-border">
+                <tr className="border-b border-border bg-subtle">
                   <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
                     Prop
                   </th>
@@ -50,7 +50,9 @@ export function PropsTable({ groups }: { groups: PropGroup[] }) {
                       {prop.name}
                       {prop.required ? (
                         <>
-                          <span aria-hidden="true">*</span>
+                          <span aria-hidden="true" className="text-critical">
+                            *
+                          </span>
                           <span className="sr-only"> (required)</span>
                         </>
                       ) : null}

@@ -1,5 +1,9 @@
-Dark mode is a token swap, not a second set of styles. That choice is what lets
-a preview on this site render in light mode while the page around it stays dark.
+Dark mode is a token swap, not a second set of styles.
+
+This site renders dark only and has no switcher — it sets `class="dark"` on
+`<html>` and stops there. This guide is for your project, which probably does
+need one, and for understanding why a Joinway component works in it without
+carrying a single `dark:` utility.
 
 ## Setup
 
@@ -59,34 +63,57 @@ a preview on this site render in light mode while the page around it stays dark.
 
   <Step title="Declare the dark tokens">
 
-    Dark mode inverts the grey ramp. Because the semantic tokens are aliases
-    onto that ramp, almost none of them need restating — `--foreground` is
-    `--grey-1000` in both themes, and `--grey-1000` is what changes.
+    Dark mode substitutes a second neutral ramp running the same direction:
+    `--grey-0` is the page in both themes and `--grey-1000` is the ink in both.
+    Because the semantic tokens are aliases onto that ramp, most of them need
+    no restating at all.
 
     ```css title="app/globals.css"
     .dark {
-      --grey-0: oklch(0 0 0);
-      --grey-50: oklch(0.09 0 0);
-      --grey-100: oklch(0.14 0 0);
-      --grey-200: oklch(0.22 0 0);
-      --grey-300: oklch(0.3 0 0);
-      --grey-400: oklch(0.42 0 0);
-      --grey-500: oklch(0.55 0 0);
-      --grey-600: oklch(0.68 0 0);
-      --grey-700: oklch(0.79 0 0);
-      --grey-800: oklch(0.88 0 0);
-      --grey-900: oklch(0.95 0 0);
-      --grey-1000: oklch(1 0 0);
+      --grey-0: oklch(0.178 0.004 58); /* #13110f — the page */
+      --grey-50: oklch(0.228 0.005 58); /* #1e1c1a — cards */
+      --grey-100: oklch(0.268 0.006 58); /* #282523 — popovers */
+      --grey-200: oklch(0.302 0.006 58);
+      --grey-300: oklch(0.352 0.007 58); /* the hairline */
+      --grey-400: oklch(0.435 0.008 56);
+      --grey-500: oklch(0.545 0.008 56);
+      --grey-600: oklch(0.655 0.008 58);
+      --grey-700: oklch(0.762 0.007 60); /* #b5b1ad — secondary text */
+      --grey-800: oklch(0.855 0.006 62);
+      --grey-900: oklch(0.923 0.005 65);
+      --grey-1000: oklch(0.965 0.004 70); /* #f5f3f1 — the ink */
 
-      /* The two aliases that genuinely differ between themes. */
-      --popover: var(--grey-50);
-      --selection: oklch(1 0 0 / 0.18);
+      /* The aliases that genuinely differ between themes. */
+      --card: var(--grey-50);
+      --popover: var(--grey-100);
+      --subtle: var(--grey-50);
+      --selection: oklch(0.965 0.004 70 / 0.16);
     }
     ```
 
-    The ramp is not a mirror image of the light one. Dark surfaces need their
-    low steps spaced further apart than a straight inversion would give, or the
-    first three greys collapse into one flat black.
+    Three things about this ramp are worth copying if you build your own.
+
+    It is not a mirror image of the light one. Dark surfaces need their low
+    steps spaced further apart than a straight inversion would give, or the
+    first three collapse into one flat block.
+
+    It stops well short of black. `--grey-0` resolves to `#13110f`, not
+    `#000000` — on a large surface pure black reads as a hole punched through
+    the screen, and a hairline drawn on it reads as a scratch. The ink end stops
+    short of white for the same reason, at `#f5f3f1`.
+
+    It keeps the light ramp's warmth. The hue angle drops from `76` to `60` and
+    the chroma roughly halves, which is enough to stay warm without going muddy
+    — dark neutrals hold far less chroma before they read as brown. A cooler
+    slate would have been easier, but the two themes would then feel like two
+    different products.
+
+    The `--card` and `--popover` aliases flip because the rule they encode is
+    directional, not absolute: *a raised surface sits one step above the page*.
+    In the light theme that step is upward into white; here it is upward out of
+    the deepest charcoal. It is the same cue in both, and with no accent colour
+    in the system it is what marks an active sidebar row, a selected tab and a
+    card as raised.
 
   </Step>
 </Steps>
@@ -140,12 +167,13 @@ Because of the above, scoping a theme is one class:
 browser to render native scrollbars, form controls and autofill in the matching
 theme.
 
-This is exactly how the preview frame on every component page works. Its stage
-carries `.light` or `.dark` when you press the sun or moon button in the
-toolbar, and the demo inside re-resolves its tokens against that wrapper while
-the rest of the page keeps the site theme. No demo re-renders and no stylesheet
-is swapped — the only thing that changed is which ancestor declares the
-variables.
+Nothing re-renders and no stylesheet is swapped — the only thing that changed is
+which ancestor declares the variables, and every utility inside follows.
+
+This site used to put a sun/moon switch on each component preview to show it off.
+That is gone along with the light theme, but the mechanism is the reason the
+constraint above is worth keeping: a component that themes purely through tokens
+drops into your light project and works, with no `dark:` branch to get wrong.
 
 ## Building a theme toggle
 

@@ -22,16 +22,16 @@ export const SheetContent = React.forwardRef<
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay
         className={cn(
-          "fixed inset-0 z-50 bg-foreground/25 backdrop-blur-[2px]",
+          "fixed inset-0 z-50 bg-grey-1000/20 backdrop-blur-[3px]",
           "data-[state=open]:animate-fade-in"
         )}
       />
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed inset-y-0 z-50 flex w-[19rem] max-w-[85vw] flex-col bg-background",
+          "fixed inset-y-0 z-50 flex w-[19rem] max-w-[85vw] flex-col bg-card shadow-lg",
           side === "left" ? "left-0 border-r" : "right-0 border-l",
-          "border-foreground",
+          "border-border",
           "data-[state=open]:animate-fade-in",
           className
         )}
@@ -40,9 +40,9 @@ export const SheetContent = React.forwardRef<
         {children}
         <DialogPrimitive.Close
           className={cn(
-            "absolute top-3 right-3 flex size-8 cursor-pointer items-center justify-center",
+            "absolute top-3 right-3 flex size-8 cursor-pointer items-center justify-center rounded-lg",
             "border border-transparent text-muted-foreground transition-colors",
-            "hover:border-border hover:text-foreground",
+            "hover:bg-muted hover:text-foreground",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           )}
         >

@@ -3,10 +3,10 @@ install and import from — it is a registry that writes real source files into
 your repository, which you then own outright.
 
 If you have used shadcn/ui, the model will be familiar. What Joinway adds is a
-two-layer design system — an achromatic interface wrapped around components that
-carry colour through tokens — a focus on motion that stays cheap, accessibility
-that is designed in rather than retrofitted, and a per-component prompt built
-for coding agents.
+two-layer design system — a soft, entirely neutral interface wrapped around
+components that carry hue through tokens — a focus on motion that stays cheap,
+accessibility that is designed in rather than retrofitted, and a per-component
+prompt built for coding agents.
 
 <Callout variant="note">
   The catalog is currently empty. The design system was rebuilt from the ground
@@ -45,23 +45,34 @@ usually the trade you want.
 ### Colour is a token, never a literal
 
 The palette splits in two. The chrome — navigation, type, rules, buttons, the
-documentation itself — is achromatic: every one of its tokens is declared with
-zero chroma, so the frame renders in black, white and the greys between them and
-nothing else. There are no gradients, no shadow tokens, and `--radius` is
-`0rem`.
+documentation itself — is neutral and has no brand hue in it at all. The ramp is
+not greyscale either: it carries a trace of warmth in both themes, so this page
+resolves to `#13110f` rather than to black and its ink to `#f5f3f1` rather than
+to white. Neither ramp reaches a pure value at either end, which caps the
+strongest pair at about 17:1 rather than 21:1 — the deliberate cost of surfaces
+that recede instead of glowing.
 
-Components are allowed hue, because they are the product rather than the frame.
-They take it from four semantic families — `--info`, `--positive`, `--caution`
-and `--critical` — rather than from a literal colour or Tailwind's built-in
-palette, which is what keeps a component retintable in one place, and it is why
-components round through `rounded-soft*` while the chrome stays square.
+This site renders the dark theme and only the dark theme. The token system still
+ships both, because registry components get installed into other people's
+projects and plenty of those are light.
 
-The hard signal is still the one that carries. Hierarchy comes from weight, rule
-thickness, size and spacing; a destructive control in the interface is the one
-set in inverted ink; a warning is an aside with a thicker rule, an icon and the
-word written out. No component leans on red-versus-green, because every state it
-draws in colour is also drawn as a glyph and spelled out. See
-[theming](/docs/theming).
+Emphasis is carried by ink, by material and by space rather than by an accent.
+The primary action is the one filled high-contrast shape in a view; a card, an
+active sidebar row and a selected tab are all the same move — a surface lifted
+one step off the page by a hairline and the faintest shadow. An accent was tried
+here and removed: pick one and it ends up on the link, the active row, the
+inline code span, the chip, the step number and the focus ring, at which point
+it has stopped meaning anything.
+
+Components are allowed hue of their own, because they are the product rather
+than the frame. They take it from four semantic families — `--info`,
+`--positive`, `--caution` and `--critical` — rather than from a literal colour
+or Tailwind's built-in palette, which is what keeps a component retintable in
+one place. It is held at low chroma, because next to a chrome with no hue in it
+a saturated chip reads as a different website rather than as emphasis.
+
+No component leans on red-versus-green: every state it draws in colour is also
+drawn as a glyph and spelled out in words. See [theming](/docs/theming).
 
 ### Motion is a cost, not a decoration
 
@@ -83,10 +94,10 @@ a keyboard.
 ### Tokens, not `dark:` variants
 
 Registry components theme entirely through CSS custom properties. None of them
-use a `dark:` utility. That sounds like a small stylistic rule, but it is what
-makes the theme islands on this site work: a light preview inside a dark page
-renders correctly because the nearest `.light` ancestor simply redeclares the
-variables. See [dark mode](/docs/dark-mode).
+use a `dark:` utility. That sounds like a small stylistic rule, and it is the
+one that makes a component portable: dropped into a light project, or into a
+scoped subtree that redeclares the variables, it themes correctly with no
+`dark:` branch to get wrong. See [dark mode](/docs/dark-mode).
 
 ### One source of truth
 
@@ -113,19 +124,20 @@ real.
 | Primitives | Radix UI |
 | Animation | Motion for React |
 | Icons | Lucide |
-| Highlighting | Shiki at build time, with achromatic themes |
+| Highlighting | Shiki at build time, with themes built from these tokens |
 | Content | MDX |
 
-Syntax highlighting is worth a note. Code blocks are chrome, and off-the-shelf
-Shiki themes are built around hue, so the site ships its own pair —
-`swiss-light` and `swiss-dark` — that encode the same information with
-luminance, weight and italics instead.
+Syntax highlighting is worth a note. Off-the-shelf Shiki themes are tuned for an
+editor at full saturation, which on a documentation page reads as noise sitting
+inside otherwise quiet type. The site ships its own pair — `joinway-light` and
+`joinway-dark` — holding the same six grammar roles at roughly half that chroma,
+over the same neutral base as everything else.
 
 ## Where to go next
 
 <CardGroup columns={2}>
   <Card title="Installation" href="/docs/installation">Add Joinway UI to a new or existing Next.js app.</Card>
   <Card title="Registry setup" href="/docs/registry-setup">Wire up the @joinway namespace, or self-host the registry.</Card>
-  <Card title="Theming" href="/docs/theming">The grey ramp, the semantic tokens, and the four component colour families.</Card>
+  <Card title="Theming" href="/docs/theming">The neutral ramp, the semantic tokens, and the four component colour families.</Card>
   <Card title="Using components with AI" href="/docs/ai">What the copied prompt contains and why.</Card>
 </CardGroup>

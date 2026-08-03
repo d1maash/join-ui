@@ -13,7 +13,17 @@ export function generateStaticParams() {
 
 /**
  * Per-component social card, generated at build time from registry metadata.
+ *
+ * Satori resolves no custom properties, so the dark theme's tokens are inlined
+ * as hex — the same set the site-wide card uses. Keep both in sync with
+ * `globals.css`.
  */
+const PAGE = "#13110f"
+const INK = "#f5f3f1"
+const MUTED = "#b5b1ad"
+const HAIRLINE = "#3e3a37"
+const PANEL = "#1e1c1a"
+
 export default async function ComponentOpengraphImage({
   params,
 }: {
@@ -35,24 +45,37 @@ export default async function ComponentOpengraphImage({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: 64,
-        backgroundColor: "#ffffff",
-        color: "#000000",
-        border: "12px solid #000000",
+        padding: 68,
+        backgroundColor: PAGE,
+        color: INK,
         fontFamily: "sans-serif",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 6,
+          display: "flex",
+          backgroundColor: INK,
+        }}
+      />
+
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
           style={{
-            width: 40,
-            height: 40,
-            border: "3px solid #000000",
+            width: 42,
+            height: 42,
+            borderRadius: 11,
+            backgroundColor: INK,
+            color: PAGE,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginRight: 14,
-            fontSize: 22,
+            fontSize: 23,
             fontWeight: 700,
           }}
         >
@@ -65,11 +88,14 @@ export default async function ComponentOpengraphImage({
           style={{
             display: "flex",
             marginLeft: "auto",
-            border: "2px solid #000000",
-            padding: "5px 14px",
+            borderRadius: 999,
+            border: `1px solid ${HAIRLINE}`,
+            backgroundColor: PANEL,
+            padding: "7px 18px",
             fontSize: 19,
             letterSpacing: 2,
             textTransform: "uppercase",
+            color: INK,
           }}
         >
           {category}
@@ -95,7 +121,7 @@ export default async function ComponentOpengraphImage({
             marginTop: 24,
             fontSize: 28,
             lineHeight: 1.4,
-            color: "#5c5c5c",
+            color: MUTED,
             maxWidth: 900,
           }}
         >
@@ -107,16 +133,18 @@ export default async function ComponentOpengraphImage({
         style={{
           display: "flex",
           alignItems: "center",
-          borderTop: "2px solid #000000",
-          paddingTop: 22,
+          borderRadius: 14,
+          border: `1px solid ${HAIRLINE}`,
+          backgroundColor: PANEL,
+          padding: "20px 24px",
           fontSize: 21,
-          color: "#3a3a3a",
+          color: MUTED,
         }}
       >
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", color: INK }}>
           {siteConfig.namespace}/{slug}
         </div>
-        <div style={{ display: "flex", marginLeft: 24 }}>
+        <div style={{ display: "flex", marginLeft: "auto" }}>
           {dependencies.length === 0
             ? "No dependencies"
             : `${dependencies.length} dependenc${dependencies.length === 1 ? "y" : "ies"}`}

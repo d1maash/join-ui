@@ -28,17 +28,18 @@ export function ComponentCard({
   className,
 }: ComponentCardProps) {
   const shared = cn(
-    "group relative isolate flex flex-col border border-border bg-background p-5",
-    "transition-colors duration-[var(--duration-fast)]",
-    "hover:border-foreground focus-within:border-foreground",
+    "group relative isolate flex flex-col rounded-xl border border-border bg-card p-5 shadow-xs",
+    "transition-[border-color,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
+    "hover:border-border-hover hover:shadow-sm",
+    "focus-within:border-border-hover focus-within:shadow-sm",
     className
   )
 
   const title = (
-    <h3 className="text-[0.9375rem] font-semibold tracking-tight">
+    <h3 className="text-[0.9375rem] font-semibold">
       <Link
         href={`/components/${item.slug}`}
-        className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="rounded-sm after:absolute after:inset-0 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         {item.title}
       </Link>
@@ -52,7 +53,7 @@ export function ComponentCard({
           {title}
           <ArrowUpRight
             aria-hidden="true"
-            className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            className="size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
           />
         </div>
         <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">

@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils"
 /**
  * Grid of links used inside MDX.
  *
- * Cells overlap their rules (`-ml-px -mt-px`) so the group reads as one
- * subdivided rectangle instead of a row of detached boxes.
+ * Separate raised cards with a gap between them, matching the catalog: the
+ * lift and the brand hue on hover are the same gesture in both places.
  */
 export function CardGroup({
   children,
@@ -22,7 +22,7 @@ export function CardGroup({
   return (
     <div
       className={cn(
-        "my-6 grid",
+        "my-6 grid gap-3",
         columns === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2",
         className
       )}
@@ -49,7 +49,7 @@ export function DocsCard({
         <span className="text-sm font-medium">{title}</span>
         <ArrowUpRight
           aria-hidden="true"
-          className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          className="size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
         />
       </span>
       {children ? (
@@ -59,8 +59,10 @@ export function DocsCard({
   )
 
   const styles = cn(
-    "group -mt-px -ml-px flex flex-col gap-1.5 border border-border p-4 transition-colors",
-    "hover:border-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+    "group flex flex-col gap-1.5 rounded-xl border border-border bg-card p-4 shadow-xs",
+    "transition-[border-color,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
+    "hover:border-border-hover hover:shadow-sm",
+    "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
   )
 
   if (external) {

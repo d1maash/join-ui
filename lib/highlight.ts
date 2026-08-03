@@ -2,7 +2,7 @@ import "server-only"
 
 import { createHighlighter, type Highlighter } from "shiki"
 
-import { swissDark, swissLight } from "@/lib/shiki-theme"
+import { joinwayDark, joinwayLight } from "@/lib/shiki-theme"
 
 export const SUPPORTED_LANGUAGES = [
   "tsx",
@@ -51,7 +51,7 @@ let highlighterPromise: Promise<Highlighter> | null = null
 
 function getHighlighter(): Promise<Highlighter> {
   highlighterPromise ??= createHighlighter({
-    themes: [swissLight, swissDark],
+    themes: [joinwayLight, joinwayDark],
     langs: [...SUPPORTED_LANGUAGES],
   })
   return highlighterPromise
@@ -80,7 +80,7 @@ export async function highlightCode(
 
   return highlighter.codeToHtml(code.replace(/\n$/, ""), {
     lang,
-    themes: { light: "swiss-light", dark: "swiss-dark" },
+    themes: { light: "joinway-light", dark: "joinway-dark" },
     defaultColor: false,
     transformers: [
       {

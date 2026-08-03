@@ -47,8 +47,10 @@ Requirements:
   destructive, radius, plus the component colour families info, positive,
   caution and critical — each with a `-soft` tint and a `-foreground`, as in
   `bg-info-soft text-info`). Round corners with the `rounded-soft-sm` /
-  `rounded-soft` / `rounded-soft-lg` scale; the plain `rounded-*` scale is
-  pinned to zero. Do not introduce new hard-coded colours.
+  `rounded-soft` / `rounded-soft-lg` scale. Do not introduce new hard-coded
+  colours, and do not reach for Tailwind's built-in palette (`gray-500`,
+  `red-600`) — the tokens are warm neutrals and low-chroma hues, so those land
+  next to but not on the system.
 - Preserve dark mode support. The component must theme through CSS variables
   only — do not add `dark:` variants, so it keeps working inside a forced-theme
   preview.
@@ -91,11 +93,13 @@ File: components/joinway/<component>.tsx
 ```
 ````
 
-The "do not introduce new hard-coded colours" line is doing more work than it
-looks. The design system is token-driven, and the hue a component is allowed
-lives in four named families, so an agent that invents a colour is the single
-most common way an edit ends up visibly off — naming the tokens explicitly is
-what keeps it on-system.
+That line is doing more work than it looks. The design system is token-driven:
+the neutrals carry a deliberate trace of warmth, emphasis in the chrome is ink
+rather than an accent, and the colour a component is allowed lives in four named
+families at low chroma. An agent reaching for `gray-500` — a pure neutral — or
+`red-600` — a saturated one — lands next to but not on those values, which is
+the single most common way an edit ends up visibly off. Naming the tokens
+explicitly is what keeps it on-system.
 
 ## How it is generated
 

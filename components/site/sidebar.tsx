@@ -9,8 +9,10 @@ import { cn } from "@/lib/utils"
 /**
  * Documentation navigation.
  *
- * Sections are separated by rules and labelled in mono caps; the active page is
- * marked by an ink rule on the left edge rather than a filled pill.
+ * Sections are separated by rules and labelled in mono caps. The active page is
+ * a white chip lifted off the warm rail by a hairline and the lightest shadow —
+ * the same material cue the cards use, rather than a colour the rail does not
+ * otherwise contain.
  */
 export function Sidebar({
   sections,
@@ -41,12 +43,12 @@ export function Sidebar({
                     onClick={onNavigate}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex items-center justify-between gap-2 border-l-2 py-1.5 pl-3 text-sm",
+                      "flex items-center justify-between gap-2 rounded-md border px-2.5 py-1.5 text-sm",
                       "transition-colors duration-[var(--duration-fast)]",
                       "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
                       active
-                        ? "border-foreground font-medium text-foreground"
-                        : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
+                        ? "border-border bg-card font-medium text-foreground shadow-xs"
+                        : "border-transparent text-muted-foreground hover:text-foreground"
                     )}
                   >
                     <span className="truncate">{item.title}</span>

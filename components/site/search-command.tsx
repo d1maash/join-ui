@@ -47,9 +47,9 @@ export function SearchCommand({ index }: { index: SearchEntry[] }) {
         type="button"
         onClick={() => setOpen(true)}
         className={cn(
-          "flex h-8 cursor-pointer items-center gap-2 border border-border px-2.5 text-sm",
-          "text-muted-foreground transition-colors duration-[var(--duration-fast)]",
-          "hover:border-foreground hover:text-foreground",
+          "flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-border bg-card px-2.5 text-sm",
+          "text-muted-foreground shadow-xs transition-colors duration-[var(--duration-fast)]",
+          "hover:border-border-hover hover:text-foreground",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         )}
       >
@@ -64,11 +64,12 @@ export function SearchCommand({ index }: { index: SearchEntry[] }) {
         label="Search Joinway UI"
         shouldFilter={false}
         // cmdk renders its own portal + overlay; both are styled here so the
-        // dialog matches the rest of the square, hairline system.
-        overlayClassName="fixed inset-0 z-50 bg-foreground/25 backdrop-blur-[2px] data-[state=open]:animate-fade-in"
+        // dialog matches the rest of the rounded, softly raised system.
+        overlayClassName="fixed inset-0 z-50 bg-grey-1000/25 backdrop-blur-[3px] data-[state=open]:animate-fade-in"
         contentClassName={cn(
           "fixed top-[12vh] left-1/2 z-50 w-[min(38rem,calc(100vw-2rem))] -translate-x-1/2",
-          "border border-foreground bg-background data-[state=open]:animate-fade-in"
+          "overflow-hidden rounded-2xl border border-border bg-popover shadow-lg",
+          "data-[state=open]:animate-pop-in"
         )}
       >
         <div className="flex items-center gap-3 border-b border-border px-4">
@@ -97,8 +98,8 @@ export function SearchCommand({ index }: { index: SearchEntry[] }) {
               key={group}
               heading={group}
               className={cn(
-                "border-b border-border last:border-b-0",
-                "[&_[cmdk-group-heading]]:label-caps [&_[cmdk-group-heading]]:px-4",
+                "px-2 pb-1",
+                "[&_[cmdk-group-heading]]:label-caps [&_[cmdk-group-heading]]:px-2",
                 "[&_[cmdk-group-heading]]:pt-4 [&_[cmdk-group-heading]]:pb-2",
                 "[&_[cmdk-group-heading]]:text-muted-foreground"
               )}
@@ -109,14 +110,15 @@ export function SearchCommand({ index }: { index: SearchEntry[] }) {
                   value={entry.id}
                   onSelect={() => onSelect(entry.href)}
                   className={cn(
-                    "flex cursor-pointer items-center gap-3 px-4 py-2.5 text-sm",
-                    "data-[selected=true]:bg-foreground data-[selected=true]:text-background"
+                    "group flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2.5 text-sm",
+                    "transition-colors duration-[var(--duration-instant)]",
+                    "data-[selected=true]:bg-muted data-[selected=true]:text-foreground"
                   )}
                 >
                   <span className="min-w-0 flex-1 truncate font-medium">
                     {entry.title}
                   </span>
-                  <span className="hidden min-w-0 flex-1 truncate text-xs text-muted-foreground data-[selected=true]:text-background sm:block">
+                  <span className="hidden min-w-0 flex-1 truncate text-xs text-muted-foreground group-data-[selected=true]:text-muted-foreground sm:block">
                     {entry.description}
                   </span>
                   {entry.badge ? (

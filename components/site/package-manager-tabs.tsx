@@ -36,11 +36,16 @@ export function PackageManagerTabs({
   const command = commands[manager]
 
   return (
-    <div className={cn("border border-border bg-code-bg", className)}>
+    <div
+      className={cn(
+        "overflow-hidden rounded-xl border border-border bg-code-bg shadow-xs",
+        className
+      )}
+    >
       <div
         role="tablist"
         aria-label={label}
-        className="flex h-9 items-stretch border-b border-border"
+        className="flex h-9 items-stretch gap-1 border-b border-border bg-card/40 px-1.5 py-1.5"
       >
         {PACKAGE_MANAGERS.map((pm) => {
           const active = pm === manager
@@ -52,11 +57,11 @@ export function PackageManagerTabs({
               aria-selected={active}
               onClick={() => setManager(pm)}
               className={cn(
-                "label-caps cursor-pointer border-r border-border px-3 transition-colors",
+                "label-caps cursor-pointer rounded-md px-2.5 transition-colors",
                 "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
                 active
-                  ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-card text-foreground shadow-xs"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               {pm}

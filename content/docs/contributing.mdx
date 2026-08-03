@@ -45,8 +45,8 @@ pnpm dev
 
     - Theme through tokens. **No `dark:` variants** — see [dark mode](/docs/dark-mode) for why.
     - Colour is welcome, but only through the `--info` / `--positive` / `--caution` / `--critical` families. No literal colours and nothing from Tailwind's built-in palette — see [theming](/docs/theming).
-    - No gradients and no shadows. Separation is drawn with a rule.
-    - Round through `rounded-soft-sm`, `rounded-soft` and `rounded-soft-lg`. The chrome scale is still zero, so a plain `rounded-*` is a no-op.
+    - Elevation comes from the `--elevation-*` steps, reached as `shadow-xs` through `shadow-lg`. Do not invent a shadow, and do not use a gradient as one.
+    - Round through `rounded-soft-sm`, `rounded-soft` and `rounded-soft-lg` rather than the plain scale, so a project that retunes its own radii does not resize your component.
     - Never let colour be the only carrier of state: pair it with a glyph and a label.
     - Accept and merge `className` through `cn`, always last.
     - Export the props interface.
@@ -88,8 +88,8 @@ pnpm dev
     explicit empty state rather than failing.
 
     <Callout variant="note">
-      Previews must not use `dark:` variants either — they render inside the
-      theme island that the preview toolbar controls.
+      Previews must not use `dark:` variants either. They demonstrate registry
+      components, and the rule those live under has to hold in the demo too.
     </Callout>
 
   </Step>
@@ -204,9 +204,10 @@ Two files, again derived from one source.
 | `<CodeBlock code language title />` | Highlighted code outside a fence |
 | `<Kbd>` / `<Badge>` | Inline key and status chips |
 
-`Callout` signals severity with an icon and a spelled-out label, and thickens
-its left rule for the two serious variants. Nothing about it depends on hue, so
-do not add a variant expecting a colour.
+`Callout` signals severity three ways at once: an icon, a spelled-out label, and
+a tint from one of the four hue families. The tint is the accelerator and the
+other two are the message, so a new variant needs all three — a colour on its
+own is not a variant.
 
 Fenced blocks support a title, highlighted lines and line numbers:
 

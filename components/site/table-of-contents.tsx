@@ -58,7 +58,7 @@ export function TableOfContents({ entries }: { entries: TocEntry[] }) {
                   entry.level === 3 ? "pl-6" : "pl-3",
                   active
                     ? "border-foreground font-medium text-foreground"
-                    : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
+                    : "border-transparent text-muted-foreground hover:border-border-hover hover:text-foreground"
                 )}
               >
                 {entry.title}

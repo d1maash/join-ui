@@ -1,6 +1,5 @@
-Joinway UI targets Tailwind CSS v4. There is no `tailwind.config.ts` — the
-theme is declared in CSS, which is also what makes the per-preview theme islands
-possible.
+Joinway UI targets Tailwind CSS v4. There is no `tailwind.config.ts` — the theme
+is declared in CSS, which is also what lets any subtree redeclare it.
 
 ## Install
 
@@ -54,26 +53,30 @@ that distinction matters.
   --color-muted-foreground: var(--muted-foreground);
   --color-subtle: var(--subtle);
   --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-soft: var(--primary-soft);
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-border: var(--accent-border);
   --color-destructive: var(--destructive);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-code-bg: var(--code-bg);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
 ```
 
-The grey ramp is mapped the same way, which is what gives you `bg-grey-100` and
-`text-grey-600` for the rare case where a semantic name would be a lie:
+The ramp is mapped the same way, which is what gives you `bg-grey-100` and
+`text-grey-800` for the rare case where a semantic name would be a lie:
 
 ```css title="app/globals.css"
 @theme inline {
@@ -86,28 +89,49 @@ The grey ramp is mapped the same way, which is what gives you `bg-grey-100` and
 <Callout variant="tip">
   The `inline` keyword matters. Without it Tailwind copies the value at build
   time; with it, the utility emits `var(--primary)` and follows the token at
-  runtime — which is exactly what theme switching needs.
+  runtime — which is what lets a scoped subtree re-resolve every utility by
+  redeclaring one variable.
 </Callout>
 
 ## Radius
 
-Every step of the scale is pinned to zero, so a stray `rounded-lg` in an edit
-does nothing rather than breaking the grid:
+The scale is redeclared rather than pinned, so every step resolves to a real
+value and each one has a job:
 
 ```css title="app/globals.css"
 @theme inline {
-  --radius-xs: 0rem;
-  --radius-sm: 0rem;
-  --radius-md: 0rem;
-  --radius-lg: 0rem;
-  --radius-xl: 0rem;
-  --radius-2xl: 0rem;
-  --radius-3xl: 0rem;
+  --radius-xs: 0.25rem; /* a tag */
+  --radius-sm: 0.375rem; /* an inline code span, a chip */
+  --radius-md: 0.5rem; /* a menu item */
+  --radius-lg: 0.625rem; /* a control — buttons, inputs */
+  --radius-xl: 0.875rem; /* a card, a code block */
+  --radius-2xl: 1.125rem; /* a dialog */
+  --radius-3xl: 1.5rem;
+
+  /* The component scale, kept as aliases so installed components are stable. */
+  --radius-soft-sm: var(--radius-sm);
+  --radius-soft: var(--radius-lg);
+  --radius-soft-lg: var(--radius-xl);
 }
 ```
 
 `rounded-full` is deliberately left alone: a pip or an avatar is a circle, not a
 rounded rectangle.
+
+## Elevation
+
+The shadow scale is mapped through the same mechanism, so `shadow-sm` and
+`shadow-md` pick up the theme's own tinted shadow instead of Tailwind's black
+default:
+
+```css title="app/globals.css"
+@theme inline {
+  --shadow-xs: var(--elevation-xs);
+  --shadow-sm: var(--elevation-sm);
+  --shadow-md: var(--elevation-md);
+  --shadow-lg: var(--elevation-lg);
+}
+```
 
 ## Motion tokens
 

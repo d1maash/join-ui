@@ -5,39 +5,42 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 /**
- * Square, high-contrast buttons.
+ * Rounded, soft-contrast buttons.
  *
- * Hierarchy is expressed through fill and rule weight rather than hue: solid
- * ink for the primary action, a hairline box for the secondary, bare text for
- * the tertiary.
+ * Hierarchy runs down a single axis of material rather than of colour: the
+ * primary action is the only filled dark shape on a page, the secondary is a
+ * white card with a hairline, and the tertiary is bare text that grows a
+ * neutral background on hover. The fill is ink, not a brand hue — on a warm
+ * page a dark button already reads as the loudest thing available.
  */
 const buttonVariants = cva(
   cn(
-    "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 text-sm font-medium whitespace-nowrap select-none",
-    "transition-[background-color,color,border-color,opacity] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+    "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap select-none",
+    "transition-[background-color,color,border-color,box-shadow,transform] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-    "disabled:pointer-events-none disabled:opacity-40",
+    "active:translate-y-px",
+    "disabled:pointer-events-none disabled:opacity-45 disabled:shadow-none",
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
   ),
   {
     variants: {
       variant: {
         primary:
-          "border border-foreground bg-foreground text-background hover:bg-grey-800 hover:border-grey-800",
+          "border border-primary bg-primary text-primary-foreground shadow-xs hover:border-primary-hover hover:bg-primary-hover",
         secondary:
-          "border border-border bg-background text-foreground hover:border-foreground",
+          "border border-border bg-card text-foreground shadow-xs hover:border-border-hover hover:bg-subtle",
         outline:
-          "border border-foreground bg-transparent text-foreground hover:bg-foreground hover:text-background",
+          "border border-border-hover bg-transparent text-foreground hover:bg-muted",
         ghost:
-          "border border-transparent bg-transparent text-muted-foreground hover:border-border hover:text-foreground",
-        link: "h-auto p-0 text-foreground underline decoration-1 underline-offset-4 hover:decoration-2",
+          "border border-transparent bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
+        link: "h-auto rounded-sm p-0 text-foreground underline decoration-border-strong decoration-1 underline-offset-4 hover:decoration-foreground",
         destructive:
-          "border border-foreground bg-background text-foreground hover:bg-foreground hover:text-background",
+          "border border-destructive bg-destructive text-destructive-foreground shadow-xs hover:opacity-90",
       },
       size: {
         sm: "h-8 px-3 text-[0.8125rem]",
         md: "h-9 px-4",
-        lg: "h-11 px-6 text-[0.9375rem]",
+        lg: "h-11 px-5 text-[0.9375rem]",
         icon: "size-9 p-0",
         "icon-sm": "size-8 p-0",
       },

@@ -9,9 +9,17 @@ export const contentType = "image/png"
 /**
  * Social card.
  *
- * Ink on paper, laid out on the same rule grid as the site: a hairline frame,
- * one horizontal division and type doing all of the work.
+ * The design tokens do not reach Satori — it resolves no custom properties — so
+ * the dark theme's values are inlined here, resolved from `oklch` to hex. The
+ * site renders dark, and a social card that opened light would be the one
+ * surface that disagreed with it. Keep this in sync with `globals.css`.
  */
+const PAGE = "#13110f"
+const INK = "#f5f3f1"
+const MUTED = "#b5b1ad"
+const HAIRLINE = "#3e3a37"
+const PANEL = "#1e1c1a"
+
 export default function OpengraphImage() {
   return new ImageResponse(
     <div
@@ -21,24 +29,38 @@ export default function OpengraphImage() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: 64,
-        backgroundColor: "#ffffff",
-        color: "#000000",
-        border: "12px solid #000000",
+        padding: 68,
+        backgroundColor: PAGE,
+        color: INK,
         fontFamily: "sans-serif",
       }}
     >
+      {/* An ink rule along the top edge — the card's one graphic element. */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 6,
+          display: "flex",
+          backgroundColor: INK,
+        }}
+      />
+
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
           style={{
-            width: 44,
-            height: 44,
-            border: "3px solid #000000",
+            width: 46,
+            height: 46,
+            borderRadius: 12,
+            backgroundColor: INK,
+            color: PAGE,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginRight: 16,
-            fontSize: 24,
+            fontSize: 25,
             fontWeight: 700,
           }}
         >
@@ -51,10 +73,14 @@ export default function OpengraphImage() {
           style={{
             display: "flex",
             marginLeft: "auto",
-            fontSize: 20,
+            borderRadius: 999,
+            border: `1px solid ${HAIRLINE}`,
+            backgroundColor: PANEL,
+            padding: "8px 18px",
+            fontSize: 19,
             letterSpacing: 3,
             textTransform: "uppercase",
-            color: "#5c5c5c",
+            color: MUTED,
           }}
         >
           Component registry
@@ -80,7 +106,7 @@ export default function OpengraphImage() {
             marginTop: 26,
             fontSize: 27,
             lineHeight: 1.4,
-            color: "#5c5c5c",
+            color: MUTED,
             maxWidth: 820,
           }}
         >
@@ -93,12 +119,15 @@ export default function OpengraphImage() {
         style={{
           display: "flex",
           alignItems: "center",
-          borderTop: "2px solid #000000",
-          paddingTop: 22,
+          borderRadius: 14,
+          border: `1px solid ${HAIRLINE}`,
+          backgroundColor: PANEL,
+          padding: "20px 24px",
           fontSize: 22,
-          color: "#3a3a3a",
+          color: MUTED,
         }}
       >
+        <div style={{ display: "flex", color: INK, marginRight: 12 }}>$</div>
         <div style={{ display: "flex" }}>
           pnpm dlx shadcn@latest add {siteConfig.namespace}/…
         </div>

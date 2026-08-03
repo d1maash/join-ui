@@ -141,7 +141,7 @@ export default async function ComponentPage({ params }: PageProps) {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.03em]">
+            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.015em]">
               {component.title}
             </h1>
             <p className="max-w-2xl text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">
@@ -326,7 +326,7 @@ export default async function ComponentPage({ params }: PageProps) {
         </Section>
 
         <Section id="dependencies" title="Dependencies">
-          <div className="grid sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <DependencyPanel
               title="npm packages"
               items={component.dependencies}
@@ -337,7 +337,6 @@ export default async function ComponentPage({ params }: PageProps) {
               items={component.registryDependencies}
               emptyMessage="None."
               note="Installed automatically by the CLI when they are missing."
-              className="sm:-ml-px"
             />
           </div>
         </Section>
@@ -354,13 +353,13 @@ export default async function ComponentPage({ params }: PageProps) {
 
         <Section id="keyboard" title="Keyboard interactions">
           {component.keyboard.length > 0 ? (
-            <div className="overflow-x-auto border border-border">
+            <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-xs">
               <table className="w-full border-collapse text-left text-sm">
                 <caption className="sr-only">
                   Keyboard interactions for {component.title}
                 </caption>
                 <thead>
-                  <tr className="border-b border-border">
+                  <tr className="border-b border-border bg-subtle">
                     <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
                       Key
                     </th>
@@ -402,7 +401,7 @@ export default async function ComponentPage({ params }: PageProps) {
           <div className="flex flex-col gap-8">
             {component.customization.map((example) => (
               <div key={example.title} className="flex flex-col gap-2">
-                <h3 className="text-[0.9375rem] font-semibold tracking-tight text-foreground">
+                <h3 className="text-[0.9375rem] font-semibold text-foreground">
                   {example.title}
                 </h3>
                 <p className="text-sm leading-relaxed">{example.description}</p>
@@ -451,7 +450,7 @@ export default async function ComponentPage({ params }: PageProps) {
 
 function Code({ children }: { children: React.ReactNode }) {
   return (
-    <code className="border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
+    <code className="rounded-sm border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
       {children}
     </code>
   )
@@ -471,7 +470,7 @@ function Section({
       aria-labelledby={id}
       className="mt-12 scroll-mt-24 border-t border-border pt-8"
     >
-      <h2 id={id} className="mb-5 text-xl font-semibold tracking-tight">
+      <h2 id={id} className="mb-5 text-xl font-semibold">
         {title}
       </h2>
       <div className="flex flex-col gap-4 leading-[1.75] text-muted-foreground">
@@ -493,7 +492,7 @@ function InstallStep({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1.5">
-        <h3 className="text-[0.9375rem] font-semibold tracking-tight">{title}</h3>
+        <h3 className="text-[0.9375rem] font-semibold">{title}</h3>
         <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
       </div>
       {children}
@@ -515,7 +514,9 @@ function DependencyPanel({
   className?: string
 }) {
   return (
-    <div className={`border border-border p-4 ${className ?? ""}`}>
+    <div
+      className={`rounded-xl border border-border bg-card p-4 shadow-xs ${className ?? ""}`}
+    >
       <h3 className="label-caps text-muted-foreground">{title}</h3>
       {items.length > 0 ? (
         <ul className="mt-3 flex flex-wrap gap-1.5">

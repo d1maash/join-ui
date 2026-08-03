@@ -10,8 +10,9 @@ export const Tabs = TabsPrimitive.Root
 /**
  * Tab bar.
  *
- * The active tab is marked by a 2px ink rule along the bottom edge, in the
- * manner of a printed index — no pill, no fill, no shadow.
+ * The active tab is marked by a 2px brand rule along the bottom edge and by
+ * the hue of its label — the same signal the sidebar and the top nav use, so
+ * "where am I" is one colour everywhere on the site.
  */
 export const TabsList = React.forwardRef<
   React.ComponentRef<typeof TabsPrimitive.List>,
@@ -38,10 +39,10 @@ export const TabsTrigger = React.forwardRef<
       ref={ref}
       className={cn(
         "relative -mb-px cursor-pointer border-b-2 border-transparent pb-2.5",
-        "font-mono text-[0.6875rem] tracking-[0.12em] uppercase",
+        "font-mono text-[0.6875rem] tracking-[0.08em] uppercase",
         "text-muted-foreground transition-colors duration-[var(--duration-fast)]",
         "hover:text-foreground",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         "disabled:pointer-events-none disabled:opacity-40",
         "data-[state=active]:border-foreground data-[state=active]:text-foreground",
         className

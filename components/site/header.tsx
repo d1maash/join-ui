@@ -5,7 +5,6 @@ import { Logo } from "@/components/site/logo"
 import { MobileNav } from "@/components/site/mobile-nav"
 import { NavLink } from "@/components/site/nav-link"
 import { SearchCommand } from "@/components/site/search-command"
-import { ThemeToggle } from "@/components/site/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { getSidebarSections } from "@/lib/docs/sidebar"
 import { buildSearchIndex } from "@/lib/search"
@@ -28,7 +27,7 @@ export function SiteHeader() {
   const searchEntries = buildSearchIndex()
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-14 max-w-[100rem] items-center gap-3 px-4 sm:px-6">
         <MobileNav sections={sections} />
         <Logo />
@@ -55,7 +54,6 @@ export function SiteHeader() {
               <GitHubIcon aria-hidden="true" className="size-4" />
             </a>
           </Button>
-          <ThemeToggle />
         </div>
       </div>
     </header>
@@ -66,7 +64,7 @@ export function SkipToContent() {
   return (
     <Link
       href="#main-content"
-      className="sr-only z-50 focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:border focus:border-foreground focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium"
+      className="sr-only z-50 focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:rounded-lg focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg"
     >
       Skip to content
     </Link>
