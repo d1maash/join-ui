@@ -187,7 +187,7 @@ function Panel({
   )
 }
 
-/** Rounded, tinted control — the site's own buttons are square and achromatic. */
+/** Pill-shaped, tinted control — a demo affordance, not the site's own button. */
 function Pill({
   tone = "neutral",
   className,

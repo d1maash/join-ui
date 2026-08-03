@@ -204,9 +204,10 @@ Two files, again derived from one source.
 | `<CodeBlock code language title />` | Highlighted code outside a fence |
 | `<Kbd>` / `<Badge>` | Inline key and status chips |
 
-`Callout` signals severity with an icon and a spelled-out label, and thickens
-its left rule for the two serious variants. Nothing about it depends on hue, so
-do not add a variant expecting a colour.
+`Callout` signals severity three ways at once: an icon, a spelled-out label, and
+a tint from one of the four hue families. The tint is the accelerator and the
+other two are the message, so a new variant needs all three — a colour on its
+own is not a variant.
 
 Fenced blocks support a title, highlighted lines and line numbers:
 

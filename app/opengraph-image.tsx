@@ -9,9 +9,19 @@ export const contentType = "image/png"
 /**
  * Social card.
  *
- * Ink on paper, laid out on the same rule grid as the site: a hairline frame,
- * one horizontal division and type doing all of the work.
+ * The design tokens do not reach Satori — it resolves no custom properties —
+ * so the light theme's values are inlined here, resolved from `oklch` to hex.
+ * They are the same six the site uses: paper, ink, muted, hairline, and the
+ * two brand steps. Keep this in sync with `globals.css`.
  */
+const PAPER = "#fcfbf9"
+const INK = "#1d1610"
+const MUTED = "#615b54"
+const HAIRLINE = "#e5e3df"
+const BRAND = "#525edd"
+const BRAND_SOFT = "#f5f5ff"
+const BRAND_BORDER = "#d7dafd"
+
 export default function OpengraphImage() {
   return new ImageResponse(
     <div
@@ -21,24 +31,38 @@ export default function OpengraphImage() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: 64,
-        backgroundColor: "#ffffff",
-        color: "#000000",
-        border: "12px solid #000000",
+        padding: 68,
+        backgroundColor: PAPER,
+        color: INK,
         fontFamily: "sans-serif",
       }}
     >
+      {/* A wide brand wash along the top edge, standing in for `.surface-glow`. */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 8,
+          display: "flex",
+          backgroundImage: `linear-gradient(90deg, ${BRAND}, #6d7bf1 55%, ${BRAND_BORDER})`,
+        }}
+      />
+
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
           style={{
-            width: 44,
-            height: 44,
-            border: "3px solid #000000",
+            width: 46,
+            height: 46,
+            borderRadius: 12,
+            backgroundColor: BRAND,
+            color: "#ffffff",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginRight: 16,
-            fontSize: 24,
+            fontSize: 25,
             fontWeight: 700,
           }}
         >
@@ -51,10 +75,14 @@ export default function OpengraphImage() {
           style={{
             display: "flex",
             marginLeft: "auto",
-            fontSize: 20,
+            borderRadius: 999,
+            border: `1px solid ${BRAND_BORDER}`,
+            backgroundColor: BRAND_SOFT,
+            padding: "8px 18px",
+            fontSize: 19,
             letterSpacing: 3,
             textTransform: "uppercase",
-            color: "#5c5c5c",
+            color: "#414bb5",
           }}
         >
           Component registry
@@ -80,7 +108,7 @@ export default function OpengraphImage() {
             marginTop: 26,
             fontSize: 27,
             lineHeight: 1.4,
-            color: "#5c5c5c",
+            color: MUTED,
             maxWidth: 820,
           }}
         >
@@ -93,12 +121,15 @@ export default function OpengraphImage() {
         style={{
           display: "flex",
           alignItems: "center",
-          borderTop: "2px solid #000000",
-          paddingTop: 22,
+          borderRadius: 14,
+          border: `1px solid ${HAIRLINE}`,
+          backgroundColor: "#ffffff",
+          padding: "20px 24px",
           fontSize: 22,
-          color: "#3a3a3a",
+          color: MUTED,
         }}
       >
+        <div style={{ display: "flex", color: BRAND, marginRight: 12 }}>$</div>
         <div style={{ display: "flex" }}>
           pnpm dlx shadcn@latest add {siteConfig.namespace}/…
         </div>

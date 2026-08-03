@@ -42,8 +42,13 @@ export function CodeBlockShell({
   const clipped = collapses && !expanded
 
   return (
-    <figure className={cn("border border-border bg-code-bg", className)}>
-      <figcaption className="flex h-9 items-center gap-3 border-b border-border px-3">
+    <figure
+      className={cn(
+        "overflow-hidden rounded-xl border border-border bg-code-bg shadow-xs",
+        className
+      )}
+    >
+      <figcaption className="flex h-9 items-center gap-3 border-b border-border bg-card/40 px-3">
         <span className="label-caps min-w-0 flex-1 truncate text-muted-foreground">
           {title ?? language ?? "code"}
         </span>

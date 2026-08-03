@@ -66,18 +66,24 @@ export default function HomePage() {
 
   return (
     <main id="main-content">
-      {/* Masthead */}
-      <section className="border-b border-border">
+      {/* Masthead. The glow is lighting, not content — hence aria-hidden. */}
+      <section className="relative isolate overflow-hidden border-b border-border">
+        <span aria-hidden="true" className="surface-glow -z-10" />
         <div className="mx-auto max-w-[100rem] px-4 sm:px-6">
           <div className="grid gap-10 py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
             <div className="lg:col-span-8">
-              <p className="label-caps mb-8 text-muted-foreground">
+              <p className="label-caps mb-8 inline-flex items-center gap-2 rounded-full border border-accent-border bg-accent-soft px-3 py-1.5 text-accent">
                 {siteConfig.namespace} — open-code component registry
               </p>
+              {/*
+                Two-tone: the second line drops a step down the ramp so a
+                display size this large lands as a heading rather than as a
+                solid block of ink.
+              */}
               <h1 className="text-[clamp(2.75rem,8vw,6.5rem)] leading-[0.92] font-semibold tracking-[-0.035em] text-balance">
                 Components
                 <br />
-                you actually own
+                <span className="text-grey-800">you actually own</span>
               </h1>
             </div>
 
@@ -130,7 +136,7 @@ export default function HomePage() {
                   documentation, the search index and the installable JSON endpoints are
                   all in place and wired to a single metadata file — the first component
                   added to{" "}
-                  <code className="border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
+                  <code className="rounded-sm border border-accent-border/60 bg-accent-soft px-1 py-0.5 font-mono text-[0.85em] text-accent">
                     lib/registry/components.ts
                   </code>{" "}
                   will appear across every surface of this site automatically.
@@ -200,13 +206,13 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <ol className="grid lg:col-span-9 sm:grid-cols-2 xl:grid-cols-3">
+            <ol className="grid gap-3 lg:col-span-9 sm:grid-cols-2 xl:grid-cols-3">
               {PRINCIPLES.map((principle, index) => (
                 <li
                   key={principle.title}
-                  className="-mt-px -ml-px flex flex-col gap-2 border border-border p-5"
+                  className="flex flex-col gap-2 rounded-xl border border-border bg-card p-5 shadow-xs"
                 >
-                  <span className="numeral text-[0.6875rem] text-muted-foreground">
+                  <span className="numeral flex size-6 items-center justify-center rounded-full bg-accent-soft text-[0.6875rem] font-medium text-accent">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <h3 className="text-[0.9375rem] font-semibold tracking-tight">
@@ -250,14 +256,16 @@ export default function HomePage() {
             title="Browse by category"
             description="Every category that currently holds at least one component."
           >
-            <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               {categories.map((category) => (
                 <li key={category.slug} className="flex">
                   <Link
                     href={`/components?category=${encodeURIComponent(category.name)}`}
-                    className="-mt-px -ml-px flex w-full flex-col gap-1 border border-border p-4 transition-colors hover:border-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+                    className="group flex w-full flex-col gap-1 rounded-xl border border-border bg-card p-4 shadow-xs transition-[border-color,box-shadow] hover:border-accent-border hover:shadow-sm focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                   >
-                    <span className="text-sm font-medium">{category.name}</span>
+                    <span className="text-sm font-medium transition-colors group-hover:text-accent">
+                      {category.name}
+                    </span>
                     <span className="numeral text-xs text-muted-foreground">
                       {String(category.count).padStart(2, "0")}
                     </span>
@@ -313,8 +321,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="border border-border bg-code-bg lg:col-span-4">
-              <p className="label-caps border-b border-border px-4 py-2.5 text-muted-foreground">
+            <div className="overflow-hidden rounded-xl border border-border bg-code-bg shadow-xs lg:col-span-4">
+              <p className="label-caps border-b border-border bg-card/40 px-4 py-2.5 text-muted-foreground">
                 prompt.txt
               </p>
               <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-muted-foreground">
@@ -355,7 +363,7 @@ function Figure({
   return (
     <div className={bordered ? "border-border py-8 sm:border-l sm:pl-8" : "py-8"}>
       <dt className="label-caps text-muted-foreground">{label}</dt>
-      <dd className="numeral mt-2 text-4xl font-semibold">
+      <dd className="numeral mt-2 bg-gradient-to-br from-accent to-brand-500 bg-clip-text text-4xl font-semibold text-transparent">
         {String(value).padStart(2, "0")}
       </dd>
     </div>

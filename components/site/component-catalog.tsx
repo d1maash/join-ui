@@ -106,7 +106,7 @@ export function ComponentCatalog({ items }: { items: CatalogItem[] }) {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex h-9 flex-1 items-center gap-2 border border-border px-3 focus-within:border-foreground">
+          <div className="flex h-9 flex-1 items-center gap-2 rounded-lg border border-border bg-card px-3 shadow-xs transition-[border-color,box-shadow] focus-within:border-accent focus-within:shadow-ring">
             <Search aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
             <input
               type="search"
@@ -147,7 +147,7 @@ export function ComponentCatalog({ items }: { items: CatalogItem[] }) {
           ))}
         </ul>
       ) : (
-        <p className="border border-border px-6 py-16 text-center text-sm text-muted-foreground">
+        <p className="rounded-xl border border-dashed border-border bg-subtle px-6 py-16 text-center text-sm text-muted-foreground">
           Nothing matches these filters.
         </p>
       )}
@@ -167,7 +167,7 @@ export function ComponentCatalogFallback() {
 /** Shown when the registry itself is empty. */
 function CatalogEmptyState() {
   return (
-    <div className="flex flex-col items-center gap-3 border border-border px-6 py-24 text-center">
+    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-subtle px-6 py-24 text-center">
       <p className="label-caps text-muted-foreground">Empty registry</p>
       <h2 className="text-xl font-semibold tracking-tight">No components published</h2>
       <p className="max-w-md text-sm leading-relaxed text-pretty text-muted-foreground">
@@ -210,11 +210,11 @@ function FilterChip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "label-caps h-6 cursor-pointer border px-2 transition-colors",
+        "label-caps h-6 cursor-pointer rounded-full border px-2.5 transition-colors",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         active
-          ? "border-foreground bg-foreground text-background"
-          : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+          ? "border-accent-border bg-accent-soft text-accent"
+          : "border-border bg-card text-muted-foreground hover:border-accent-border hover:text-foreground"
       )}
     >
       {children}

@@ -61,9 +61,11 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
+  // The two `--background` values, resolved. Browser chrome should match the
+  // page surface, not the extremes the palette no longer contains.
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+    { media: "(prefers-color-scheme: light)", color: "#fcfbf9" },
+    { media: "(prefers-color-scheme: dark)", color: "#16171b" },
   ],
   colorScheme: "light dark",
 }

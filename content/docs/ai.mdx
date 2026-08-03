@@ -92,10 +92,12 @@ File: components/joinway/<component>.tsx
 ````
 
 The "do not introduce new hard-coded colours" line is doing more work than it
-looks. The design system is token-driven, and the hue a component is allowed
-lives in four named families, so an agent that invents a colour is the single
-most common way an edit ends up visibly off — naming the tokens explicitly is
-what keeps it on-system.
+looks. The design system is token-driven: the neutrals carry a deliberate trace
+of hue, the accent is one indigo, and the colour a component is allowed lives in
+four named families. An agent reaching for `gray-500` or `red-600` from
+Tailwind's built-in palette lands next to but not on those values, which is the
+single most common way an edit ends up visibly off — naming the tokens
+explicitly is what keeps it on-system.
 
 ## How it is generated
 

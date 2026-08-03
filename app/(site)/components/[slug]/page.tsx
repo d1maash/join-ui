@@ -326,7 +326,7 @@ export default async function ComponentPage({ params }: PageProps) {
         </Section>
 
         <Section id="dependencies" title="Dependencies">
-          <div className="grid sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <DependencyPanel
               title="npm packages"
               items={component.dependencies}
@@ -337,13 +337,12 @@ export default async function ComponentPage({ params }: PageProps) {
               items={component.registryDependencies}
               emptyMessage="None."
               note="Installed automatically by the CLI when they are missing."
-              className="sm:-ml-px"
             />
           </div>
         </Section>
 
         <Section id="accessibility" title="Accessibility">
-          <ul className="flex list-disc flex-col gap-2 pl-5 marker:text-border-strong">
+          <ul className="flex list-disc flex-col gap-2 pl-5 marker:text-accent/55">
             {component.accessibility.map((note) => (
               <li key={note} className="leading-[1.75]">
                 {note}
@@ -354,13 +353,13 @@ export default async function ComponentPage({ params }: PageProps) {
 
         <Section id="keyboard" title="Keyboard interactions">
           {component.keyboard.length > 0 ? (
-            <div className="overflow-x-auto border border-border">
+            <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-xs">
               <table className="w-full border-collapse text-left text-sm">
                 <caption className="sr-only">
                   Keyboard interactions for {component.title}
                 </caption>
                 <thead>
-                  <tr className="border-b border-border">
+                  <tr className="border-b border-border bg-subtle">
                     <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
                       Key
                     </th>
@@ -451,7 +450,7 @@ export default async function ComponentPage({ params }: PageProps) {
 
 function Code({ children }: { children: React.ReactNode }) {
   return (
-    <code className="border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
+    <code className="rounded-sm border border-accent-border/60 bg-accent-soft px-1 py-0.5 font-mono text-[0.85em] text-accent">
       {children}
     </code>
   )
@@ -515,7 +514,9 @@ function DependencyPanel({
   className?: string
 }) {
   return (
-    <div className={`border border-border p-4 ${className ?? ""}`}>
+    <div
+      className={`rounded-xl border border-border bg-card p-4 shadow-xs ${className ?? ""}`}
+    >
       <h3 className="label-caps text-muted-foreground">{title}</h3>
       {items.length > 0 ? (
         <ul className="mt-3 flex flex-wrap gap-1.5">

@@ -4,10 +4,12 @@ import { siteConfig } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 /**
- * The mark: two strokes converging inside a square — the "join" in Joinway.
+ * The mark: two strokes converging inside a rounded square — the "join" in
+ * Joinway.
  *
- * Drawn entirely in `currentColor`, so it inverts with the theme and can be
- * dropped onto any surface without a second asset.
+ * The tile is filled with `--primary` and the strokes are knocked out of it in
+ * `--primary-foreground`, so the mark reads the same on paper, on slate and on
+ * a social card, and needs no second asset for either theme.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
@@ -17,22 +19,22 @@ export function LogoMark({ className }: { className?: string }) {
       aria-hidden="true"
       className={cn("size-6", className)}
     >
-      <rect
-        x="0.75"
-        y="0.75"
-        width="22.5"
-        height="22.5"
+      <rect width="24" height="24" rx="6.5" fill="var(--primary)" />
+      <path
+        d="M7 17.5V11.5A2.5 2.5 0 0 1 9.5 9H17"
         fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
+        stroke="var(--primary-foreground)"
+        strokeWidth="2"
+        strokeLinecap="round"
       />
       <path
-        d="M6 18V11.5A2.5 2.5 0 0 1 8.5 9H18"
+        d="M7 6.5h5.5"
         fill="none"
-        stroke="currentColor"
+        stroke="var(--primary-foreground)"
         strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.62"
       />
-      <path d="M6 6h6" fill="none" stroke="currentColor" strokeWidth="2" />
     </svg>
   )
 }

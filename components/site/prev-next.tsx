@@ -11,8 +11,8 @@ interface NavTarget {
 /**
  * Sequential navigation.
  *
- * The two cells share a single rule between them (`-ml-px`), so the pair reads
- * as one divided block rather than two floating cards.
+ * Two raised cards with a gap between them; each lifts a little and picks up
+ * the brand hue on hover, the same gesture the catalog cards use.
  */
 export function PrevNextNavigation({
   previous,
@@ -28,18 +28,23 @@ export function PrevNextNavigation({
   if (!previous && !next) return null
 
   return (
-    <nav aria-label={label} className={cn("grid sm:grid-cols-2", className)}>
+    <nav aria-label={label} className={cn("grid gap-3 sm:grid-cols-2", className)}>
       {previous ? (
         <Link
           href={previous.href}
           rel="prev"
           className={cn(
-            "group flex flex-col gap-1 border border-border p-4 transition-colors",
-            "hover:border-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+            "group flex flex-col gap-1 rounded-xl border border-border bg-card p-4 shadow-xs",
+            "transition-[border-color,box-shadow] duration-[var(--duration-fast)]",
+            "hover:border-accent-border hover:shadow-sm",
+            "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
           )}
         >
-          <span className="label-caps flex items-center gap-1.5 text-muted-foreground">
-            <ArrowLeft aria-hidden="true" className="size-3" />
+          <span className="label-caps flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-accent">
+            <ArrowLeft
+              aria-hidden="true"
+              className="size-3 transition-transform group-hover:-translate-x-0.5"
+            />
             Previous
           </span>
           <span className="text-sm font-medium">{previous.title}</span>
@@ -53,14 +58,19 @@ export function PrevNextNavigation({
           href={next.href}
           rel="next"
           className={cn(
-            "group flex flex-col items-end gap-1 border border-border p-4 text-right transition-colors",
-            "hover:border-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
-            "sm:-ml-px"
+            "group flex flex-col items-end gap-1 rounded-xl border border-border bg-card p-4 text-right shadow-xs",
+            "transition-[border-color,box-shadow] duration-[var(--duration-fast)]",
+            "hover:border-accent-border hover:shadow-sm",
+            "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
+            "sm:col-start-2"
           )}
         >
-          <span className="label-caps flex items-center gap-1.5 text-muted-foreground">
+          <span className="label-caps flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-accent">
             Next
-            <ArrowRight aria-hidden="true" className="size-3" />
+            <ArrowRight
+              aria-hidden="true"
+              className="size-3 transition-transform group-hover:translate-x-0.5"
+            />
           </span>
           <span className="text-sm font-medium">{next.title}</span>
         </Link>

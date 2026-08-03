@@ -53,11 +53,11 @@ export function TableOfContents({ entries }: { entries: TocEntry[] }) {
                 href={`#${entry.id}`}
                 aria-current={active ? "location" : undefined}
                 className={cn(
-                  "block border-l-2 py-1.5 text-[0.8125rem] leading-snug transition-colors",
+                  "block rounded-r-md border-l-2 py-1.5 text-[0.8125rem] leading-snug transition-colors",
                   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
                   entry.level === 3 ? "pl-6" : "pl-3",
                   active
-                    ? "border-foreground font-medium text-foreground"
+                    ? "border-accent bg-accent-soft font-medium text-accent"
                     : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
                 )}
               >

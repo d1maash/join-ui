@@ -1,45 +1,63 @@
 import type { ThemeRegistrationRaw } from "shiki"
 
 /**
- * Achromatic syntax themes.
+ * Syntax themes.
  *
- * Every off-the-shelf Shiki theme is built around hue, which would be the one
- * place colour leaked back into the interface. These two themes encode the
- * same information with the only channels the design system allows: luminance,
- * weight and italics.
+ * Off-the-shelf Shiki themes are tuned for an editor at full saturation, which
+ * on a documentation page reads as noise sitting inside otherwise quiet type.
+ * These two hold the same information at roughly half that chroma, over the
+ * same neutral base the rest of the site uses: warm paper in the light theme,
+ * slate in the dark one.
  *
- * The ramp mirrors the greys in `globals.css`:
- *   ink      — keywords and punctuation that structure the line
- *   strong   — identifiers the reader scans for (functions, types, tags)
- *   body     — plain code
- *   quiet    — strings and literals, set lighter so they read as data
- *   faint    — comments, italic and lightest of all
+ * Six roles carry the whole grammar, and each keeps its hue across both themes
+ * so a reader who learns the mapping once keeps it:
+ *   keyword   — violet, the brand hue; control flow and declarations
+ *   entity    — blue; functions and the things being called
+ *   type      — teal; types, classes and JSX tags
+ *   string    — green; strings and template literals
+ *   number    — amber; numeric and language constants, JSX attributes
+ *   comment   — neutral and italic, the quietest thing on the line
+ *
+ * Every value clears 4.5:1 against its own theme's code background, so the
+ * grammar stays legible for anyone reading the page in greyscale.
  */
 interface Ramp {
-  ink: string
-  strong: string
-  body: string
-  quiet: string
-  faint: string
+  plain: string
+  keyword: string
+  entity: string
+  type: string
+  string: string
+  number: string
+  comment: string
+  punctuation: string
+  deleted: string
   background: string
 }
 
 const LIGHT: Ramp = {
-  ink: "#000000",
-  strong: "#1f1f1f",
-  body: "#3a3a3a",
-  quiet: "#5c5c5c",
-  faint: "#8f8f8f",
-  background: "#ffffff",
+  plain: "#413b36",
+  keyword: "#6644c8",
+  entity: "#2a6ba8",
+  type: "#146b62",
+  string: "#3d7a4a",
+  number: "#a05a1f",
+  comment: "#7d756e",
+  punctuation: "#6b645e",
+  deleted: "#a8455a",
+  background: "transparent",
 }
 
 const DARK: Ramp = {
-  ink: "#ffffff",
-  strong: "#e6e6e6",
-  body: "#c4c4c4",
-  quiet: "#9c9c9c",
-  faint: "#6e6e6e",
-  background: "#000000",
+  plain: "#d7d5e2",
+  keyword: "#b6a0ff",
+  entity: "#86b6f0",
+  type: "#6fd0c4",
+  string: "#94d3a2",
+  number: "#f0b27a",
+  comment: "#847f97",
+  punctuation: "#9a95ab",
+  deleted: "#f2879d",
+  background: "transparent",
 }
 
 function buildTheme(name: string, type: "light" | "dark", ramp: Ramp) {
@@ -48,14 +66,14 @@ function buildTheme(name: string, type: "light" | "dark", ramp: Ramp) {
     type,
     colors: {
       "editor.background": ramp.background,
-      "editor.foreground": ramp.body,
+      "editor.foreground": ramp.plain,
     },
     settings: [
-      { settings: { foreground: ramp.body, background: ramp.background } },
+      { settings: { foreground: ramp.plain, background: ramp.background } },
 
       {
         scope: ["comment", "punctuation.definition.comment", "string.comment"],
-        settings: { foreground: ramp.faint, fontStyle: "italic" },
+        settings: { foreground: ramp.comment, fontStyle: "italic" },
       },
 
       {
@@ -68,9 +86,8 @@ function buildTheme(name: string, type: "light" | "dark", ramp: Ramp) {
           "storage.type",
           "storage.modifier",
           "variable.language",
-          "constant.language",
         ],
-        settings: { foreground: ramp.ink, fontStyle: "bold" },
+        settings: { foreground: ramp.keyword },
       },
 
       {
@@ -78,62 +95,78 @@ function buildTheme(name: string, type: "light" | "dark", ramp: Ramp) {
           "entity.name.function",
           "support.function",
           "meta.function-call.generic",
-          "entity.name.type",
-          "entity.name.class",
-          "support.class",
-          "support.type",
-          "entity.name.tag",
-          "entity.other.attribute-name",
+          "entity.name.label",
         ],
-        settings: { foreground: ramp.strong, fontStyle: "bold" },
+        settings: { foreground: ramp.entity },
       },
 
       {
         scope: [
-          "string",
-          "string.quoted",
-          "string.template",
+          "entity.name.type",
+          "entity.name.class",
+          "entity.other.inherited-class",
+          "support.class",
+          "support.type",
+          "entity.name.tag",
+          "entity.name.namespace",
+        ],
+        settings: { foreground: ramp.type },
+      },
+
+      {
+        scope: ["string", "string.quoted", "string.template", "constant.character.escape"],
+        settings: { foreground: ramp.string },
+      },
+
+      {
+        scope: [
           "constant.numeric",
-          "constant.character",
+          "constant.language",
           "constant.other",
           "support.constant",
+          "entity.other.attribute-name",
         ],
-        settings: { foreground: ramp.quiet },
+        settings: { foreground: ramp.number },
       },
 
       {
         scope: ["variable", "variable.other", "meta.object-literal.key", "support.variable"],
-        settings: { foreground: ramp.body },
+        settings: { foreground: ramp.plain },
       },
 
       {
         scope: ["punctuation", "meta.brace", "keyword.operator"],
-        settings: { foreground: ramp.faint },
+        settings: { foreground: ramp.punctuation },
       },
 
+      /*
+       * Diffs are the one place where hue would be load-bearing, and also the
+       * one place a glyph is guaranteed — a diff line carries its own `+`/`-`
+       * in the source — so the pair is safe to colour.
+       */
       {
         scope: ["markup.inserted", "meta.diff.header.to-file"],
-        settings: { foreground: ramp.ink, fontStyle: "bold" },
+        settings: { foreground: ramp.string },
       },
       {
         scope: ["markup.deleted", "meta.diff.header.from-file"],
-        settings: { foreground: ramp.faint, fontStyle: "italic" },
+        settings: { foreground: ramp.deleted },
       },
       {
         scope: ["markup.bold"],
-        settings: { foreground: ramp.ink, fontStyle: "bold" },
+        settings: { foreground: ramp.plain, fontStyle: "bold" },
       },
       {
         scope: ["markup.italic"],
-        settings: { foreground: ramp.body, fontStyle: "italic" },
+        settings: { foreground: ramp.plain, fontStyle: "italic" },
       },
       {
         scope: ["markup.heading", "entity.name.section"],
-        settings: { foreground: ramp.ink, fontStyle: "bold" },
+        settings: { foreground: ramp.keyword, fontStyle: "bold" },
       },
     ],
   } satisfies ThemeRegistrationRaw
 }
 
-export const swissLight = buildTheme("swiss-light", "light", LIGHT)
-export const swissDark = buildTheme("swiss-dark", "dark", DARK)
+export const joinwayLight = buildTheme("joinway-light", "light", LIGHT)
+export const joinwayDark = buildTheme("joinway-dark", "dark", DARK)

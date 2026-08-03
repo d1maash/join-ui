@@ -35,8 +35,13 @@ export function ComponentPreview({
   const demo = renderPreview(slug)
 
   return (
-    <div className={cn("flex flex-col border border-border", className)}>
-      <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border px-3">
+    <div
+      className={cn(
+        "flex flex-col overflow-hidden rounded-xl border border-border shadow-xs",
+        className
+      )}
+    >
+      <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border bg-card/40 px-3">
         <span className="label-caps min-w-0 flex-1 truncate text-muted-foreground">
           {title ?? slug}
         </span>
@@ -62,8 +67,8 @@ export function ComponentPreview({
               href={`/preview/${slug}`}
               aria-label="Open the full-page preview"
               className={cn(
-                "flex size-7 items-center justify-center border border-transparent text-muted-foreground",
-                "transition-colors hover:border-border hover:text-foreground",
+                "flex size-7 items-center justify-center rounded-md border border-transparent text-muted-foreground",
+                "transition-colors hover:bg-muted hover:text-foreground",
                 "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
               )}
             >
@@ -111,11 +116,11 @@ function PreviewToggle({
       aria-pressed={active}
       aria-label={label}
       className={cn(
-        "flex size-7 cursor-pointer items-center justify-center border transition-colors",
+        "flex size-7 cursor-pointer items-center justify-center rounded-md border transition-colors",
         "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
         active
-          ? "border-foreground bg-foreground text-background"
-          : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
+          ? "border-accent-border bg-accent-soft text-accent"
+          : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
       )}
     >
       {children}

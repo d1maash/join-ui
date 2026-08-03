@@ -3,11 +3,37 @@ import { AlertTriangle, Ban, CheckCircle2, Info } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Each variant gets one of the semantic hue families, drawn as a tinted panel
+ * with a matching left rule. The tint is the accelerator — the icon and the
+ * spelled-out label are what actually carry the severity, so the block still
+ * works for a reader who cannot separate amber from red.
+ */
 const VARIANTS = {
-  note: { icon: Info, label: "Note", rule: "border-l-border-strong" },
-  tip: { icon: CheckCircle2, label: "Tip", rule: "border-l-border-strong" },
-  warning: { icon: AlertTriangle, label: "Warning", rule: "border-l-foreground" },
-  danger: { icon: Ban, label: "Careful", rule: "border-l-foreground" },
+  note: {
+    icon: Info,
+    label: "Note",
+    surface: "border-info/20 bg-info-soft border-l-info",
+    accent: "text-info",
+  },
+  tip: {
+    icon: CheckCircle2,
+    label: "Tip",
+    surface: "border-positive/20 bg-positive-soft border-l-positive",
+    accent: "text-positive",
+  },
+  warning: {
+    icon: AlertTriangle,
+    label: "Warning",
+    surface: "border-caution/25 bg-caution-soft border-l-caution",
+    accent: "text-caution",
+  },
+  danger: {
+    icon: Ban,
+    label: "Careful",
+    surface: "border-critical/25 bg-critical-soft border-l-critical",
+    accent: "text-critical",
+  },
 } as const
 
 export type CalloutVariant = keyof typeof VARIANTS
@@ -15,8 +41,8 @@ export type CalloutVariant = keyof typeof VARIANTS
 /**
  * Aside block.
  *
- * Severity is signalled by the icon and the spelled-out label; the left rule
- * thickens for the two serious variants. Nothing depends on hue.
+ * Severity is signalled three ways at once — the icon, the spelled-out label
+ * and the tint — so no single channel has to carry it alone.
  */
 export function Callout({
   variant = "note",
@@ -29,25 +55,20 @@ export function Callout({
   children: React.ReactNode
   className?: string
 }) {
-  const { icon: Icon, label, rule } = VARIANTS[variant]
-  const serious = variant === "warning" || variant === "danger"
+  const { icon: Icon, label, surface, accent } = VARIANTS[variant]
 
   return (
     <aside
       className={cn(
-        "my-5 flex gap-3 border border-border bg-subtle p-4",
-        serious ? "border-l-2" : "border-l-2",
-        rule,
+        "my-5 flex gap-3 rounded-lg border border-l-[3px] p-4",
+        surface,
         className
       )}
     >
-      <Icon
-        aria-hidden="true"
-        className={cn("mt-0.5 size-4 shrink-0", serious ? "text-foreground" : "text-muted-foreground")}
-      />
+      <Icon aria-hidden="true" className={cn("mt-0.5 size-4 shrink-0", accent)} />
       <div className="min-w-0 flex-1">
-        <p className="label-caps mb-1.5 text-muted-foreground">{title ?? label}</p>
-        <div className="flex flex-col gap-2 text-sm leading-relaxed text-muted-foreground [&>p]:my-0">
+        <p className={cn("label-caps mb-1.5", accent)}>{title ?? label}</p>
+        <div className="flex flex-col gap-2 text-sm leading-relaxed text-foreground/80 [&>p]:my-0">
           {children}
         </div>
       </div>

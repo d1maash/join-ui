@@ -113,8 +113,8 @@ export const mdxComponents = {
   a: ({ href = "", className, ...props }: React.ComponentPropsWithoutRef<"a">) => {
     const internal = href.startsWith("/") || href.startsWith("#")
     const style = cn(
-      "font-medium text-foreground underline decoration-1 underline-offset-4 transition-[text-decoration-thickness]",
-      "hover:decoration-2",
+      "rounded-sm font-medium text-accent underline decoration-accent/35 decoration-1 underline-offset-4",
+      "transition-[text-decoration-color] hover:decoration-accent",
       "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
       className
     )
@@ -133,7 +133,7 @@ export const mdxComponents = {
   ul: ({ className, ...props }: React.ComponentPropsWithoutRef<"ul">) => (
     <ul
       className={cn(
-        "my-4 flex list-disc flex-col gap-2 pl-5 text-muted-foreground marker:text-border-strong",
+        "my-4 flex list-disc flex-col gap-2 pl-5 text-muted-foreground marker:text-accent/55",
         className
       )}
       {...props}
@@ -160,7 +160,7 @@ export const mdxComponents = {
   }: React.ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
       className={cn(
-        "my-5 border-l-2 border-foreground pl-4 text-muted-foreground italic",
+        "my-5 rounded-r-lg border-l-[3px] border-accent/40 bg-subtle py-2 pl-4 text-muted-foreground italic",
         className
       )}
       {...props}
@@ -174,7 +174,7 @@ export const mdxComponents = {
   code: ({ className, ...props }: React.ComponentPropsWithoutRef<"code">) => (
     <code
       className={cn(
-        "border border-border bg-muted px-[0.3em] py-[0.15em] font-mono text-[0.85em] text-foreground",
+        "rounded-sm border border-accent-border/60 bg-accent-soft px-[0.35em] py-[0.15em] font-mono text-[0.85em] text-accent",
         className
       )}
       {...props}
@@ -184,7 +184,7 @@ export const mdxComponents = {
   pre: Pre,
 
   table: ({ className, ...props }: React.ComponentPropsWithoutRef<"table">) => (
-    <div className="my-5 overflow-x-auto border border-border">
+    <div className="my-5 overflow-x-auto rounded-xl border border-border bg-card shadow-xs">
       <table
         className={cn("w-full border-collapse text-left text-sm", className)}
         {...props}
@@ -196,7 +196,7 @@ export const mdxComponents = {
     <th
       scope="col"
       className={cn(
-        "label-caps border-b border-border px-4 py-2.5 text-muted-foreground",
+        "label-caps border-b border-border bg-subtle px-4 py-2.5 text-muted-foreground",
         className
       )}
       {...props}
@@ -206,7 +206,7 @@ export const mdxComponents = {
   td: ({ className, ...props }: React.ComponentPropsWithoutRef<"td">) => (
     <td
       className={cn(
-        "border-b border-border px-4 py-2.5 align-top text-muted-foreground",
+        "border-b border-border px-4 py-2.5 align-top text-muted-foreground last:border-b-0",
         className
       )}
       {...props}

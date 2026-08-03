@@ -36,8 +36,8 @@ export function Step({
         "[counter-increment:step]",
         // The marker sits on the rule and carries the generated number.
         "before:absolute before:top-0 before:left-0 before:flex before:size-6 before:-translate-x-1/2",
-        "before:items-center before:justify-center before:border before:border-foreground",
-        "before:bg-background before:font-mono before:text-[0.6875rem] before:text-foreground",
+        "before:items-center before:justify-center before:rounded-full before:border before:border-accent-border",
+        "before:bg-accent-soft before:font-mono before:text-[0.6875rem] before:font-medium before:text-accent",
         "before:content-[counter(step)]"
       )}
     >

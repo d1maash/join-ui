@@ -28,7 +28,7 @@ export function SiteHeader() {
   const searchEntries = buildSearchIndex()
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-14 max-w-[100rem] items-center gap-3 px-4 sm:px-6">
         <MobileNav sections={sections} />
         <Logo />
@@ -66,7 +66,7 @@ export function SkipToContent() {
   return (
     <Link
       href="#main-content"
-      className="sr-only z-50 focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:border focus:border-foreground focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium"
+      className="sr-only z-50 focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:rounded-lg focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg"
     >
       Skip to content
     </Link>

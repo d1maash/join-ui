@@ -58,10 +58,13 @@ that distinction matters.
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-soft: var(--primary-soft);
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-border: var(--accent-border);
   --color-destructive: var(--destructive);
   --color-success: var(--success);
   --color-warning: var(--warning);
@@ -72,14 +75,19 @@ that distinction matters.
 }
 ```
 
-The grey ramp is mapped the same way, which is what gives you `bg-grey-100` and
-`text-grey-600` for the rare case where a semantic name would be a lie:
+Both ramps are mapped the same way, which is what gives you `bg-grey-100`,
+`text-grey-800` and `border-brand-200` for the rare case where a semantic name
+would be a lie:
 
 ```css title="app/globals.css"
 @theme inline {
   --color-grey-0: var(--grey-0);
   --color-grey-100: var(--grey-100);
   /* … through to --color-grey-1000 */
+
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  /* … through to --color-brand-900 */
 }
 ```
 
@@ -91,23 +99,44 @@ The grey ramp is mapped the same way, which is what gives you `bg-grey-100` and
 
 ## Radius
 
-Every step of the scale is pinned to zero, so a stray `rounded-lg` in an edit
-does nothing rather than breaking the grid:
+The scale is redeclared rather than pinned, so every step resolves to a real
+value and each one has a job:
 
 ```css title="app/globals.css"
 @theme inline {
-  --radius-xs: 0rem;
-  --radius-sm: 0rem;
-  --radius-md: 0rem;
-  --radius-lg: 0rem;
-  --radius-xl: 0rem;
-  --radius-2xl: 0rem;
-  --radius-3xl: 0rem;
+  --radius-xs: 0.25rem; /* a tag */
+  --radius-sm: 0.375rem; /* an inline code span, a chip */
+  --radius-md: 0.5rem; /* a menu item */
+  --radius-lg: 0.625rem; /* a control — buttons, inputs */
+  --radius-xl: 0.875rem; /* a card, a code block */
+  --radius-2xl: 1.125rem; /* a dialog */
+  --radius-3xl: 1.5rem;
+
+  /* The component scale, kept as aliases so installed components are stable. */
+  --radius-soft-sm: var(--radius-sm);
+  --radius-soft: var(--radius-lg);
+  --radius-soft-lg: var(--radius-xl);
 }
 ```
 
 `rounded-full` is deliberately left alone: a pip or an avatar is a circle, not a
 rounded rectangle.
+
+## Elevation
+
+The shadow scale is mapped through the same mechanism, so `shadow-sm` and
+`shadow-md` pick up the theme's own tinted shadow instead of Tailwind's black
+default:
+
+```css title="app/globals.css"
+@theme inline {
+  --shadow-xs: var(--elevation-xs);
+  --shadow-sm: var(--elevation-sm);
+  --shadow-md: var(--elevation-md);
+  --shadow-lg: var(--elevation-lg);
+  --shadow-ring: var(--elevation-ring); /* the soft focus halo */
+}
+```
 
 ## Motion tokens
 

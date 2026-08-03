@@ -59,34 +59,54 @@ a preview on this site render in light mode while the page around it stays dark.
 
   <Step title="Declare the dark tokens">
 
-    Dark mode inverts the grey ramp. Because the semantic tokens are aliases
-    onto that ramp, almost none of them need restating — `--foreground` is
-    `--grey-1000` in both themes, and `--grey-1000` is what changes.
+    Dark mode substitutes a second neutral ramp running the same direction:
+    `--grey-0` is the page in both themes and `--grey-1000` is the ink in both.
+    Because the semantic tokens are aliases onto that ramp, most of them need
+    no restating at all.
 
     ```css title="app/globals.css"
     .dark {
-      --grey-0: oklch(0 0 0);
-      --grey-50: oklch(0.09 0 0);
-      --grey-100: oklch(0.14 0 0);
-      --grey-200: oklch(0.22 0 0);
-      --grey-300: oklch(0.3 0 0);
-      --grey-400: oklch(0.42 0 0);
-      --grey-500: oklch(0.55 0 0);
-      --grey-600: oklch(0.68 0 0);
-      --grey-700: oklch(0.79 0 0);
-      --grey-800: oklch(0.88 0 0);
-      --grey-900: oklch(0.95 0 0);
-      --grey-1000: oklch(1 0 0);
+      --grey-0: oklch(0.205 0.009 280); /* #16171b — the page */
+      --grey-50: oklch(0.238 0.011 280);
+      --grey-100: oklch(0.268 0.013 280);
+      --grey-200: oklch(0.305 0.014 280);
+      --grey-300: oklch(0.35 0.016 280); /* the hairline */
+      --grey-400: oklch(0.425 0.017 280);
+      --grey-500: oklch(0.535 0.017 280);
+      --grey-600: oklch(0.645 0.016 281);
+      --grey-700: oklch(0.755 0.013 282); /* secondary text */
+      --grey-800: oklch(0.85 0.01 284);
+      --grey-900: oklch(0.925 0.007 286);
+      --grey-1000: oklch(0.972 0.004 288); /* the ink */
 
-      /* The two aliases that genuinely differ between themes. */
-      --popover: var(--grey-50);
-      --selection: oklch(1 0 0 / 0.18);
+      /* The aliases that genuinely differ between themes. */
+      --card: var(--grey-50);
+      --popover: var(--grey-100);
+      --subtle: var(--grey-50);
+      --selection: oklch(0.645 0.168 275 / 0.3);
     }
     ```
 
-    The ramp is not a mirror image of the light one. Dark surfaces need their
-    low steps spaced further apart than a straight inversion would give, or the
-    first three greys collapse into one flat black.
+    Three things about this ramp are worth copying if you build your own.
+
+    It is not a mirror image of the light one. Dark surfaces need their low
+    steps spaced further apart than a straight inversion would give, or the
+    first three collapse into one flat block.
+
+    It stops well short of black. `--grey-0` resolves to `#16171b`, not
+    `#0d0e11` and certainly not `#000000` — on a large surface pure black reads
+    as a hole punched through the screen, and a hairline drawn on it reads as a
+    scratch. The ink end stops short of white for the same reason, at `#f5f5f8`.
+
+    It leans cool where the light ramp leans warm — hue `280` against hue `85`.
+    That is deliberate rather than an oversight: warm dark neutrals go muddy at
+    these lightness values, and the cool cast sits better under the same indigo
+    accent that both themes share.
+
+    The `--card` and `--popover` aliases flip because the rule they encode is
+    directional, not absolute: *a raised surface sits one step above the page*.
+    In the light theme that step is upward into white; here it is upward out of
+    the deepest slate.
 
   </Step>
 </Steps>
