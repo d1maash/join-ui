@@ -338,8 +338,8 @@
   --shadow-lg: var(--elevation-lg);
   --shadow-xl: var(--elevation-lg);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
 
   --ease-out-soft: var(--ease-out-soft);
   --ease-in-out-soft: var(--ease-in-out-soft);
@@ -392,10 +392,23 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-feature-settings: "cv11", "ss01";
-    font-variant-ligatures: contextual;
     text-rendering: optimizeLegibility;
+    /*
+     * Antialiasing only, no `-moz-osx-font-smoothing: grayscale`. On a dark
+     * page grayscale smoothing thins light text until 400 reads as 300, which
+     * is most of why light-on-dark type looks weak.
+     */
     -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+   * Headings set their own tracking by size. Plex is a fairly narrow face
+   * already, so the blanket negative tracking a display font wants would close
+   * it up — only the largest sizes get any, and small headings get none.
+   */
+  h1,
+  h2 {
+    letter-spacing: -0.015em;
   }
 
   ::selection {

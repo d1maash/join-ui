@@ -34,7 +34,7 @@ export default function OpengraphImage() {
         fontFamily: "sans-serif",
       }}
     >
-      {/* A wide brand wash along the top edge, standing in for `.surface-glow`. */}
+      {/* An ink rule along the top edge — the card's one graphic element. */}
       <div
         style={{
           position: "absolute",

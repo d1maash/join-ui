@@ -5,7 +5,6 @@ import { Logo } from "@/components/site/logo"
 import { MobileNav } from "@/components/site/mobile-nav"
 import { NavLink } from "@/components/site/nav-link"
 import { SearchCommand } from "@/components/site/search-command"
-import { ThemeToggle } from "@/components/site/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { getSidebarSections } from "@/lib/docs/sidebar"
 import { buildSearchIndex } from "@/lib/search"
@@ -55,7 +54,6 @@ export function SiteHeader() {
               <GitHubIcon aria-hidden="true" className="size-4" />
             </a>
           </Button>
-          <ThemeToggle />
         </div>
       </div>
     </header>
