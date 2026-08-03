@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google"
+import { Inter, JetBrains_Mono } from "next/font/google"
 
 import { Toaster } from "@/components/ui/toaster"
 import { siteConfig } from "@/lib/site"
@@ -7,31 +7,34 @@ import { siteConfig } from "@/lib/site"
 import "./globals.css"
 
 /*
- * IBM Plex rather than Inter.
+ * Inter for everything the reader reads.
  *
- * Inter is the correct answer often enough that it has become the default
- * answer, and a page set in it at tight tracking reads as unattended — the
- * typeface is doing nothing the layout did not already do. Plex was drawn for
- * an engineering company and shows it: flared stems, a true single-storey `g`,
- * slightly narrow caps. It has opinions, which is the point.
+ * Documentation is not a place for a typeface with a point of view. A reader
+ * arrives mid-task, scans for the one paragraph they need and leaves; anything
+ * the face does on its own — flared stems, a narrow cap height, an unusual `g`
+ * — is friction spent on a page nobody is admiring. Inter was drawn for screen
+ * UI at small sizes and disappears, which is the entire job.
  *
- * The mono is its sibling rather than a second family, so the mono labels, the
- * numerals and the code all sit on the same skeleton as the prose.
- *
- * Only three weights are loaded. A wider range invites the middle of a scale to
- * be used for emphasis, which is how a hierarchy stops meaning anything.
+ * Both families are variable fonts, so the whole weight axis costs one file
+ * per family. The scale is still used sparingly — 400 for prose, 500 for
+ * interface labels, 600 for headings — but the restraint now lives in the
+ * components rather than in what was downloaded.
  */
-const plexSans = IBM_Plex_Sans({
+const sans = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-plex-sans",
+  variable: "--font-inter",
   display: "swap",
 })
 
-const plexMono = IBM_Plex_Mono({
+/*
+ * JetBrains Mono for code, and for code only.
+ *
+ * It is a taller-x-height mono than most, which matters because the listings
+ * on this site sit at 13px inside a card and have to stay readable there.
+ */
+const mono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-plex-mono",
+  variable: "--font-jetbrains-mono",
   display: "swap",
 })
 
@@ -97,7 +100,7 @@ export default function RootLayout({
        * `colorScheme` is what tells the browser to draw form controls,
        * scrollbars and the caret dark.
        */
-      className={`dark ${plexSans.variable} ${plexMono.variable}`}
+      className={`dark ${sans.variable} ${mono.variable}`}
       style={{ colorScheme: "dark" }}
     >
       <body className="font-sans antialiased">
