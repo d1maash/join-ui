@@ -174,7 +174,7 @@ export const mdxComponents = {
   code: ({ className, ...props }: React.ComponentPropsWithoutRef<"code">) => (
     <code
       className={cn(
-        "rounded-sm border border-accent-border/60 bg-accent-soft px-[0.35em] py-[0.15em] font-mono text-[0.85em] text-accent",
+        "rounded-sm border border-border bg-muted px-[0.35em] py-[0.15em] font-mono text-[0.85em] text-foreground",
         className
       )}
       {...props}

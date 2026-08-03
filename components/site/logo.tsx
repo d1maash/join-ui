@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils"
  * The mark: two strokes converging inside a rounded square — the "join" in
  * Joinway.
  *
- * The tile is filled with `--primary` and the strokes are knocked out of it in
- * `--primary-foreground`, so the mark reads the same on paper, on slate and on
- * a social card, and needs no second asset for either theme.
+ * The tile is filled with `--primary` — ink — and the strokes are knocked out
+ * of it in `--primary-foreground`, so the mark reads the same on paper, on
+ * charcoal and on a social card, and needs no second asset for either theme.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (

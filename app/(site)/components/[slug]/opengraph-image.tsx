@@ -18,14 +18,10 @@ export function generateStaticParams() {
  * as hex — the same set the site-wide card uses. Keep both in sync with
  * `globals.css`.
  */
-const PAPER = "#fcfbf9"
-const INK = "#1d1610"
-const MUTED = "#615b54"
-const HAIRLINE = "#e5e3df"
-const BRAND = "#525edd"
-const BRAND_INK = "#414bb5"
-const BRAND_SOFT = "#f5f5ff"
-const BRAND_BORDER = "#d7dafd"
+const PAPER = "#f6f2ec"
+const INK = "#2a2420"
+const MUTED = "#6b625a"
+const HAIRLINE = "#e4ded6"
 
 export default async function ComponentOpengraphImage({
   params,
@@ -60,9 +56,9 @@ export default async function ComponentOpengraphImage({
           top: 0,
           left: 0,
           right: 0,
-          height: 8,
+          height: 6,
           display: "flex",
-          backgroundImage: `linear-gradient(90deg, ${BRAND}, #6d7bf1 55%, ${BRAND_BORDER})`,
+          backgroundColor: INK,
         }}
       />
 
@@ -72,7 +68,7 @@ export default async function ComponentOpengraphImage({
             width: 42,
             height: 42,
             borderRadius: 11,
-            backgroundColor: BRAND,
+            backgroundColor: INK,
             color: "#ffffff",
             display: "flex",
             alignItems: "center",
@@ -92,13 +88,13 @@ export default async function ComponentOpengraphImage({
             display: "flex",
             marginLeft: "auto",
             borderRadius: 999,
-            border: `1px solid ${BRAND_BORDER}`,
-            backgroundColor: BRAND_SOFT,
+            border: `1px solid ${HAIRLINE}`,
+            backgroundColor: "#ffffff",
             padding: "7px 18px",
             fontSize: 19,
             letterSpacing: 2,
             textTransform: "uppercase",
-            color: BRAND_INK,
+            color: INK,
           }}
         >
           {category}
@@ -144,7 +140,7 @@ export default async function ComponentOpengraphImage({
           color: MUTED,
         }}
       >
-        <div style={{ display: "flex", color: BRAND_INK }}>
+        <div style={{ display: "flex", color: INK }}>
           {siteConfig.namespace}/{slug}
         </div>
         <div style={{ display: "flex", marginLeft: "auto" }}>

@@ -11,16 +11,13 @@ export const contentType = "image/png"
  *
  * The design tokens do not reach Satori — it resolves no custom properties —
  * so the light theme's values are inlined here, resolved from `oklch` to hex.
- * They are the same six the site uses: paper, ink, muted, hairline, and the
- * two brand steps. Keep this in sync with `globals.css`.
+ * They are the four the site uses: paper, ink, muted and the hairline. Keep
+ * this in sync with `globals.css`.
  */
-const PAPER = "#fcfbf9"
-const INK = "#1d1610"
-const MUTED = "#615b54"
-const HAIRLINE = "#e5e3df"
-const BRAND = "#525edd"
-const BRAND_SOFT = "#f5f5ff"
-const BRAND_BORDER = "#d7dafd"
+const PAPER = "#f6f2ec"
+const INK = "#2a2420"
+const MUTED = "#6b625a"
+const HAIRLINE = "#e4ded6"
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -44,9 +41,9 @@ export default function OpengraphImage() {
           top: 0,
           left: 0,
           right: 0,
-          height: 8,
+          height: 6,
           display: "flex",
-          backgroundImage: `linear-gradient(90deg, ${BRAND}, #6d7bf1 55%, ${BRAND_BORDER})`,
+          backgroundColor: INK,
         }}
       />
 
@@ -56,7 +53,7 @@ export default function OpengraphImage() {
             width: 46,
             height: 46,
             borderRadius: 12,
-            backgroundColor: BRAND,
+            backgroundColor: INK,
             color: "#ffffff",
             display: "flex",
             alignItems: "center",
@@ -76,13 +73,13 @@ export default function OpengraphImage() {
             display: "flex",
             marginLeft: "auto",
             borderRadius: 999,
-            border: `1px solid ${BRAND_BORDER}`,
-            backgroundColor: BRAND_SOFT,
+            border: `1px solid ${HAIRLINE}`,
+            backgroundColor: "#ffffff",
             padding: "8px 18px",
             fontSize: 19,
             letterSpacing: 3,
             textTransform: "uppercase",
-            color: "#414bb5",
+            color: MUTED,
           }}
         >
           Component registry
@@ -129,7 +126,7 @@ export default function OpengraphImage() {
           color: MUTED,
         }}
       >
-        <div style={{ display: "flex", color: BRAND, marginRight: 12 }}>$</div>
+        <div style={{ display: "flex", color: INK, marginRight: 12 }}>$</div>
         <div style={{ display: "flex" }}>
           pnpm dlx shadcn@latest add {siteConfig.namespace}/…
         </div>

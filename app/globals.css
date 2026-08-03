@@ -42,11 +42,11 @@
    * than to `#000`. Neither end of the ramp is a pure value.
    */
   --grey-0: oklch(1 0 0);
-  --grey-50: oklch(0.981 0.004 78);
-  --grey-100: oklch(0.966 0.006 76);
-  --grey-200: oklch(0.943 0.008 74);
-  --grey-300: oklch(0.912 0.009 72);
-  --grey-400: oklch(0.855 0.01 70);
+  --grey-50: oklch(0.978 0.005 78);
+  --grey-100: oklch(0.955 0.009 76);
+  --grey-200: oklch(0.928 0.011 74);
+  --grey-300: oklch(0.898 0.011 72);
+  --grey-400: oklch(0.845 0.012 70);
   --grey-500: oklch(0.73 0.012 66);
   --grey-600: oklch(0.6 0.013 62);
   --grey-700: oklch(0.472 0.014 58);
@@ -170,8 +170,8 @@
    * scratch.
    */
   --grey-0: oklch(0.192 0.004 60);
-  --grey-50: oklch(0.226 0.005 60);
-  --grey-100: oklch(0.256 0.005 60);
+  --grey-50: oklch(0.238 0.005 60);
+  --grey-100: oklch(0.272 0.005 60);
   --grey-200: oklch(0.294 0.006 58);
   --grey-300: oklch(0.34 0.006 58);
   --grey-400: oklch(0.42 0.007 56);

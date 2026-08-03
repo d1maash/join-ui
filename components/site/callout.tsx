@@ -4,34 +4,37 @@ import { AlertTriangle, Ban, CheckCircle2, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * Each variant gets one of the semantic hue families, drawn as a tinted panel
- * with a matching left rule. The tint is the accelerator — the icon and the
- * spelled-out label are what actually carry the severity, so the block still
- * works for a reader who cannot separate amber from red.
+ * Callouts are the one part of the documentation chrome allowed hue, because
+ * severity is genuinely information rather than styling.
+ *
+ * The two quiet variants stay neutral — a "note" is not an event, and tinting
+ * it just adds a colour to the page. Only `warning` and `danger` take a family,
+ * and even then the tint sits behind an icon and a spelled-out label that carry
+ * the meaning on their own.
  */
 const VARIANTS = {
   note: {
     icon: Info,
     label: "Note",
-    surface: "border-info/20 bg-info-soft border-l-info",
-    accent: "text-info",
+    surface: "border-border bg-card border-l-border-strong",
+    accent: "text-muted-foreground",
   },
   tip: {
     icon: CheckCircle2,
     label: "Tip",
-    surface: "border-positive/20 bg-positive-soft border-l-positive",
-    accent: "text-positive",
+    surface: "border-border bg-card border-l-border-strong",
+    accent: "text-muted-foreground",
   },
   warning: {
     icon: AlertTriangle,
     label: "Warning",
-    surface: "border-caution/25 bg-caution-soft border-l-caution",
+    surface: "border-caution/20 bg-caution-soft border-l-caution",
     accent: "text-caution",
   },
   danger: {
     icon: Ban,
     label: "Careful",
-    surface: "border-critical/25 bg-critical-soft border-l-critical",
+    surface: "border-critical/20 bg-critical-soft border-l-critical",
     accent: "text-critical",
   },
 } as const
@@ -60,7 +63,7 @@ export function Callout({
   return (
     <aside
       className={cn(
-        "my-5 flex gap-3 rounded-lg border border-l-[3px] p-4",
+        "my-5 flex gap-3 rounded-lg border border-l-2 p-4 shadow-xs",
         surface,
         className
       )}

@@ -66,24 +66,23 @@ export default function HomePage() {
 
   return (
     <main id="main-content">
-      {/* Masthead. The glow is lighting, not content — hence aria-hidden. */}
-      <section className="relative isolate overflow-hidden border-b border-border">
-        <span aria-hidden="true" className="surface-glow -z-10" />
+      {/* Masthead */}
+      <section className="border-b border-border">
         <div className="mx-auto max-w-[100rem] px-4 sm:px-6">
           <div className="grid gap-10 py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
             <div className="lg:col-span-8">
-              <p className="label-caps mb-8 inline-flex items-center gap-2 rounded-full border border-accent-border bg-accent-soft px-3 py-1.5 text-accent">
+              <p className="label-caps mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-muted-foreground shadow-xs">
                 {siteConfig.namespace} — open-code component registry
               </p>
               {/*
-                Two-tone: the second line drops a step down the ramp so a
-                display size this large lands as a heading rather than as a
-                solid block of ink.
+                Held to ~4rem rather than the 6.5 it was. Past that the headline
+                stops being type and becomes a shape, and a shape this dark is
+                the thing that made the page feel hard.
               */}
-              <h1 className="text-[clamp(2.75rem,8vw,6.5rem)] leading-[0.92] font-semibold tracking-[-0.035em] text-balance">
+              <h1 className="text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.02] font-semibold tracking-[-0.03em] text-balance">
                 Components
                 <br />
-                <span className="text-grey-800">you actually own</span>
+                you actually own
               </h1>
             </div>
 
@@ -136,7 +135,7 @@ export default function HomePage() {
                   documentation, the search index and the installable JSON endpoints are
                   all in place and wired to a single metadata file — the first component
                   added to{" "}
-                  <code className="rounded-sm border border-accent-border/60 bg-accent-soft px-1 py-0.5 font-mono text-[0.85em] text-accent">
+                  <code className="rounded-sm border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
                     lib/registry/components.ts
                   </code>{" "}
                   will appear across every surface of this site automatically.
@@ -212,7 +211,7 @@ export default function HomePage() {
                   key={principle.title}
                   className="flex flex-col gap-2 rounded-xl border border-border bg-card p-5 shadow-xs"
                 >
-                  <span className="numeral flex size-6 items-center justify-center rounded-full bg-accent-soft text-[0.6875rem] font-medium text-accent">
+                  <span className="numeral text-[0.6875rem] text-muted-foreground">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <h3 className="text-[0.9375rem] font-semibold tracking-tight">
@@ -363,7 +362,7 @@ function Figure({
   return (
     <div className={bordered ? "border-border py-8 sm:border-l sm:pl-8" : "py-8"}>
       <dt className="label-caps text-muted-foreground">{label}</dt>
-      <dd className="numeral mt-2 bg-gradient-to-br from-accent to-brand-500 bg-clip-text text-4xl font-semibold text-transparent">
+      <dd className="numeral mt-2 text-4xl font-semibold">
         {String(value).padStart(2, "0")}
       </dd>
     </div>

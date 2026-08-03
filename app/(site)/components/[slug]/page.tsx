@@ -450,7 +450,7 @@ export default async function ComponentPage({ params }: PageProps) {
 
 function Code({ children }: { children: React.ReactNode }) {
   return (
-    <code className="rounded-sm border border-accent-border/60 bg-accent-soft px-1 py-0.5 font-mono text-[0.85em] text-accent">
+    <code className="rounded-sm border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
       {children}
     </code>
   )
