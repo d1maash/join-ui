@@ -92,7 +92,7 @@ Project stack:
 Requirements:
 - Install all required dependencies: ${dependencies}.
 - Place the component at ${primaryTarget}.
-- Use the project's existing \`cn\` utility from \`@/lib/utils\` and its existing design tokens (background, foreground, card, muted, border, primary, accent, destructive, radius, plus the component colour families info, positive, caution and critical — each with a \`-soft\` tint and a \`-foreground\`, as in \`bg-info-soft text-info\`). Round corners with the \`rounded-soft-sm\` / \`rounded-soft\` / \`rounded-soft-lg\` scale. Do not introduce new hard-coded colours, and do not reach for Tailwind's built-in palette (\`gray-500\`, \`red-600\`) — the tokens are warm neutrals and low-chroma hues, so those land next to but not on the system.
+- Use the project's existing \`cn\` utility from \`@/lib/utils\` and its existing design tokens (background, foreground, card, muted, border, primary, accent, destructive, radius, plus the component colour families info, positive, caution and critical — each with a \`-soft\` tint and a \`-foreground\`, as in \`bg-info-soft text-info\`). Round corners with the \`rounded-soft-sm\` / \`rounded-soft\` / \`rounded-soft-lg\` scale. Do not introduce new hard-coded colours, and do not reach for Tailwind's built-in palette (\`gray-500\`, \`red-600\`) — the tokens are warm neutrals and low-chroma hues, so those land next to but not on the system. A colour the caller hands in through a prop is not a hard-coded colour: where the implementation takes one, that API stays.
 - Preserve dark mode support. The component must theme through CSS variables only — do not add \`dark:\` variants, so it keeps working inside a forced-theme preview.
 - Preserve keyboard navigation and every ARIA attribute in the implementation below.
 - Respect \`prefers-reduced-motion: reduce\`.
@@ -117,7 +117,9 @@ Keyboard interactions:
 ${formatKeyboard(component)}
 
 Animation requirements:
-- Animate compositor-friendly properties (transform, opacity) only.
+- Reach for transform and opacity first: they are the two the compositor carries on its own, and they are what most of the motion below is built from.
+- Where the implementation animates something costlier than those — a filter, a shadow — it is deliberate, bounded, and usually behind a prop that turns it off. Keep both the effect and the escape hatch rather than optimising the effect away.
+- Add no motion of your own. Nothing may animate on mount, and nothing may loop at rest unless the implementation below already does.
 - Pause or skip animation when the element is outside the viewport where the implementation already does so.
 - Every animation must degrade to a static, fully functional state under reduced motion.
 
