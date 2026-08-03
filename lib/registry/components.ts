@@ -490,7 +490,7 @@ export function Example() {
           {
             name: "blur",
             type: "number",
-            defaultValue: "1.1",
+            defaultValue: "0.55",
             description:
               "Pixels of blur per rank. Set 0 to drop the filter — and the per-frame repaint with it — on a long list or a weak device.",
           },
