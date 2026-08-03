@@ -19,9 +19,11 @@ import type { ReactNode } from "react"
  * `pnpm registry:validate` fails for any component without an entry here.
  */
 const StatusTimelinePreview = dynamic(() => import("./status-timeline-preview"))
+const FocusStackPreview = dynamic(() => import("./focus-stack-preview"))
 
 export const previews: Record<string, () => ReactNode> = {
   "status-timeline": () => <StatusTimelinePreview />,
+  "focus-stack": () => <FocusStackPreview />,
 }
 
 export function renderPreview(slug: string): ReactNode | null {

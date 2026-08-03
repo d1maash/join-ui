@@ -88,6 +88,44 @@
           "critical-foreground": "oklch(0.16 0.04 23)"
         }
       }
+    },
+    {
+      "name": "focus-stack",
+      "type": "registry:ui",
+      "title": "Focus Stack",
+      "description": "A coil of pills that keeps one item in focus and lets the rest twist away, turned either by a timer or by the page scroll.",
+      "author": "Join Way",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "marketing",
+        "carousel",
+        "stack",
+        "scroll",
+        "showcase",
+        "features",
+        "list",
+        "slider",
+        "parallax"
+      ],
+      "docs": "https://ui.join-way.com/components/focus-stack",
+      "meta": {
+        "status": "new",
+        "since": "2026-08-03",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinui/focus-stack"
+      },
+      "files": [
+        {
+          "path": "registry/components/focus-stack.tsx",
+          "type": "registry:ui",
+          "target": "components/joinui/focus-stack.tsx"
+        }
+      ]
     }
   ]
 }
