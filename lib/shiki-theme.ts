@@ -169,5 +169,5 @@ function buildTheme(name: string, type: "light" | "dark", ramp: Ramp) {
   } satisfies ThemeRegistrationRaw
 }
 
-export const joinwayLight = buildTheme("joinway-light", "light", LIGHT)
-export const joinwayDark = buildTheme("joinway-dark", "dark", DARK)
+export const joinuiLight = buildTheme("joinui-light", "light", LIGHT)
+export const joinuiDark = buildTheme("joinui-dark", "dark", DARK)

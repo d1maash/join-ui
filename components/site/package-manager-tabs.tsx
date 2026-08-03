@@ -28,7 +28,7 @@ export function PackageManagerTabs({
   className?: string
 }) {
   const [manager, setManager] = useStoredPreference<PackageManager>(
-    "joinway-package-manager",
+    "joinui-package-manager",
     "pnpm",
     isPackageManager
   )

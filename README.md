@@ -1,4 +1,4 @@
-# Joinway UI
+# Join UI
 
 An open-code catalog of motion-first React components for Next.js, with a
 shadcn-compatible registry and a generated AI prompt for every component.
@@ -191,7 +191,7 @@ defineComponent({
   accessibility: ["Decorative layers are aria-hidden and pointer-events-none."],
   keyboard: [],
   props: [{ name: "GlowCard", props: [/* … */] }],
-  usage: `import { GlowCard } from "@/components/joinway/glow-card"`,
+  usage: `import { GlowCard } from "@/components/joinui/glow-card"`,
   customization: [],
   related: [],
   since: "2026-08-02",
@@ -235,7 +235,7 @@ search index, the sitemap and `generateStaticParams`.
 | `<Callout type="note \| tip \| warning \| success">` | Highlighted aside                 |
 | `<Steps>` / `<Step title="…">`                       | Numbered walkthrough              |
 | `<CardGroup>` / `<Card title href>`                  | Linkable card grid                |
-| `<InstallTabs target="@joinway/name" />`             | `shadcn add`, per package manager |
+| `<InstallTabs target="@joinui/name" />`             | `shadcn add`, per package manager |
 | `<DependencyTabs packages="motion clsx" />`          | `install`, per package manager    |
 | `<ComponentPreview slug title />`                    | Live preview                      |
 | `<Kbd>` / `<Badge>`                                  | Inline key and status chips       |
@@ -270,13 +270,13 @@ pnpm registry:build
 Consumers install by namespace:
 
 ```bash
-pnpm dlx shadcn@latest add @joinway/glow-card
+pnpm dlx shadcn@latest add @joinui/glow-card
 ```
 
 …or straight from a URL, with nothing configured:
 
 ```bash
-pnpm dlx shadcn@latest add https://ui.joinway.dev/r/glow-card.json
+pnpm dlx shadcn@latest add https://ui.join-way.com/r/glow-card.json
 ```
 
 To consume the namespace, add it to `components.json`:
@@ -284,7 +284,7 @@ To consume the namespace, add it to `components.json`:
 ```json
 {
   "registries": {
-    "@joinway": "https://ui.joinway.dev/r/{name}.json"
+    "@joinui": "https://ui.join-way.com/r/{name}.json"
   }
 }
 ```

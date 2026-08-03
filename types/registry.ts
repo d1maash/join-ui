@@ -1,5 +1,5 @@
 /**
- * Shared content model for Joinway UI.
+ * Shared content model for Join UI.
  *
  * Every surface of the site — catalog card, component page, navigation,
  * search index, install command, `/r/*.json` registry item and the AI prompt —

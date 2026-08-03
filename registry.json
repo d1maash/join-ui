@@ -1,14 +1,14 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "joinway",
-  "homepage": "https://ui.joinway.dev",
+  "name": "joinui",
+  "homepage": "https://ui.join-way.com",
   "items": [
     {
       "name": "status-timeline",
       "type": "registry:ui",
       "title": "Status Timeline",
       "description": "A colour-coded step tracker for orders, deployments and onboarding, with a pulsing marker on the step in flight.",
-      "author": "Joinway",
+      "author": "Join Way",
       "dependencies": [
         "motion",
         "lucide-react"
@@ -27,18 +27,18 @@
         "steps",
         "delivery"
       ],
-      "docs": "https://ui.joinway.dev/components/status-timeline",
+      "docs": "https://ui.join-way.com/components/status-timeline",
       "meta": {
         "status": "new",
         "since": "2026-08-02",
         "featured": true,
-        "installCommand": "pnpm dlx shadcn@latest add @joinway/status-timeline"
+        "installCommand": "pnpm dlx shadcn@latest add @joinui/status-timeline"
       },
       "files": [
         {
           "path": "registry/components/status-timeline.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/status-timeline.tsx"
+          "target": "components/joinui/status-timeline.tsx"
         }
       ],
       "cssVars": {

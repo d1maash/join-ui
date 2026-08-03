@@ -1,4 +1,4 @@
-Joinway UI targets Tailwind CSS v4. There is no `tailwind.config.ts` — the theme
+Join UI targets Tailwind CSS v4. There is no `tailwind.config.ts` — the theme
 is declared in CSS, which is also what lets any subtree redeclare it.
 
 ## Install
@@ -192,6 +192,6 @@ const COL_SPAN = { 1: "md:col-span-1", 2: "md:col-span-2" } as const
 <div className={COL_SPAN[span]} />
 ```
 
-Every Joinway component uses the second form. Any component that takes a numeric
+Every Join UI component uses the second form. Any component that takes a numeric
 layout prop — a span, a column count, a size step — resolves it through a
 lookup table of complete class names for exactly this reason.

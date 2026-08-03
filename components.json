@@ -19,6 +19,6 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@joinway": "https://ui.joinway.dev/r/{name}.json"
+    "@joinui": "https://ui.join-way.com/r/{name}.json"
   }
 }

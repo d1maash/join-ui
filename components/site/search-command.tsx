@@ -61,7 +61,7 @@ export function SearchCommand({ index }: { index: SearchEntry[] }) {
       <Command.Dialog
         open={open}
         onOpenChange={setOpen}
-        label="Search Joinway UI"
+        label="Search Join UI"
         shouldFilter={false}
         // cmdk renders its own portal + overlay; both are styled here so the
         // dialog matches the rest of the rounded, softly raised system.

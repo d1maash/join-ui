@@ -70,7 +70,7 @@ function Pre({ children }: React.ComponentPropsWithoutRef<"pre">) {
   )
 }
 
-/** `<InstallTabs target="@joinway/magnetic-button" />` inside MDX. */
+/** `<InstallTabs target="@joinui/magnetic-button" />` inside MDX. */
 function InstallTabs({ target, label }: { target: string; label?: string }) {
   return (
     <PackageManagerTabs

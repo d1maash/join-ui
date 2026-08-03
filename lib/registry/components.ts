@@ -165,7 +165,7 @@ export const components: ComponentMetadata[] = [
         ],
       },
     ],
-    usage: `import { StatusTimeline } from "@/components/joinway/status-timeline"
+    usage: `import { StatusTimeline } from "@/components/joinui/status-timeline"
 
 export function Example() {
   return (

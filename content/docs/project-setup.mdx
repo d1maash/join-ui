@@ -91,19 +91,19 @@ export function cn(...inputs: ClassValue[]) {
 }
 ```
 
-The shadcn CLI creates this file for you during `init`, and every Joinway
+The shadcn CLI creates this file for you during `init`, and every Join UI
 registry item lists `utils` in its `registryDependencies` so it is installed
 automatically when missing.
 
 ## Where components land
 
-The registry writes to `components/joinway/<name>.tsx`. That is set once, in
+The registry writes to `components/joinui/<name>.tsx`. That is set once, in
 `lib/site.ts`:
 
 ```ts title="lib/site.ts"
 export const siteConfig = {
-  namespace: "@joinway",
-  installTarget: "components/joinway",
+  namespace: "@joinui",
+  installTarget: "components/joinui",
   // …
 } as const
 ```

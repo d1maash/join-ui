@@ -29,8 +29,8 @@ export const docsNav: DocsNavSection[] = [
   {
     title: "Getting Started",
     items: [
-      item("introduction", "Introduction", "What Joinway UI is and how it is built."),
-      item("installation", "Installation", "Add Joinway UI to a new or existing app."),
+      item("introduction", "Introduction", "What Join UI is and how it is built."),
+      item("installation", "Installation", "Add Join UI to a new or existing app."),
       item(
         "project-setup",
         "Project setup",

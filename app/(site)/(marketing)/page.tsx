@@ -17,8 +17,8 @@ import { siteConfig } from "@/lib/site"
 
 export const metadata: Metadata = {
   // No `title` — the root layout's `title.default` already reads
-  // "Joinway UI — <tagline>", and setting one here would run it through the
-  // "%s — Joinway UI" template and repeat the site name.
+  // "Join UI — <tagline>", and setting one here would run it through the
+  // "%s — Join UI" template and repeat the site name.
   description: siteConfig.description,
   alternates: { canonical: "/" },
 }
@@ -167,7 +167,7 @@ export default function HomePage() {
                 Straight into your project
               </h2>
               <p className="leading-relaxed text-pretty text-muted-foreground">
-                Joinway UI is a shadcn-compatible registry. Point the CLI at the{" "}
+                Join UI is a shadcn-compatible registry. Point the CLI at the{" "}
                 <code className="border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
                   {siteConfig.namespace}
                 </code>{" "}
@@ -337,7 +337,7 @@ Project stack:
 Requirements:
 - Install all required dependencies.
 - Place the component at
-  components/joinway/<component>.tsx.
+  components/joinui/<component>.tsx.
 - Use the project's existing \`cn\` utility …
 - Respect \`prefers-reduced-motion: reduce\`.
 - Do not modify unrelated files.`}

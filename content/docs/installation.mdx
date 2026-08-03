@@ -1,4 +1,4 @@
-Joinway UI installs through the shadcn CLI. If your project already uses
+Join UI installs through the shadcn CLI. If your project already uses
 shadcn/ui, you only need to add the registry namespace — skip to
 [registry setup](/docs/registry-setup).
 
@@ -31,20 +31,20 @@ shadcn/ui, you only need to add the registry namespace — skip to
 
   <Step title="Initialise shadcn">
 
-    This creates `components.json` and the `cn` utility that every Joinway
+    This creates `components.json` and the `cn` utility that every Join UI
     component imports.
 
     ```bash
     pnpm dlx shadcn@latest init
     ```
 
-    Answer the prompts however you like — Joinway components respect your
+    Answer the prompts however you like — Join UI components respect your
     aliases. `neutral` is the closest base colour to the tokens you will add in
     the next step, so it is the least surprising answer there.
 
   </Step>
 
-  <Step title="Register the @joinway namespace">
+  <Step title="Register the @joinui namespace">
 
     Add a `registries` block to `components.json`:
 
@@ -57,7 +57,7 @@ shadcn/ui, you only need to add the registry namespace — skip to
       "tailwind": { "css": "app/globals.css", "baseColor": "neutral", "cssVariables": true },
       "aliases": { "components": "@/components", "utils": "@/lib/utils", "ui": "@/components/ui" },
       "registries": {
-        "@joinway": "https://ui.joinway.dev/r/{name}.json"
+        "@joinui": "https://ui.join-way.com/r/{name}.json"
       }
     }
     ```
@@ -66,7 +66,7 @@ shadcn/ui, you only need to add the registry namespace — skip to
 
   <Step title="Add the design tokens">
 
-    Joinway components read the neutral ramp and the semantic tokens built on
+    Join UI components read the neutral ramp and the semantic tokens built on
     it — `--background`, `--foreground`, `--muted-foreground`, `--border`,
     `--primary`, `--accent`, `--radius`, the elevation steps and the motion
     variables. Copy them into your `globals.css`; the full block is in
@@ -85,17 +85,17 @@ shadcn/ui, you only need to add the registry namespace — skip to
 
     Substitute the slug you want from the [catalog](/components):
 
-    <InstallTabs target="@joinway/<component>" />
+    <InstallTabs target="@joinui/<component>" />
 
     The CLI resolves dependencies, installs them with your package manager and
-    writes the component to `components/joinway/<component>.tsx`.
+    writes the component to `components/joinui/<component>.tsx`.
 
   </Step>
 
   <Step title="Use it">
 
     ```tsx title="app/page.tsx"
-    import { YourComponent } from "@/components/joinway/your-component"
+    import { YourComponent } from "@/components/joinui/your-component"
 
     export default function Page() {
       return <YourComponent>Get started</YourComponent>
@@ -113,7 +113,7 @@ shadcn/ui, you only need to add the registry namespace — skip to
 You do not have to edit `components.json` at all. Every registry item is a plain
 JSON file, so the CLI can take its URL directly:
 
-<InstallTabs target="https://ui.joinway.dev/r/<component>.json" />
+<InstallTabs target="https://ui.join-way.com/r/<component>.json" />
 
 This is the fastest way to try one component, and it is what the "Installation"
 tab on every component page shows as a fallback — with the real slug already
@@ -136,7 +136,7 @@ the complete source and a copy button.
 
   <Step title="Copy the source">
 
-    Paste it into `components/joinway/<name>.tsx`. The import of `cn` assumes
+    Paste it into `components/joinui/<name>.tsx`. The import of `cn` assumes
     `@/lib/utils` — adjust it if your alias differs.
 
   </Step>
@@ -144,7 +144,7 @@ the complete source and a copy button.
 
 ## Verifying the install
 
-Run your type checker. Joinway components export their prop interfaces, so a
+Run your type checker. Join UI components export their prop interfaces, so a
 missing dependency or a wrong alias surfaces immediately:
 
 ```bash

@@ -13,12 +13,12 @@ import { siteConfig } from "@/lib/site"
 export const metadata: Metadata = {
   title: "Components",
   description:
-    "Browse every Joinway UI component. Filter by category, status and traits, preview each one live, then install it with the shadcn CLI.",
+    "Browse every Join UI component. Filter by category, status and traits, preview each one live, then install it with the shadcn CLI.",
   alternates: { canonical: "/components" },
   openGraph: {
     title: `Components — ${siteConfig.name}`,
     description:
-      "Browse every Joinway UI component. Filter by category, status and traits, then install with the shadcn CLI.",
+      "Browse every Join UI component. Filter by category, status and traits, then install with the shadcn CLI.",
     url: `${siteConfig.url}/components`,
   },
 }
