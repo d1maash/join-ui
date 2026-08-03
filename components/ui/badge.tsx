@@ -15,8 +15,14 @@ import type { ComponentStatus } from "@/types/registry"
  */
 const badgeVariants = cva(
   cn(
-    "inline-flex items-center gap-1.5 rounded-full border font-mono uppercase whitespace-nowrap select-none",
-    "tracking-[0.08em]",
+    "inline-flex items-center gap-1.5 rounded-full border whitespace-nowrap select-none",
+    /*
+     * Set in the interface face at its own size, not in mono caps. A pill is
+     * read as a word — "New", "Data Display" — and uppercase mono turns each
+     * one into a string of letters to decode at the exact moment a reader is
+     * scanning past it.
+     */
+    "font-medium tracking-[-0.005em]",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0"
   ),
   {
@@ -36,9 +42,14 @@ const badgeVariants = cva(
         critical: "border-transparent bg-critical-soft text-critical",
         info: "border-transparent bg-info-soft text-info",
       },
+      /*
+       * Both steps are larger than they were. Uppercase mono carries at 9px
+       * because every glyph is cap height; a mixed-case sans at that size is
+       * simply small, so the scale moves up to where its x-height works.
+       */
       size: {
-        sm: "h-5 px-2 text-[0.5625rem]",
-        md: "h-6 px-2.5 text-[0.625rem]",
+        sm: "h-[1.375rem] px-2.5 text-[0.6875rem]",
+        md: "h-6 px-2.5 text-xs",
       },
     },
     defaultVariants: { variant: "neutral", size: "sm" },
@@ -71,7 +82,13 @@ export function StatusBadge({
   ...props
 }: { status: ComponentStatus } & Omit<BadgeProps, "variant" | "children">) {
   return (
-    <Badge variant={STATUS_VARIANT[status]} className={className} {...props}>
+    <Badge
+      variant={STATUS_VARIANT[status]}
+      // The registry stores the status lower-cased; `capitalize` is what makes
+      // it a word on screen now that the pill is no longer uppercased wholesale.
+      className={cn("capitalize", className)}
+      {...props}
+    >
       {status}
     </Badge>
   )

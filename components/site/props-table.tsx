@@ -29,16 +29,16 @@ export function PropsTable({ groups }: { groups: PropGroup[] }) {
               <caption className="sr-only">Props for {group.name}</caption>
               <thead>
                 <tr className="border-b border-border bg-subtle">
-                  <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
+                  <th scope="col" className="label-micro px-4 py-2.5 text-muted-foreground">
                     Prop
                   </th>
-                  <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
+                  <th scope="col" className="label-micro px-4 py-2.5 text-muted-foreground">
                     Type
                   </th>
-                  <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
+                  <th scope="col" className="label-micro px-4 py-2.5 text-muted-foreground">
                     Default
                   </th>
-                  <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
+                  <th scope="col" className="label-micro px-4 py-2.5 text-muted-foreground">
                     Description
                   </th>
                 </tr>

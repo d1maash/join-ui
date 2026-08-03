@@ -23,7 +23,7 @@ export function Breadcrumbs({
           return (
             <li key={`${item.label}-${index}`} className="flex items-center gap-2">
               {index > 0 ? (
-                <span aria-hidden="true" className="label-caps text-muted-foreground/45">
+                <span aria-hidden="true" className="label-micro text-muted-foreground/45">
                   /
                 </span>
               ) : null}
@@ -31,7 +31,7 @@ export function Breadcrumbs({
                 <Link
                   href={item.href}
                   className={cn(
-                    "label-caps rounded-sm text-muted-foreground underline-offset-4 transition-colors",
+                    "label-micro rounded-sm text-muted-foreground underline-offset-4 transition-colors",
                     "hover:text-foreground hover:underline"
                   )}
                 >
@@ -40,7 +40,7 @@ export function Breadcrumbs({
               ) : (
                 <span
                   aria-current={last ? "page" : undefined}
-                  className="label-caps text-foreground"
+                  className="label-micro text-foreground"
                 >
                   {item.label}
                 </span>

@@ -66,7 +66,7 @@ export function ComponentCard({
   return (
     <article className={cn(shared, "gap-3")}>
       <div className="flex items-start justify-between gap-3">
-        <span className="label-caps text-muted-foreground">{item.category}</span>
+        <span className="label-micro text-muted-foreground">{item.category}</span>
         {typeof index === "number" ? (
           <span className="numeral text-[0.6875rem] text-muted-foreground">
             {String(index).padStart(2, "0")}

@@ -70,7 +70,7 @@ export function Callout({
     >
       <Icon aria-hidden="true" className={cn("mt-0.5 size-4 shrink-0", accent)} />
       <div className="min-w-0 flex-1">
-        <p className={cn("label-caps mb-1.5", accent)}>{title ?? label}</p>
+        <p className={cn("label-micro mb-1.5", accent)}>{title ?? label}</p>
         <div className="flex flex-col gap-2 text-sm leading-relaxed text-foreground/80 [&>p]:my-0">
           {children}
         </div>

@@ -99,7 +99,7 @@ export function SearchCommand({ index }: { index: SearchEntry[] }) {
               heading={group}
               className={cn(
                 "px-2 pb-1",
-                "[&_[cmdk-group-heading]]:label-caps [&_[cmdk-group-heading]]:px-2",
+                "[&_[cmdk-group-heading]]:label-micro [&_[cmdk-group-heading]]:px-2",
                 "[&_[cmdk-group-heading]]:pt-4 [&_[cmdk-group-heading]]:pb-2",
                 "[&_[cmdk-group-heading]]:text-muted-foreground"
               )}
@@ -122,7 +122,7 @@ export function SearchCommand({ index }: { index: SearchEntry[] }) {
                     {entry.description}
                   </span>
                   {entry.badge ? (
-                    <span className="label-caps shrink-0 text-muted-foreground">
+                    <span className="label-micro shrink-0 text-muted-foreground">
                       {entry.badge}
                     </span>
                   ) : null}

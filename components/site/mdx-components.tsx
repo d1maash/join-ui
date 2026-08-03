@@ -143,7 +143,7 @@ export const mdxComponents = {
   ol: ({ className, ...props }: React.ComponentPropsWithoutRef<"ol">) => (
     <ol
       className={cn(
-        "my-4 flex list-decimal flex-col gap-2 pl-5 text-muted-foreground marker:font-mono marker:text-muted-foreground",
+        "my-4 flex list-decimal flex-col gap-2 pl-5 text-muted-foreground marker:font-medium marker:text-muted-foreground/70",
         className
       )}
       {...props}
@@ -196,7 +196,7 @@ export const mdxComponents = {
     <th
       scope="col"
       className={cn(
-        "label-caps border-b border-border bg-subtle px-4 py-2.5 text-muted-foreground",
+        "label-micro border-b border-border bg-subtle px-4 py-2.5 text-muted-foreground",
         className
       )}
       {...props}

@@ -71,7 +71,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-[100rem] px-4 sm:px-6">
           <div className="grid gap-10 py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
             <div className="lg:col-span-8">
-              <p className="label-caps mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-muted-foreground shadow-xs">
+              <p className="label-micro mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-muted-foreground shadow-xs">
                 {siteConfig.namespace} — open-code component registry
               </p>
               {/*
@@ -124,7 +124,7 @@ export default function HomePage() {
           <section aria-labelledby="empty-heading" className="border-b border-border py-16">
             <div className="grid gap-8 lg:grid-cols-12">
               <div className="lg:col-span-3">
-                <p className="label-caps text-muted-foreground">Status</p>
+                <p className="label-micro text-muted-foreground">Status</p>
               </div>
               <div className="flex max-w-2xl flex-col gap-4 lg:col-span-9">
                 <h2 id="empty-heading" className="text-2xl font-semibold">
@@ -160,7 +160,7 @@ export default function HomePage() {
         <section aria-labelledby="install-heading" className="border-b border-border py-16">
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-3">
-              <p className="label-caps text-muted-foreground">Install</p>
+              <p className="label-micro text-muted-foreground">Install</p>
             </div>
             <div className="flex max-w-xl flex-col gap-4 lg:col-span-5">
               <h2 id="install-heading" className="text-2xl font-semibold">
@@ -196,7 +196,7 @@ export default function HomePage() {
         <section aria-labelledby="principles-heading" className="border-b border-border py-16">
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-3">
-              <p className="label-caps text-muted-foreground">Principles</p>
+              <p className="label-micro text-muted-foreground">Principles</p>
               <h2
                 id="principles-heading"
                 className="mt-3 text-2xl font-semibold"
@@ -301,7 +301,7 @@ export default function HomePage() {
         <section aria-labelledby="prompt-heading" className="py-16">
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-3">
-              <p className="label-caps text-muted-foreground">For agents</p>
+              <p className="label-micro text-muted-foreground">For agents</p>
             </div>
             <div className="flex max-w-xl flex-col gap-4 lg:col-span-5">
               <h2 id="prompt-heading" className="text-2xl font-semibold">
@@ -321,7 +321,7 @@ export default function HomePage() {
             </div>
 
             <div className="overflow-hidden rounded-xl border border-border bg-code-bg shadow-xs lg:col-span-4">
-              <p className="label-caps border-b border-border bg-card/40 px-4 py-2.5 text-muted-foreground">
+              <p className="label-micro border-b border-border bg-card/40 px-4 py-2.5 text-muted-foreground">
                 prompt.txt
               </p>
               <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-muted-foreground">
@@ -361,7 +361,7 @@ function Figure({
 }) {
   return (
     <div className={bordered ? "border-border py-8 sm:border-l sm:pl-8" : "py-8"}>
-      <dt className="label-caps text-muted-foreground">{label}</dt>
+      <dt className="label-micro text-muted-foreground">{label}</dt>
       <dd className="numeral mt-2 text-4xl font-semibold">
         {String(value).padStart(2, "0")}
       </dd>
@@ -388,7 +388,7 @@ function Collection({
     <section aria-labelledby={`${id}-heading`} className="border-b border-border py-16">
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex max-w-2xl flex-col gap-2">
-          <p className="label-caps text-muted-foreground">{eyebrow}</p>
+          <p className="label-micro text-muted-foreground">{eyebrow}</p>
           <h2 id={`${id}-heading`} className="text-2xl font-semibold">
             {title}
           </h2>

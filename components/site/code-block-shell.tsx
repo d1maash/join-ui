@@ -49,10 +49,10 @@ export function CodeBlockShell({
       )}
     >
       <figcaption className="flex h-9 items-center gap-3 border-b border-border bg-card/40 px-3">
-        <span className="label-caps min-w-0 flex-1 truncate text-muted-foreground">
+        <span className="label-micro min-w-0 flex-1 truncate text-muted-foreground">
           {title ?? language ?? "code"}
         </span>
-        <span className="label-caps hidden text-muted-foreground sm:inline">
+        <span className="label-micro hidden text-muted-foreground sm:inline">
           {lineCount} {lineCount === 1 ? "line" : "lines"}
         </span>
         <CopyButton
@@ -77,7 +77,7 @@ export function CodeBlockShell({
           onClick={() => setExpanded((previous) => !previous)}
           aria-expanded={expanded}
           className={cn(
-            "label-caps flex w-full cursor-pointer items-center justify-center gap-2 border-t border-border py-2.5",
+            "label-micro flex w-full cursor-pointer items-center justify-center gap-2 border-t border-border py-2.5",
             "text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
             "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
           )}

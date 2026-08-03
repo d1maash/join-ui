@@ -513,22 +513,37 @@
   }
 
   /*
-   * Uppercase micro-label used for section eyebrows and table headers. Plex
-   * Mono is already a wide face, so this tracks looser than a proportional
-   * label would but tighter than the 0.12em a condensed one needs.
+   * The micro-label: section eyebrows, table headers, breadcrumbs, sidebar
+   * group titles, the caption on a code block.
+   *
+   * This used to be mono, uppercase, and tracked out to 0.08em. Three
+   * signals for one job, and the cost was real — uppercase destroys word
+   * shape, so `DATA DISPLAY / STATUS TIMELINE` had to be read letter by
+   * letter, and setting it in mono made the chrome compete with the code it
+   * was labelling. Small, muted and a half-step heavier than the body says
+   * "this is a label" on its own, in a form that can still be skimmed.
    */
-  .label-caps {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    line-height: 1;
+  .label-micro {
+    font-size: 0.75rem;
+    line-height: 1.45;
     font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: -0.006em;
   }
 
-  /* Numeric counter set in mono, as used in editorial layouts. */
+  /* The same label where it heads a region rather than annotating one. */
+  .label-section {
+    font-size: 0.75rem;
+    line-height: 1.45;
+    font-weight: 600;
+    letter-spacing: -0.004em;
+    color: var(--foreground);
+  }
+
+  /*
+   * Figures. Inter's tabular set is well drawn, so a counter no longer has to
+   * leave the family to line up in a column.
+   */
   .numeral {
-    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
   }

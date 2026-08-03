@@ -46,7 +46,7 @@ export function ComponentPreview({
       )}
     >
       <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border bg-card/40 px-3">
-        <span className="label-caps min-w-0 flex-1 truncate text-muted-foreground">
+        <span className="label-micro min-w-0 flex-1 truncate text-muted-foreground">
           {title ?? slug}
         </span>
 

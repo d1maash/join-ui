@@ -53,7 +53,7 @@ export default async function FullPreviewPage({ params }: PageProps) {
         </Button>
 
         <div className="ml-auto flex items-center gap-3">
-          <span className="label-caps hidden text-muted-foreground sm:inline">
+          <span className="label-micro hidden text-muted-foreground sm:inline">
             {component.title}
           </span>
           <Link
