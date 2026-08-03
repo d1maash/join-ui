@@ -235,7 +235,7 @@ export function Example() {
       {
         title: "Give each step its own glyph",
         description:
-          "An icon replaces the default state glyph while the fill and the hidden state label keep carrying the meaning. The component sizes it, so pass the element bare.",
+          "An icon replaces the default state glyph while the ring and the hidden state label keep carrying the meaning — a dashed grey circle before the step happens, a tinted one after. The component sizes it, so pass the element bare.",
         code: `import { MapPin, Package, ShoppingBag, Truck } from "lucide-react"
 
 <StatusTimeline

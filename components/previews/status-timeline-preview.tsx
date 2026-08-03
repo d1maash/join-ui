@@ -72,14 +72,24 @@ const ONBOARDING: StatusTimelineStep[] = [
   { id: "invite", title: "Invite your team", state: "pending" },
 ]
 
+/*
+ * Two panels sharing one grid: the parent owns the rows, each panel spans both
+ * of them through `subgrid`, and so the cards start on the same line however
+ * many lines the caption above them happens to run to. `1fr` on the second row
+ * then holds the two cards to a single height.
+ */
+const PAIR = "grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-3"
+const ALIGNED = "lg:row-span-2 lg:grid lg:grid-rows-subgrid"
+
 export default function StatusTimelinePreview() {
   const [active, setActive] = React.useState(2)
   const done = active >= DELIVERY.length
 
   return (
     <div className="flex w-full max-w-5xl flex-col gap-10">
-      <div className="grid gap-10 lg:grid-cols-2">
+      <div className={PAIR}>
         <Panel
+          className={ALIGNED}
           caption="Driven by activeStep"
           description="One index decides everything. Advance it and the line draws down, the next marker cross-fades into blue and pulses once — then everything goes still again."
         >
@@ -108,6 +118,7 @@ export default function StatusTimelinePreview() {
         </Panel>
 
         <Panel
+          className={ALIGNED}
           caption="Finished, with an action"
           description="Past the last index every step is complete, and the header chip goes green with it."
         >
@@ -139,8 +150,9 @@ export default function StatusTimelinePreview() {
         />
       </Panel>
 
-      <div className="grid gap-10 lg:grid-cols-2">
+      <div className={PAIR}>
         <Panel
+          className={ALIGNED}
           caption={<Code>state: &quot;waiting&quot;</Code>}
           description="Amber for a step that is neither moving nor broken — an approval, a review, a queue."
         >
@@ -148,6 +160,7 @@ export default function StatusTimelinePreview() {
         </Panel>
 
         <Panel
+          className={ALIGNED}
           caption={<Code>state: &quot;blocked&quot;, variant=&quot;plain&quot;</Code>}
           description="Red for a step that failed, with the card and header dropped so the list can sit in a surface you own."
         >
@@ -168,15 +181,18 @@ export default function StatusTimelinePreview() {
 function Panel({
   caption,
   description,
+  className,
   children,
 }: {
   /** A `<Code>` where the caption names an actual prop, plain text otherwise. */
   caption: React.ReactNode
   description: string
+  /** Carries `ALIGNED` when the panel is one half of a two-up row. */
+  className?: string
   children: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className={cn("flex flex-col gap-3", className)}>
       <div className="flex flex-col gap-1">
         <span className="label-section text-foreground">{caption}</span>
         <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>

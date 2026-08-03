@@ -196,7 +196,9 @@ export function StatusTimeline({
   return (
     <div
       className={cn(
-        "w-full text-foreground",
+        // A column, so a card given a height taller than its steps keeps the
+        // footer on the bottom rule rather than floating it under the list.
+        "flex w-full flex-col text-foreground",
         chrome && "rounded-soft-lg border border-border bg-card",
         className
       )}
@@ -275,7 +277,7 @@ export function StatusTimeline({
         aria-labelledby={showHeader ? labelId : undefined}
         aria-label={showHeader ? undefined : label}
         className={cn(
-          "flex",
+          "flex flex-1",
           horizontal ? "flex-row" : "flex-col",
           chrome && scale.padding
         )}
