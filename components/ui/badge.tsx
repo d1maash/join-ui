@@ -7,9 +7,11 @@ import type { ComponentStatus } from "@/types/registry"
 /**
  * Small pill label.
  *
- * The four tonal variants are all tint-on-hairline rather than solid ink, so a
- * row of badges reads as one quiet band instead of four separate blocks. The
- * status variants below add hue on top of that, never instead of the word.
+ * The tonal variants are neutral by design. A catalog row is mostly badges, and
+ * giving each state its own hue turned that row into a colour chart — the words
+ * were already doing the work, so the colour was decoration. The semantic
+ * variants exist for the rare case where a badge really is reporting a state
+ * (a failing check, a live run), not for labelling.
  */
 const badgeVariants = cva(
   cn(
@@ -20,12 +22,12 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        /** Brand tint — the loudest label available. */
-        primary: "border-accent-border bg-accent-soft text-accent",
+        /** Filled ink — the loudest label available. */
+        primary: "border-primary bg-primary text-primary-foreground",
         /** Hairline pill on the card surface — the default. */
         neutral: "border-border bg-card text-muted-foreground",
         /** Hairline pill with normal ink — one step above neutral. */
-        outline: "border-border-strong/40 bg-transparent text-foreground",
+        outline: "border-border-hover bg-transparent text-foreground",
         /** Flat tint, no rule — the quietest label. */
         muted: "border-transparent bg-muted text-muted-foreground",
         /** Semantic tints, for a state that has one. */
@@ -53,15 +55,14 @@ export function Badge({ className, variant, size, ...props }: BadgeProps) {
 /**
  * Registry status.
  *
- * Each state now gets a hue, but the hue is an accelerator rather than the
- * message: the word is always rendered, so the four remain distinguishable
- * without colour.
+ * Separated by fill weight and always spelled out, never by hue. `new` is the
+ * only one worth interrupting a scan for, so it is the only filled pill.
  */
 const STATUS_VARIANT: Record<ComponentStatus, BadgeProps["variant"]> = {
-  stable: "positive",
+  stable: "neutral",
   new: "primary",
-  updated: "info",
-  experimental: "caution",
+  updated: "outline",
+  experimental: "muted",
 }
 
 export function StatusBadge({

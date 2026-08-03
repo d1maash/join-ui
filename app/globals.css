@@ -5,24 +5,22 @@
  * ---------------------------------------------------------------------------
  * Two layers, with different rules.
  *
- * The chrome — everything the site itself is built from — runs on a soft
- * neutral ramp and a single brand hue. The ramp is not pure greyscale: in the
- * light theme it carries a trace of warmth so the page reads as paper rather
- * than as a lit panel, and in the dark theme it cools toward slate so the
- * surface recedes instead of punching a hole. Neither end of either ramp is
- * pure black or pure white; the highest-contrast pair the interface can draw
- * is soft ink on soft paper, which is a comfortable reading contrast rather
- * than a maximal one.
+ * The chrome — everything the site itself is built from — is neutral. It has
+ * no brand hue at all: emphasis is carried by ink, by a raised white surface,
+ * and by space. What makes it soft is not colour, it is the material. The page
+ * is a warm off-white, a panel is white sitting one step above it, corners are
+ * rounded, and every boundary is a hairline rather than a rule.
  *
- * The brand hue is one indigo, and it does all the work an accent has to do:
- * the primary action, links, the current page, focus, selection. Everything
- * else stays neutral so that indigo always means "this is the thing".
+ * That is the whole trick, and it is worth stating plainly because the obvious
+ * alternative is worse: tinting links, chips, active rows and inline code in
+ * one accent reads as decoration rather than as meaning, and it makes every
+ * page look the same from six feet away. Ink on warm paper does not.
  *
- * The component palette below carries its own hue. Registry components are the
- * product, not the frame, so they are free to use colour: a status chip, a
- * progress marker, a chart series. They read the `--info` / `--positive` /
- * `--caution` / `--critical` families rather than literal colours, which is
- * what keeps a component retintable and consistent with its neighbours.
+ * Hue is reserved for the places where it *is* the information — the four
+ * semantic families below, used by registry components for a status chip or a
+ * progress marker, by the callouts in these guides, and by syntax highlighting.
+ * Even there it is held at low chroma and never allowed to carry the meaning on
+ * its own.
  *
  * Theming is driven entirely by CSS custom properties. Nothing in the
  * `registry/` components uses a `dark:` utility, which is what makes the
@@ -37,47 +35,31 @@
 :root,
 .light {
   /*
-   * Neutral ramp — paper at 0, ink at 1000.
+   * Neutral ramp — white at 0, ink at 1000.
    *
-   * Chroma is deliberately tiny (0.002–0.015) and warm: enough that white
-   * surfaces read as paper and dark text reads as ink rather than as a
-   * printer's black, not enough to be seen as a colour.
+   * Chroma is tiny and warm throughout, so `--grey-100` resolves to a greige
+   * page rather than to grey, and `--grey-1000` to a soft brown-black rather
+   * than to `#000`. Neither end of the ramp is a pure value.
    */
   --grey-0: oklch(1 0 0);
-  --grey-50: oklch(0.988 0.0025 85);
-  --grey-100: oklch(0.972 0.004 85);
-  --grey-200: oklch(0.951 0.005 85);
-  --grey-300: oklch(0.916 0.006 83);
-  --grey-400: oklch(0.86 0.008 80);
-  --grey-500: oklch(0.74 0.01 78);
-  --grey-600: oklch(0.6 0.012 74);
-  --grey-700: oklch(0.474 0.013 70);
-  --grey-800: oklch(0.37 0.014 66);
-  --grey-900: oklch(0.28 0.015 62);
-  --grey-1000: oklch(0.205 0.015 58);
+  --grey-50: oklch(0.981 0.004 78);
+  --grey-100: oklch(0.966 0.006 76);
+  --grey-200: oklch(0.943 0.008 74);
+  --grey-300: oklch(0.912 0.009 72);
+  --grey-400: oklch(0.855 0.01 70);
+  --grey-500: oklch(0.73 0.012 66);
+  --grey-600: oklch(0.6 0.013 62);
+  --grey-700: oklch(0.472 0.014 58);
+  --grey-800: oklch(0.36 0.014 54);
+  --grey-900: oklch(0.27 0.013 50);
+  --grey-1000: oklch(0.21 0.011 48);
 
   /*
-   * Brand ramp — one indigo, ten steps. The 500 is the hue at full voice; the
-   * 600 and 700 are the two that clear text contrast on paper, and the 50/100
-   * are the tints used for selected and held states.
+   * Surfaces. The page is warm paper; a card is white and sits one step above
+   * it. That step is the system's only elevation cue that works at a glance,
+   * and it is why the page is not white itself.
    */
-  --brand-50: oklch(0.974 0.012 285);
-  --brand-100: oklch(0.944 0.026 283);
-  --brand-200: oklch(0.897 0.048 281);
-  --brand-300: oklch(0.822 0.083 279);
-  --brand-400: oklch(0.724 0.135 277);
-  --brand-500: oklch(0.63 0.176 275);
-  --brand-600: oklch(0.545 0.192 274);
-  --brand-700: oklch(0.468 0.166 274);
-  --brand-800: oklch(0.392 0.13 274);
-  --brand-900: oklch(0.322 0.095 275);
-
-  /*
-   * Surfaces. The page is paper and a card sits one step above it — in this
-   * theme that step is upward into white, in the dark theme it is upward out
-   * of the deepest slate. Same rule, opposite direction.
-   */
-  --background: var(--grey-50);
+  --background: var(--grey-100);
   --foreground: var(--grey-1000);
   --card: var(--grey-0);
   --card-foreground: var(--grey-1000);
@@ -85,34 +67,36 @@
   --popover-foreground: var(--grey-1000);
   --muted: var(--grey-200);
   --muted-foreground: var(--grey-700);
-  --subtle: var(--grey-100);
+  --subtle: var(--grey-50);
 
   /* Rules. `--border` is the hairline; `--border-strong` is the emphasis rule. */
   --border: var(--grey-300);
+  --border-hover: var(--grey-400);
   --border-strong: var(--grey-600);
-  --input: var(--grey-500);
-  --ring: var(--brand-500);
+  --input: var(--grey-400);
+  --ring: var(--grey-900);
 
   /*
-   * Emphasis. `--primary` is a fill and is dark enough to carry light text;
-   * `--accent` is the same hue tuned for text on the page background. The
-   * `-soft` pair is the tint used behind a selected or held state.
+   * Emphasis is ink. `--primary` is the filled surface — the one solid dark
+   * shape on a page — and `--accent` is the same ink used as text or as a
+   * marker. `--accent-soft` is the neutral tint behind a held state; it is one
+   * step above the page so it stays visible on both paper and white.
    */
-  --primary: var(--brand-600);
-  --primary-hover: var(--brand-700);
-  --primary-foreground: oklch(0.99 0.005 275);
-  --primary-soft: var(--brand-50);
-  --accent: var(--brand-700);
-  --accent-foreground: oklch(0.99 0.005 275);
-  --accent-soft: var(--brand-50);
-  --accent-border: var(--brand-200);
-  --secondary: var(--grey-100);
+  --primary: var(--grey-1000);
+  --primary-hover: var(--grey-900);
+  --primary-foreground: var(--grey-0);
+  --primary-soft: var(--grey-200);
+  --accent: var(--grey-1000);
+  --accent-foreground: var(--grey-0);
+  --accent-soft: var(--grey-200);
+  --accent-border: var(--grey-400);
+  --secondary: var(--grey-50);
   --secondary-foreground: var(--grey-900);
 
   /*
-   * Chrome status now shares the component hue families rather than being
-   * drawn in grey. The pairing rule survives the change: a status is still
-   * spelled out and given a glyph, because hue alone never carries meaning.
+   * Chrome status shares the component hue families. These are the one part of
+   * the interface allowed colour, because a failed payment and a completed run
+   * are genuinely different things rather than differently-styled ones.
    */
   --destructive: var(--critical);
   --destructive-foreground: var(--critical-foreground);
@@ -122,54 +106,50 @@
   --warning: var(--caution);
   --warning-soft: var(--caution-soft);
 
-  --code-bg: var(--grey-100);
-  --selection: oklch(0.63 0.176 275 / 0.18);
+  --code-bg: var(--grey-0);
+  --selection: oklch(0.21 0.011 48 / 0.12);
 
   /*
    * Component palette.
    *
    * Each family is three tokens: the ink used for a solid fill and for text on
    * a tint, a light tint for that background, and the colour that sits on top
-   * of the solid fill. Chroma is held below the point where a fill starts to
-   * vibrate against neutral text. Components pair them with a glyph and a
-   * label anyway, so the meaning survives for anyone who cannot separate the
-   * hues.
+   * of the solid fill. Chroma is held low — between 0.11 and 0.16 on the inks,
+   * and barely there on the tints — so a chip reads as a quiet state rather
+   * than as a warning light. Components pair them with a glyph and a label, so
+   * the meaning survives for anyone who cannot separate the hues.
    */
-  --info: oklch(0.52 0.155 250);
-  --info-soft: oklch(0.955 0.03 250);
-  --info-foreground: oklch(0.99 0.006 250);
+  --info: oklch(0.5 0.11 245);
+  --info-soft: oklch(0.958 0.019 245);
+  --info-foreground: oklch(0.99 0.006 245);
 
-  --positive: oklch(0.505 0.12 155);
-  --positive-soft: oklch(0.955 0.036 155);
+  --positive: oklch(0.495 0.095 155);
+  --positive-soft: oklch(0.958 0.022 155);
   --positive-foreground: oklch(0.99 0.008 155);
 
-  --caution: oklch(0.535 0.12 68);
-  --caution-soft: oklch(0.955 0.045 80);
-  --caution-foreground: oklch(0.99 0.008 70);
+  --caution: oklch(0.525 0.1 66);
+  --caution-soft: oklch(0.958 0.03 78);
+  --caution-foreground: oklch(0.99 0.008 66);
 
-  --critical: oklch(0.535 0.17 22);
-  --critical-soft: oklch(0.955 0.03 22);
+  --critical: oklch(0.525 0.145 22);
+  --critical-soft: oklch(0.958 0.022 22);
   --critical-foreground: oklch(0.99 0.006 22);
 
-  /*
-   * Shape. The chrome rounds — a rounded corner is the cheapest softness there
-   * is, and it costs the grid nothing.
-   */
+  /* Shape. A rounded corner is the cheapest softness there is. */
   --radius: 0.625rem;
 
   /*
-   * Elevation. Shadows are wide, low-opacity and tinted with the ink of the
-   * theme rather than with black, so a raised surface reads as lit paper
-   * instead of as a cut-out.
+   * Elevation. Shadows are wide, low-opacity and tinted with the theme's own
+   * ink rather than with black, so a raised surface reads as lit paper instead
+   * of as a cut-out. Nothing on this site goes above `-md` except a portal.
    */
-  --elevation-xs: 0 1px 2px -1px oklch(0.28 0.02 70 / 0.08);
+  --elevation-xs: 0 1px 2px -1px oklch(0.24 0.014 52 / 0.07);
   --elevation-sm:
-    0 1px 2px -1px oklch(0.28 0.02 70 / 0.07), 0 2px 6px -2px oklch(0.28 0.02 70 / 0.06);
+    0 1px 2px -1px oklch(0.24 0.014 52 / 0.06), 0 2px 6px -2px oklch(0.24 0.014 52 / 0.05);
   --elevation-md:
-    0 2px 4px -2px oklch(0.28 0.02 70 / 0.07), 0 8px 20px -6px oklch(0.28 0.02 70 / 0.1);
+    0 2px 4px -2px oklch(0.24 0.014 52 / 0.06), 0 8px 20px -6px oklch(0.24 0.014 52 / 0.09);
   --elevation-lg:
-    0 4px 8px -4px oklch(0.28 0.02 70 / 0.08), 0 18px 40px -12px oklch(0.28 0.02 70 / 0.14);
-  --elevation-ring: 0 0 0 4px oklch(0.63 0.176 275 / 0.14);
+    0 4px 8px -4px oklch(0.24 0.014 52 / 0.08), 0 18px 40px -12px oklch(0.24 0.014 52 / 0.13);
 
   /* Motion */
   --duration-instant: 80ms;
@@ -182,36 +162,25 @@
 
 .dark {
   /*
-   * The dark ramp is slate rather than the light ramp negated. `--grey-0` is
-   * still the page and `--grey-1000` is still the ink, so every semantic alias
-   * below keeps its meaning; only the direction of travel flips. The darkest
-   * step stops well short of black, which is what keeps a large surface from
-   * looking like a hole and a hairline from looking like a scratch.
+   * The dark ramp is warm charcoal rather than the light ramp negated.
+   * `--grey-0` is still the page and `--grey-1000` is still the ink, so every
+   * semantic alias below keeps its meaning; only the direction of travel flips.
+   * The darkest step stops well short of black, which is what keeps a large
+   * surface from looking like a hole and a hairline from looking like a
+   * scratch.
    */
-  --grey-0: oklch(0.205 0.009 280);
-  --grey-50: oklch(0.238 0.011 280);
-  --grey-100: oklch(0.268 0.013 280);
-  --grey-200: oklch(0.305 0.014 280);
-  --grey-300: oklch(0.35 0.016 280);
-  --grey-400: oklch(0.425 0.017 280);
-  --grey-500: oklch(0.535 0.017 280);
-  --grey-600: oklch(0.645 0.016 281);
-  --grey-700: oklch(0.755 0.013 282);
-  --grey-800: oklch(0.85 0.01 284);
-  --grey-900: oklch(0.925 0.007 286);
-  --grey-1000: oklch(0.972 0.004 288);
-
-  /* The brand ramp lightens: on slate the readable steps are the pale ones. */
-  --brand-50: oklch(0.285 0.05 278);
-  --brand-100: oklch(0.33 0.068 277);
-  --brand-200: oklch(0.385 0.09 276);
-  --brand-300: oklch(0.46 0.12 276);
-  --brand-400: oklch(0.55 0.152 275);
-  --brand-500: oklch(0.645 0.168 275);
-  --brand-600: oklch(0.72 0.152 276);
-  --brand-700: oklch(0.79 0.12 277);
-  --brand-800: oklch(0.86 0.085 279);
-  --brand-900: oklch(0.92 0.05 281);
+  --grey-0: oklch(0.192 0.004 60);
+  --grey-50: oklch(0.226 0.005 60);
+  --grey-100: oklch(0.256 0.005 60);
+  --grey-200: oklch(0.294 0.006 58);
+  --grey-300: oklch(0.34 0.006 58);
+  --grey-400: oklch(0.42 0.007 56);
+  --grey-500: oklch(0.53 0.008 56);
+  --grey-600: oklch(0.64 0.008 58);
+  --grey-700: oklch(0.75 0.007 60);
+  --grey-800: oklch(0.85 0.006 62);
+  --grey-900: oklch(0.92 0.005 65);
+  --grey-1000: oklch(0.965 0.004 70);
 
   --background: var(--grey-0);
   --foreground: var(--grey-1000);
@@ -224,22 +193,19 @@
   --subtle: var(--grey-50);
 
   --border: var(--grey-300);
+  --border-hover: var(--grey-400);
   --border-strong: var(--grey-500);
   --input: var(--grey-400);
-  --ring: var(--brand-500);
+  --ring: var(--grey-900);
 
-  /*
-   * On slate the fill brightens and the text on it darkens — light ink on a
-   * mid indigo loses too much contrast once the surrounding surface is dark.
-   */
-  --primary: var(--brand-600);
-  --primary-hover: var(--brand-700);
-  --primary-foreground: oklch(0.19 0.045 276);
-  --primary-soft: var(--brand-50);
-  --accent: var(--brand-700);
-  --accent-foreground: oklch(0.19 0.045 276);
-  --accent-soft: var(--brand-50);
-  --accent-border: var(--brand-200);
+  --primary: var(--grey-1000);
+  --primary-hover: var(--grey-900);
+  --primary-foreground: var(--grey-0);
+  --primary-soft: var(--grey-200);
+  --accent: var(--grey-1000);
+  --accent-foreground: var(--grey-0);
+  --accent-soft: var(--grey-200);
+  --accent-border: var(--grey-400);
   --secondary: var(--grey-100);
   --secondary-foreground: var(--grey-900);
 
@@ -252,38 +218,37 @@
   --warning-soft: var(--caution-soft);
 
   --code-bg: var(--grey-50);
-  --selection: oklch(0.645 0.168 275 / 0.3);
+  --selection: oklch(0.965 0.004 70 / 0.16);
 
   /*
    * The hues invert their roles rather than their values: the ink lightens so
    * it reads on a dark surface, the tint darkens, and the colour that sits on
    * a solid fill becomes dark ink.
    */
-  --info: oklch(0.78 0.115 250);
-  --info-soft: oklch(0.315 0.058 250);
-  --info-foreground: oklch(0.18 0.04 250);
+  --info: oklch(0.775 0.095 245);
+  --info-soft: oklch(0.315 0.045 245);
+  --info-foreground: oklch(0.18 0.035 245);
 
-  --positive: oklch(0.79 0.12 155);
-  --positive-soft: oklch(0.31 0.05 155);
-  --positive-foreground: oklch(0.18 0.035 155);
+  --positive: oklch(0.785 0.1 155);
+  --positive-soft: oklch(0.31 0.04 155);
+  --positive-foreground: oklch(0.18 0.03 155);
 
-  --caution: oklch(0.83 0.12 80);
-  --caution-soft: oklch(0.325 0.052 68);
-  --caution-foreground: oklch(0.19 0.035 68);
+  --caution: oklch(0.825 0.1 78);
+  --caution-soft: oklch(0.325 0.042 66);
+  --caution-foreground: oklch(0.19 0.03 66);
 
-  --critical: oklch(0.755 0.135 22);
-  --critical-soft: oklch(0.325 0.065 22);
-  --critical-foreground: oklch(0.18 0.04 22);
+  --critical: oklch(0.75 0.115 22);
+  --critical-soft: oklch(0.325 0.055 22);
+  --critical-foreground: oklch(0.18 0.035 22);
 
   /*
-   * Shadows on slate cannot rely on darkening alone, so they are deeper and
+   * Shadows on charcoal cannot rely on darkening alone, so they are deeper and
    * paired with a hairline on the raised surface itself.
    */
   --elevation-xs: 0 1px 2px -1px oklch(0 0 0 / 0.4);
   --elevation-sm: 0 1px 2px -1px oklch(0 0 0 / 0.45), 0 2px 6px -2px oklch(0 0 0 / 0.35);
   --elevation-md: 0 2px 4px -2px oklch(0 0 0 / 0.4), 0 8px 20px -6px oklch(0 0 0 / 0.5);
   --elevation-lg: 0 4px 8px -4px oklch(0 0 0 / 0.45), 0 18px 40px -12px oklch(0 0 0 / 0.6);
-  --elevation-ring: 0 0 0 4px oklch(0.645 0.168 275 / 0.24);
 }
 
 @theme inline {
@@ -297,6 +262,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-subtle: var(--subtle);
   --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -345,17 +311,6 @@
   --color-grey-900: var(--grey-900);
   --color-grey-1000: var(--grey-1000);
 
-  --color-brand-50: var(--brand-50);
-  --color-brand-100: var(--brand-100);
-  --color-brand-200: var(--brand-200);
-  --color-brand-300: var(--brand-300);
-  --color-brand-400: var(--brand-400);
-  --color-brand-500: var(--brand-500);
-  --color-brand-600: var(--brand-600);
-  --color-brand-700: var(--brand-700);
-  --color-brand-800: var(--brand-800);
-  --color-brand-900: var(--brand-900);
-
   /*
    * A real radius scale. `rounded-md` on a control and `rounded-xl` on a panel
    * both resolve to something, so a surface can be softened without reaching
@@ -382,7 +337,6 @@
   --shadow-md: var(--elevation-md);
   --shadow-lg: var(--elevation-lg);
   --shadow-xl: var(--elevation-lg);
-  --shadow-ring: var(--elevation-ring);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
@@ -415,7 +369,7 @@
   @keyframes pop-in {
     from {
       opacity: 0;
-      transform: scale(0.97);
+      transform: scale(0.98);
     }
     to {
       opacity: 1;
@@ -449,9 +403,8 @@
   }
 
   /*
-   * A brand-coloured focus ring that follows whatever radius the element
-   * already has — `outline` inherits `border-radius` on its own, so nothing
-   * needs to be forced here.
+   * The ring follows whatever radius the element already has — `outline`
+   * inherits `border-radius` on its own, so nothing needs forcing here.
    */
   :focus-visible {
     outline: 2px solid var(--ring);
@@ -519,42 +472,6 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
   }
-
-  /*
-   * Ambient wash for the top of a page — a wide, very low-opacity bloom of the
-   * brand hue used as lighting rather than as decoration. It sits behind
-   * content and never carries meaning, so it is `aria-hidden` by construction.
-   */
-  .surface-glow {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(
-        60rem 28rem at 15% -10%,
-        oklch(0.63 0.176 275 / 0.07),
-        transparent 60%
-      ),
-      radial-gradient(
-        44rem 22rem at 92% 0%,
-        oklch(0.7 0.12 200 / 0.055),
-        transparent 62%
-      );
-  }
-
-  .dark .surface-glow {
-    background:
-      radial-gradient(
-        60rem 28rem at 15% -10%,
-        oklch(0.645 0.168 275 / 0.16),
-        transparent 60%
-      ),
-      radial-gradient(
-        44rem 22rem at 92% 0%,
-        oklch(0.7 0.12 200 / 0.1),
-        transparent 62%
-      );
-  }
 }
 
 /*
@@ -589,8 +506,8 @@
 }
 
 .shiki .line.highlighted {
-  background-color: var(--accent-soft);
-  border-left-color: var(--accent);
+  background-color: var(--muted);
+  border-left-color: var(--border-strong);
 }
 
 .shiki[data-line-numbers] code {

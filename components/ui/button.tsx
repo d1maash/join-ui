@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils"
 /**
  * Rounded, soft-contrast buttons.
  *
- * Hierarchy runs down a single axis: the primary action is the only filled
- * brand surface on a page, the secondary is a card with a hairline, and the
- * tertiary is bare text that grows a tinted background on hover. Nothing here
- * uses maximum contrast — a filled button is indigo rather than black ink, and
- * a resting border is a hairline rather than a rule.
+ * Hierarchy runs down a single axis of material rather than of colour: the
+ * primary action is the only filled dark shape on a page, the secondary is a
+ * white card with a hairline, and the tertiary is bare text that grows a
+ * neutral background on hover. The fill is ink, not a brand hue — on a warm
+ * page a dark button already reads as the loudest thing available.
  */
 const buttonVariants = cva(
   cn(
@@ -26,14 +26,14 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "border border-primary bg-primary text-primary-foreground shadow-xs hover:border-primary-hover hover:bg-primary-hover hover:shadow-sm",
+          "border border-primary bg-primary text-primary-foreground shadow-xs hover:border-primary-hover hover:bg-primary-hover",
         secondary:
-          "border border-border bg-card text-foreground shadow-xs hover:border-accent-border hover:bg-accent-soft hover:text-accent",
+          "border border-border bg-card text-foreground shadow-xs hover:border-border-hover hover:bg-subtle",
         outline:
-          "border border-accent-border bg-transparent text-accent hover:bg-accent-soft",
+          "border border-border-hover bg-transparent text-foreground hover:bg-muted",
         ghost:
           "border border-transparent bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
-        link: "h-auto rounded-sm p-0 text-accent underline decoration-1 underline-offset-4 hover:decoration-2",
+        link: "h-auto rounded-sm p-0 text-foreground underline decoration-border-strong decoration-1 underline-offset-4 hover:decoration-foreground",
         destructive:
           "border border-destructive bg-destructive text-destructive-foreground shadow-xs hover:opacity-90",
       },

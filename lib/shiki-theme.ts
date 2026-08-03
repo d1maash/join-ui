@@ -4,18 +4,19 @@ import type { ThemeRegistrationRaw } from "shiki"
  * Syntax themes.
  *
  * Off-the-shelf Shiki themes are tuned for an editor at full saturation, which
- * on a documentation page reads as noise sitting inside otherwise quiet type.
- * These two hold the same information at roughly half that chroma, over the
- * same neutral base the rest of the site uses: warm paper in the light theme,
- * slate in the dark one.
+ * on a documentation page reads as noise sitting inside otherwise quiet type —
+ * and next to a chrome with no hue in it at all, it reads as a different site.
+ * These two hold the grammar at roughly a third of an editor theme's chroma,
+ * over the same neutral base as everything else: warm paper in the light
+ * theme, charcoal in the dark one.
  *
  * Six roles carry the whole grammar, and each keeps its hue across both themes
  * so a reader who learns the mapping once keeps it:
- *   keyword   — violet, the brand hue; control flow and declarations
- *   entity    — blue; functions and the things being called
- *   type      — teal; types, classes and JSX tags
- *   string    — green; strings and template literals
- *   number    — amber; numeric and language constants, JSX attributes
+ *   keyword   — muted violet; control flow and declarations
+ *   entity    — muted blue; functions and the things being called
+ *   type      — muted teal; types, classes and JSX tags
+ *   string    — muted green; strings and template literals
+ *   number    — muted amber; numeric and language constants, JSX attributes
  *   comment   — neutral and italic, the quietest thing on the line
  *
  * Every value clears 4.5:1 against its own theme's code background, so the
@@ -35,28 +36,28 @@ interface Ramp {
 }
 
 const LIGHT: Ramp = {
-  plain: "#413b36",
-  keyword: "#6644c8",
-  entity: "#2a6ba8",
-  type: "#146b62",
-  string: "#3d7a4a",
-  number: "#a05a1f",
-  comment: "#7d756e",
-  punctuation: "#6b645e",
-  deleted: "#a8455a",
+  plain: "#3c3733",
+  keyword: "#6a5aa6",
+  entity: "#3c6a94",
+  type: "#2f7068",
+  string: "#4a7551",
+  number: "#96632c",
+  comment: "#79726b",
+  punctuation: "#7a736c",
+  deleted: "#9d5057",
   background: "transparent",
 }
 
 const DARK: Ramp = {
-  plain: "#d7d5e2",
-  keyword: "#b6a0ff",
-  entity: "#86b6f0",
-  type: "#6fd0c4",
-  string: "#94d3a2",
-  number: "#f0b27a",
-  comment: "#847f97",
-  punctuation: "#9a95ab",
-  deleted: "#f2879d",
+  plain: "#d6d1cb",
+  keyword: "#b3a6dc",
+  entity: "#93b4d4",
+  type: "#82c4bb",
+  string: "#a2c49f",
+  number: "#d6ab7b",
+  comment: "#8b837b",
+  punctuation: "#9c948b",
+  deleted: "#d9989a",
   background: "transparent",
 }
 
