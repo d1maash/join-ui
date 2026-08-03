@@ -80,8 +80,12 @@ const TONES: Record<
   },
 }
 
-const MICRO_LABEL =
-  "font-mono text-[0.6875rem] leading-none font-medium tracking-[0.08em] uppercase"
+/*
+ * The chip label. Set in whatever face the host app uses for its interface,
+ * because an installed component has no business asserting a second family —
+ * and because a status word ("In review", "Blocked") is read, not decoded.
+ */
+const MICRO_LABEL = "text-[0.6875rem] leading-none font-medium tracking-[-0.005em]"
 
 const SIZES = {
   sm: {
@@ -334,7 +338,7 @@ export function StatusTimeline({
                   <span
                     className={cn(
                       scale.meta,
-                      "shrink-0 font-mono text-muted-foreground tabular-nums"
+                      "shrink-0 text-muted-foreground tabular-nums"
                     )}
                   >
                     {step.timestamp}

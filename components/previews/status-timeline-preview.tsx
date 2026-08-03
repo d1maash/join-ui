@@ -90,7 +90,7 @@ export default function StatusTimelinePreview() {
             className="max-w-md"
             footer={
               <div className="flex items-center justify-between gap-3">
-                <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                <span className="text-xs font-medium text-muted-foreground tabular-nums">
                   {Math.min(active + 1, DELIVERY.length)} / {DELIVERY.length}
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -127,7 +127,7 @@ export default function StatusTimelinePreview() {
       </div>
 
       <Panel
-        caption='orientation="horizontal"'
+        caption={<Code>orientation=&quot;horizontal&quot;</Code>}
         description="The same steps laid along a rule — a checkout or wizard header."
       >
         <StatusTimeline
@@ -141,14 +141,14 @@ export default function StatusTimelinePreview() {
 
       <div className="grid gap-10 lg:grid-cols-2">
         <Panel
-          caption='state: "waiting"'
+          caption={<Code>state: &quot;waiting&quot;</Code>}
           description="Amber for a step that is neither moving nor broken — an approval, a review, a queue."
         >
           <StatusTimeline label="Onboarding" steps={ONBOARDING} className="max-w-md" />
         </Panel>
 
         <Panel
-          caption='state: "blocked", variant="plain"'
+          caption={<Code>state: &quot;blocked&quot;, variant=&quot;plain&quot;</Code>}
           description="Red for a step that failed, with the card and header dropped so the list can sit in a surface you own."
         >
           <StatusTimeline
@@ -170,20 +170,28 @@ function Panel({
   description,
   children,
 }: {
-  caption: string
+  /** A `<Code>` where the caption names an actual prop, plain text otherwise. */
+  caption: React.ReactNode
   description: string
   children: React.ReactNode
 }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
-        <span className="font-mono text-[0.6875rem] leading-none font-medium tracking-[0.12em] text-muted-foreground uppercase">
-          {caption}
-        </span>
+        <span className="label-section text-foreground">{caption}</span>
         <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
       </div>
       {children}
     </div>
+  )
+}
+
+/** Mono is reserved for the captions that really are quoting the API. */
+function Code({ children }: { children: string }) {
+  return (
+    <code className="font-mono text-[0.75rem] font-medium text-foreground">
+      {children}
+    </code>
   )
 }
 

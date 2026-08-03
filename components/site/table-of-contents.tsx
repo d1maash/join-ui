@@ -43,7 +43,7 @@ export function TableOfContents({ entries }: { entries: TocEntry[] }) {
 
   return (
     <nav aria-label="On this page" className="py-10">
-      <p className="label-micro mb-3 text-muted-foreground">On this page</p>
+      <p className="label-section mb-3">On this page</p>
       <ul className="flex flex-col">
         {entries.map((entry) => {
           const active = activeId === entry.id

@@ -79,7 +79,7 @@ export default function HomePage() {
                 stops being type and becomes a shape, and a shape this dark is
                 the thing that made the page feel hard.
               */}
-              <h1 className="text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.02] font-semibold tracking-[-0.015em] text-balance">
+              <h1 className="text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.04] font-semibold tracking-[-0.038em] text-balance">
                 Components
                 <br />
                 you actually own
@@ -124,7 +124,7 @@ export default function HomePage() {
           <section aria-labelledby="empty-heading" className="border-b border-border py-16">
             <div className="grid gap-8 lg:grid-cols-12">
               <div className="lg:col-span-3">
-                <p className="label-micro text-muted-foreground">Status</p>
+                <p className="label-section text-muted-foreground">Status</p>
               </div>
               <div className="flex max-w-2xl flex-col gap-4 lg:col-span-9">
                 <h2 id="empty-heading" className="text-2xl font-semibold">
@@ -160,7 +160,7 @@ export default function HomePage() {
         <section aria-labelledby="install-heading" className="border-b border-border py-16">
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-3">
-              <p className="label-micro text-muted-foreground">Install</p>
+              <p className="label-section text-muted-foreground">Install</p>
             </div>
             <div className="flex max-w-xl flex-col gap-4 lg:col-span-5">
               <h2 id="install-heading" className="text-2xl font-semibold">
@@ -196,7 +196,7 @@ export default function HomePage() {
         <section aria-labelledby="principles-heading" className="border-b border-border py-16">
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-3">
-              <p className="label-micro text-muted-foreground">Principles</p>
+              <p className="label-section text-muted-foreground">Principles</p>
               <h2
                 id="principles-heading"
                 className="mt-3 text-2xl font-semibold"
@@ -301,7 +301,7 @@ export default function HomePage() {
         <section aria-labelledby="prompt-heading" className="py-16">
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-3">
-              <p className="label-micro text-muted-foreground">For agents</p>
+              <p className="label-section text-muted-foreground">For agents</p>
             </div>
             <div className="flex max-w-xl flex-col gap-4 lg:col-span-5">
               <h2 id="prompt-heading" className="text-2xl font-semibold">
@@ -361,7 +361,7 @@ function Figure({
 }) {
   return (
     <div className={bordered ? "border-border py-8 sm:border-l sm:pl-8" : "py-8"}>
-      <dt className="label-micro text-muted-foreground">{label}</dt>
+      <dt className="label-section text-muted-foreground">{label}</dt>
       <dd className="numeral mt-2 text-4xl font-semibold">
         {String(value).padStart(2, "0")}
       </dd>
@@ -388,7 +388,7 @@ function Collection({
     <section aria-labelledby={`${id}-heading`} className="border-b border-border py-16">
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex max-w-2xl flex-col gap-2">
-          <p className="label-micro text-muted-foreground">{eyebrow}</p>
+          <p className="label-section text-muted-foreground">{eyebrow}</p>
           <h2 id={`${id}-heading`} className="text-2xl font-semibold">
             {title}
           </h2>

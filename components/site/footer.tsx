@@ -44,7 +44,7 @@ export function SiteFooter() {
 
           {COLUMNS.map((column) => (
             <div key={column.title} className="flex flex-col gap-3">
-              <p className="label-micro text-muted-foreground">{column.title}</p>
+              <p className="label-section">{column.title}</p>
               <ul className="flex flex-col gap-2">
                 {column.links.map((link) => {
                   const external = link.href.startsWith("http")
