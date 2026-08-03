@@ -27,15 +27,18 @@ So emphasis here is carried by three things that do not have that failure mode:
 
 - **Ink.** The filled dark shape is the loudest thing available, and there is
   usually one of it per view.
-- **Material.** The page is warm off-white and a panel is white sitting one step
-  above it, on a hairline and the faintest shadow. That step is what makes a
-  card a card, an active sidebar row active, and a selected tab selected.
+- **Material.** A panel sits one step above the page, on a hairline and the
+  faintest shadow. That step is what makes a card a card, an active sidebar row
+  active, and a selected tab selected — and because it is defined as a
+  *direction* rather than a value, it is the same move in both themes.
 - **Space.**
 
 Neither end of either ramp is a pure value. The strongest pair the interface can
-draw is 15.5:1, soft ink on warm paper — a comfortable reading contrast rather
+draw is 17:1 in dark and 15.5:1 in light — a comfortable reading contrast rather
 than a maximal one. Nothing in the chrome reaches for `#000` or `#fff`, and that
-is most of what separates this from a high-contrast editorial system.
+is most of what separates this from a high-contrast editorial system. In the
+dark theme in particular, a page at true black turns every large surface into a
+hole and every hairline into a scratch.
 
 Hue is reserved for the places where it *is* the information: the four semantic
 families below, used by registry components for a status chip or a progress
@@ -71,14 +74,15 @@ the third is hue — here between `0.005` and `0.014` at a warm angle, which is
 enough that the page resolves to `#f4efea` instead of `#f5f5f5` and the ink to
 `#1d1714` instead of `#000000`, and not enough that either reads as a colour.
 
-That trace of warmth is doing most of the work. A greige page with white panels
-on it is soft in a way that a white page with grey panels is not, and it costs
-nothing structurally.
+That trace of warmth is doing most of the work in both directions. A greige page
+with white panels on it is soft in a way that a white page with grey panels is
+not, and a charcoal that still has a little brown in it is warm in a way that
+neutral `#111` is not. Neither costs anything structurally.
 
-Dark mode does not negate this ramp; it substitutes a warmer-charcoal one that
+Dark mode does not negate this ramp; it substitutes a warm-charcoal one that
 runs the same direction. `--grey-0` is the page in both themes and `--grey-1000`
 is the ink in both, which is why the semantic layer barely changes between them.
-See [dark mode](/docs/dark-mode).
+The dark ramp is the one this site renders — see [dark mode](/docs/dark-mode).
 
 ## Semantic tokens
 
@@ -349,7 +353,8 @@ is a supported pattern, not a hack — inverting a section is a token swap:
 </section>
 ```
 
-The same mechanism powers the theme switch on every preview — see
+This is the same mechanism that lets a component installed in a light project
+theme correctly without a single `dark:` variant — see
 [dark mode](/docs/dark-mode).
 
 ## Component-level overrides
