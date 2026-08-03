@@ -21,7 +21,7 @@ export function Toaster() {
             "flex w-full items-center gap-3 rounded-xl border border-border bg-popover px-4 py-3 font-sans text-sm text-popover-foreground shadow-lg",
           title: "font-medium",
           description: "text-muted-foreground",
-          icon: "flex size-4 shrink-0 items-center justify-center text-accent [&_svg]:size-4",
+          icon: "flex size-4 shrink-0 items-center justify-center text-foreground [&_svg]:size-4",
           actionButton:
             "ml-auto cursor-pointer rounded-md bg-primary px-2 py-1 font-mono text-[0.625rem] tracking-[0.1em] uppercase text-primary-foreground",
           cancelButton:

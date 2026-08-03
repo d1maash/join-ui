@@ -106,7 +106,7 @@ export function ComponentCatalog({ items }: { items: CatalogItem[] }) {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex h-9 flex-1 items-center gap-2 rounded-lg border border-border bg-card px-3 shadow-xs transition-[border-color,box-shadow] focus-within:border-accent focus-within:shadow-ring">
+          <div className="flex h-9 flex-1 items-center gap-2 rounded-lg border border-border bg-card px-3 shadow-xs transition-[border-color,box-shadow] focus-within:border-border-hover">
             <Search aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
             <input
               type="search"
@@ -213,8 +213,8 @@ function FilterChip({
         "label-caps h-6 cursor-pointer rounded-full border px-2.5 transition-colors",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         active
-          ? "border-accent-border bg-accent-soft text-accent"
-          : "border-border bg-card text-muted-foreground hover:border-accent-border hover:text-foreground"
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-border bg-card text-muted-foreground hover:border-border-hover hover:text-foreground"
       )}
     >
       {children}

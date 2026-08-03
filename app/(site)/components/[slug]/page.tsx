@@ -342,7 +342,7 @@ export default async function ComponentPage({ params }: PageProps) {
         </Section>
 
         <Section id="accessibility" title="Accessibility">
-          <ul className="flex list-disc flex-col gap-2 pl-5 marker:text-accent/55">
+          <ul className="flex list-disc flex-col gap-2 pl-5 marker:text-border-strong">
             {component.accessibility.map((note) => (
               <li key={note} className="leading-[1.75]">
                 {note}

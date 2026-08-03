@@ -261,9 +261,9 @@ export default function HomePage() {
                 <li key={category.slug} className="flex">
                   <Link
                     href={`/components?category=${encodeURIComponent(category.name)}`}
-                    className="group flex w-full flex-col gap-1 rounded-xl border border-border bg-card p-4 shadow-xs transition-[border-color,box-shadow] hover:border-accent-border hover:shadow-sm focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+                    className="group flex w-full flex-col gap-1 rounded-xl border border-border bg-card p-4 shadow-xs transition-[border-color,box-shadow] hover:border-border-hover hover:shadow-sm focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                   >
-                    <span className="text-sm font-medium transition-colors group-hover:text-accent">
+                    <span className="text-sm font-medium transition-colors group-hover:text-foreground">
                       {category.name}
                     </span>
                     <span className="numeral text-xs text-muted-foreground">

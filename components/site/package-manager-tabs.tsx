@@ -60,7 +60,7 @@ export function PackageManagerTabs({
                 "label-caps cursor-pointer rounded-md px-2.5 transition-colors",
                 "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
                 active
-                  ? "bg-accent-soft text-accent"
+                  ? "bg-card text-foreground shadow-xs"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >

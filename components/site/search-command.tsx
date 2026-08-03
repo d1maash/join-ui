@@ -49,7 +49,7 @@ export function SearchCommand({ index }: { index: SearchEntry[] }) {
         className={cn(
           "flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-border bg-card px-2.5 text-sm",
           "text-muted-foreground shadow-xs transition-colors duration-[var(--duration-fast)]",
-          "hover:border-accent-border hover:text-foreground",
+          "hover:border-border-hover hover:text-foreground",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         )}
       >
@@ -112,13 +112,13 @@ export function SearchCommand({ index }: { index: SearchEntry[] }) {
                   className={cn(
                     "group flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2.5 text-sm",
                     "transition-colors duration-[var(--duration-instant)]",
-                    "data-[selected=true]:bg-accent-soft data-[selected=true]:text-accent"
+                    "data-[selected=true]:bg-muted data-[selected=true]:text-foreground"
                   )}
                 >
                   <span className="min-w-0 flex-1 truncate font-medium">
                     {entry.title}
                   </span>
-                  <span className="hidden min-w-0 flex-1 truncate text-xs text-muted-foreground group-data-[selected=true]:text-accent/75 sm:block">
+                  <span className="hidden min-w-0 flex-1 truncate text-xs text-muted-foreground group-data-[selected=true]:text-muted-foreground sm:block">
                     {entry.description}
                   </span>
                   {entry.badge ? (

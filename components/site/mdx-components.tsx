@@ -113,8 +113,8 @@ export const mdxComponents = {
   a: ({ href = "", className, ...props }: React.ComponentPropsWithoutRef<"a">) => {
     const internal = href.startsWith("/") || href.startsWith("#")
     const style = cn(
-      "rounded-sm font-medium text-accent underline decoration-accent/35 decoration-1 underline-offset-4",
-      "transition-[text-decoration-color] hover:decoration-accent",
+      "rounded-sm font-medium text-foreground underline decoration-border-strong decoration-1 underline-offset-4",
+      "transition-[text-decoration-color] hover:decoration-foreground",
       "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
       className
     )
@@ -133,7 +133,7 @@ export const mdxComponents = {
   ul: ({ className, ...props }: React.ComponentPropsWithoutRef<"ul">) => (
     <ul
       className={cn(
-        "my-4 flex list-disc flex-col gap-2 pl-5 text-muted-foreground marker:text-accent/55",
+        "my-4 flex list-disc flex-col gap-2 pl-5 text-muted-foreground marker:text-border-strong",
         className
       )}
       {...props}
@@ -160,7 +160,7 @@ export const mdxComponents = {
   }: React.ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
       className={cn(
-        "my-5 rounded-r-lg border-l-[3px] border-accent/40 bg-subtle py-2 pl-4 text-muted-foreground italic",
+        "my-5 rounded-r-lg border-l-2 border-border-strong bg-subtle py-3 pl-4 text-muted-foreground italic",
         className
       )}
       {...props}

@@ -60,8 +60,8 @@ export function DocsCard({
 
   const styles = cn(
     "group flex flex-col gap-1.5 rounded-xl border border-border bg-card p-4 shadow-xs",
-    "transition-[border-color,box-shadow,transform] duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
-    "hover:-translate-y-0.5 hover:border-accent-border hover:shadow-md",
+    "transition-[border-color,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
+    "hover:border-border-hover hover:shadow-sm",
     "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
   )
 

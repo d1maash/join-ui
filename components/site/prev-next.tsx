@@ -36,11 +36,11 @@ export function PrevNextNavigation({
           className={cn(
             "group flex flex-col gap-1 rounded-xl border border-border bg-card p-4 shadow-xs",
             "transition-[border-color,box-shadow] duration-[var(--duration-fast)]",
-            "hover:border-accent-border hover:shadow-sm",
+            "hover:border-border-hover hover:shadow-sm",
             "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
           )}
         >
-          <span className="label-caps flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-accent">
+          <span className="label-caps flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground">
             <ArrowLeft
               aria-hidden="true"
               className="size-3 transition-transform group-hover:-translate-x-0.5"
@@ -60,12 +60,12 @@ export function PrevNextNavigation({
           className={cn(
             "group flex flex-col items-end gap-1 rounded-xl border border-border bg-card p-4 text-right shadow-xs",
             "transition-[border-color,box-shadow] duration-[var(--duration-fast)]",
-            "hover:border-accent-border hover:shadow-sm",
+            "hover:border-border-hover hover:shadow-sm",
             "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
             "sm:col-start-2"
           )}
         >
-          <span className="label-caps flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-accent">
+          <span className="label-caps flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground">
             Next
             <ArrowRight
               aria-hidden="true"

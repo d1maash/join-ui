@@ -32,7 +32,7 @@ export function Breadcrumbs({
                   href={item.href}
                   className={cn(
                     "label-caps rounded-sm text-muted-foreground underline-offset-4 transition-colors",
-                    "hover:text-accent hover:underline"
+                    "hover:text-foreground hover:underline"
                   )}
                 >
                   {item.label}

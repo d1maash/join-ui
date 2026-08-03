@@ -119,7 +119,7 @@ function PreviewToggle({
         "flex size-7 cursor-pointer items-center justify-center rounded-md border transition-colors",
         "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
         active
-          ? "border-accent-border bg-accent-soft text-accent"
+          ? "border-primary bg-primary text-primary-foreground"
           : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
       )}
     >
