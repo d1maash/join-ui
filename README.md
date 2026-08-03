@@ -9,11 +9,12 @@ delete what you do not need.
 
 - **Real registry** — `/r/registry.json` plus one installable item per component
 - **Copy Prompt** — a structured, agent-ready brief on every component page
-- **Two-layer design system** — an entirely neutral chrome (warm paper in light,
-  warm charcoal in dark, emphasis by ink and elevation rather than by an accent;
-  neither ramp reaches pure black or pure white) around components that take
-  their hue from the `--info` / `--positive` / `--caution` / `--critical` token
-  families
+- **Two-layer design system** — an entirely neutral chrome (emphasis by ink and
+  elevation rather than by an accent; neither ramp reaches pure black or pure
+  white) around components that take their hue from the `--info` / `--positive`
+  / `--caution` / `--critical` token families. The site renders dark only; the
+  tokens ship both themes, because installed components land in light projects
+  too
 - **WCAG 2.2 AA** baseline, with reduced-motion fallbacks throughout
 - **Fully static** — every route prerendered, no runtime services
 
@@ -365,10 +366,10 @@ to genuinely interactive pieces — clipboard, tab switchers, the command palett
 the catalog filter and the previews themselves.
 
 **No `dark:` in registry components.** Registry components theme purely through
-CSS custom properties. That is what makes the per-preview theme islands work: a
-light preview inside a dark page resolves correctly because the nearest `.light`
-ancestor redeclares the variables, and custom-property inheritance already means
-"nearest wins". A `dark:` variant would match on `.dark *` and win anyway.
+CSS custom properties. That is what makes them portable: dropped into a light
+project, or into any subtree that redeclares the variables, they resolve
+correctly because custom-property inheritance already means "nearest wins". A
+`dark:` variant would match on `.dark *` and win anyway.
 
 **Previews are the real thing.** Every preview imports from
 `registry/components/`, and every code block reads that same file from disk at
