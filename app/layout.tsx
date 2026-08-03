@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google"
 
-import { ThemeProvider } from "@/components/site/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { siteConfig } from "@/lib/site"
 
@@ -89,16 +88,21 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      // `dark` is written here rather than by next-themes: the site has no
-      // light mode to switch to, so there is nothing to resolve on the client
-      // and no flash to guard against.
+      /*
+       * The theme is a static class rather than something next-themes resolves
+       * on the client. There is nothing to switch to, so the dependency bought
+       * only a hydration mismatch and a blocking inline script — this renders
+       * correctly with JavaScript disabled and cannot flash.
+       *
+       * `colorScheme` is what tells the browser to draw form controls,
+       * scrollbars and the caret dark.
+       */
       className={`dark ${plexSans.variable} ${plexMono.variable}`}
+      style={{ colorScheme: "dark" }}
     >
       <body className="font-sans antialiased">
-        <ThemeProvider>
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        {children}
+        <Toaster />
       </body>
     </html>
   )

@@ -61,18 +61,3 @@ export function useStoredPreference<T extends string>(
 
   return [value, setValue] as const
 }
-
-const noopSubscribe = () => () => {}
-const getTrue = () => true
-const getFalse = () => false
-
-/**
- * `false` during SSR and the hydration render, `true` afterwards.
- *
- * Use it to defer rendering that depends on client-only state — it avoids a
- * hydration mismatch without the `useState` + `useEffect` dance, which React's
- * `set-state-in-effect` rule now (correctly) rejects.
- */
-export function useIsHydrated(): boolean {
-  return React.useSyncExternalStore(noopSubscribe, getTrue, getFalse)
-}
