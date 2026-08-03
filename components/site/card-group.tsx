@@ -46,12 +46,10 @@ export function DocsCard({
   const body = (
     <>
       <span className="flex items-start justify-between gap-3">
-        <span className="text-sm font-medium transition-colors group-hover:text-accent">
-          {title}
-        </span>
+        <span className="text-sm font-medium">{title}</span>
         <ArrowUpRight
           aria-hidden="true"
-          className="size-3.5 shrink-0 text-muted-foreground transition-[transform,color] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
+          className="size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
         />
       </span>
       {children ? (
