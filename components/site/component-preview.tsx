@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Maximize2 } from "lucide-react"
 
@@ -23,7 +25,9 @@ export interface ComponentPreviewProps {
  * `dark:` utility: components get installed into light projects, and they have
  * to theme purely through custom properties to survive that.
  *
- * With no state left to hold, this is a Server Component.
+ * It holds no state any more, but it stays a Client Component: `renderPreview`
+ * reaches into a client module of `dynamic()` imports, and a server render
+ * cannot call into that.
  */
 export function ComponentPreview({
   slug,
