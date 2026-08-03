@@ -18,10 +18,10 @@ type HeadingProps = React.ComponentPropsWithoutRef<"h2">
 function heading(level: 1 | 2 | 3 | 4) {
   const Tag = `h${level}` as const
   const sizes = {
-    1: "mt-0 mb-4 text-3xl font-semibold tracking-tight",
-    2: "mt-12 mb-4 scroll-mt-24 border-t border-border pt-6 text-xl font-semibold tracking-tight first:mt-0 first:border-0 first:pt-0",
-    3: "mt-8 mb-2 scroll-mt-24 text-base font-semibold tracking-tight",
-    4: "mt-6 mb-2 scroll-mt-24 text-[0.9375rem] font-semibold tracking-tight",
+    1: "mt-0 mb-4 text-3xl font-semibold",
+    2: "mt-12 mb-4 scroll-mt-24 border-t border-border pt-6 text-xl font-semibold first:mt-0 first:border-0 first:pt-0",
+    3: "mt-8 mb-2 scroll-mt-24 text-base font-semibold",
+    4: "mt-6 mb-2 scroll-mt-24 text-[0.9375rem] font-semibold",
   }
 
   return function Heading({ className, ...props }: HeadingProps) {

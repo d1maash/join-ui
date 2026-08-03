@@ -79,7 +79,7 @@ export default function HomePage() {
                 stops being type and becomes a shape, and a shape this dark is
                 the thing that made the page feel hard.
               */}
-              <h1 className="text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.02] font-semibold tracking-[-0.03em] text-balance">
+              <h1 className="text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.02] font-semibold tracking-[-0.015em] text-balance">
                 Components
                 <br />
                 you actually own
@@ -127,7 +127,7 @@ export default function HomePage() {
                 <p className="label-caps text-muted-foreground">Status</p>
               </div>
               <div className="flex max-w-2xl flex-col gap-4 lg:col-span-9">
-                <h2 id="empty-heading" className="text-2xl font-semibold tracking-tight">
+                <h2 id="empty-heading" className="text-2xl font-semibold">
                   The registry is being rebuilt
                 </h2>
                 <p className="leading-relaxed text-pretty text-muted-foreground">
@@ -163,7 +163,7 @@ export default function HomePage() {
               <p className="label-caps text-muted-foreground">Install</p>
             </div>
             <div className="flex max-w-xl flex-col gap-4 lg:col-span-5">
-              <h2 id="install-heading" className="text-2xl font-semibold tracking-tight">
+              <h2 id="install-heading" className="text-2xl font-semibold">
                 Straight into your project
               </h2>
               <p className="leading-relaxed text-pretty text-muted-foreground">
@@ -199,7 +199,7 @@ export default function HomePage() {
               <p className="label-caps text-muted-foreground">Principles</p>
               <h2
                 id="principles-heading"
-                className="mt-3 text-2xl font-semibold tracking-tight"
+                className="mt-3 text-2xl font-semibold"
               >
                 Built like a developer tool
               </h2>
@@ -214,7 +214,7 @@ export default function HomePage() {
                   <span className="numeral text-[0.6875rem] text-muted-foreground">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="text-[0.9375rem] font-semibold tracking-tight">
+                  <h3 className="text-[0.9375rem] font-semibold">
                     {principle.title}
                   </h3>
                   <p className="text-sm leading-relaxed text-muted-foreground">
@@ -304,7 +304,7 @@ export default function HomePage() {
               <p className="label-caps text-muted-foreground">For agents</p>
             </div>
             <div className="flex max-w-xl flex-col gap-4 lg:col-span-5">
-              <h2 id="prompt-heading" className="text-2xl font-semibold tracking-tight">
+              <h2 id="prompt-heading" className="text-2xl font-semibold">
                 Hand the whole component to your agent
               </h2>
               <p className="leading-relaxed text-pretty text-muted-foreground">
@@ -389,7 +389,7 @@ function Collection({
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex max-w-2xl flex-col gap-2">
           <p className="label-caps text-muted-foreground">{eyebrow}</p>
-          <h2 id={`${id}-heading`} className="text-2xl font-semibold tracking-tight">
+          <h2 id={`${id}-heading`} className="text-2xl font-semibold">
             {title}
           </h2>
           <p className="leading-relaxed text-pretty text-muted-foreground">

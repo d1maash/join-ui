@@ -141,7 +141,7 @@ export default async function ComponentPage({ params }: PageProps) {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.03em]">
+            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.015em]">
               {component.title}
             </h1>
             <p className="max-w-2xl text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">
@@ -401,7 +401,7 @@ export default async function ComponentPage({ params }: PageProps) {
           <div className="flex flex-col gap-8">
             {component.customization.map((example) => (
               <div key={example.title} className="flex flex-col gap-2">
-                <h3 className="text-[0.9375rem] font-semibold tracking-tight text-foreground">
+                <h3 className="text-[0.9375rem] font-semibold text-foreground">
                   {example.title}
                 </h3>
                 <p className="text-sm leading-relaxed">{example.description}</p>
@@ -470,7 +470,7 @@ function Section({
       aria-labelledby={id}
       className="mt-12 scroll-mt-24 border-t border-border pt-8"
     >
-      <h2 id={id} className="mb-5 text-xl font-semibold tracking-tight">
+      <h2 id={id} className="mb-5 text-xl font-semibold">
         {title}
       </h2>
       <div className="flex flex-col gap-4 leading-[1.75] text-muted-foreground">
@@ -492,7 +492,7 @@ function InstallStep({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1.5">
-        <h3 className="text-[0.9375rem] font-semibold tracking-tight">{title}</h3>
+        <h3 className="text-[0.9375rem] font-semibold">{title}</h3>
         <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
       </div>
       {children}

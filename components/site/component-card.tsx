@@ -36,7 +36,7 @@ export function ComponentCard({
   )
 
   const title = (
-    <h3 className="text-[0.9375rem] font-semibold tracking-tight">
+    <h3 className="text-[0.9375rem] font-semibold">
       <Link
         href={`/components/${item.slug}`}
         className="rounded-sm after:absolute after:inset-0 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"

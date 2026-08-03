@@ -105,7 +105,7 @@ export default async function DocsPage({ params }: PageProps) {
 
         <article className="max-w-3xl">
           <header className="mb-10 flex flex-col gap-3 border-b border-border pb-8">
-            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.03em]">
+            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.015em]">
               {page.title}
             </h1>
             <p className="text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">

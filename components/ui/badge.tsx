@@ -16,7 +16,7 @@ import type { ComponentStatus } from "@/types/registry"
 const badgeVariants = cva(
   cn(
     "inline-flex items-center gap-1.5 rounded-full border font-mono uppercase whitespace-nowrap select-none",
-    "tracking-[0.1em]",
+    "tracking-[0.08em]",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0"
   ),
   {

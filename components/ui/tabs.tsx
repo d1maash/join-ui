@@ -39,7 +39,7 @@ export const TabsTrigger = React.forwardRef<
       ref={ref}
       className={cn(
         "relative -mb-px cursor-pointer border-b-2 border-transparent pb-2.5",
-        "font-mono text-[0.6875rem] tracking-[0.12em] uppercase",
+        "font-mono text-[0.6875rem] tracking-[0.08em] uppercase",
         "text-muted-foreground transition-colors duration-[var(--duration-fast)]",
         "hover:text-foreground",
         "focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",

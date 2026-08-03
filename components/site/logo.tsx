@@ -49,7 +49,7 @@ export function Logo({ className }: { className?: string }) {
       )}
     >
       <LogoMark />
-      <span className="text-[0.9375rem] font-semibold tracking-tight">
+      <span className="text-[0.9375rem] font-semibold">
         {siteConfig.shortName}
         <span className="font-normal text-muted-foreground"> UI</span>
       </span>

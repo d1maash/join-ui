@@ -41,7 +41,7 @@ export function Step({
         "before:content-[counter(step)]"
       )}
     >
-      <h3 className="mt-0.5 mb-2 text-[0.9375rem] font-semibold tracking-tight">
+      <h3 className="mt-0.5 mb-2 text-[0.9375rem] font-semibold">
         {title}
       </h3>
       <div className="flex flex-col gap-3 text-sm leading-relaxed text-muted-foreground [&>p]:my-0">

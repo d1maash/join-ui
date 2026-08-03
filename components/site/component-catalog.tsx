@@ -169,7 +169,7 @@ function CatalogEmptyState() {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-subtle px-6 py-24 text-center">
       <p className="label-caps text-muted-foreground">Empty registry</p>
-      <h2 className="text-xl font-semibold tracking-tight">No components published</h2>
+      <h2 className="text-xl font-semibold">No components published</h2>
       <p className="max-w-md text-sm leading-relaxed text-pretty text-muted-foreground">
         Nothing is registered yet. Add a component under{" "}
         <code className="font-mono text-foreground">registry/components/</code>, describe
