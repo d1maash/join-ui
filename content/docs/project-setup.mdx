@@ -11,10 +11,11 @@ app/
     components/              # /components and /components/[slug]
     docs/[[...slug]]/        # /docs and /docs/[slug]
   (preview)/preview/[slug]/  # bare full-page previews
-  layout.tsx                 # html, fonts, theme provider, toaster
+  layout.tsx                 # html, fonts, metadata, toaster
   globals.css                # design tokens — the neutral ramp, hue families, motion
   opengraph-image.tsx        # site-wide social card
-  sitemap.ts / robots.ts
+  icon.png / apple-icon.png / favicon.ico   # the Join Way monogram, by convention
+  manifest.ts / sitemap.ts / robots.ts
 components/
   site/                      # documentation chrome
   previews/                  # one live demo per component
@@ -59,9 +60,9 @@ apart:
 </Callout>
 
 <Callout variant="note">
-  `registry/components/` is empty at the moment — the component set is being
-  rebuilt from scratch against the current design system. The pipeline around it
-  is unchanged, so the first new component only has to follow
+  `registry/components/` is still short — the component set is being rebuilt against
+  the current design system, one component at a time. The pipeline around it does not
+  change as it grows, so the next component only has to follow
   [contributing](/docs/contributing).
 </Callout>
 

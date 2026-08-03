@@ -92,9 +92,9 @@ export default function OpengraphImage() {
             border: `1px solid ${HAIRLINE}`,
             backgroundColor: PANEL,
             padding: "8px 18px",
-            fontSize: 19,
-            letterSpacing: 3,
-            textTransform: "uppercase",
+            fontSize: 20,
+            fontWeight: 500,
+            letterSpacing: -0.2,
             color: MUTED,
           }}
         >

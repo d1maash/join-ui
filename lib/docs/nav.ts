@@ -49,7 +49,11 @@ export const docsNav: DocsNavSection[] = [
     title: "Customization",
     items: [
       item("theming", "Theming", "Design tokens, palettes and radius."),
-      item("dark-mode", "Dark mode", "Theme switching and per-preview theme islands."),
+      item(
+        "dark-mode",
+        "Dark mode",
+        "Theme switching in your project, and scoped theme islands."
+      ),
     ],
   },
   {

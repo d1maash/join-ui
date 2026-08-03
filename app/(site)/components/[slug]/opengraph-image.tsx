@@ -107,9 +107,9 @@ export default async function ComponentOpengraphImage({
             border: `1px solid ${HAIRLINE}`,
             backgroundColor: PANEL,
             padding: "7px 18px",
-            fontSize: 19,
-            letterSpacing: 2,
-            textTransform: "uppercase",
+            fontSize: 20,
+            fontWeight: 500,
+            letterSpacing: -0.2,
             color: INK,
           }}
         >

@@ -18,9 +18,10 @@ delete what you do not need.
 - **WCAG 2.2 AA** baseline, with reduced-motion fallbacks throughout
 - **Fully static** — every route prerendered, no runtime services
 
-The catalog is currently empty: the registry pipeline, documentation, search
-index and JSON endpoints are all in place, and components appear across every
-surface as soon as they are added to `lib/registry/components.ts`.
+The catalog is young: the component set is being rebuilt against the current
+design system one component at a time. The registry pipeline, documentation,
+search index and JSON endpoints are all in place, and a component appears across
+every surface as soon as it is added to `lib/registry/components.ts`.
 
 ---
 
@@ -68,15 +69,15 @@ app/
     components/[slug]/          # /components/[slug] + per-component OG image
     docs/[[...slug]]/           # /docs and /docs/[slug]
   (preview)/preview/[slug]/     # bare full-page previews
-  layout.tsx                    # html, fonts, theme provider, toaster
+  layout.tsx                    # html, fonts, metadata, toaster
   globals.css                   # design tokens + Tailwind theme
   opengraph-image.tsx           # site-wide social card
-  sitemap.ts, robots.ts, not-found.tsx
+  icon.png, apple-icon.png, favicon.ico   # brand marks, picked up by convention
+  manifest.ts, sitemap.ts, robots.ts, not-found.tsx
 components/
-  docs/                         # documentation chrome (header, sidebar, code blocks…)
+  site/                         # documentation chrome (header, sidebar, code blocks…)
   previews/                     # one live demo per component + the lazy map
   ui/                           # local shadcn-style primitives
-  icons.tsx, theme-provider.tsx
 content/
   docs/                         # MDX guides — content only, no frontmatter
 lib/
@@ -85,7 +86,8 @@ lib/
   search/                       # local search index and scorer
   docs/                         # navigation and sidebar trees
   mdx/                          # MDX loading, TOC extraction, rehype plugin
-  highlight.ts, hooks.ts, site.ts, clipboard.ts, utils.ts
+  highlight.ts, shiki-theme.ts  # Shiki, and the two low-chroma syntax themes
+  commands.ts, hooks.ts, site.ts, clipboard.ts, utils.ts
 registry/
   components/                   # the components the CLI ships
 public/
@@ -104,6 +106,19 @@ types/
 | `components/previews/` | Demos. Never leave this site, so they may import anything.                                                   |
 | `components/site/`     | Documentation chrome. Never shipped by the registry.                                                         |
 | `components/ui/`       | Local primitives for the docs. Deliberately separate from registry components.                               |
+
+### Brand assets
+
+The wordmark and the monogram both live in `components/site/logo.tsx`. The mark
+is vector, drawn on `currentColor` rather than as an image, so it inherits from
+the text beside it and stays crisp at any size. Its two paths are exported as
+`MARK` and reused by the social cards, which Satori renders without CSS — there
+is one copy of the geometry, not three.
+
+`app/icon.png`, `app/apple-icon.png` and `app/favicon.ico` are the Join Way
+originals, copied verbatim from the studio site so a browser tab, an installed
+shortcut and join-way.com all show the same tile. Next picks all three up by file
+convention, and `app/manifest.ts` points at the same PNG.
 
 ---
 
@@ -264,7 +279,7 @@ pnpm registry:build
 ```
 
 ```text
-✓ Registry built — 14 items, 74.8 kB of source
+✓ Registry built — 1 items, 13.2 kB of source
 ```
 
 Consumers install by namespace:

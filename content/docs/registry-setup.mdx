@@ -77,15 +77,16 @@ pnpm registry:build
 ```
 
 ```text
-✓ Registry built — 0 items, 0.0 kB of source
+✓ Registry built — 1 items, 13.2 kB of source
   registry.json
   public/r/registry.json
-  public/r/*.json (0 files)
+  public/r/*.json (1 files)
 ```
 
-The catalog is empty while the component set is rebuilt from scratch, so the
-counts above are what you will see today. They track `lib/registry/components.ts`
-exactly — one entry there is one item here.
+The counts track `lib/registry/components.ts` exactly — one entry there is one
+item here, and the byte count is the source inlined into the item files. The
+catalog is still short while the component set is rebuilt against the current
+design system, so expect those numbers to be small and to climb.
 
 The build refuses to emit anything until validation passes:
 
