@@ -7,7 +7,7 @@
       "name": "status-timeline",
       "type": "registry:ui",
       "title": "Status Timeline",
-      "description": "A colour-coded step tracker for orders, deployments and onboarding, with a pulsing marker on the step in flight.",
+      "description": "A colour-coded step tracker for orders, deployments and onboarding, still at rest and animated only when a step advances.",
       "author": "Join Way",
       "dependencies": [
         "motion",

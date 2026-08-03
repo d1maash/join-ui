@@ -81,7 +81,7 @@ export default function StatusTimelinePreview() {
       <div className="grid gap-10 lg:grid-cols-2">
         <Panel
           caption="Driven by activeStep"
-          description="One index decides everything: earlier steps go green, the one in flight turns blue and pulses, the rest stay grey."
+          description="One index decides everything. Advance it and the line draws down, the next marker cross-fades into blue and pulses once — then everything goes still again."
         >
           <StatusTimeline
             label="Delivery"

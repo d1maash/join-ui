@@ -24,9 +24,9 @@ export const components: ComponentMetadata[] = [
     slug: "status-timeline",
     title: "Status Timeline",
     description:
-      "A colour-coded step tracker for orders, deployments and onboarding, with a pulsing marker on the step in flight.",
+      "A colour-coded step tracker for orders, deployments and onboarding, still at rest and animated only when a step advances.",
     overview:
-      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue and pulses, the rest stay grey — or pin a state per step to describe a run that is waiting on someone or has failed outright. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
+      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue, the rest stay grey behind a dashed ring — or pin a state per step to describe a run that is waiting on someone or has failed outright. At rest it is a still drawing: nothing loops and nothing breathes. The motion is spent on the one moment worth showing — move activeStep on and the connector above the cleared step draws downward, the marker it reaches cross-fades into its new ring, and a single pulse leaves the step now in flight. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
     category: "Data Display",
     tags: [
       "timeline",
@@ -49,8 +49,8 @@ export const components: ComponentMetadata[] = [
       "Colour is never the only signal, which is what satisfies WCAG 1.4.1: every state also has its own glyph — a tick, a pip, a clock, a cross — and appends a visually hidden label reading “Completed”, “In progress”, “Waiting”, “Not started” or “Blocked”.",
       "A blocked step additionally shifts its title to the critical hue, so the failure is findable without reading every marker.",
       "The list is named by the header eyebrow through `aria-labelledby`, or by `label` when the header is hidden.",
-      "Markers, trails and the pulse ring are `aria-hidden` and non-interactive; only content you pass to `footer` enters the tab order.",
-      "Step reveals and the pulse animate `transform` and `opacity` only, and stop entirely under `prefers-reduced-motion`.",
+      "Markers, trails and the arrival ring are `aria-hidden` and non-interactive; only content you pass to `footer` enters the tab order.",
+      "Nothing animates on mount or loops at rest, so the component never competes with the page for attention; the advance transition animates `transform` and `opacity` only, and resolves instantly under `prefers-reduced-motion`.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
     ],
     keyboard: [],
