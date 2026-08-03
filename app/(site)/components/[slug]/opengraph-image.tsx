@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og"
 
+import { MARK } from "@/components/site/logo"
 import { allComponents, getComponent } from "@/lib/registry"
 import { siteConfig } from "@/lib/site"
 
@@ -75,11 +76,25 @@ export default async function ComponentOpengraphImage({
             alignItems: "center",
             justifyContent: "center",
             marginRight: 14,
-            fontSize: 23,
-            fontWeight: 700,
           }}
         >
-          J
+          <svg viewBox={MARK.viewBox} width={29} height={29}>
+            <path
+              d={MARK.stems}
+              fill="none"
+              stroke={PAGE}
+              strokeWidth={MARK.stemsWidth}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d={MARK.middle}
+              fill="none"
+              stroke={PAGE}
+              strokeWidth={MARK.middleWidth}
+              strokeLinecap="round"
+            />
+          </svg>
         </div>
         <div style={{ display: "flex", fontSize: 24, fontWeight: 600 }}>
           {siteConfig.name}
@@ -92,9 +107,9 @@ export default async function ComponentOpengraphImage({
             border: `1px solid ${HAIRLINE}`,
             backgroundColor: PANEL,
             padding: "7px 18px",
-            fontSize: 19,
-            letterSpacing: 2,
-            textTransform: "uppercase",
+            fontSize: 20,
+            fontWeight: 500,
+            letterSpacing: -0.2,
             color: INK,
           }}
         >

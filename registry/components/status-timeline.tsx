@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Check, Clock, X } from "lucide-react"
-import { motion, useReducedMotion } from "motion/react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
@@ -38,73 +38,88 @@ const STATE_LABEL: Record<StatusTimelineState, string> = {
 /**
  * One hue per state, taken from the component palette rather than a literal
  * colour, so a consumer can retint the whole family in `globals.css`.
+ *
+ * `ring` is the marker's outline and tint together, because the two cross-fade
+ * as one shape when a step advances — a dashed grey circle turning into a
+ * tinted one is a single move, not two.
  */
 const TONES: Record<
   StatusTimelineState,
-  { marker: string; title: string; trail: string; chip: string; chipIcon: string }
+  { ring: string; ink: string; title: string; chip: string; chipIcon: string }
 > = {
   complete: {
-    marker: "border-positive/25 bg-positive-soft text-positive",
+    ring: "border-positive/35 bg-positive-soft",
+    ink: "text-positive",
     title: "text-foreground",
-    trail: "bg-positive/35",
     chip: "bg-positive-soft text-positive",
     chipIcon: "bg-positive text-positive-foreground",
   },
   current: {
-    marker: "border-info bg-info text-info-foreground",
+    ring: "border-info/50 bg-info-soft ring-[3px] ring-info/12",
+    ink: "text-info",
     title: "text-foreground",
-    trail: "bg-border",
     chip: "bg-info-soft text-info",
     chipIcon: "bg-info text-info-foreground",
   },
   waiting: {
-    marker: "border-caution/25 bg-caution-soft text-caution",
+    ring: "border-dashed border-caution/45 bg-caution-soft",
+    ink: "text-caution",
     title: "text-foreground",
-    trail: "bg-border",
     chip: "bg-caution-soft text-caution",
     chipIcon: "bg-caution text-caution-foreground",
   },
   pending: {
-    marker: "border-dashed border-border bg-background text-muted-foreground",
+    ring: "border-dashed border-border bg-muted/40",
+    ink: "text-muted-foreground",
     title: "text-muted-foreground",
-    trail: "bg-border",
     chip: "bg-muted text-muted-foreground",
     chipIcon: "bg-muted-foreground/25 text-muted-foreground",
   },
   blocked: {
-    marker: "border-critical/25 bg-critical-soft text-critical",
+    ring: "border-critical/40 bg-critical-soft",
+    ink: "text-critical",
     title: "text-critical",
-    trail: "bg-border",
     chip: "bg-critical-soft text-critical",
     chipIcon: "bg-critical text-critical-foreground",
   },
 }
 
-const MICRO_LABEL =
-  "font-mono text-[0.6875rem] leading-none font-medium tracking-[0.08em] uppercase"
+/** The colour the connector takes once the step above it has been cleared. */
+const TRAIL_FILL = "bg-positive/70"
+
+/*
+ * The chip label. Set in whatever face the host app uses for its interface,
+ * because an installed component has no business asserting a second family —
+ * and because a status word ("In review", "Blocked") is read, not decoded.
+ */
+const MICRO_LABEL = "text-[0.6875rem] leading-none font-medium tracking-[-0.005em]"
+
+const EASE = [0.22, 1, 0.36, 1] as const
 
 const SIZES = {
   sm: {
-    marker: "size-7",
-    glyph: "size-3",
+    marker: "size-8",
+    glyph: "size-3.5",
     pip: "size-1.5",
     title: "text-[0.8125rem]",
-    meta: "text-[0.6875rem]",
-    trail: "pb-4",
+    meta: "text-xs",
+    trail: "pb-5",
     columnGap: "gap-3",
     contentOffset: "pt-1.5",
-    padding: "p-3.5",
+    padding: "p-4",
+    lane: "my-2",
   },
   md: {
-    marker: "size-9",
-    glyph: "size-4",
+    marker: "size-10",
+    glyph: "size-[1.125rem]",
     pip: "size-2",
-    title: "text-sm",
-    meta: "text-xs",
-    trail: "pb-6",
-    columnGap: "gap-3.5",
-    contentOffset: "pt-2",
-    padding: "p-4",
+    title: "text-[0.9375rem]",
+    meta: "text-[0.8125rem]",
+    trail: "pb-7",
+    columnGap: "gap-4",
+    contentOffset: "pt-2.5",
+    padding: "p-5",
+    lane: "my-2.5",
   },
 } as const
 
@@ -135,6 +150,13 @@ export interface StatusTimelineProps extends Omit<
  * A step tracker for anything that moves through a fixed sequence: an order
  * being fulfilled, a deployment, an onboarding checklist.
  *
+ * At rest it is a still drawing — dashed rings for what has not happened yet,
+ * tinted ones for what has, a hairline running between them. Nothing loops and
+ * nothing breathes. The motion is spent entirely on the one moment worth
+ * showing: when `activeStep` moves on, the connector above the cleared step
+ * draws downward, the marker it reaches cross-fades into its new ring, and a
+ * single pulse leaves the step now in flight.
+ *
  * Each state gets its own hue — green behind a finished step, blue on the one
  * in flight, amber on one that is waiting, red on one that failed — and each
  * hue is backed by a glyph and a text label, so nothing depends on being able
@@ -158,6 +180,7 @@ export function StatusTimeline({
   const scale = SIZES[size]
   const chrome = variant === "card"
   const horizontal = orientation === "horizontal"
+  const animate = !reduceMotion
 
   const resolved = steps.map((step, index) => ({
     ...step,
@@ -168,11 +191,14 @@ export function StatusTimeline({
 
   const summary = summarise(resolved)
   const summaryTone = TONES[summary.state]
+  const summaryLabel = status ?? summary.label
 
   return (
     <div
       className={cn(
-        "w-full text-foreground",
+        // A column, so a card given a height taller than its steps keeps the
+        // footer on the bottom rule rather than floating it under the list.
+        "flex w-full flex-col text-foreground",
         chrome && "rounded-soft-lg border border-border bg-card",
         className
       )}
@@ -189,7 +215,7 @@ export function StatusTimeline({
             id={labelId}
             className={cn(
               MICRO_LABEL,
-              "rounded-full border border-border px-2.5 py-1.5 text-muted-foreground"
+              "rounded-full border border-dashed border-border px-2.5 py-1.5 text-muted-foreground"
             )}
           >
             {label}
@@ -203,22 +229,46 @@ export function StatusTimeline({
           <span
             className={cn(
               "flex shrink-0 items-center gap-1.5 rounded-full py-1 pr-2.5 pl-1",
+              "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
               summaryTone.chip
             )}
           >
             <span
               className={cn(
                 "flex size-5 items-center justify-center rounded-full",
+                "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
                 summaryTone.chipIcon
               )}
             >
-              <StateGlyph
-                state={summary.state}
-                className="size-3"
-                pipClassName="size-1.5"
-              />
+              <Swap
+                token={glyphKey(summary.state)}
+                animate={animate}
+                className="flex items-center justify-center"
+              >
+                <StateGlyph
+                  state={summary.state}
+                  className="size-3"
+                  pipClassName="size-1.5"
+                />
+              </Swap>
             </span>
-            <span className={MICRO_LABEL}>{status ?? summary.label}</span>
+
+            {/*
+              Stacked in a single grid cell so the outgoing and incoming words
+              overlap instead of shunting the pill sideways mid-cross-fade.
+            */}
+            <span className="grid">
+              <Swap
+                token={summaryLabel}
+                animate={animate}
+                className={cn(
+                  MICRO_LABEL,
+                  "col-start-1 row-start-1 whitespace-nowrap"
+                )}
+              >
+                {summaryLabel}
+              </Swap>
+            </span>
           </span>
         </div>
       ) : null}
@@ -227,7 +277,7 @@ export function StatusTimeline({
         aria-labelledby={showHeader ? labelId : undefined}
         aria-label={showHeader ? undefined : label}
         className={cn(
-          "flex",
+          "flex flex-1",
           horizontal ? "flex-row" : "flex-col",
           chrome && scale.padding
         )}
@@ -237,16 +287,9 @@ export function StatusTimeline({
           const tone = TONES[step.state]
 
           return (
-            <motion.li
+            <li
               key={step.id}
               aria-current={step.state === "current" ? "step" : undefined}
-              initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.32,
-                delay: index * 0.06,
-                ease: [0.22, 1, 0.36, 1],
-              }}
               className={cn(
                 "flex min-w-0",
                 horizontal
@@ -263,32 +306,21 @@ export function StatusTimeline({
                 <Marker
                   state={step.state}
                   icon={step.icon}
-                  className={cn(scale.marker, tone.marker)}
+                  tone={tone}
+                  sizeClassName={scale.marker}
                   glyphClassName={scale.glyph}
                   pipClassName={scale.pip}
-                  animate={!reduceMotion}
+                  animate={animate}
                 />
 
                 {!isLast ? (
-                  <motion.span
-                    aria-hidden="true"
-                    initial={
-                      reduceMotion ? false : horizontal ? { scaleX: 0 } : { scaleY: 0 }
-                    }
-                    animate={{ scaleX: 1, scaleY: 1 }}
-                    transition={{
-                      duration: 0.4,
-                      delay: index * 0.06 + 0.12,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                    style={{
-                      transformOrigin: horizontal ? "left center" : "top center",
-                    }}
-                    className={cn(
-                      "rounded-full",
-                      tone.trail,
-                      horizontal ? "h-0.5 flex-1" : "my-2 min-h-3 w-0.5 flex-1"
-                    )}
+                  <Trail
+                    /* The connector belongs to the step above it, and fills
+                       the moment that step is cleared. */
+                    filled={step.state === "complete"}
+                    horizontal={horizontal}
+                    laneClassName={scale.lane}
+                    animate={animate}
                   />
                 ) : null}
               </div>
@@ -311,7 +343,8 @@ export function StatusTimeline({
                   <p
                     className={cn(
                       scale.title,
-                      "font-medium tracking-tight",
+                      "font-semibold tracking-tight",
+                      "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
                       tone.title
                     )}
                   >
@@ -334,14 +367,14 @@ export function StatusTimeline({
                   <span
                     className={cn(
                       scale.meta,
-                      "shrink-0 font-mono text-muted-foreground tabular-nums"
+                      "shrink-0 text-muted-foreground tabular-nums"
                     )}
                   >
                     {step.timestamp}
                   </span>
                 ) : null}
               </div>
-            </motion.li>
+            </li>
           )
         })}
       </ol>
@@ -355,17 +388,26 @@ export function StatusTimeline({
   )
 }
 
+/**
+ * The circle. Its ring is a separate absolutely-positioned layer keyed on the
+ * state, so advancing cross-fades one whole marker into the next — the old ring
+ * expands away as the new one blooms up from the centre — rather than snapping
+ * a dashed border to a solid one. `initial={false}` keeps all of that off the
+ * first paint: a timeline that is merely rendered does not animate.
+ */
 function Marker({
   state,
   icon,
-  className,
+  tone,
+  sizeClassName,
   glyphClassName,
   pipClassName,
   animate,
 }: {
   state: StatusTimelineState
   icon?: React.ReactNode
-  className?: string
+  tone: (typeof TONES)[StatusTimelineState]
+  sizeClassName?: string
   glyphClassName?: string
   pipClassName?: string
   animate: boolean
@@ -373,38 +415,141 @@ function Marker({
   return (
     <span
       className={cn(
-        "relative flex shrink-0 items-center justify-center rounded-full border",
-        className
+        "relative flex shrink-0 items-center justify-center rounded-full",
+        "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
+        sizeClassName,
+        tone.ink
       )}
     >
+      <AnimatePresence initial={false}>
+        <motion.span
+          key={state}
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute inset-0 rounded-full border",
+            tone.ring
+          )}
+          initial={{ opacity: 0, scale: 0.62 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.18 }}
+          transition={animate ? { duration: 0.34, ease: EASE } : { duration: 0 }}
+        />
+      </AnimatePresence>
+
+      {/*
+        One pulse, once, on arrival — not a loop. It plays only when a step
+        becomes current after the first render, which is exactly the moment the
+        eye needs pointing at.
+      */}
+      <AnimatePresence initial={false}>
+        {state === "current" ? (
+          <motion.span
+            key="arrival"
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 rounded-full border-2 border-info"
+            initial={{ opacity: 0.5, scale: 1 }}
+            animate={{ opacity: 0, scale: 1.7 }}
+            exit={{ opacity: 0, scale: 1.7 }}
+            transition={animate ? { duration: 0.7, ease: "easeOut" } : { duration: 0 }}
+          />
+        ) : null}
+      </AnimatePresence>
+
       {icon ? (
         <span
           aria-hidden="true"
           className={cn(
-            "flex items-center justify-center [&_svg]:size-full [&_svg]:shrink-0",
+            "relative flex items-center justify-center [&_svg]:size-full [&_svg]:shrink-0",
             glyphClassName
           )}
         >
           {icon}
         </span>
       ) : (
-        <StateGlyph
-          state={state}
-          className={glyphClassName}
-          pipClassName={pipClassName}
-        />
+        <Swap
+          token={glyphKey(state)}
+          animate={animate}
+          className={cn("relative flex items-center justify-center", glyphClassName)}
+        >
+          <StateGlyph
+            state={state}
+            className={glyphClassName}
+            pipClassName={pipClassName}
+          />
+        </Swap>
       )}
-
-      {state === "current" && animate ? (
-        <motion.span
-          aria-hidden="true"
-          className="pointer-events-none absolute -inset-0.5 rounded-full border-2 border-info"
-          initial={{ opacity: 0.4, scale: 1 }}
-          animate={{ opacity: 0, scale: 1.5 }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
-        />
-      ) : null}
     </span>
+  )
+}
+
+/**
+ * The hairline between two markers: a static rule with a tinted overlay that
+ * draws from the marker above down to the one below the instant its step is
+ * cleared. This is the move that reads as progress.
+ */
+function Trail({
+  filled,
+  horizontal,
+  laneClassName,
+  animate,
+}: {
+  filled: boolean
+  horizontal: boolean
+  laneClassName?: string
+  animate: boolean
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "relative bg-border",
+        horizontal ? "mx-1 h-px min-w-3 flex-1" : cn("w-px min-h-3 flex-1", laneClassName)
+      )}
+    >
+      <motion.span
+        className={cn("absolute inset-0", TRAIL_FILL)}
+        style={{ transformOrigin: horizontal ? "left center" : "center top" }}
+        initial={false}
+        animate={
+          horizontal
+            ? { scaleX: filled ? 1 : 0 }
+            : { scaleY: filled ? 1 : 0 }
+        }
+        transition={animate ? { duration: 0.42, ease: EASE } : { duration: 0 }}
+      />
+    </span>
+  )
+}
+
+/**
+ * Cross-fades whatever it wraps whenever `token` changes, and stays perfectly
+ * still otherwise — including on mount, which is what keeps a freshly rendered
+ * timeline from performing.
+ */
+function Swap({
+  token,
+  animate,
+  className,
+  children,
+}: {
+  token: string
+  animate: boolean
+  className?: string
+  children: React.ReactNode
+}) {
+  return (
+    <AnimatePresence initial={false} mode="wait">
+      <motion.span
+        key={token}
+        className={className}
+        initial={{ opacity: 0, scale: 0.7 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.7 }}
+        transition={animate ? { duration: 0.16, ease: EASE } : { duration: 0 }}
+      >
+        {children}
+      </motion.span>
+    </AnimatePresence>
   )
 }
 
@@ -436,6 +581,17 @@ function StateGlyph({
       )}
     />
   )
+}
+
+/**
+ * Which drawing a state uses. Two states that share a glyph share a key, so
+ * moving between them recolours in place instead of swapping like for like.
+ */
+function glyphKey(state: StatusTimelineState): string {
+  if (state === "complete") return "check"
+  if (state === "blocked") return "cross"
+  if (state === "waiting") return "clock"
+  return "pip"
 }
 
 /** Rolls the resolved steps up into the single state the header chip reports. */

@@ -13,12 +13,12 @@ import { siteConfig } from "@/lib/site"
 export const metadata: Metadata = {
   title: "Components",
   description:
-    "Browse every Joinway UI component. Filter by category, status and traits, preview each one live, then install it with the shadcn CLI.",
+    "Browse every Join UI component. Filter by category, status and traits, preview each one live, then install it with the shadcn CLI.",
   alternates: { canonical: "/components" },
   openGraph: {
     title: `Components — ${siteConfig.name}`,
     description:
-      "Browse every Joinway UI component. Filter by category, status and traits, then install with the shadcn CLI.",
+      "Browse every Join UI component. Filter by category, status and traits, then install with the shadcn CLI.",
     url: `${siteConfig.url}/components`,
   },
 }
@@ -35,7 +35,7 @@ export default function ComponentsPage() {
       />
 
       <header className="mb-8 grid gap-6 lg:grid-cols-12">
-        <h1 className="text-[clamp(2rem,5vw,3.5rem)] leading-[1] font-semibold tracking-[-0.015em] lg:col-span-7">
+        <h1 className="text-[clamp(2rem,5vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.036em] lg:col-span-7">
           Components
         </h1>
         <p className="max-w-xl self-end leading-relaxed text-pretty text-muted-foreground lg:col-span-5">

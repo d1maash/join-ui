@@ -1,4 +1,4 @@
-Joinway UI targets Tailwind CSS v4. There is no `tailwind.config.ts` — the theme
+Join UI targets Tailwind CSS v4. There is no `tailwind.config.ts` — the theme
 is declared in CSS, which is also what lets any subtree redeclare it.
 
 ## Install
@@ -70,10 +70,15 @@ that distinction matters.
   --color-warning: var(--warning);
   --color-code-bg: var(--code-bg);
 
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 ```
+
+The two font variables come from `next/font` in `app/layout.tsx` — Inter for
+everything a person reads, JetBrains Mono for anything a machine would also have
+to read. Substitute your own families there and every utility follows; nothing in
+`registry/components/` names a typeface directly.
 
 The ramp is mapped the same way, which is what gives you `bg-grey-100` and
 `text-grey-800` for the rare case where a semantic name would be a lie:
@@ -192,6 +197,6 @@ const COL_SPAN = { 1: "md:col-span-1", 2: "md:col-span-2" } as const
 <div className={COL_SPAN[span]} />
 ```
 
-Every Joinway component uses the second form. Any component that takes a numeric
+Every Join UI component uses the second form. Any component that takes a numeric
 layout prop — a span, a column count, a size step — resolves it through a
 lookup table of complete class names for exactly this reason.

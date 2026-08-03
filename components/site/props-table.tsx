@@ -16,7 +16,8 @@ export function PropsTable({ groups }: { groups: PropGroup[] }) {
       {groups.map((group) => (
         <div key={group.name} className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
-            <h3 className="font-mono text-sm font-semibold">{group.name}</h3>
+            {/* The heading names the group; the rows below it quote the API. */}
+            <h3 className="text-[0.9375rem] font-semibold">{group.name}</h3>
             {group.description ? (
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {group.description}
@@ -29,24 +30,42 @@ export function PropsTable({ groups }: { groups: PropGroup[] }) {
               <caption className="sr-only">Props for {group.name}</caption>
               <thead>
                 <tr className="border-b border-border bg-subtle">
-                  <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="label-micro px-4 py-2.5 text-muted-foreground"
+                  >
                     Prop
                   </th>
-                  <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="label-micro px-4 py-2.5 text-muted-foreground"
+                  >
                     Type
                   </th>
-                  <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="label-micro px-4 py-2.5 text-muted-foreground"
+                  >
                     Default
                   </th>
-                  <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="label-micro px-4 py-2.5 text-muted-foreground"
+                  >
                     Description
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {group.props.map((prop) => (
-                  <tr key={prop.name} className="border-b border-border align-top last:border-b-0">
-                    <th scope="row" className="px-4 py-3 text-left font-mono text-[0.8125rem] font-medium whitespace-nowrap">
+                  <tr
+                    key={prop.name}
+                    className="border-b border-border align-top last:border-b-0"
+                  >
+                    <th
+                      scope="row"
+                      className="px-4 py-3 text-left font-mono text-[0.8125rem] font-medium whitespace-nowrap"
+                    >
                       {prop.name}
                       {prop.required ? (
                         <>

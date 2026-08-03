@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Question or idea
+    url: https://github.com/d1maash/join-ui/discussions
+    about: Ask about usage, theming or the registry — anything that is not a bug.
+  - name: Documentation
+    url: https://ui.join-way.com/docs
+    about: Installation, theming, dark mode, accessibility and the registry setup.
+  - name: Report a security vulnerability
+    url: https://github.com/d1maash/join-ui/security/advisories/new
+    about: Please report security issues privately, never as a public issue.

@@ -1,14 +1,14 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "joinway",
-  "homepage": "https://ui.joinway.dev",
+  "name": "joinui",
+  "homepage": "https://ui.join-way.com",
   "items": [
     {
       "name": "status-timeline",
       "type": "registry:ui",
       "title": "Status Timeline",
-      "description": "A colour-coded step tracker for orders, deployments and onboarding, with a pulsing marker on the step in flight.",
-      "author": "Joinway",
+      "description": "A colour-coded step tracker for orders, deployments and onboarding, still at rest and animated only when a step advances.",
+      "author": "Join Way",
       "dependencies": [
         "motion",
         "lucide-react"
@@ -27,18 +27,18 @@
         "steps",
         "delivery"
       ],
-      "docs": "https://ui.joinway.dev/components/status-timeline",
+      "docs": "https://ui.join-way.com/components/status-timeline",
       "meta": {
         "status": "new",
         "since": "2026-08-02",
         "featured": true,
-        "installCommand": "pnpm dlx shadcn@latest add @joinway/status-timeline"
+        "installCommand": "pnpm dlx shadcn@latest add @joinui/status-timeline"
       },
       "files": [
         {
           "path": "registry/components/status-timeline.tsx",
           "type": "registry:ui",
-          "target": "components/joinway/status-timeline.tsx"
+          "target": "components/joinui/status-timeline.tsx"
         }
       ],
       "cssVars": {
@@ -88,6 +88,44 @@
           "critical-foreground": "oklch(0.16 0.04 23)"
         }
       }
+    },
+    {
+      "name": "focus-stack",
+      "type": "registry:ui",
+      "title": "Focus Stack",
+      "description": "A coil of pills that keeps one item in focus and lets the rest twist away, turned either by a timer or by the page scroll.",
+      "author": "Join Way",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "data-display",
+        "carousel",
+        "stack",
+        "scroll",
+        "showcase",
+        "features",
+        "list",
+        "slider",
+        "parallax"
+      ],
+      "docs": "https://ui.join-way.com/components/focus-stack",
+      "meta": {
+        "status": "new",
+        "since": "2026-08-03",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinui/focus-stack"
+      },
+      "files": [
+        {
+          "path": "registry/components/focus-stack.tsx",
+          "type": "registry:ui",
+          "target": "components/joinui/focus-stack.tsx"
+        }
+      ]
     }
   ]
 }

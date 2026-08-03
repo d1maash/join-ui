@@ -24,9 +24,9 @@ export const components: ComponentMetadata[] = [
     slug: "status-timeline",
     title: "Status Timeline",
     description:
-      "A colour-coded step tracker for orders, deployments and onboarding, with a pulsing marker on the step in flight.",
+      "A colour-coded step tracker for orders, deployments and onboarding, still at rest and animated only when a step advances.",
     overview:
-      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue and pulses, the rest stay grey — or pin a state per step to describe a run that is waiting on someone or has failed outright. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
+      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue, the rest stay grey behind a dashed ring — or pin a state per step to describe a run that is waiting on someone or has failed outright. At rest it is a still drawing: nothing loops and nothing breathes. The motion is spent on the one moment worth showing — move activeStep on and the connector above the cleared step draws downward, the marker it reaches cross-fades into its new ring, and a single pulse leaves the step now in flight. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
     category: "Data Display",
     tags: [
       "timeline",
@@ -49,8 +49,8 @@ export const components: ComponentMetadata[] = [
       "Colour is never the only signal, which is what satisfies WCAG 1.4.1: every state also has its own glyph — a tick, a pip, a clock, a cross — and appends a visually hidden label reading “Completed”, “In progress”, “Waiting”, “Not started” or “Blocked”.",
       "A blocked step additionally shifts its title to the critical hue, so the failure is findable without reading every marker.",
       "The list is named by the header eyebrow through `aria-labelledby`, or by `label` when the header is hidden.",
-      "Markers, trails and the pulse ring are `aria-hidden` and non-interactive; only content you pass to `footer` enters the tab order.",
-      "Step reveals and the pulse animate `transform` and `opacity` only, and stop entirely under `prefers-reduced-motion`.",
+      "Markers, trails and the arrival ring are `aria-hidden` and non-interactive; only content you pass to `footer` enters the tab order.",
+      "Nothing animates on mount or loops at rest, so the component never competes with the page for attention; the advance transition animates `transform` and `opacity` only, and resolves instantly under `prefers-reduced-motion`.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
     ],
     keyboard: [],
@@ -165,7 +165,7 @@ export const components: ComponentMetadata[] = [
         ],
       },
     ],
-    usage: `import { StatusTimeline } from "@/components/joinway/status-timeline"
+    usage: `import { StatusTimeline } from "@/components/joinui/status-timeline"
 
 export function Example() {
   return (
@@ -235,7 +235,7 @@ export function Example() {
       {
         title: "Give each step its own glyph",
         description:
-          "An icon replaces the default state glyph while the fill and the hidden state label keep carrying the meaning. The component sizes it, so pass the element bare.",
+          "An icon replaces the default state glyph while the ring and the hidden state label keep carrying the meaning — a dashed grey circle before the step happens, a tinted one after. The component sizes it, so pass the element bare.",
         code: `import { MapPin, Package, ShoppingBag, Truck } from "lucide-react"
 
 <StatusTimeline
@@ -358,5 +358,273 @@ export function Example() {
     },
     related: [],
     since: "2026-08-02",
+  }),
+
+  defineComponent({
+    name: "FocusStack",
+    slug: "focus-stack",
+    title: "Focus Stack",
+    description:
+      "A coil of pills that keeps one item in focus and lets the rest twist away, turned either by a timer or by the page scroll.",
+    overview:
+      "FocusStack draws a list as a receding stack: rank by rank the pills shrink, fade, blur and lean away from the middle, and the one in focus straightens out, comes back to full size and lifts off the page. Every one of those properties is a function of a single fractional number — the distance from a pill to the focused position — so nothing snaps between states and two pills can sit half-focused either side of the centre mid-turn. That number has two drivers, and they are the two variants. In auto mode a spring walks it along on a timer, the stack wraps end to end, and a pill can be clicked or arrowed into focus; the timer stops for a pointer, for a caret, for a stack scrolled out of view and for anyone who has asked for reduced motion. In scroll mode the number is mapped to the stack's own transit through the viewport instead, so the coil turns exactly as far as the reader scrolls it and nothing moves on its own.",
+    category: "Data Display",
+    tags: [
+      "carousel",
+      "stack",
+      "scroll",
+      "showcase",
+      "features",
+      "list",
+      "slider",
+      "parallax",
+    ],
+    status: "new",
+    featured: true,
+    dependencies: ["motion"],
+    registryDependencies: ["utils"],
+    files: [uiFile("focus-stack")],
+    accessibility: [
+      "The pills render as an ordered list, so assistive technology reports both position and total, and the list is named by `label`.",
+      'The pill in focus carries `aria-current="true"` in both modes.',
+      "Depth is never the only signal: scale, opacity and blur are decoration over text that stays in the accessibility tree at full strength, so a screen reader gets the whole list rather than the three ranks that happen to be legible.",
+      "In auto mode the stack is a single tab stop with a roving tabindex, and the arrow keys move inside it — tabbing past a seven-item carousel does not cost seven stops.",
+      "WCAG 2.2.2 wants a mechanism to pause anything that moves by itself for more than five seconds. Autoplay stops on hover and on focus within, stops while the stack is scrolled out of view, and the `paused` prop hands the same switch to a control you own.",
+      "`prefers-reduced-motion` disables autoplay outright and drops the springs, so the stack becomes a still drawing that only moves when it is clicked, arrowed or scrolled.",
+      "Scroll mode adds no animation of its own: the position is tied to the scrollbar, so nothing plays that the reader did not drive.",
+      "A pill faded past the edge of the stack has its pointer events removed, so an invisible target can never take a click.",
+      "Badges are `aria-hidden`; the label carries the meaning, which is what keeps a pale accent from becoming an accessibility problem.",
+      "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
+    ],
+    keyboard: [
+      {
+        keys: ["↑", "←"],
+        description: "Moves the focus one pill up the stack.",
+      },
+      {
+        keys: ["↓", "→"],
+        description: "Moves the focus one pill down the stack.",
+      },
+      { keys: ["Home"], description: "Focuses the first pill." },
+      { keys: ["End"], description: "Focuses the last pill." },
+      {
+        keys: ["Enter", "Space"],
+        description: "Brings the pill under the caret into focus.",
+      },
+    ],
+    props: [
+      {
+        name: "FocusStack",
+        props: [
+          {
+            name: "items",
+            type: "FocusStackItem[]",
+            required: true,
+            description: "The pills to render, in order.",
+          },
+          {
+            name: "mode",
+            type: '"auto" | "scroll"',
+            defaultValue: '"auto"',
+            description:
+              "Auto advances on a timer and takes clicks and arrow keys. Scroll hands the focus to the page, so the coil turns as the stack passes through the viewport.",
+          },
+          {
+            name: "index",
+            type: "number",
+            description:
+              "Controlled focus. Leave unset to let the component hold it, and read the position through onIndexChange instead.",
+          },
+          {
+            name: "defaultIndex",
+            type: "number",
+            defaultValue: "0",
+            description: "Where an uncontrolled stack starts.",
+          },
+          {
+            name: "onIndexChange",
+            type: "(index: number) => void",
+            description:
+              "Fires with the focused index in both modes — in scroll mode once per pill rather than once per frame.",
+          },
+          {
+            name: "interval",
+            type: "number",
+            defaultValue: "2600",
+            description:
+              "Milliseconds between advances in auto mode. Floored at 600.",
+          },
+          {
+            name: "loop",
+            type: "boolean",
+            description:
+              "Wrap past the ends. Defaults to true in auto mode and false in scroll mode. Looping puts the tail of the list above the head, so the depth comes down to fit a short list rather than showing a pill twice.",
+          },
+          {
+            name: "paused",
+            type: "boolean",
+            defaultValue: "false",
+            description:
+              "Externally held pause, for a play control of your own. Autoplay also pauses on hover, on focus and off screen without it.",
+          },
+          {
+            name: "depth",
+            type: "number",
+            defaultValue: "3",
+            description:
+              "Ranks drawn either side of the focused pill. It also sets the height of the frame, which the component reserves up front so nothing below it shifts.",
+          },
+          {
+            name: "size",
+            type: '"sm" | "md" | "lg"',
+            defaultValue: '"md"',
+            description: "Pill, badge, type and lane scale.",
+          },
+          {
+            name: "tilt",
+            type: "number",
+            defaultValue: "5",
+            description:
+              "Degrees of lean per rank. Both ends twist the same way, so the focused pill is the only level one. Negative twists the coil the other way; 0 stacks it flat.",
+          },
+          {
+            name: "blur",
+            type: "number",
+            defaultValue: "1.1",
+            description:
+              "Pixels of blur per rank. Set 0 to drop the filter — and the per-frame repaint with it — on a long list or a weak device.",
+          },
+          {
+            name: "interactive",
+            type: "boolean",
+            description:
+              "Whether a pill can be clicked or arrowed into focus. Defaults to true in auto mode and false in scroll mode, where a click could not hold against the scrollbar.",
+          },
+          {
+            name: "label",
+            type: "string",
+            defaultValue: '"Highlights"',
+            description: "Accessible name of the list.",
+          },
+          {
+            name: "className",
+            type: "string",
+            description:
+              "Merged onto the root through `cn` — this is where the width goes, since the size only sets a max.",
+          },
+        ],
+      },
+      {
+        name: "FocusStackItem",
+        description: "Shape of a single entry in the `items` array.",
+        props: [
+          {
+            name: "id",
+            type: "string",
+            required: true,
+            description: "Stable identity for the rendered list item.",
+          },
+          {
+            name: "label",
+            type: "string",
+            required: true,
+            description: "The line of type on the pill.",
+          },
+          {
+            name: "description",
+            type: "string",
+            description:
+              "Second line, revealed only while the pill holds focus. Its space is reserved at every rank, so nothing reflows as the stack turns.",
+          },
+          {
+            name: "icon",
+            type: "React.ReactNode",
+            description:
+              "Drawn inside the badge. Sized by the component, so pass a bare icon element.",
+          },
+          {
+            name: "accent",
+            type: "string",
+            description:
+              "Any CSS colour. Fills the badge; the glyph on top stays near-white. Omit both this and icon and the pill drops the badge entirely.",
+          },
+        ],
+      },
+    ],
+    usage: `import { FocusStack } from "@/components/joinui/focus-stack"
+import { Compass, Layers, Shapes, Sparkles } from "lucide-react"
+
+export function Example() {
+  return (
+    <FocusStack
+      label="Design system"
+      items={[
+        { id: "language", label: "Design Language", icon: <Compass />, accent: "#6366f1" },
+        { id: "direction", label: "Art Direction", icon: <Shapes />, accent: "#f97316" },
+        { id: "architecture", label: "UI Architecture", icon: <Layers />, accent: "#a855f7" },
+        { id: "motion", label: "Motion System", icon: <Sparkles />, accent: "#ef4444" },
+      ]}
+    />
+  )
+}`,
+    customization: [
+      {
+        title: "Turned by the page instead of by a timer",
+        description:
+          "Scroll mode maps the focus to the stack's own transit through the viewport, so it works wherever it is dropped — no sticky wrapper, no scroll container, no height to calculate. Nothing animates on its own in this mode, which makes it the safer default on a page that already moves.",
+        code: `<FocusStack
+  mode="scroll"
+  label="Capabilities"
+  items={items}
+  onIndexChange={(index) => setHeadline(items[index].label)}
+/>`,
+      },
+      {
+        title: "Drive it yourself",
+        description:
+          "Pass index and the stack becomes controlled — the spring still takes the shortest way round the ring, so stepping from the last item to the first is one step forward rather than a rewind through everything in between.",
+        code: `const [index, setIndex] = React.useState(0)
+
+<FocusStack items={items} index={index} onIndexChange={setIndex} />
+
+<button type="button" onClick={() => setIndex((value) => value + 1)}>
+  Next
+</button>`,
+      },
+      {
+        title: "A pause control of your own",
+        description:
+          "Autoplay already stops on hover, on focus and off screen, and never starts under prefers-reduced-motion. The paused prop is for the visible switch WCAG asks for on top of that.",
+        code: `const [paused, setPaused] = React.useState(false)
+
+<FocusStack items={items} paused={paused} />
+
+<button type="button" onClick={() => setPaused((value) => !value)}>
+  {paused ? "Play" : "Pause"}
+</button>`,
+      },
+      {
+        title: "Reshape the coil",
+        description:
+          "Three numbers own the whole drawing. Depth sets how many ranks survive either side of the focus and how tall the frame is, tilt sets the lean per rank, and blur sets the haze — drop it to 0 on a long list to lose the per-frame repaint.",
+        code: `{/* A tight, flat stack for a sidebar. */}
+<FocusStack items={items} size="sm" depth={2} tilt={0} blur={0} />
+
+{/* A wide, deep one for a hero, twisted the other way. */}
+<FocusStack items={items} size="lg" depth={4} tilt={-7} className="max-w-2xl" />`,
+      },
+      {
+        title: "Retint the badge glyph",
+        description:
+          "Accents are per item and can be any CSS colour, so the palette belongs to your content rather than to the component. The glyph over them is near-white by default; if your accents are pale, redeclare it once instead of threading a second colour through every item.",
+        language: "css",
+        code: `/* app/globals.css */
+:root {
+  --focus-stack-glyph: oklch(0.24 0.02 60);
+}`,
+      },
+    ],
+    related: ["status-timeline"],
+    since: "2026-08-03",
   }),
 ]

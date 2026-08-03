@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Joinway UI — design tokens
+ * Join UI — design tokens
  * ---------------------------------------------------------------------------
  * Two layers, with different rules.
  *
@@ -338,8 +338,17 @@
   --shadow-lg: var(--elevation-lg);
   --shadow-xl: var(--elevation-lg);
 
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
+  /*
+   * Two families, and a hard rule about which is which: the sans is for
+   * everything a person reads, the mono is for anything a machine would also
+   * have to read — a listing, a prop name, a package command. Mono used as
+   * decoration on labels, tabs and breadcrumbs was the single loudest thing on
+   * this site, and it made a documentation page look like a terminal emulator.
+   */
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 
   --ease-out-soft: var(--ease-out-soft);
   --ease-in-out-soft: var(--ease-in-out-soft);
@@ -399,16 +408,50 @@
      * is most of why light-on-dark type looks weak.
      */
     -webkit-font-smoothing: antialiased;
+    /*
+     * Inter is drawn on a wide sidebearing so it holds up at 12px in a form
+     * label. At paragraph size that spacing reads loose, which is why every
+     * site shipping it pulls the tracking in slightly. This is the whole
+     * adjustment; headings take more, below.
+     */
+    letter-spacing: -0.009em;
+    /* Contextual alternates on, so `->` and friends stay unmangled in prose. */
+    font-feature-settings: "cv05" 1;
   }
 
   /*
-   * Headings set their own tracking by size. Plex is a fairly narrow face
-   * already, so the blanket negative tracking a display font wants would close
-   * it up — only the largest sizes get any, and small headings get none.
+   * Optical sizing by hand.
+   *
+   * Tracking that is correct at 14px is far too open at 40px — the larger the
+   * type, the more negative it wants. The ramp below is applied by tag so a
+   * heading is right by default, and the display sizes on the marketing and
+   * component pages set their own on top of it.
    */
-  h1,
+  h1 {
+    letter-spacing: -0.032em;
+  }
+
   h2 {
-    letter-spacing: -0.015em;
+    letter-spacing: -0.024em;
+  }
+
+  h3,
+  h4 {
+    letter-spacing: -0.017em;
+  }
+
+  /*
+   * Mono runs at the same nominal size as the sans around it but reads larger,
+   * because a monospaced face spends its width budget on the narrow letters.
+   * Pulling it back a hair keeps an inline `<code>` from bulging out of the
+   * line it sits in.
+   */
+  code,
+  kbd,
+  pre,
+  samp {
+    font-feature-settings: "liga" 0;
+    letter-spacing: -0.01em;
   }
 
   ::selection {
@@ -470,22 +513,37 @@
   }
 
   /*
-   * Uppercase micro-label used for section eyebrows and table headers. Plex
-   * Mono is already a wide face, so this tracks looser than a proportional
-   * label would but tighter than the 0.12em a condensed one needs.
+   * The micro-label: section eyebrows, table headers, breadcrumbs, sidebar
+   * group titles, the caption on a code block.
+   *
+   * This used to be mono, uppercase, and tracked out to 0.08em. Three
+   * signals for one job, and the cost was real — uppercase destroys word
+   * shape, so `DATA DISPLAY / STATUS TIMELINE` had to be read letter by
+   * letter, and setting it in mono made the chrome compete with the code it
+   * was labelling. Small, muted and a half-step heavier than the body says
+   * "this is a label" on its own, in a form that can still be skimmed.
    */
-  .label-caps {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    line-height: 1;
+  .label-micro {
+    font-size: 0.75rem;
+    line-height: 1.45;
     font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: -0.006em;
   }
 
-  /* Numeric counter set in mono, as used in editorial layouts. */
+  /* The same label where it heads a region rather than annotating one. */
+  .label-section {
+    font-size: 0.75rem;
+    line-height: 1.45;
+    font-weight: 600;
+    letter-spacing: -0.004em;
+    color: var(--foreground);
+  }
+
+  /*
+   * Figures. Inter's tabular set is well drawn, so a counter no longer has to
+   * leave the family to line up in a column.
+   */
   .numeral {
-    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
   }

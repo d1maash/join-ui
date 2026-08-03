@@ -134,7 +134,7 @@ export function ComponentCatalog({ items }: { items: CatalogItem[] }) {
         </div>
       </div>
 
-      <p aria-live="polite" className="label-caps py-4 text-muted-foreground">
+      <p aria-live="polite" className="label-micro py-4 text-muted-foreground">
         {filtered.length} of {items.length} components
       </p>
 
@@ -159,7 +159,7 @@ export function ComponentCatalog({ items }: { items: CatalogItem[] }) {
 export function ComponentCatalogFallback() {
   return (
     <div className="border-y border-border py-4">
-      <p className="label-caps text-muted-foreground">Loading catalog…</p>
+      <p className="label-micro text-muted-foreground">Loading catalog…</p>
     </div>
   )
 }
@@ -168,7 +168,7 @@ export function ComponentCatalogFallback() {
 function CatalogEmptyState() {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-subtle px-6 py-24 text-center">
-      <p className="label-caps text-muted-foreground">Empty registry</p>
+      <p className="label-micro text-muted-foreground">Empty registry</p>
       <h2 className="text-xl font-semibold">No components published</h2>
       <p className="max-w-md text-sm leading-relaxed text-pretty text-muted-foreground">
         Nothing is registered yet. Add a component under{" "}
@@ -189,7 +189,7 @@ function FilterRow({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="label-caps text-muted-foreground">{label}</span>
+      <span className="label-micro text-muted-foreground">{label}</span>
       {children}
     </div>
   )
@@ -210,7 +210,7 @@ function FilterChip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "label-caps h-6 cursor-pointer rounded-full border px-2.5 transition-colors",
+        "label-micro h-6 cursor-pointer rounded-full border px-2.5 transition-colors",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         active
           ? "border-primary bg-primary text-primary-foreground"

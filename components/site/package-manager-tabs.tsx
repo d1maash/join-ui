@@ -28,7 +28,7 @@ export function PackageManagerTabs({
   className?: string
 }) {
   const [manager, setManager] = useStoredPreference<PackageManager>(
-    "joinway-package-manager",
+    "joinui-package-manager",
     "pnpm",
     isPackageManager
   )
@@ -57,7 +57,7 @@ export function PackageManagerTabs({
               aria-selected={active}
               onClick={() => setManager(pm)}
               className={cn(
-                "label-caps cursor-pointer rounded-md px-2.5 transition-colors",
+                "label-micro cursor-pointer rounded-md px-2.5 transition-colors",
                 "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
                 active
                   ? "bg-card text-foreground shadow-xs"

@@ -29,8 +29,8 @@ export const docsNav: DocsNavSection[] = [
   {
     title: "Getting Started",
     items: [
-      item("introduction", "Introduction", "What Joinway UI is and how it is built."),
-      item("installation", "Installation", "Add Joinway UI to a new or existing app."),
+      item("introduction", "Introduction", "What Join UI is and how it is built."),
+      item("installation", "Installation", "Add Join UI to a new or existing app."),
       item(
         "project-setup",
         "Project setup",
@@ -49,7 +49,11 @@ export const docsNav: DocsNavSection[] = [
     title: "Customization",
     items: [
       item("theming", "Theming", "Design tokens, palettes and radius."),
-      item("dark-mode", "Dark mode", "Theme switching and per-preview theme islands."),
+      item(
+        "dark-mode",
+        "Dark mode",
+        "Theme switching in your project, and scoped theme islands."
+      ),
     ],
   },
   {

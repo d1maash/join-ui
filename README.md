@@ -1,7 +1,12 @@
-# Joinway UI
+# Join UI
+
+[![CI](https://github.com/d1maash/join-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/d1maash/join-ui/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 An open-code catalog of motion-first React components for Next.js, with a
 shadcn-compatible registry and a generated AI prompt for every component.
+
+**[ui.join-way.com](https://ui.join-way.com)** — catalog, docs and registry.
 
 Components are not imported from a package. The shadcn CLI writes real `.tsx`
 files into your project, which you then own outright — read them, edit them,
@@ -18,9 +23,10 @@ delete what you do not need.
 - **WCAG 2.2 AA** baseline, with reduced-motion fallbacks throughout
 - **Fully static** — every route prerendered, no runtime services
 
-The catalog is currently empty: the registry pipeline, documentation, search
-index and JSON endpoints are all in place, and components appear across every
-surface as soon as they are added to `lib/registry/components.ts`.
+The catalog is young: the component set is being rebuilt against the current
+design system one component at a time. The registry pipeline, documentation,
+search index and JSON endpoints are all in place, and a component appears across
+every surface as soon as it is added to `lib/registry/components.ts`.
 
 ---
 
@@ -68,15 +74,15 @@ app/
     components/[slug]/          # /components/[slug] + per-component OG image
     docs/[[...slug]]/           # /docs and /docs/[slug]
   (preview)/preview/[slug]/     # bare full-page previews
-  layout.tsx                    # html, fonts, theme provider, toaster
+  layout.tsx                    # html, fonts, metadata, toaster
   globals.css                   # design tokens + Tailwind theme
   opengraph-image.tsx           # site-wide social card
-  sitemap.ts, robots.ts, not-found.tsx
+  icon.png, apple-icon.png, favicon.ico   # brand marks, picked up by convention
+  manifest.ts, sitemap.ts, robots.ts, not-found.tsx
 components/
-  docs/                         # documentation chrome (header, sidebar, code blocks…)
+  site/                         # documentation chrome (header, sidebar, code blocks…)
   previews/                     # one live demo per component + the lazy map
   ui/                           # local shadcn-style primitives
-  icons.tsx, theme-provider.tsx
 content/
   docs/                         # MDX guides — content only, no frontmatter
 lib/
@@ -85,7 +91,8 @@ lib/
   search/                       # local search index and scorer
   docs/                         # navigation and sidebar trees
   mdx/                          # MDX loading, TOC extraction, rehype plugin
-  highlight.ts, hooks.ts, site.ts, clipboard.ts, utils.ts
+  highlight.ts, shiki-theme.ts  # Shiki, and the two low-chroma syntax themes
+  commands.ts, hooks.ts, site.ts, clipboard.ts, utils.ts
 registry/
   components/                   # the components the CLI ships
 public/
@@ -104,6 +111,19 @@ types/
 | `components/previews/` | Demos. Never leave this site, so they may import anything.                                                   |
 | `components/site/`     | Documentation chrome. Never shipped by the registry.                                                         |
 | `components/ui/`       | Local primitives for the docs. Deliberately separate from registry components.                               |
+
+### Brand assets
+
+The wordmark and the monogram both live in `components/site/logo.tsx`. The mark
+is vector, drawn on `currentColor` rather than as an image, so it inherits from
+the text beside it and stays crisp at any size. Its two paths are exported as
+`MARK` and reused by the social cards, which Satori renders without CSS — there
+is one copy of the geometry, not three.
+
+`app/icon.png`, `app/apple-icon.png` and `app/favicon.ico` are the Join Way
+originals, copied verbatim from the studio site so a browser tab, an installed
+shortcut and join-way.com all show the same tile. Next picks all three up by file
+convention, and `app/manifest.ts` points at the same PNG.
 
 ---
 
@@ -191,7 +211,7 @@ defineComponent({
   accessibility: ["Decorative layers are aria-hidden and pointer-events-none."],
   keyboard: [],
   props: [{ name: "GlowCard", props: [/* … */] }],
-  usage: `import { GlowCard } from "@/components/joinway/glow-card"`,
+  usage: `import { GlowCard } from "@/components/joinui/glow-card"`,
   customization: [],
   related: [],
   since: "2026-08-02",
@@ -235,7 +255,7 @@ search index, the sitemap and `generateStaticParams`.
 | `<Callout type="note \| tip \| warning \| success">` | Highlighted aside                 |
 | `<Steps>` / `<Step title="…">`                       | Numbered walkthrough              |
 | `<CardGroup>` / `<Card title href>`                  | Linkable card grid                |
-| `<InstallTabs target="@joinway/name" />`             | `shadcn add`, per package manager |
+| `<InstallTabs target="@joinui/name" />`             | `shadcn add`, per package manager |
 | `<DependencyTabs packages="motion clsx" />`          | `install`, per package manager    |
 | `<ComponentPreview slug title />`                    | Live preview                      |
 | `<Kbd>` / `<Badge>`                                  | Inline key and status chips       |
@@ -264,19 +284,19 @@ pnpm registry:build
 ```
 
 ```text
-✓ Registry built — 14 items, 74.8 kB of source
+✓ Registry built — 1 items, 13.2 kB of source
 ```
 
 Consumers install by namespace:
 
 ```bash
-pnpm dlx shadcn@latest add @joinway/glow-card
+pnpm dlx shadcn@latest add @joinui/glow-card
 ```
 
 …or straight from a URL, with nothing configured:
 
 ```bash
-pnpm dlx shadcn@latest add https://ui.joinway.dev/r/glow-card.json
+pnpm dlx shadcn@latest add https://ui.join-way.com/r/glow-card.json
 ```
 
 To consume the namespace, add it to `components.json`:
@@ -284,7 +304,7 @@ To consume the namespace, add it to `components.json`:
 ```json
 {
   "registries": {
-    "@joinway": "https://ui.joinway.dev/r/{name}.json"
+    "@joinui": "https://ui.join-way.com/r/{name}.json"
   }
 }
 ```
@@ -331,8 +351,10 @@ pnpm build
 (configured in `next.config.ts`), so the shadcn CLI can read it from any
 project. Any static host works, including an object store behind a CDN.
 
-Set `NEXT_PUBLIC_SITE_URL` for the deployment so canonical URLs, OG tags, the
-sitemap and the registry `docs` links point at the right origin:
+`lib/site.ts` already falls back to the production origin, so a deployment to
+`ui.join-way.com` needs no configuration. Set `NEXT_PUBLIC_SITE_URL` anywhere
+else — a preview deployment, a fork, a self-hosted registry — so canonical URLs,
+OG tags, the sitemap and the registry `docs` links point at that origin instead:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://ui.example.com pnpm build
@@ -380,6 +402,26 @@ catalog cards only mount their demo once the card approaches the viewport.
 
 ---
 
+## Contributing
+
+Contributions are welcome — components, fixes and documentation alike. Read
+[CONTRIBUTING.md](CONTRIBUTING.md) for the repository workflow, and
+[/docs/contributing](https://ui.join-way.com/docs/contributing) for the four
+files a component takes and the house rules it has to satisfy.
+
+For anything larger than a bug fix, open an issue first. A component that does
+not fit the design system is a painful thing to reject after it has been built.
+
+Participation is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
+Security problems go to [SECURITY.md](SECURITY.md) — privately, never as a
+public issue.
+
+---
+
 ## License
 
-MIT.
+[MIT](LICENSE) © Join Way and contributors.
+
+Components installed through the CLI become source files in your project. You
+own them: edit, rewrite or delete them, with no attribution required in your
+own product.

@@ -1,23 +1,23 @@
 export const siteConfig = {
-  name: "Joinway UI",
-  shortName: "Joinway",
-  /** shadcn CLI namespace: `pnpm dlx shadcn@latest add @joinway/<name>`. */
-  namespace: "@joinway",
-  registryName: "joinway",
+  name: "Join UI",
+  shortName: "Join",
+  /** shadcn CLI namespace: `pnpm dlx shadcn@latest add @joinui/<name>`. */
+  namespace: "@joinui",
+  registryName: "joinui",
   tagline: "Motion-first React components you actually own.",
   description:
     "An open-code catalog of accessible, animated React components for Next.js. Install through the shadcn CLI, copy the source, or hand a ready-made prompt to your AI coding agent.",
-  url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://ui.joinway.dev",
+  url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://ui.join-way.com",
   ogImage: "/opengraph-image",
-  author: "Joinway",
+  author: "Join Way",
   links: {
-    github: "https://github.com/joinway/ui",
-    repo: "https://github.com/joinway/ui",
-    issues: "https://github.com/joinway/ui/issues",
+    github: "https://github.com/d1maash/join-ui",
+    repo: "https://github.com/d1maash/join-ui",
+    issues: "https://github.com/d1maash/join-ui/issues",
     contributing: "/docs/contributing",
   },
   /** Where the CLI drops component files inside a consumer project. */
-  installTarget: "components/joinway",
+  installTarget: "components/joinui",
 } as const
 
 export type SiteConfig = typeof siteConfig

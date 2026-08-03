@@ -17,8 +17,8 @@ import { siteConfig } from "@/lib/site"
 
 export const metadata: Metadata = {
   // No `title` — the root layout's `title.default` already reads
-  // "Joinway UI — <tagline>", and setting one here would run it through the
-  // "%s — Joinway UI" template and repeat the site name.
+  // "Join UI — <tagline>", and setting one here would run it through the
+  // "%s — Join UI" template and repeat the site name.
   description: siteConfig.description,
   alternates: { canonical: "/" },
 }
@@ -71,7 +71,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-[100rem] px-4 sm:px-6">
           <div className="grid gap-10 py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
             <div className="lg:col-span-8">
-              <p className="label-caps mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-muted-foreground shadow-xs">
+              <p className="label-micro mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-muted-foreground shadow-xs">
                 {siteConfig.namespace} — open-code component registry
               </p>
               {/*
@@ -79,7 +79,7 @@ export default function HomePage() {
                 stops being type and becomes a shape, and a shape this dark is
                 the thing that made the page feel hard.
               */}
-              <h1 className="text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.02] font-semibold tracking-[-0.015em] text-balance">
+              <h1 className="text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.04] font-semibold tracking-[-0.038em] text-balance">
                 Components
                 <br />
                 you actually own
@@ -124,7 +124,7 @@ export default function HomePage() {
           <section aria-labelledby="empty-heading" className="border-b border-border py-16">
             <div className="grid gap-8 lg:grid-cols-12">
               <div className="lg:col-span-3">
-                <p className="label-caps text-muted-foreground">Status</p>
+                <p className="label-section text-muted-foreground">Status</p>
               </div>
               <div className="flex max-w-2xl flex-col gap-4 lg:col-span-9">
                 <h2 id="empty-heading" className="text-2xl font-semibold">
@@ -160,14 +160,14 @@ export default function HomePage() {
         <section aria-labelledby="install-heading" className="border-b border-border py-16">
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-3">
-              <p className="label-caps text-muted-foreground">Install</p>
+              <p className="label-section text-muted-foreground">Install</p>
             </div>
             <div className="flex max-w-xl flex-col gap-4 lg:col-span-5">
               <h2 id="install-heading" className="text-2xl font-semibold">
                 Straight into your project
               </h2>
               <p className="leading-relaxed text-pretty text-muted-foreground">
-                Joinway UI is a shadcn-compatible registry. Point the CLI at the{" "}
+                Join UI is a shadcn-compatible registry. Point the CLI at the{" "}
                 <code className="border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
                   {siteConfig.namespace}
                 </code>{" "}
@@ -196,7 +196,7 @@ export default function HomePage() {
         <section aria-labelledby="principles-heading" className="border-b border-border py-16">
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-3">
-              <p className="label-caps text-muted-foreground">Principles</p>
+              <p className="label-section text-muted-foreground">Principles</p>
               <h2
                 id="principles-heading"
                 className="mt-3 text-2xl font-semibold"
@@ -301,7 +301,7 @@ export default function HomePage() {
         <section aria-labelledby="prompt-heading" className="py-16">
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-3">
-              <p className="label-caps text-muted-foreground">For agents</p>
+              <p className="label-section text-muted-foreground">For agents</p>
             </div>
             <div className="flex max-w-xl flex-col gap-4 lg:col-span-5">
               <h2 id="prompt-heading" className="text-2xl font-semibold">
@@ -321,7 +321,7 @@ export default function HomePage() {
             </div>
 
             <div className="overflow-hidden rounded-xl border border-border bg-code-bg shadow-xs lg:col-span-4">
-              <p className="label-caps border-b border-border bg-card/40 px-4 py-2.5 text-muted-foreground">
+              <p className="label-micro border-b border-border bg-card/40 px-4 py-2.5 text-muted-foreground">
                 prompt.txt
               </p>
               <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-muted-foreground">
@@ -337,7 +337,7 @@ Project stack:
 Requirements:
 - Install all required dependencies.
 - Place the component at
-  components/joinway/<component>.tsx.
+  components/joinui/<component>.tsx.
 - Use the project's existing \`cn\` utility …
 - Respect \`prefers-reduced-motion: reduce\`.
 - Do not modify unrelated files.`}
@@ -361,7 +361,7 @@ function Figure({
 }) {
   return (
     <div className={bordered ? "border-border py-8 sm:border-l sm:pl-8" : "py-8"}>
-      <dt className="label-caps text-muted-foreground">{label}</dt>
+      <dt className="label-section text-muted-foreground">{label}</dt>
       <dd className="numeral mt-2 text-4xl font-semibold">
         {String(value).padStart(2, "0")}
       </dd>
@@ -388,7 +388,7 @@ function Collection({
     <section aria-labelledby={`${id}-heading`} className="border-b border-border py-16">
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex max-w-2xl flex-col gap-2">
-          <p className="label-caps text-muted-foreground">{eyebrow}</p>
+          <p className="label-section text-muted-foreground">{eyebrow}</p>
           <h2 id={`${id}-heading`} className="text-2xl font-semibold">
             {title}
           </h2>

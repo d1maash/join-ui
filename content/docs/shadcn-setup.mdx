@@ -1,4 +1,4 @@
-Joinway UI is a shadcn registry, so the CLI is the same one you already use.
+Join UI is a shadcn registry, so the CLI is the same one you already use.
 This page covers the configuration it reads.
 
 ## Initialise
@@ -8,7 +8,7 @@ pnpm dlx shadcn@latest init
 ```
 
 This writes `components.json`, creates `lib/utils.ts` with the `cn` helper, and
-adds the base tokens to your stylesheet. Joinway components need all three.
+adds the base tokens to your stylesheet. Join UI components need all three.
 
 ## components.json
 
@@ -34,12 +34,12 @@ adds the base tokens to your stylesheet. Joinway components need all three.
     "hooks": "@/hooks"
   },
   "registries": {
-    "@joinway": "https://ui.joinway.dev/r/{name}.json"
+    "@joinui": "https://ui.join-way.com/r/{name}.json"
   }
 }
 ```
 
-The fields Joinway actually depends on:
+The fields Join UI actually depends on:
 
 | Field | Why it matters |
 | --- | --- |
@@ -47,11 +47,11 @@ The fields Joinway actually depends on:
 | `tailwind.cssVariables` | Must be `true`; components theme through variables only |
 | `aliases.utils` | Where `cn` lives. Components import it as `@/lib/utils` |
 | `rsc` | Controls whether the CLI keeps the `"use client"` directive |
-| `registries` | Maps the `@joinway` namespace to the item URL template |
+| `registries` | Maps the `@joinui` namespace to the item URL template |
 
 <Callout variant="warning">
   With `cssVariables: false` the CLI rewrites colours into literal utility
-  classes. Joinway components would still render, but they would stop following
+  classes. Join UI components would still render, but they would stop following
   the tokens — so a component would be stuck in whichever theme it was compiled
   against. Leave it on.
 </Callout>
@@ -78,25 +78,25 @@ component's `rounded-lg`.
 
 By namespace, substituting the slug from the [catalog](/components):
 
-<InstallTabs target="@joinway/<component>" />
+<InstallTabs target="@joinui/<component>" />
 
 Several at once:
 
 ```bash
-pnpm dlx shadcn@latest add @joinway/<first> @joinway/<second>
+pnpm dlx shadcn@latest add @joinui/<first> @joinui/<second>
 ```
 
 By URL, with no namespace configured:
 
 ```bash
-pnpm dlx shadcn@latest add https://ui.joinway.dev/r/<component>.json
+pnpm dlx shadcn@latest add https://ui.join-way.com/r/<component>.json
 ```
 
 Mixed with shadcn's own registry — namespaced and bare names resolve
 independently:
 
 ```bash
-pnpm dlx shadcn@latest add button dialog @joinway/<component>
+pnpm dlx shadcn@latest add button dialog @joinui/<component>
 ```
 
 ## What the CLI does
@@ -104,15 +104,15 @@ pnpm dlx shadcn@latest add button dialog @joinway/<component>
 <Steps>
   <Step title="Fetches the item">
 
-    `GET https://ui.joinway.dev/r/<name>.json`. The response is served with
+    `GET https://ui.join-way.com/r/<name>.json`. The response is served with
     permissive CORS headers, so it works from any origin.
 
   </Step>
 
   <Step title="Resolves registryDependencies">
 
-    Joinway items depend on `utils`, which resolves against shadcn's own
-    registry. A dependency written with the `@joinway` prefix resolves against
+    Join UI items depend on `utils`, which resolves against shadcn's own
+    registry. A dependency written with the `@joinui` prefix resolves against
     the namespace you configured instead.
 
   </Step>
@@ -126,18 +126,18 @@ pnpm dlx shadcn@latest add button dialog @joinway/<component>
   <Step title="Writes the files">
 
     Each file has a `target`, so it lands at
-    `components/joinway/<name>.tsx` regardless of your `components` alias.
+    `components/joinui/<name>.tsx` regardless of your `components` alias.
 
   </Step>
 </Steps>
 
 ## Coexisting with shadcn/ui
 
-Joinway components are deliberately standalone: none of them import
-`@/components/ui/*`. They live in `components/joinway/`, which means:
+Join UI components are deliberately standalone: none of them import
+`@/components/ui/*`. They live in `components/joinui/`, which means:
 
 - adding shadcn components will never overwrite one;
 - `pnpm dlx shadcn@latest add button` upgrading your Button will not touch them;
-- you can delete the whole `components/joinway/` directory to remove every trace.
+- you can delete the whole `components/joinui/` directory to remove every trace.
 
 They do read your tokens, so they inherit your theme automatically.

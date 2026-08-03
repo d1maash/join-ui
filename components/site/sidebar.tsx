@@ -32,7 +32,7 @@ export function Sidebar({
     <nav aria-label="Documentation" className={cn("flex flex-col", className)}>
       {sections.map((section) => (
         <div key={section.title} className="border-b border-border py-5 last:border-b-0">
-          <p className="label-caps mb-3 text-muted-foreground">{section.title}</p>
+          <p className="label-section mb-3">{section.title}</p>
           <ul className="flex flex-col">
             {section.items.map((item) => {
               const active = pathname === item.href
@@ -53,7 +53,7 @@ export function Sidebar({
                   >
                     <span className="truncate">{item.title}</span>
                     {item.label ? (
-                      <span className="label-caps shrink-0 text-muted-foreground">
+                      <span className="label-micro shrink-0 text-muted-foreground">
                         {item.label}
                       </span>
                     ) : null}

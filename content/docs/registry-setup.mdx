@@ -1,4 +1,4 @@
-Joinway ships a real shadcn-compatible registry: a JSON index plus one
+Join UI ships a real shadcn-compatible registry: a JSON index plus one
 installable item per component, generated and validated during the build.
 
 ## Consuming the registry
@@ -8,20 +8,20 @@ Add the namespace to `components.json`:
 ```json title="components.json" {3}
 {
   "registries": {
-    "@joinway": "https://ui.joinway.dev/r/{name}.json"
+    "@joinui": "https://ui.join-way.com/r/{name}.json"
   }
 }
 ```
 
-`{name}` is substituted by the CLI, so `@joinway/<component>` resolves to
-`https://ui.joinway.dev/r/<component>.json`.
+`{name}` is substituted by the CLI, so `@joinui/<component>` resolves to
+`https://ui.join-way.com/r/<component>.json`.
 
-<InstallTabs target="@joinway/<component>" />
+<InstallTabs target="@joinui/<component>" />
 
 Or skip the namespace entirely:
 
 ```bash
-pnpm dlx shadcn@latest add https://ui.joinway.dev/r/<component>.json
+pnpm dlx shadcn@latest add https://ui.join-way.com/r/<component>.json
 ```
 
 ## Endpoints
@@ -46,19 +46,19 @@ hypothetical `glow-card`:
   "type": "registry:ui",
   "title": "Glow Card",
   "description": "A bounded panel that raises its rule on hover.",
-  "author": "Joinway",
+  "author": "Join Way",
   "dependencies": [],
   "registryDependencies": ["utils"],
   "files": [
     {
       "path": "registry/components/glow-card.tsx",
       "type": "registry:ui",
-      "target": "components/joinway/glow-card.tsx",
+      "target": "components/joinui/glow-card.tsx",
       "content": "\"use client\"\n\nimport * as React from \"react\"\n…"
     }
   ],
   "categories": ["cards", "layout"],
-  "docs": "https://ui.joinway.dev/components/glow-card",
+  "docs": "https://ui.join-way.com/components/glow-card",
   "meta": { "status": "stable", "since": "2026-08-02", "featured": false }
 }
 ```
@@ -77,15 +77,16 @@ pnpm registry:build
 ```
 
 ```text
-✓ Registry built — 0 items, 0.0 kB of source
+✓ Registry built — 1 items, 13.2 kB of source
   registry.json
   public/r/registry.json
-  public/r/*.json (0 files)
+  public/r/*.json (1 files)
 ```
 
-The catalog is empty while the component set is rebuilt from scratch, so the
-counts above are what you will see today. They track `lib/registry/components.ts`
-exactly — one entry there is one item here.
+The counts track `lib/registry/components.ts` exactly — one entry there is one
+item here, and the byte count is the source inlined into the item files. The
+catalog is still short while the component set is rebuilt against the current
+design system, so expect those numbers to be small and to climb.
 
 The build refuses to emit anything until validation passes:
 
@@ -189,11 +190,11 @@ for those routes.
 
 | Type | Used for |
 | --- | --- |
-| `registry:ui` | A component — what every Joinway item is |
+| `registry:ui` | A component — what every Join UI item is |
 | `registry:lib` | A utility module |
 | `registry:hook` | A React hook |
 | `registry:component` | A composed, app-level component |
 | `registry:file` | Anything else, placed verbatim at `target` |
 
-Joinway keeps every component to a single `registry:ui` file on purpose: one
+Join UI keeps every component to a single `registry:ui` file on purpose: one
 install, one file to read, one file to delete.

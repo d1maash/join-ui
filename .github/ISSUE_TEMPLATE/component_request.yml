@@ -1,0 +1,80 @@
+name: Component request
+description: Propose a component for the catalog.
+labels: ["component request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the API and the behaviour, not the implementation. It is much
+        cheaper to agree on the shape here than to reject a finished component.
+
+  - type: input
+    id: name
+    attributes:
+      label: Component
+      placeholder: Glow Card
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is it for
+      description: The problem it solves, and where you would reach for it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: api
+    attributes:
+      label: Proposed API
+      description: The props you would expect, with types and defaults.
+      render: tsx
+      placeholder: |
+        interface GlowCardProps extends React.ComponentPropsWithoutRef<"div"> {
+          /** Glow strength. Defaults to 1. */
+          intensity?: number
+        }
+    validations:
+      required: true
+
+  - type: textarea
+    id: motion
+    attributes:
+      label: Motion and accessibility
+      description: |
+        What animates, and what it falls back to under `prefers-reduced-motion`.
+        Keyboard interaction, focus handling, and the ARIA roles it needs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: prior-art
+    attributes:
+      label: Prior art
+      description: Similar components elsewhere, and what you would do differently.
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: House rules
+      description: See [contributing](https://ui.join-way.com/docs/contributing).
+      options:
+        - label: It can be built with the `--info` / `--positive` / `--caution` / `--critical` token families — no literal colours
+        - label: It animates `transform` and `opacity` only
+        - label: It needs no dependency beyond `react`, `motion` and `@/lib/utils`
+
+  - type: checkboxes
+    id: offer
+    attributes:
+      label: Would you like to build it?
+      options:
+        - label: I am willing to open a pull request for this
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's [Code of Conduct](https://github.com/d1maash/join-ui/blob/main/CODE_OF_CONDUCT.md)
+          required: true

@@ -40,7 +40,7 @@ export function PrevNextNavigation({
             "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
           )}
         >
-          <span className="label-caps flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground">
+          <span className="label-micro flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground">
             <ArrowLeft
               aria-hidden="true"
               className="size-3 transition-transform group-hover:-translate-x-0.5"
@@ -65,7 +65,7 @@ export function PrevNextNavigation({
             "sm:col-start-2"
           )}
         >
-          <span className="label-caps flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground">
+          <span className="label-micro flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground">
             Next
             <ArrowRight
               aria-hidden="true"

@@ -23,9 +23,9 @@ export function Toaster() {
           description: "text-muted-foreground",
           icon: "flex size-4 shrink-0 items-center justify-center text-foreground [&_svg]:size-4",
           actionButton:
-            "ml-auto cursor-pointer rounded-md bg-primary px-2 py-1 font-mono text-[0.625rem] tracking-[0.08em] uppercase text-primary-foreground",
+            "ml-auto cursor-pointer rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground",
           cancelButton:
-            "ml-auto cursor-pointer rounded-md border border-border px-2 py-1 font-mono text-[0.625rem] tracking-[0.08em] uppercase text-muted-foreground",
+            "ml-auto cursor-pointer rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground",
         },
       }}
     />

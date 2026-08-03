@@ -141,7 +141,7 @@ export default async function ComponentPage({ params }: PageProps) {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.015em]">
+            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.032em]">
               {component.title}
             </h1>
             <p className="max-w-2xl text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">
@@ -360,10 +360,10 @@ export default async function ComponentPage({ params }: PageProps) {
                 </caption>
                 <thead>
                   <tr className="border-b border-border bg-subtle">
-                    <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
+                    <th scope="col" className="label-micro px-4 py-2.5 text-muted-foreground">
                       Key
                     </th>
-                    <th scope="col" className="label-caps px-4 py-2.5 text-muted-foreground">
+                    <th scope="col" className="label-micro px-4 py-2.5 text-muted-foreground">
                       Behaviour
                     </th>
                   </tr>
@@ -517,12 +517,12 @@ function DependencyPanel({
     <div
       className={`rounded-xl border border-border bg-card p-4 shadow-xs ${className ?? ""}`}
     >
-      <h3 className="label-caps text-muted-foreground">{title}</h3>
+      <h3 className="label-section">{title}</h3>
       {items.length > 0 ? (
         <ul className="mt-3 flex flex-wrap gap-1.5">
           {items.map((item) => (
             <li key={item}>
-              <Badge variant="neutral" size="md" className="normal-case">
+              <Badge variant="neutral" size="md">
                 {item}
               </Badge>
             </li>

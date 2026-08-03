@@ -41,7 +41,7 @@ Project stack:
 
 Requirements:
 - Install all required dependencies: <packages>.
-- Place the component at components/joinway/<component>.tsx.
+- Place the component at components/joinui/<component>.tsx.
 - Use the project's existing `cn` utility from `@/lib/utils` and its existing
   design tokens (background, foreground, card, muted, border, primary, accent,
   destructive, radius, plus the component colour families info, positive,
@@ -80,12 +80,12 @@ Animation requirements:
 
 Integration notes:
 - Category: <category>
-- Registry item: https://ui.joinway.dev/r/<component>.json
-- Equivalent CLI install: pnpm dlx shadcn@latest add @joinway/<component>
+- Registry item: https://ui.join-way.com/r/<component>.json
+- Equivalent CLI install: pnpm dlx shadcn@latest add @joinui/<component>
 
 Implementation:
 
-File: components/joinway/<component>.tsx
+File: components/joinui/<component>.tsx
 
 ```tsx
 "use client"
@@ -182,7 +182,7 @@ the implementation, which is exactly what the generated path avoids.
 If the agent has terminal access, installing is faster and less error-prone than
 writing the file from a prompt:
 
-<InstallTabs target="@joinway/<component>" />
+<InstallTabs target="@joinui/<component>" />
 
 The prompt says as much — it ends with the equivalent CLI command and tells the
 agent to prefer it when the project already uses shadcn. Reach for **Copy
@@ -196,7 +196,7 @@ Agents that can fetch URLs do not need the clipboard at all. Every registry item
 is self-describing JSON:
 
 ```bash
-curl https://ui.joinway.dev/r/<component>.json
+curl https://ui.join-way.com/r/<component>.json
 ```
 
 It carries the title, description, dependencies, `registryDependencies`, target
