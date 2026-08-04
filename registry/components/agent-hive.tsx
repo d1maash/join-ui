@@ -59,6 +59,8 @@ const GLASS =
   "var(--agent-hive-glass, color-mix(in oklab, var(--foreground) 7%, transparent))"
 const GLASS_EMPTY =
   "var(--agent-hive-glass-empty, color-mix(in oklab, var(--foreground) 4%, transparent))"
+/** Opacity of the wash of colour the comb is lit by. */
+const GLOW = "var(--agent-hive-glow, 0.45)"
 
 /** Spelled out beside the pip, so the state never rests on hue alone. */
 const RUN_LABEL: Record<AgentHiveRunState, string> = {
@@ -72,7 +74,10 @@ const RUN_LABEL: Record<AgentHiveRunState, string> = {
  * One hue per run state, taken from the component palette rather than a literal
  * colour, so a consumer can retint the whole family in `globals.css`.
  */
-const RUN_TONE: Record<AgentHiveRunState, { pip: string; ink: string; prompt: string }> = {
+const RUN_TONE: Record<
+  AgentHiveRunState,
+  { pip: string; ink: string; prompt: string }
+> = {
   queued: {
     pip: "bg-muted-foreground/40",
     ink: "text-muted-foreground",
@@ -117,7 +122,7 @@ const SIZES = {
     line: 26,
     pip: 11,
     blur: 4,
-    glyph: "size-4",
+    glyph: "size-[1.125rem]",
     action: "h-9 px-6 text-[0.8125rem]",
     name: "text-[0.8125rem]",
     row: "gap-2.5 py-2.5",
@@ -133,7 +138,7 @@ const SIZES = {
     line: 32,
     pip: 13,
     blur: 6,
-    glyph: "size-5",
+    glyph: "size-6",
     action: "h-10 px-7 text-sm",
     name: "text-sm",
     row: "gap-3 py-3",
@@ -160,8 +165,10 @@ const EASE = [0.22, 1, 0.36, 1] as const
 const LIQUID_AT = 1500
 const LIQUID_STRETCH = 0.16
 
-export interface AgentHiveProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "children" | "defaultValue"> {
+export interface AgentHiveProps extends Omit<
+  React.ComponentPropsWithoutRef<"div">,
+  "children" | "defaultValue"
+> {
   /** The models to lay into the comb, from the middle outwards. */
   models: AgentHiveModel[]
   /** Controlled selection. Leave unset to let the component hold it. */
@@ -242,6 +249,8 @@ export function AgentHive({
   const uid = React.useId().replace(/[^a-zA-Z0-9]/g, "")
   const edge = `${uid}edge`
   const gloss = `${uid}gloss`
+  const glow = `${uid}glow`
+  const cells = `${uid}cells`
 
   const firstEnabled = models.find((model) => !model.disabled)
   const [internal, setInternal] = React.useState(defaultValue)
@@ -324,7 +333,9 @@ export function AgentHive({
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     const walk = layout.order
       .map((modelIndex) => models[modelIndex])
-      .filter((model): model is AgentHiveModel => model !== undefined && !model.disabled)
+      .filter(
+        (model): model is AgentHiveModel => model !== undefined && !model.disabled
+      )
     if (walk.length === 0) return
 
     const at = walk.findIndex((model) => model.id === selectedId)
@@ -412,32 +423,70 @@ export function AgentHive({
         style={{ width: layout.width, height: layout.height }}
       >
         {/*
-         * The light in the glass. It is the only saturated thing behind the
-         * comb, it is the selected model's own colour, and it travels with the
-         * tile — so the frosting nearest the selection lifts and the far corners
-         * of the hive stay quiet.
+         * The light in the glass.
+         *
+         * A soft wash of the selected model's colour, blurred, and then cut to
+         * the comb itself — every cell is a hole in the mask and the gaps
+         * between them are not. That masking is the whole difference between
+         * light inside a material and a coloured smear behind it: unmasked, the
+         * wash pools in the gaps and around the rim, and the hive looks stained
+         * rather than lit. It sits under the frosting, so each cell's backdrop
+         * filter picks it up and carries a little of it past its own edges.
          */}
-        <motion.div
+        <svg
           aria-hidden="true"
-          className="pointer-events-none absolute transition-colors duration-500"
-          style={{
-            width: layout.cellW * 2.4,
-            height: layout.cellW * 2.4,
-            left: -layout.cellW * 1.2,
-            top: -layout.cellW * 1.2,
-            backgroundColor: accent ?? "var(--primary)",
-            maskImage: "radial-gradient(closest-side, #000, transparent)",
-            WebkitMaskImage: "radial-gradient(closest-side, #000, transparent)",
-            filter: `blur(${Math.round(scale.cell / 4)}px)`,
-          }}
-          initial={false}
-          animate={{
-            x: home?.cx ?? layout.width / 2,
-            y: home?.cy ?? layout.height / 2,
-            opacity: home ? 0.42 : 0,
-          }}
-          transition={reduceMotion ? { duration: 0 } : TRAVEL}
-        />
+          className="pointer-events-none absolute inset-0 size-full"
+          viewBox={`0 0 ${layout.width} ${layout.height}`}
+          style={{ opacity: GLOW }}
+        >
+          <defs>
+            <radialGradient id={glow}>
+              {[
+                { at: "0%", alpha: 0.95 },
+                { at: "55%", alpha: 0.4 },
+                { at: "100%", alpha: 0 },
+              ].map((stop) => (
+                <stop
+                  key={stop.at}
+                  offset={stop.at}
+                  stopColor={accent ?? "var(--primary)"}
+                  stopOpacity={stop.alpha}
+                  style={{ transition: "stop-color 500ms" }}
+                />
+              ))}
+            </radialGradient>
+            <mask
+              id={cells}
+              maskUnits="userSpaceOnUse"
+              x="0"
+              y="0"
+              width={layout.width}
+              height={layout.height}
+            >
+              {layout.slots.map((slot, index) => (
+                <path
+                  key={index}
+                  d={hexPath(layout.cellW, layout.cellH)}
+                  transform={`translate(${slot.x} ${slot.y})`}
+                  fill="#fff"
+                />
+              ))}
+            </mask>
+          </defs>
+          <motion.circle
+            r={layout.cellW * 1.25}
+            fill={`url(#${glow})`}
+            mask={`url(#${cells})`}
+            style={{ filter: `blur(${Math.round(layout.cellW / 7)}px)` }}
+            initial={false}
+            animate={{
+              cx: home?.cx ?? layout.width / 2,
+              cy: home?.cy ?? layout.height / 2,
+              opacity: home ? 1 : 0,
+            }}
+            transition={reduceMotion ? { duration: 0 } : TRAVEL}
+          />
+        </svg>
 
         {layout.slots.map((slot, index) => {
           const modelIndex = layout.filled.get(index)
@@ -457,7 +506,12 @@ export function AgentHive({
                 className="absolute"
                 style={box}
               >
-                <Glass width={layout.cellW} height={layout.cellH} blur={scale.blur} empty />
+                <Glass
+                  width={layout.cellW}
+                  height={layout.cellH}
+                  blur={scale.blur}
+                  empty
+                />
                 <Hex stroke={`url(#${edge})`} className="opacity-55" />
               </div>
             )
@@ -479,7 +533,9 @@ export function AgentHive({
               tabIndex={active ? 0 : -1}
               onClick={() => select(model.id)}
               onFocus={(event) =>
-                setFocused(event.currentTarget.matches(":focus-visible") ? model.id : null)
+                setFocused(
+                  event.currentTarget.matches(":focus-visible") ? model.id : null
+                )
               }
               onBlur={() => setFocused(null)}
               className={cn(
@@ -545,7 +601,9 @@ export function AgentHive({
                       (active ? "text-primary-foreground" : "text-muted-foreground")
                   )}
                   style={
-                    model.accent ? { color: active ? ON_ACCENT : model.accent } : undefined
+                    model.accent
+                      ? { color: active ? ON_ACCENT : model.accent }
+                      : undefined
                   }
                   animate={{ scale: active ? 1.08 : 1 }}
                   transition={reduceMotion ? { duration: 0 } : SPRING}
@@ -572,7 +630,9 @@ export function AgentHive({
               {selected?.label ?? " "}
             </p>
             {selected?.description ? (
-              <p className="mt-0.5 text-xs text-muted-foreground">{selected.description}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {selected.description}
+              </p>
             ) : null}
           </motion.div>
         </AnimatePresence>
@@ -613,7 +673,9 @@ export function AgentHive({
           ))}
         </AnimatePresence>
         {runs.length === 0 ? (
-          <li className="py-4 text-center text-xs text-muted-foreground">{emptyLabel}</li>
+          <li className="py-4 text-center text-xs text-muted-foreground">
+            {emptyLabel}
+          </li>
         ) : null}
       </ol>
     </div>
@@ -623,10 +685,16 @@ export function AgentHive({
 /**
  * The frosted body of a cell.
  *
- * A `div` rather than the SVG, because only a real box can carry a
+ * A box rather than the SVG, because only a real box can carry a
  * `backdrop-filter` — and the hexagon it is cut to is the same path the outline
  * is drawn from, resolved to this cell's pixel size, because `clip-path: path()`
  * has no viewBox to scale it with.
+ *
+ * Two elements, not one, and the nesting is load-bearing: a `backdrop-filter`
+ * is *not* clipped by a `clip-path` on its own element, so a single box leaks
+ * its filtered backdrop as a rectangle — visible here as saturated corners
+ * bleeding into the gaps between the cells whenever anything colourful passes
+ * behind the comb. Clipping the parent and filtering the child clips it.
  */
 function Glass({
   width,
@@ -644,13 +712,17 @@ function Glass({
     <span
       aria-hidden="true"
       className="absolute inset-0 block"
-      style={{
-        clipPath: `path("${hexPath(width, height)}")`,
-        background: empty ? GLASS_EMPTY : GLASS,
-        backdropFilter: filter,
-        WebkitBackdropFilter: filter,
-      }}
-    />
+      style={{ clipPath: `path("${hexPath(width, height)}")` }}
+    >
+      <span
+        className="block size-full"
+        style={{
+          background: empty ? GLASS_EMPTY : GLASS,
+          backdropFilter: filter,
+          WebkitBackdropFilter: filter,
+        }}
+      />
+    </span>
   )
 }
 
@@ -954,8 +1026,12 @@ function Row({
         />
       </span>
 
-      <span className={cn("relative min-w-0 flex-1 font-mono leading-snug", scale.prompt)}>
-        <span className={cn("block select-none opacity-0", tone.prompt)}>{run.prompt}</span>
+      <span
+        className={cn("relative min-w-0 flex-1 font-mono leading-snug", scale.prompt)}
+      >
+        <span className={cn("block opacity-0 select-none", tone.prompt)}>
+          {run.prompt}
+        </span>
         <span aria-hidden="true" className={cn("absolute inset-0 block", tone.prompt)}>
           {run.prompt.slice(0, typed)}
           {state === "working" || !done ? (
@@ -988,7 +1064,10 @@ function Row({
         {run.status ?? RUN_LABEL[state]}
         <span className="relative grid size-1.5 place-items-center">
           <span
-            className={cn("size-1.5 rounded-full transition-colors duration-500", tone.pip)}
+            className={cn(
+              "size-1.5 rounded-full transition-colors duration-500",
+              tone.pip
+            )}
           />
           {state === "working" && !reduceMotion ? (
             <motion.span
