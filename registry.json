@@ -131,7 +131,7 @@
       "name": "agent-hive",
       "type": "registry:ui",
       "title": "Agent Hive",
-      "description": "A honeycomb of models with one filled cell that travels to your choice, an action, and the queue of runs it dispatches.",
+      "description": "A honeycomb of frosted glass with one tinted tile that travels to whatever you pick, an action, and the queue of runs it dispatches.",
       "author": "Join Way",
       "dependencies": [
         "motion"
