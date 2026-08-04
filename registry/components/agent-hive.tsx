@@ -375,7 +375,7 @@ export function AgentHive({
                 height: layout.cellH,
               }}
             >
-              <Hex className="fill-border/22" />
+              <Hex className="fill-border/40" />
             </div>
           )
         )}
