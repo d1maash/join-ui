@@ -20,10 +20,12 @@ import type { ReactNode } from "react"
  */
 const StatusTimelinePreview = dynamic(() => import("./status-timeline-preview"))
 const FocusStackPreview = dynamic(() => import("./focus-stack-preview"))
+const AgentHivePreview = dynamic(() => import("./agent-hive-preview"))
 
 export const previews: Record<string, () => ReactNode> = {
   "status-timeline": () => <StatusTimelinePreview />,
   "focus-stack": () => <FocusStackPreview />,
+  "agent-hive": () => <AgentHivePreview />,
 }
 
 export function renderPreview(slug: string): ReactNode | null {
