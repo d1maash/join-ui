@@ -146,7 +146,7 @@ export default function FocusStackPreview() {
           size="sm"
           depth={2}
           tilt={3}
-          blur={0.8}
+          blur={0.4}
           interval={2000}
         />
       </Panel>

@@ -41,7 +41,7 @@ const ON_ACCENT = "var(--focus-stack-glyph, oklch(0.985 0.002 90))"
 const SIZES = {
   sm: {
     height: 56,
-    step: 64,
+    step: 59,
     frame: "max-w-sm",
     pill: "gap-3 pl-2.5 pr-5",
     badge: "size-9 rounded-[0.6rem]",
@@ -51,7 +51,7 @@ const SIZES = {
   },
   md: {
     height: 72,
-    step: 82,
+    step: 76,
     frame: "max-w-md",
     pill: "gap-3.5 pl-3 pr-7",
     badge: "size-11 rounded-[0.8rem]",
@@ -61,7 +61,7 @@ const SIZES = {
   },
   lg: {
     height: 88,
-    step: 100,
+    step: 93,
     frame: "max-w-lg",
     pill: "gap-4 pl-3.5 pr-8",
     badge: "size-13 rounded-[0.95rem]",
@@ -71,16 +71,30 @@ const SIZES = {
   },
 } as const
 
-/** How much a rank shrinks per step away from the focused one. */
+/**
+ * How much the first rank shrinks, and how much faster every rank after it
+ * does. The exponent is the difference between a stack that steps back evenly
+ * and one that recedes: linear shrinking flattens out into a ladder, while a
+ * little curve keeps the far ranks visibly further away than the near ones.
+ */
 const SCALE_STEP = 0.07
+const SCALE_CURVE = 1.2
 const MIN_SCALE = 0.62
 
 /**
  * Exponent on the lane offset. Below 1 it spreads the near ranks and packs the
- * far ones, which is the whole perspective cue — the stack recedes rather than
- * repeating at a constant pitch.
+ * far ones, so the pills draw together as they recede — which, with the lane
+ * itself barely taller than a pill, is what closes the outer ranks up into a
+ * coil instead of leaving them as a list with gaps.
  */
 const LANE_CURVE = 0.86
+
+/**
+ * Exponent on the fade. Below 1 it holds a rank's opacity up and then drops it
+ * away at the edge, which is what keeps the top and bottom pills legible — the
+ * far ranks are meant to read as further off, not as nearly deleted.
+ */
+const FADE_CURVE = 0.55
 
 const SPRING = { stiffness: 120, damping: 20, mass: 0.9 } as const
 /** Stiffer and better damped: this one only takes the grain out of a scrollbar. */
@@ -143,7 +157,7 @@ export function FocusStack({
   depth = 3,
   size = "md",
   tilt = 5,
-  blur = 1.1,
+  blur = 0.55,
   interactive,
   label = "Highlights",
   className,
@@ -371,15 +385,17 @@ function Row({
     (d) => Math.sign(d) * Math.abs(d) ** LANE_CURVE * scale.step
   )
   const scaleValue = useTransform(distance, (d) =>
-    Math.max(MIN_SCALE, 1 - Math.abs(d) * SCALE_STEP)
+    Math.max(MIN_SCALE, 1 - Math.abs(d) ** SCALE_CURVE * SCALE_STEP)
   )
   /*
-   * Zero is reached at `ranks + 0.5`, which is at or before the wrap boundary
-   * at `count / 2` — so the frame in which an item leaves the top of the stack
-   * and reappears at the bottom is never a frame anyone can see.
+   * Zero is reached at `fade`, which is capped at the wrap boundary of
+   * `count / 2` — so the frame in which an item leaves the top of the stack and
+   * reappears at the bottom is never a frame anyone can see. A list long enough
+   * to keep that boundary out of the way gets the gentler ramp of `ranks + 1`.
    */
+  const fade = wrapped ? Math.min(ranks + 1, count / 2) : ranks + 1
   const opacity = useTransform(distance, (d) =>
-    Math.max(0, 1 - Math.abs(d) / (ranks + 0.5))
+    Math.max(0, 1 - Math.min(Math.abs(d) / fade, 1)) ** FADE_CURVE
   )
   /*
    * Unsigned, so both ends of the stack twist the same way and the focused pill

@@ -451,8 +451,7 @@ export function Example() {
             name: "interval",
             type: "number",
             defaultValue: "2600",
-            description:
-              "Milliseconds between advances in auto mode. Floored at 600.",
+            description: "Milliseconds between advances in auto mode. Floored at 600.",
           },
           {
             name: "loop",
@@ -490,7 +489,7 @@ export function Example() {
           {
             name: "blur",
             type: "number",
-            defaultValue: "1.1",
+            defaultValue: "0.55",
             description:
               "Pixels of blur per rank. Set 0 to drop the filter — and the per-frame repaint with it — on a long list or a weak device.",
           },
@@ -626,5 +625,461 @@ export function Example() {
     ],
     related: ["status-timeline"],
     since: "2026-08-03",
+  }),
+
+  defineComponent({
+    name: "AgentHive",
+    slug: "agent-hive",
+    title: "Agent Hive",
+    description:
+      "A honeycomb of frosted glass with one tinted tile that travels to whatever you pick, an action, and the queue of runs it dispatches.",
+    overview:
+      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. The comb is glass. Every cell is a frosted hexagon with a lit top edge and a shaded bottom one, and behind them sits a soft wash of the selected model's own colour — so the light in the material belongs to the selection, and moving the selection moves the light. The selected cell is not a state each cell paints for itself but a single tinted tile that slides over the frosting, stretching along its own direction of travel and settling out of it, with a plumb line swinging above. The comb underneath is a radio group wearing a shape, filled from the middle outwards, so four models sit in the centre of a ten-cell hive and the leftovers stay as comb around the rim. Below it the action takes the selected accent and pushes a ring out every couple of seconds for exactly as long as something is running. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone.",
+    category: "Data Display",
+    tags: [
+      "ai",
+      "agent",
+      "honeycomb",
+      "picker",
+      "queue",
+      "typewriter",
+      "console",
+      "radio-group",
+    ],
+    status: "new",
+    featured: true,
+    dependencies: ["motion"],
+    registryDependencies: ["utils"],
+    files: [uiFile("agent-hive")],
+    accessibility: [
+      'The comb is a real radio group: `role="radiogroup"` on the frame, `role="radio"` with `aria-checked` on every occupied cell, and a roving tabindex — so a nine-model hive costs one tab stop and the arrows move inside it.',
+      "Cells are glyph-only, so each carries its model name as `aria-label`, and the name is also printed under the comb where a sighted user can read it. The plumb line and the fill are decoration on top of that, never the only cue.",
+      "Empty comb, the travelling fill and the plumb line are all `aria-hidden` and non-interactive; they are scenery, and they are not announced or focusable.",
+      "The focus ring is drawn as a hexagon rather than left as the default outline, which would trace the cell's bounding box instead of the cell.",
+      "The selected cell is the only filled one, so the selection survives a monochrome rendering, a forced-colours mode and any accent a consumer picks — fill and position carry it, not hue and not translucency.",
+      "The material is decoration and degrades to a flat tint: a browser without `backdrop-filter` still gets a frosted wash, a lit edge and the tinted tile, because none of the three depends on the blur.",
+      "Run states never rest on hue alone — every row prints its status in words next to the pip, and `status` overrides that word rather than removing it.",
+      'The queue is an ordered list with `aria-live="polite"`, so a run arriving or landing is announced without stealing focus.',
+      "A typing row renders its prompt twice: the full text, invisible but in the accessibility tree, under the prefix typed so far, which is `aria-hidden`. Assistive technology reads the whole line at once instead of a character at a time, and the row reserves its final height so nothing below it reflows while it types.",
+      "The only continuous motion is the ring leaving the action and the pip on a working run, and both stop when the queue does; `prefers-reduced-motion` drops the typewriter, the caret blink, the ring, the swing and every spring, leaving a still component that still works.",
+      "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
+    ],
+    keyboard: [
+      {
+        keys: ["→", "↓"],
+        description: "Selects the next model in the comb, skipping disabled ones.",
+      },
+      {
+        keys: ["←", "↑"],
+        description: "Selects the previous model in the comb.",
+      },
+      { keys: ["Home"], description: "Selects the first model." },
+      { keys: ["End"], description: "Selects the last model." },
+      {
+        keys: ["Tab"],
+        description: "Moves from the comb to the action, and on out of the component.",
+      },
+      { keys: ["Enter", "Space"], description: "Fires the action." },
+    ],
+    props: [
+      {
+        name: "AgentHive",
+        props: [
+          {
+            name: "models",
+            type: "AgentHiveModel[]",
+            required: true,
+            description:
+              "The models to lay into the comb. They fill it from the middle outwards, so the order is the order they radiate, not a row-by-row layout.",
+          },
+          {
+            name: "value",
+            type: "string",
+            description:
+              "Controlled selection, by model id. Leave unset to let the component hold it and read the selection through onValueChange.",
+          },
+          {
+            name: "defaultValue",
+            type: "string",
+            description:
+              'Where an uncontrolled comb starts. Defaults to the first enabled model. Pass value="" to start with nothing selected.',
+          },
+          {
+            name: "onValueChange",
+            type: "(id: string) => void",
+            description: "Fires with the model id when the selection moves.",
+          },
+          {
+            name: "runs",
+            type: "AgentHiveRun[]",
+            defaultValue: "[]",
+            description:
+              "The queue below the action, newest first. It is state you own, so it can come from anywhere — a websocket, a poll, a reducer.",
+          },
+          {
+            name: "onGenerate",
+            type: "(model: AgentHiveModel) => void",
+            description:
+              "Fires with the selected model when the action is pressed. Push a run onto runs from here.",
+          },
+          {
+            name: "actionLabel",
+            type: "string",
+            defaultValue: '"Generate"',
+            description: "Copy on the action.",
+          },
+          {
+            name: "busy",
+            type: "boolean",
+            description:
+              "Overrides the busy state, which is otherwise true whenever a run is working. Busy is what sets the halo breathing and aria-busy on the frame.",
+          },
+          {
+            name: "disabled",
+            type: "boolean",
+            defaultValue: "false",
+            description: "Disables the whole comb and the action.",
+          },
+          {
+            name: "comb",
+            type: "number[]",
+            defaultValue: "[3, 4, 3]",
+            description:
+              "Widths of the comb's rows, top to bottom. Rows are centred on each other, which is where the half-cell offset comes from. More models than cells and the comb grows by alternating its own widest and narrowest row.",
+          },
+          {
+            name: "size",
+            type: '"sm" | "md"',
+            defaultValue: '"md"',
+            description: "Cell, action, row and type scale.",
+          },
+          {
+            name: "arm",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "The plumb line hanging over the selected cell. It tracks the cell's horizontal centre, so it can point down the corridor between two cells of the row below, and it swings on its own travelling velocity — a hop to the next cell tilts it, a jump across the comb throws it.",
+          },
+          {
+            name: "maxRuns",
+            type: "number",
+            defaultValue: "3",
+            description:
+              "Rows drawn before the queue fades out. The overflow row dissolves into a mask rather than being cut off.",
+          },
+          {
+            name: "typing",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Type each arriving run out a character at a time. Runs present at mount are treated as history and never type.",
+          },
+          {
+            name: "typeSpeed",
+            type: "number",
+            defaultValue: "26",
+            description: "Milliseconds per character. Floored at 4.",
+          },
+          {
+            name: "emptyLabel",
+            type: "string",
+            defaultValue: '"Nothing queued."',
+            description: "Shown in place of the queue while there is nothing in it.",
+          },
+          {
+            name: "label",
+            type: "string",
+            defaultValue: '"Model"',
+            description: "Accessible name of the comb.",
+          },
+          {
+            name: "variant",
+            type: '"card" | "plain"',
+            defaultValue: '"card"',
+            description:
+              "Plain drops the surrounding rule, background and padding so the hive can sit inside your own container.",
+          },
+          {
+            name: "className",
+            type: "string",
+            description:
+              "Merged onto the root through `cn` — this is where the width goes, since the size only sets a max.",
+          },
+        ],
+      },
+      {
+        name: "AgentHiveModel",
+        description: "Shape of a single entry in the `models` array.",
+        props: [
+          {
+            name: "id",
+            type: "string",
+            required: true,
+            description: "Stable identity, and the value reported by onValueChange.",
+          },
+          {
+            name: "label",
+            type: "string",
+            required: true,
+            description:
+              "The model's name. Printed under the comb, and the accessible name of its cell.",
+          },
+          {
+            name: "description",
+            type: "string",
+            description:
+              "Second line under the comb while the model holds the selection.",
+          },
+          {
+            name: "icon",
+            type: "React.ReactNode",
+            description:
+              "Drawn inside the cell. Sized by the component, so pass a bare icon element — or a brand mark as inline SVG.",
+          },
+          {
+            name: "accent",
+            type: "string",
+            description:
+              "Any CSS colour. Tints the glass tile while the model holds the selection, lights the wash behind the comb, colours its glyph while it does not, carries into the action, and marks every run the model produced. Omit it and the component falls back to its ink tokens.",
+          },
+          {
+            name: "disabled",
+            type: "boolean",
+            description:
+              "Draws the cell at half strength and takes it out of both the tab order and the arrow-key walk.",
+          },
+        ],
+      },
+      {
+        name: "AgentHiveRun",
+        description: "Shape of a single entry in the `runs` array.",
+        props: [
+          {
+            name: "id",
+            type: "string",
+            required: true,
+            description:
+              "Stable identity for the rendered row, and what the component keys typing off — reuse an id and the row is treated as the same run.",
+          },
+          {
+            name: "prompt",
+            type: "string",
+            required: true,
+            description:
+              "The line of work. Typed out when the run arrives after mount.",
+          },
+          {
+            name: "state",
+            type: '"queued" | "working" | "done" | "failed"',
+            defaultValue: '"queued"',
+            description:
+              "Picks the pip and the word beside it: grey for queued, amber and pulsing for working, green for done, red for failed.",
+          },
+          {
+            name: "status",
+            type: "string",
+            description:
+              "Overrides the status word — “Retrying”, “Queued · 3rd”, an elapsed time — without changing the hue.",
+          },
+          {
+            name: "modelId",
+            type: "string",
+            description:
+              "Ties the run to a model, which marks the row with that model's cell in miniature. Leave it out and the marker stays neutral.",
+          },
+        ],
+      },
+    ],
+    usage: `import { AgentHive, type AgentHiveRun } from "@/components/joinui/agent-hive"
+import { Asterisk, Atom, Gem, Sparkles } from "lucide-react"
+
+const models = [
+  { id: "aster", label: "Aster 3", icon: <Asterisk />, accent: "#c2410c" },
+  { id: "prism", label: "Prism Flash", icon: <Sparkles />, accent: "#4338ca" },
+  { id: "nimbus", label: "Nimbus 2", icon: <Atom />, accent: "#0f766e" },
+  { id: "quartz", label: "Quartz Mini", icon: <Gem />, accent: "#15803d" },
+]
+
+export function Example() {
+  const [runs, setRuns] = React.useState<AgentHiveRun[]>([])
+
+  return (
+    <AgentHive
+      models={models}
+      runs={runs}
+      onGenerate={(model) =>
+        setRuns((current) => [
+          {
+            id: crypto.randomUUID(),
+            prompt: "Identify code optimizations and performance improvements",
+            modelId: model.id,
+            state: "working",
+          },
+          ...current,
+        ])
+      }
+    />
+  )
+}`,
+    customization: [
+      {
+        title: "Reshape the comb",
+        description:
+          "The comb prop is the row widths, top to bottom, and rows centre on each other — so [3, 4, 3] is a hexagon of hexagons, [1, 2, 1] is a diamond, and a single-element array is a straight row. Models always fill from the middle outwards, so the shape stays balanced whatever the count.",
+        code: `{/* The default: ten cells, four of them models. */}
+<AgentHive models={models} comb={[3, 4, 3]} />
+
+{/* A diamond for four. */}
+<AgentHive models={models} comb={[1, 2, 1]} size="sm" />
+
+{/* One row, no scenery. */}
+<AgentHive models={models} comb={[4]} />`,
+      },
+      {
+        title: "Wire it to a real backend",
+        description:
+          "onGenerate hands you the model and gets out of the way. Push a working row, resolve it, and let the states carry the rest — the halo, the pulsing pip and aria-busy all follow from the run's state without a second prop.",
+        code: `async function generate(model: AgentHiveModel) {
+  const id = crypto.randomUUID()
+  const prompt = draft.trim()
+
+  setRuns((current) => [{ id, prompt, modelId: model.id, state: "working" }, ...current])
+
+  try {
+    await dispatch({ model: model.id, prompt })
+    setRuns((current) =>
+      current.map((run) => (run.id === id ? { ...run, state: "done" } : run))
+    )
+  } catch (error) {
+    setRuns((current) =>
+      current.map((run) =>
+        run.id === id ? { ...run, state: "failed", status: "Retrying" } : run
+      )
+    )
+  }
+}`,
+      },
+      {
+        title: "Bring your own marks",
+        description:
+          "An icon is any node, so the cells can carry real brand marks as inline SVG rather than an icon-set approximation. The component sizes them and leaves the fill alone unless an accent is set, in which case the glyph takes the accent and the action does too.",
+        code: `const models = [
+  {
+    id: "orbit",
+    label: "Orbit",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75}>
+        <circle cx="12" cy="12" r="4" />
+        <ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-28 12 12)" />
+      </svg>
+    ),
+    accent: "#7c3aed",
+  },
+]`,
+      },
+      {
+        title: "Give the glass something to refract",
+        description:
+          "Frosting only has something to say when there is something behind it. On a flat panel the hive supplies its own light — the wash of the selected accent — but dropped onto a photograph, a gradient or a mesh, the cells sample it: the blur and the saturation boost are real, so the picture moves under the comb rather than beside it. Plain removes the frame so the surface can be yours.",
+        code: `<div className="relative overflow-hidden rounded-3xl p-6">
+  <img src="/aurora.jpg" alt="" className="absolute inset-0 size-full object-cover" />
+  <AgentHive variant="plain" models={models} runs={runs} className="relative" />
+</div>`,
+      },
+      {
+        title: "Just the picker, or just the queue",
+        description:
+          "The three bands are independent. Drop runs and the queue collapses to its empty line; set maxRuns to keep a long queue from taking the page over. Plain removes the frame so the hive can sit inside a card of your own.",
+        code: `{/* A picker in a settings panel. */}
+<div className="rounded-xl border border-border p-6">
+  <AgentHive
+    variant="plain"
+    models={models}
+    comb={[2, 3, 2]}
+    size="sm"
+    actionLabel="Set default"
+    emptyLabel="No recent runs."
+  />
+</div>
+
+{/* A busy console: six rows in flight, three of them on screen. */}
+<AgentHive models={models} runs={runs} maxRuns={3} />`,
+      },
+      {
+        title: "Slow the typewriter down, or turn it off",
+        description:
+          "Typing is per run and happens once: a row that was on screen at mount is history and renders whole, and a row that arrives afterwards types itself out. Reduced motion turns it off on its own, so typing={false} is for when a queue is filling faster than anything can be read.",
+        code: `{/* Deliberate, terminal-paced. */}
+<AgentHive models={models} runs={runs} typeSpeed={45} />
+
+{/* Straight to the text. */}
+<AgentHive models={models} runs={runs} typing={false} />`,
+      },
+      {
+        title: "Tune the material",
+        description:
+          "The glass is four numbers, and all four are custom properties rather than props, because they are a decision about the surface the component was installed onto rather than about any one hive. The frosting is a wash of the theme's own ink, which is what lets a single value serve both themes; the glow is the one exception, since the same 45% that reads as light on paper reads as a whisper on charcoal, so a product that lives in one theme should say so. The glyph on the tinted tile is near-white by default — if your accents are pale, redeclare it once instead of threading a second colour through every model.",
+        language: "css",
+        code: `/* app/globals.css */
+:root {
+  /* The frosting, and the emptier frosting of a cell with no model in it. */
+  --agent-hive-glass: color-mix(in oklab, var(--foreground) 7%, transparent);
+  --agent-hive-glass-empty: color-mix(in oklab, var(--foreground) 4%, transparent);
+  /* How brightly the selected accent lights the comb from behind. */
+  --agent-hive-glow: 0.45;
+  /* The glyph on the tinted tile. */
+  --agent-hive-glyph: oklch(0.985 0.002 90);
+}
+
+.dark {
+  --agent-hive-glow: 0.55;
+}`,
+      },
+    ],
+    /**
+     * Shipped with the registry item so `shadcn add` writes the run palette
+     * into the consumer's `globals.css`. Both themes are declared, which is
+     * what lets the component avoid `dark:` variants entirely.
+     */
+    cssVars: {
+      theme: {
+        "color-positive": "var(--positive)",
+        "color-positive-soft": "var(--positive-soft)",
+        "color-positive-foreground": "var(--positive-foreground)",
+        "color-caution": "var(--caution)",
+        "color-caution-soft": "var(--caution-soft)",
+        "color-caution-foreground": "var(--caution-foreground)",
+        "color-critical": "var(--critical)",
+        "color-critical-soft": "var(--critical-soft)",
+        "color-critical-foreground": "var(--critical-foreground)",
+        "radius-soft-sm": "0.375rem",
+        "radius-soft": "0.625rem",
+        "radius-soft-lg": "1rem",
+      },
+      light: {
+        positive: "oklch(0.5 0.13 158)",
+        "positive-soft": "oklch(0.965 0.03 158)",
+        "positive-foreground": "oklch(0.99 0.008 158)",
+        caution: "oklch(0.53 0.13 68)",
+        "caution-soft": "oklch(0.965 0.04 78)",
+        "caution-foreground": "oklch(0.99 0.008 68)",
+        critical: "oklch(0.52 0.19 23)",
+        "critical-soft": "oklch(0.965 0.025 23)",
+        "critical-foreground": "oklch(0.99 0.006 23)",
+      },
+      dark: {
+        positive: "oklch(0.78 0.14 158)",
+        "positive-soft": "oklch(0.25 0.05 158)",
+        "positive-foreground": "oklch(0.16 0.035 158)",
+        caution: "oklch(0.82 0.14 80)",
+        "caution-soft": "oklch(0.26 0.05 68)",
+        "caution-foreground": "oklch(0.17 0.035 68)",
+        critical: "oklch(0.72 0.17 23)",
+        "critical-soft": "oklch(0.26 0.07 23)",
+        "critical-foreground": "oklch(0.16 0.04 23)",
+      },
+    },
+    related: ["status-timeline", "focus-stack"],
+    since: "2026-08-04",
   }),
 ]
