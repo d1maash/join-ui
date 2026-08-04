@@ -74,8 +74,18 @@ const COMPACT: AgentHiveModel[] = [
 ]
 
 const QUEUE: AgentHiveRun[] = [
-  { id: "q-1", prompt: "Regenerate the API reference", modelId: "deep", state: "working" },
-  { id: "q-2", prompt: "Diff the schema against staging", modelId: "swift", state: "queued" },
+  {
+    id: "q-1",
+    prompt: "Regenerate the API reference",
+    modelId: "deep",
+    state: "working",
+  },
+  {
+    id: "q-2",
+    prompt: "Diff the schema against staging",
+    modelId: "swift",
+    state: "queued",
+  },
   { id: "q-3", prompt: "Backfill the search index", modelId: "wide", state: "done" },
 ]
 
@@ -105,13 +115,18 @@ export default function AgentHivePreview() {
     const prompt = PROMPTS[(counter.current - 1) % PROMPTS.length] ?? PROMPTS[0] ?? ""
 
     setRuns((current) =>
-      [{ id, prompt, modelId: picked.id, state: "working" as const }, ...current].slice(0, 6)
+      [{ id, prompt, modelId: picked.id, state: "working" as const }, ...current].slice(
+        0,
+        6
+      )
     )
 
     timers.current.push(
       window.setTimeout(() => {
         setRuns((current) =>
-          current.map((run) => (run.id === id ? { ...run, state: "done" as const } : run))
+          current.map((run) =>
+            run.id === id ? { ...run, state: "done" as const } : run
+          )
         )
       }, RUN_MS)
     )
@@ -180,6 +195,8 @@ function Panel({
 /** Mono is reserved for the captions that really are quoting the API. */
 function Code({ children }: { children: string }) {
   return (
-    <code className="font-mono text-[0.75rem] font-medium text-foreground">{children}</code>
+    <code className="font-mono text-[0.75rem] font-medium text-foreground">
+      {children}
+    </code>
   )
 }

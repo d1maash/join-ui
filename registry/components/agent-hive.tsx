@@ -59,14 +59,21 @@ const RUN_LABEL: Record<AgentHiveRunState, string> = {
  * One hue per run state, taken from the component palette rather than a literal
  * colour, so a consumer can retint the whole family in `globals.css`.
  */
-const RUN_TONE: Record<AgentHiveRunState, { pip: string; ink: string; prompt: string }> = {
+const RUN_TONE: Record<
+  AgentHiveRunState,
+  { pip: string; ink: string; prompt: string }
+> = {
   queued: {
     pip: "bg-muted-foreground/40",
     ink: "text-muted-foreground",
     prompt: "text-foreground",
   },
   working: { pip: "bg-caution", ink: "text-foreground", prompt: "text-foreground" },
-  done: { pip: "bg-positive", ink: "text-muted-foreground", prompt: "text-muted-foreground" },
+  done: {
+    pip: "bg-positive",
+    ink: "text-muted-foreground",
+    prompt: "text-muted-foreground",
+  },
   failed: { pip: "bg-critical", ink: "text-critical", prompt: "text-muted-foreground" },
 }
 
@@ -145,8 +152,10 @@ const TRAVEL = { type: "spring", stiffness: 210, damping: 24, mass: 0.9 } as con
 const PLUMB = { type: "spring", stiffness: 150, damping: 16, mass: 0.9 } as const
 const EASE = [0.22, 1, 0.36, 1] as const
 
-export interface AgentHiveProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "children" | "defaultValue"> {
+export interface AgentHiveProps extends Omit<
+  React.ComponentPropsWithoutRef<"div">,
+  "children" | "defaultValue"
+> {
   /** The models to lay into the comb, from the middle outwards. */
   models: AgentHiveModel[]
   /** Controlled selection. Leave unset to let the component hold it. */
@@ -303,7 +312,9 @@ export function AgentHive({
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     const walk = layout.order
       .map((modelIndex) => models[modelIndex])
-      .filter((model): model is AgentHiveModel => model !== undefined && !model.disabled)
+      .filter(
+        (model): model is AgentHiveModel => model !== undefined && !model.disabled
+      )
     if (walk.length === 0) return
 
     const at = walk.findIndex((model) => model.id === selectedId)
@@ -474,10 +485,13 @@ export function AgentHive({
                    * is the only thing that survives the dark theme, where the
                    * ink is the light end of the ramp.
                    */
-                  !model.accent && (active ? "text-primary-foreground" : "text-muted-foreground")
+                  !model.accent &&
+                    (active ? "text-primary-foreground" : "text-muted-foreground")
                 )}
                 style={
-                  model.accent ? { color: active ? ON_ACCENT : model.accent } : undefined
+                  model.accent
+                    ? { color: active ? ON_ACCENT : model.accent }
+                    : undefined
                 }
                 animate={{ scale: active ? 1.08 : 1 }}
                 transition={reduceMotion ? { duration: 0 } : SPRING}
@@ -503,7 +517,9 @@ export function AgentHive({
               {selected?.label ?? " "}
             </p>
             {selected?.description ? (
-              <p className="mt-0.5 text-xs text-muted-foreground">{selected.description}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {selected.description}
+              </p>
             ) : null}
           </motion.div>
         </AnimatePresence>
@@ -544,7 +560,9 @@ export function AgentHive({
           ))}
         </AnimatePresence>
         {runs.length === 0 ? (
-          <li className="py-4 text-center text-xs text-muted-foreground">{emptyLabel}</li>
+          <li className="py-4 text-center text-xs text-muted-foreground">
+            {emptyLabel}
+          </li>
         ) : null}
       </ol>
     </div>
@@ -717,7 +735,10 @@ function Row({
       animate={{ opacity: 1, y: 0 }}
       exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
       transition={reduceMotion ? { duration: 0 } : SPRING}
-      className={cn("flex items-center not-first:border-t not-first:border-border", scale.row)}
+      className={cn(
+        "flex items-center not-first:border-t not-first:border-border",
+        scale.row
+      )}
     >
       {/* The model's cell in miniature — the same shape, at a twelfth the area. */}
       <span
@@ -734,8 +755,12 @@ function Row({
         />
       </span>
 
-      <span className={cn("relative min-w-0 flex-1 font-mono leading-snug", scale.prompt)}>
-        <span className={cn("block select-none opacity-0", tone.prompt)}>{run.prompt}</span>
+      <span
+        className={cn("relative min-w-0 flex-1 font-mono leading-snug", scale.prompt)}
+      >
+        <span className={cn("block opacity-0 select-none", tone.prompt)}>
+          {run.prompt}
+        </span>
         <span aria-hidden="true" className={cn("absolute inset-0 block", tone.prompt)}>
           {run.prompt.slice(0, typed)}
           {state === "working" || !done ? (
@@ -768,7 +793,10 @@ function Row({
         {run.status ?? RUN_LABEL[state]}
         <span className="relative grid size-1.5 place-items-center">
           <span
-            className={cn("size-1.5 rounded-full transition-colors duration-500", tone.pip)}
+            className={cn(
+              "size-1.5 rounded-full transition-colors duration-500",
+              tone.pip
+            )}
           />
           {state === "working" && !reduceMotion ? (
             <motion.span
