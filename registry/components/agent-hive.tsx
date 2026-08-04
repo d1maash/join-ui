@@ -23,7 +23,7 @@ export interface AgentHiveModel {
   description?: string
   /** Drawn inside the cell. Sized by the component, so pass a bare icon. */
   icon?: React.ReactNode
-  /** Any CSS colour. Fills the cell it holds, the action, and its runs. */
+  /** Any CSS colour. Tints the glass while the model holds the selection. */
   accent?: string
   disabled?: boolean
 }
@@ -41,11 +41,24 @@ export interface AgentHiveRun {
 }
 
 /**
- * The colour a glyph takes on a filled cell. Held as a fallback rather than a
+ * The colour a glyph takes on tinted glass. Held as a fallback rather than a
  * literal so a consumer whose accents are pale can redeclare it once, in CSS,
  * instead of threading a second colour through every model.
  */
 const ON_ACCENT = "var(--agent-hive-glyph, oklch(0.985 0.002 90))"
+
+/**
+ * The material.
+ *
+ * A frosted cell is a wash of the theme's own ink over whatever is behind it,
+ * which is the one formulation that survives both themes: 7% of near-black on
+ * paper reads as smoked glass, and 7% of near-white on charcoal reads as the
+ * same thing. A literal white would work in exactly one of them.
+ */
+const GLASS =
+  "var(--agent-hive-glass, color-mix(in oklab, var(--foreground) 7%, transparent))"
+const GLASS_EMPTY =
+  "var(--agent-hive-glass-empty, color-mix(in oklab, var(--foreground) 4%, transparent))"
 
 /** Spelled out beside the pip, so the state never rests on hue alone. */
 const RUN_LABEL: Record<AgentHiveRunState, string> = {
@@ -59,10 +72,7 @@ const RUN_LABEL: Record<AgentHiveRunState, string> = {
  * One hue per run state, taken from the component palette rather than a literal
  * colour, so a consumer can retint the whole family in `globals.css`.
  */
-const RUN_TONE: Record<
-  AgentHiveRunState,
-  { pip: string; ink: string; prompt: string }
-> = {
+const RUN_TONE: Record<AgentHiveRunState, { pip: string; ink: string; prompt: string }> = {
   queued: {
     pip: "bg-muted-foreground/40",
     ink: "text-muted-foreground",
@@ -87,23 +97,15 @@ const RUN_TONE: Record<
  */
 const HEX_RATIO = Math.sqrt(3) / 2
 const HEX_H = 100 * HEX_RATIO
-const HEX_PATH = roundedPolygon(
-  [
-    [25, 0],
-    [75, 0],
-    [100, HEX_H / 2],
-    [75, HEX_H],
-    [25, HEX_H],
-    [0, HEX_H / 2],
-  ],
-  12
-)
+/** Corner radius as a fraction of the width, shared by the outline and the clip. */
+const HEX_ROUND = 0.12
 
 /**
  * Geometry is carried in pixels, not in classes, because the comb positions
- * every cell itself — the width of the frame, the offset of a short row and the
- * lane the plumb line travels along are all arithmetic on the cell size, and
- * none of it survives being expressed as a utility.
+ * every cell itself — the width of the frame, the offset of a short row, the
+ * lane the plumb line travels along and the `clip-path` that cuts the glass are
+ * all arithmetic on the cell size, and none of it survives being expressed as a
+ * utility.
  */
 const SIZES = {
   sm: {
@@ -114,6 +116,7 @@ const SIZES = {
     gapY: 2.5,
     line: 26,
     pip: 11,
+    blur: 4,
     glyph: "size-4",
     action: "h-9 px-6 text-[0.8125rem]",
     name: "text-[0.8125rem]",
@@ -129,6 +132,7 @@ const SIZES = {
     gapY: 3,
     line: 32,
     pip: 13,
+    blur: 6,
     glyph: "size-5",
     action: "h-10 px-7 text-sm",
     name: "text-sm",
@@ -143,7 +147,7 @@ const DEFAULT_COMB = [3, 4, 3]
 
 const SPRING = { type: "spring", stiffness: 380, damping: 30, mass: 0.7 } as const
 /**
- * The fill crossing the comb. Slower than a press on purpose: at spring speed
+ * The tile crossing the comb. Slower than a press on purpose: at spring speed
  * the shape arrives before the eye has found it, and the move has to be legible
  * as a move — it is the only thing telling you where the selection went.
  */
@@ -152,10 +156,12 @@ const TRAVEL = { type: "spring", stiffness: 210, damping: 24, mass: 0.9 } as con
 const PLUMB = { type: "spring", stiffness: 150, damping: 16, mass: 0.9 } as const
 const EASE = [0.22, 1, 0.36, 1] as const
 
-export interface AgentHiveProps extends Omit<
-  React.ComponentPropsWithoutRef<"div">,
-  "children" | "defaultValue"
-> {
+/** Velocity, in px/s, at which the tile reaches its full stretch. */
+const LIQUID_AT = 1500
+const LIQUID_STRETCH = 0.16
+
+export interface AgentHiveProps
+  extends Omit<React.ComponentPropsWithoutRef<"div">, "children" | "defaultValue"> {
   /** The models to lay into the comb, from the middle outwards. */
   models: AgentHiveModel[]
   /** Controlled selection. Leave unset to let the component hold it. */
@@ -193,14 +199,14 @@ export interface AgentHiveProps extends Omit<
 /**
  * A honeycomb of models, one action, and the queue of runs it produces.
  *
- * Everything is drawn with as little ink as the state allows. Empty comb is a
- * faint fill and nothing else, a model is a hairline outline, and the selection
- * is the only solid shape on the component — one filled hexagon that slides
- * across the comb from the cell it left to the cell it was sent to, cross-fading
- * its colour on the way, with a plumb line swinging above it. There is no
- * shadow, no chip, no second border: the state is carried by fill and by
- * movement, which is also what makes it survive being dropped into a theme it
- * has never seen.
+ * The comb is glass. Every cell is a frosted hexagon with a lit top edge and a
+ * shaded bottom one, and behind them sits a soft wash of the selected model's
+ * own colour — so the light in the material belongs to the selection, and
+ * moving the selection moves the light. The selected cell is a single tinted
+ * tile that slides over the frosting rather than a state each cell paints for
+ * itself, and while it travels it stretches along its own direction of travel
+ * and settles out of it, with a plumb line swinging above. Nothing is stacked
+ * or shadowed to fake depth; the depth is the material.
  *
  * The queue is yours. `onGenerate` hands you the model that was picked and the
  * component renders whatever list you pass back, typing out the prompt of any
@@ -232,11 +238,19 @@ export function AgentHive({
   const scale = SIZES[size]
   const reduceMotion = useReducedMotion()
   const cellRefs = React.useRef<Record<string, HTMLButtonElement | null>>({})
+  /* Paint servers are referenced by id, and two hives can share a page. */
+  const uid = React.useId().replace(/[^a-zA-Z0-9]/g, "")
+  const edge = `${uid}edge`
+  const gloss = `${uid}gloss`
 
   const firstEnabled = models.find((model) => !model.disabled)
   const [internal, setInternal] = React.useState(defaultValue)
   const selectedId = value !== undefined ? value : (internal ?? firstEnabled?.id)
   const selected = models.find((model) => model.id === selectedId)
+  const accent = selected?.accent
+
+  /* Only a keyboard gets a ring, and the ring has to be drawn above the tile. */
+  const [focused, setFocused] = React.useState<string | null>(null)
 
   const select = React.useCallback(
     (id: string) => {
@@ -265,7 +279,7 @@ export function AgentHive({
       return Array.from({ length: count }, (_, col) => {
         const x = left + col * stepX
         const y = row * stepY
-        return { x, y, cx: x + cellW / 2 }
+        return { x, y, cx: x + cellW / 2, cy: y + cellH / 2 }
       })
     })
 
@@ -283,9 +297,7 @@ export function AgentHive({
     const centred = slots
       .map((slot, index) => ({
         index,
-        rank: Math.round(
-          Math.hypot(slot.cx - width / 2, slot.y + cellH / 2 - height / 2) * 100
-        ),
+        rank: Math.round(Math.hypot(slot.cx - width / 2, slot.cy - height / 2) * 100),
       }))
       .sort((a, b) => a.rank - b.rank || a.index - b.index)
       .slice(0, models.length)
@@ -301,7 +313,7 @@ export function AgentHive({
     return { cellW, cellH, width, height, slots, filled, order }
   }, [comb, models.length, scale])
 
-  /* Where the fill currently sits, and where the plumb line hangs from. */
+  /* Where the tile sits, the glow pools, and the plumb line hangs from. */
   const home = React.useMemo(() => {
     for (const [slotIndex, modelIndex] of layout.filled) {
       if (models[modelIndex]?.id === selectedId) return layout.slots[slotIndex]
@@ -312,9 +324,7 @@ export function AgentHive({
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     const walk = layout.order
       .map((modelIndex) => models[modelIndex])
-      .filter(
-        (model): model is AgentHiveModel => model !== undefined && !model.disabled
-      )
+      .filter((model): model is AgentHiveModel => model !== undefined && !model.disabled)
     if (walk.length === 0) return
 
     const at = walk.findIndex((model) => model.id === selectedId)
@@ -349,17 +359,46 @@ export function AgentHive({
       className={cn(
         "relative mx-auto flex w-full flex-col",
         scale.frame,
-        variant === "card" && cn("rounded-3xl border border-border bg-card", scale.pad),
+        variant === "card" &&
+          cn(
+            "overflow-hidden rounded-3xl border border-border bg-card",
+            /* The light catching the top edge of the panel. */
+            "before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px",
+            "before:bg-linear-to-r before:from-transparent before:via-foreground/15 before:to-transparent",
+            scale.pad
+          ),
         className
       )}
       aria-busy={running || undefined}
       {...props}
     >
+      {/*
+       * The two paint servers the material is made of, declared once. `edge` is
+       * the lens: a lit top rim and a shaded bottom one, taken from the theme's
+       * own surface colours so it reads in both. `gloss` is the reflection on
+       * the tinted tile, which is white in every theme because it is light.
+       */}
+      <svg aria-hidden="true" className="pointer-events-none absolute size-0">
+        <defs>
+          <linearGradient id={edge} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#fff" stopOpacity="0.55" />
+            <stop offset="42%" stopColor="#fff" stopOpacity="0.05" />
+            <stop offset="100%" stopColor="var(--background)" stopOpacity="0.55" />
+          </linearGradient>
+          <linearGradient id={gloss} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#fff" stopOpacity="0.5" />
+            <stop offset="45%" stopColor="#fff" stopOpacity="0.04" />
+            <stop offset="100%" stopColor="#fff" stopOpacity="0.22" />
+          </linearGradient>
+        </defs>
+      </svg>
+
       {arm ? (
         <Plumb
           width={layout.width}
           height={scale.line}
           x={home ? home.cx : layout.width / 2}
+          accent={accent}
           visible={Boolean(home)}
           still={Boolean(reduceMotion)}
         />
@@ -372,63 +411,61 @@ export function AgentHive({
         className="relative mx-auto"
         style={{ width: layout.width, height: layout.height }}
       >
-        {/* Empty comb: a fill and nothing else, so the rim reads as material. */}
-        {layout.slots.map((slot, index) =>
-          layout.filled.has(index) ? null : (
-            <div
-              key={`empty-${index}`}
-              aria-hidden="true"
-              className="absolute"
-              style={{
-                left: slot.x,
-                top: slot.y,
-                width: layout.cellW,
-                height: layout.cellH,
-              }}
-            >
-              <Hex className="fill-border/40" />
-            </div>
-          )
-        )}
-
         {/*
-         * The selection, as one shape.
-         *
-         * It is drawn once and moved, rather than faded out of one cell and into
-         * the next, which is the whole difference between a component that
-         * switches and one that travels. The fill cross-fades on the way, so a
-         * hop between two accents is a single continuous move.
+         * The light in the glass. It is the only saturated thing behind the
+         * comb, it is the selected model's own colour, and it travels with the
+         * tile — so the frosting nearest the selection lifts and the far corners
+         * of the hive stay quiet.
          */}
         <motion.div
           aria-hidden="true"
-          className="pointer-events-none absolute top-0 left-0"
-          style={{ width: layout.cellW, height: layout.cellH }}
+          className="pointer-events-none absolute transition-colors duration-500"
+          style={{
+            width: layout.cellW * 2.4,
+            height: layout.cellW * 2.4,
+            left: -layout.cellW * 1.2,
+            top: -layout.cellW * 1.2,
+            backgroundColor: accent ?? "var(--primary)",
+            maskImage: "radial-gradient(closest-side, #000, transparent)",
+            WebkitMaskImage: "radial-gradient(closest-side, #000, transparent)",
+            filter: `blur(${Math.round(scale.cell / 4)}px)`,
+          }}
           initial={false}
           animate={{
-            x: home?.x ?? 0,
-            y: home?.y ?? 0,
-            opacity: home ? 1 : 0,
-            scale: home ? 1 : 0.8,
+            x: home?.cx ?? layout.width / 2,
+            y: home?.cy ?? layout.height / 2,
+            opacity: home ? 0.42 : 0,
           }}
           transition={reduceMotion ? { duration: 0 } : TRAVEL}
-        >
-          <Hex
-            className={cn(
-              "transition-[fill] duration-300",
-              selected?.accent ? undefined : "fill-primary"
-            )}
-            style={selected?.accent ? { fill: selected.accent } : undefined}
-          />
-        </motion.div>
+        />
 
         {layout.slots.map((slot, index) => {
           const modelIndex = layout.filled.get(index)
           const model = modelIndex === undefined ? undefined : models[modelIndex]
-          if (!model) return null
+          const box = {
+            left: slot.x,
+            top: slot.y,
+            width: layout.cellW,
+            height: layout.cellH,
+          }
+
+          if (!model) {
+            return (
+              <div
+                key={`empty-${index}`}
+                aria-hidden="true"
+                className="absolute"
+                style={box}
+              >
+                <Glass width={layout.cellW} height={layout.cellH} blur={scale.blur} empty />
+                <Hex stroke={`url(#${edge})`} className="opacity-55" />
+              </div>
+            )
+          }
 
           const active = model.id === selectedId
           return (
-            <motion.button
+            <button
               key={model.id}
               ref={(node) => {
                 cellRefs.current[model.id] = node
@@ -441,66 +478,84 @@ export function AgentHive({
               /* Roving tabindex: the comb is one tab stop, the arrows move inside it. */
               tabIndex={active ? 0 : -1}
               onClick={() => select(model.id)}
+              onFocus={(event) =>
+                setFocused(event.currentTarget.matches(":focus-visible") ? model.id : null)
+              }
+              onBlur={() => setFocused(null)}
               className={cn(
-                "group absolute grid place-items-center",
-                "focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40",
+                "absolute focus-visible:outline-none",
+                "disabled:cursor-not-allowed disabled:opacity-40",
                 !disabled && !model.disabled && "cursor-pointer"
               )}
-              style={{
-                left: slot.x,
-                top: slot.y,
-                width: layout.cellW,
-                height: layout.cellH,
-              }}
-              whileTap={reduceMotion || disabled ? undefined : { scale: 0.94 }}
-              transition={SPRING}
+              style={box}
             >
-              {/*
-               * A hairline outline over nothing: the cell has to stay
-               * transparent for the travelling fill to show through it from
-               * below, which is also why the outline fades out as it arrives.
-               */}
-              <Hex
-                className={cn(
-                  "fill-none transition-[stroke] duration-300",
-                  active
-                    ? "stroke-transparent"
-                    : "stroke-border-hover group-hover:stroke-border-strong"
-                )}
-              />
-              {/* A hex-shaped focus ring — an outline would draw the box instead. */}
-              <Hex
-                className="fill-none stroke-ring opacity-0 group-focus-visible:opacity-100"
-                strokeWidth={2}
-              />
-              <motion.span
-                aria-hidden="true"
-                className={cn(
-                  "relative grid place-items-center transition-colors duration-300 [&_svg]:size-full",
-                  scale.glyph,
-                  /*
-                   * An accent is a literal colour, so the glyph over it takes
-                   * the one overridable near-white. Without one the cell fills
-                   * with ink instead, and ink has a paired foreground — which
-                   * is the only thing that survives the dark theme, where the
-                   * ink is the light end of the ramp.
-                   */
-                  !model.accent &&
-                    (active ? "text-primary-foreground" : "text-muted-foreground")
-                )}
-                style={
-                  model.accent
-                    ? { color: active ? ON_ACCENT : model.accent }
-                    : undefined
-                }
-                animate={{ scale: active ? 1.08 : 1 }}
-                transition={reduceMotion ? { duration: 0 } : SPRING}
-              >
-                {model.icon}
-              </motion.span>
-            </motion.button>
+              <Glass width={layout.cellW} height={layout.cellH} blur={scale.blur} />
+              <Hex stroke={`url(#${edge})`} />
+            </button>
           )
         })}
+
+        {/* The selection: one tinted tile, over the frosting rather than in it. */}
+        <Tile
+          home={home}
+          width={layout.cellW}
+          height={layout.cellH}
+          accent={accent}
+          gloss={gloss}
+          still={Boolean(reduceMotion)}
+        />
+
+        {/*
+         * Glyphs and the focus ring ride above the tile, so the tile can pass
+         * under them without taking the drawing with it.
+         */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20">
+          {layout.slots.map((slot, index) => {
+            const modelIndex = layout.filled.get(index)
+            const model = modelIndex === undefined ? undefined : models[modelIndex]
+            if (!model) return null
+
+            const active = model.id === selectedId
+            return (
+              <span
+                key={model.id}
+                className="absolute grid place-items-center"
+                style={{
+                  left: slot.x,
+                  top: slot.y,
+                  width: layout.cellW,
+                  height: layout.cellH,
+                }}
+              >
+                {focused === model.id ? (
+                  <Hex stroke="var(--ring)" strokeWidth={2} />
+                ) : null}
+                <motion.span
+                  className={cn(
+                    "relative grid place-items-center transition-colors duration-300 [&_svg]:size-full",
+                    scale.glyph,
+                    /*
+                     * An accent is a literal colour, so the glyph over it takes
+                     * the one overridable near-white. Without one the tile is
+                     * ink instead, and ink has a paired foreground — which is
+                     * the only thing that survives the dark theme, where the ink
+                     * is the light end of the ramp.
+                     */
+                    !model.accent &&
+                      (active ? "text-primary-foreground" : "text-muted-foreground")
+                  )}
+                  style={
+                    model.accent ? { color: active ? ON_ACCENT : model.accent } : undefined
+                  }
+                  animate={{ scale: active ? 1.08 : 1 }}
+                  transition={reduceMotion ? { duration: 0 } : SPRING}
+                >
+                  {model.icon}
+                </motion.span>
+              </span>
+            )
+          })}
+        </div>
       </div>
 
       {/* The selection, in words. The comb is glyphs, and glyphs are not a label. */}
@@ -514,19 +569,17 @@ export function AgentHive({
             transition={{ duration: 0.2, ease: EASE }}
           >
             <p className={cn("font-medium text-foreground", scale.name)}>
-              {selected?.label ?? " "}
+              {selected?.label ?? " "}
             </p>
             {selected?.description ? (
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                {selected.description}
-              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{selected.description}</p>
             ) : null}
           </motion.div>
         </AnimatePresence>
       </div>
 
       <Action
-        accent={selected?.accent}
+        accent={accent}
         busy={running}
         disabled={!canGenerate}
         label={actionLabel}
@@ -560,12 +613,144 @@ export function AgentHive({
           ))}
         </AnimatePresence>
         {runs.length === 0 ? (
-          <li className="py-4 text-center text-xs text-muted-foreground">
-            {emptyLabel}
-          </li>
+          <li className="py-4 text-center text-xs text-muted-foreground">{emptyLabel}</li>
         ) : null}
       </ol>
     </div>
+  )
+}
+
+/**
+ * The frosted body of a cell.
+ *
+ * A `div` rather than the SVG, because only a real box can carry a
+ * `backdrop-filter` — and the hexagon it is cut to is the same path the outline
+ * is drawn from, resolved to this cell's pixel size, because `clip-path: path()`
+ * has no viewBox to scale it with.
+ */
+function Glass({
+  width,
+  height,
+  blur,
+  empty = false,
+}: {
+  width: number
+  height: number
+  blur: number
+  empty?: boolean
+}) {
+  const filter = `blur(${blur}px) saturate(1.6)`
+  return (
+    <span
+      aria-hidden="true"
+      className="absolute inset-0 block"
+      style={{
+        clipPath: `path("${hexPath(width, height)}")`,
+        background: empty ? GLASS_EMPTY : GLASS,
+        backdropFilter: filter,
+        WebkitBackdropFilter: filter,
+      }}
+    />
+  )
+}
+
+/**
+ * The selected cell, as one piece of tinted glass that travels.
+ *
+ * Three nested transforms, and they are the whole trick: the outer one carries
+ * the tile and turns it into the direction it is moving, the middle one
+ * stretches it along that direction and thins it across, and the inner one
+ * turns the drawing back upright. Composed, that is a stretch along the line of
+ * travel with the hexagon still level — a shape that leans into a move and
+ * settles out of it, rather than a box that slides.
+ */
+function Tile({
+  home,
+  width,
+  height,
+  accent,
+  gloss,
+  still,
+}: {
+  home?: { x: number; y: number }
+  width: number
+  height: number
+  accent?: string
+  gloss: string
+  still: boolean
+}) {
+  const targetX = useMotionValue(home?.x ?? 0)
+  const targetY = useMotionValue(home?.y ?? 0)
+  React.useEffect(() => {
+    if (!home) return
+    targetX.set(home.x)
+    targetY.set(home.y)
+  }, [home, targetX, targetY])
+
+  const x = useSpring(targetX, TRAVEL)
+  const y = useSpring(targetY, TRAVEL)
+  const velocityX = useVelocity(x)
+  const velocityY = useVelocity(y)
+
+  const speed = useTransform([velocityX, velocityY], ([vx = 0, vy = 0]: number[]) =>
+    Math.hypot(vx, vy)
+  )
+  const angle = useTransform([velocityX, velocityY], ([vx = 0, vy = 0]: number[]) =>
+    Math.hypot(vx, vy) < 1 ? 0 : (Math.atan2(vy, vx) * 180) / Math.PI
+  )
+  const counter = useTransform(angle, (value: number) => -value)
+  const stretch = useTransform(speed, [0, LIQUID_AT], [1, 1 + LIQUID_STRETCH], {
+    clamp: true,
+  })
+  const squash = useTransform(speed, [0, LIQUID_AT], [1, 1 - LIQUID_STRETCH * 0.7], {
+    clamp: true,
+  })
+
+  const clip = `path("${hexPath(width, height)}")`
+
+  return (
+    <motion.div
+      aria-hidden="true"
+      className="pointer-events-none absolute top-0 left-0 z-10"
+      style={{
+        width,
+        height,
+        x: still ? (home?.x ?? 0) : x,
+        y: still ? (home?.y ?? 0) : y,
+        rotate: still ? 0 : angle,
+      }}
+      initial={false}
+      animate={{ opacity: home ? 1 : 0, scale: home ? 1 : 0.85 }}
+      transition={still ? { duration: 0 } : TRAVEL}
+    >
+      <motion.div
+        className="size-full"
+        style={still ? undefined : { scaleX: stretch, scaleY: squash }}
+      >
+        <motion.div
+          className="relative size-full"
+          style={still ? undefined : { rotate: counter }}
+        >
+          <span
+            className={cn(
+              "absolute inset-0 block transition-colors duration-300",
+              accent ? undefined : "bg-primary"
+            )}
+            style={{ clipPath: clip, ...(accent ? { backgroundColor: accent } : {}) }}
+          />
+          {/* The reflection: bright across the top, gone by the waist. */}
+          <span
+            className="absolute inset-0 block"
+            style={{
+              clipPath: clip,
+              backgroundImage:
+                "linear-gradient(to bottom, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.06) 48%, rgb(255 255 255 / 0) 52%)",
+            }}
+          />
+          <Hex stroke={`url(#${gloss})`} strokeWidth={1.25} />
+        </motion.div>
+      </motion.div>
+    </motion.div>
   )
 }
 
@@ -576,18 +761,20 @@ export function AgentHive({
  * to the third row would have to cross the two rows above it — and it swings
  * while it travels. The swing is read off the line's own velocity rather than
  * scripted, so a hop to the next cell tilts it slightly and a jump across the
- * comb throws it, then it settles late, after the fill has already arrived.
+ * comb throws it, then it settles late, after the tile has already arrived.
  */
 function Plumb({
   width,
   height,
   x,
+  accent,
   visible,
   still,
 }: {
   width: number
   height: number
   x: number
+  accent?: string
   visible: boolean
   still: boolean
 }) {
@@ -617,7 +804,13 @@ function Plumb({
         transition={{ duration: 0.2, ease: EASE }}
       >
         <span className="w-px flex-1 bg-linear-to-b from-transparent to-border-strong/80" />
-        <span className="size-1.5 rounded-full bg-border-strong/80" />
+        <span
+          className={cn(
+            "size-1.5 rounded-full transition-colors duration-500",
+            accent ? undefined : "bg-border-strong"
+          )}
+          style={accent ? { backgroundColor: accent } : undefined}
+        />
       </motion.div>
     </div>
   )
@@ -627,7 +820,7 @@ function Plumb({
  * The action.
  *
  * Nothing surrounds it at rest. While the queue is working, a ring leaves the
- * pill every couple of seconds and fades out — one moving thing, tied to one
+ * capsule every couple of seconds and fades out — one moving thing, tied to one
  * piece of state, that stops the moment the state does.
  */
 function Action({
@@ -676,8 +869,9 @@ function Action({
         disabled={disabled}
         onClick={onPress}
         className={cn(
-          "relative inline-flex items-center justify-center rounded-full font-medium",
+          "relative inline-flex items-center justify-center overflow-hidden rounded-full font-medium",
           "transition-[background-color,opacity] duration-300",
+          "shadow-[inset_0_1px_0_rgb(255_255_255/0.35)]",
           "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
           "disabled:cursor-not-allowed disabled:opacity-40",
           !disabled && "cursor-pointer",
@@ -689,7 +883,12 @@ function Action({
         whileTap={reduceMotion || disabled ? undefined : { scale: 0.96 }}
         transition={SPRING}
       >
-        {label}
+        {/* The same reflection the tile carries, on a capsule. */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-linear-to-b from-white/22 to-transparent"
+        />
+        <span className="relative">{label}</span>
       </motion.button>
     </div>
   )
@@ -755,12 +954,8 @@ function Row({
         />
       </span>
 
-      <span
-        className={cn("relative min-w-0 flex-1 font-mono leading-snug", scale.prompt)}
-      >
-        <span className={cn("block opacity-0 select-none", tone.prompt)}>
-          {run.prompt}
-        </span>
+      <span className={cn("relative min-w-0 flex-1 font-mono leading-snug", scale.prompt)}>
+        <span className={cn("block select-none opacity-0", tone.prompt)}>{run.prompt}</span>
         <span aria-hidden="true" className={cn("absolute inset-0 block", tone.prompt)}>
           {run.prompt.slice(0, typed)}
           {state === "working" || !done ? (
@@ -793,10 +988,7 @@ function Row({
         {run.status ?? RUN_LABEL[state]}
         <span className="relative grid size-1.5 place-items-center">
           <span
-            className={cn(
-              "size-1.5 rounded-full transition-colors duration-500",
-              tone.pip
-            )}
+            className={cn("size-1.5 rounded-full transition-colors duration-500", tone.pip)}
           />
           {state === "working" && !reduceMotion ? (
             <motion.span
@@ -811,24 +1003,35 @@ function Row({
   )
 }
 
-/** The hexagon itself, as a path rather than a `clip-path` — corners round. */
+/**
+ * The hexagon as a drawing — the outline over the glass, the miniature beside a
+ * run, and the focus ring. Unfilled unless a fill is passed, so it can sit on
+ * top of the material without hiding it.
+ */
 function Hex({
   className,
   style,
+  stroke,
   strokeWidth = 1,
 }: {
   className?: string
   style?: React.CSSProperties
+  stroke?: string
   strokeWidth?: number
 }) {
   return (
     <svg
       viewBox={`-1 -1 102 ${HEX_H + 2}`}
       aria-hidden="true"
-      className={cn("absolute inset-0 size-full", className)}
+      className={cn("absolute inset-0 size-full fill-none", className)}
       style={style}
     >
-      <path d={HEX_PATH} vectorEffect="non-scaling-stroke" strokeWidth={strokeWidth} />
+      <path
+        d={hexPath(100, HEX_H)}
+        stroke={stroke}
+        vectorEffect="non-scaling-stroke"
+        strokeWidth={strokeWidth}
+      />
     </svg>
   )
 }
@@ -887,12 +1090,37 @@ function growComb(pattern: number[], count: number): number[] {
 }
 
 /**
- * A polygon with its corners cut back and joined by a curve through the vertex.
+ * The hexagon at a given size, with its corners cut back and joined by a curve
+ * through the vertex.
  *
- * Rounding is the whole reason the hexagon is a path: `clip-path` draws the same
- * six points with knife-sharp corners, and at this size that is the difference
- * between a cell and a caltrop.
+ * Rounding is the whole reason the shape is a path: the same six points as a
+ * `polygon()` come out knife-sharp, and at this size that is the difference
+ * between a cell and a caltrop. It is generated per pixel size rather than
+ * scaled, because `clip-path: path()` takes neither a viewBox nor percentages —
+ * and cached, because ten cells ask for the same one.
  */
+const PATHS = new Map<string, string>()
+
+function hexPath(width: number, height: number): string {
+  const key = `${width}x${height}`
+  const cached = PATHS.get(key)
+  if (cached) return cached
+
+  const path = roundedPolygon(
+    [
+      [width * 0.25, 0],
+      [width * 0.75, 0],
+      [width, height / 2],
+      [width * 0.75, height],
+      [width * 0.25, height],
+      [0, height / 2],
+    ],
+    width * HEX_ROUND
+  )
+  PATHS.set(key, path)
+  return path
+}
+
 function roundedPolygon(
   points: ReadonlyArray<readonly [number, number]>,
   radius: number
