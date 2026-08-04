@@ -632,9 +632,9 @@ export function Example() {
     slug: "agent-hive",
     title: "Agent Hive",
     description:
-      "A honeycomb of models with a marker hanging over the selected cell, one action, and the queue of runs it dispatches.",
+      "A honeycomb of models with one filled cell that travels to your choice, an action, and the queue of runs it dispatches.",
     overview:
-      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. The comb is a radio group wearing a shape — models fill it from the middle outwards, so four of them sit in the centre of a ten-cell hive and the leftovers stay as empty comb around the rim, and a marker hangs above the selection and slides along the lane as it moves. The action below inherits the selected model's accent, and its halo breathes for exactly as long as something is running and stops on its own when the queue does. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone. Nothing about the shape is hardcoded — comb takes the row widths, and a hive that runs out of cells grows by the same alternating pattern rather than breaking the honeycomb.",
+      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. It is drawn with as little ink as the state allows — empty comb is a faint fill, a model is a hairline outline, and the selection is the only solid shape on the component. That shape is not redrawn when you pick something else, it is moved: one filled hexagon slides across the comb from the cell it left to the cell it was sent to, cross-fading its colour on the way, with a plumb line swinging above it on the velocity of its own travel. The comb underneath is a radio group wearing a shape, filled from the middle outwards, so four models sit in the centre of a ten-cell hive and the leftovers stay as comb around the rim. Below it, the action takes the selected model's accent and pushes a ring out every couple of seconds for exactly as long as something is running. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone. Nothing about the shape is hardcoded — comb takes the row widths, and a hive that runs out of cells grows by the same alternating pattern rather than breaking the honeycomb.",
     category: "Data Display",
     tags: [
       "ai",
@@ -653,13 +653,14 @@ export function Example() {
     files: [uiFile("agent-hive")],
     accessibility: [
       'The comb is a real radio group: `role="radiogroup"` on the frame, `role="radio"` with `aria-checked` on every occupied cell, and a roving tabindex — so a nine-model hive costs one tab stop and the arrows move inside it.',
-      "Cells are glyph-only, so each carries its model name as `aria-label`, and the name is also printed under the comb where a sighted user can read it. The marker is decoration on top of that, never the only cue.",
-      "Empty comb is `aria-hidden` and non-interactive; it is scenery, and it is not announced or focusable.",
+      "Cells are glyph-only, so each carries its model name as `aria-label`, and the name is also printed under the comb where a sighted user can read it. The plumb line and the fill are decoration on top of that, never the only cue.",
+      "Empty comb, the travelling fill and the plumb line are all `aria-hidden` and non-interactive; they are scenery, and they are not announced or focusable.",
       "The focus ring is drawn as a hexagon rather than left as the default outline, which would trace the cell's bounding box instead of the cell.",
-      "Run states never rest on hue alone — every row prints its status in words next to the dot, and `status` overrides that word rather than removing it.",
+      "The selected cell is the only filled one, so the selection survives a monochrome rendering, a forced-colours mode and any accent a consumer picks — shape and fill carry it, not hue.",
+      "Run states never rest on hue alone — every row prints its status in words next to the pip, and `status` overrides that word rather than removing it.",
       'The queue is an ordered list with `aria-live="polite"`, so a run arriving or landing is announced without stealing focus.',
       "A typing row renders its prompt twice: the full text, invisible but in the accessibility tree, under the prefix typed so far, which is `aria-hidden`. Assistive technology reads the whole line at once instead of a character at a time, and the row reserves its final height so nothing below it reflows while it types.",
-      "The only continuous motion is the halo and the working pip, both of which stop when the queue empties; `prefers-reduced-motion` drops the typewriter, the caret blink, the halo and every spring, leaving a still component that still works.",
+      "The only continuous motion is the ring leaving the action and the pip on a working run, and both stop when the queue does; `prefers-reduced-motion` drops the typewriter, the caret blink, the ring, the swing and every spring, leaving a still component that still works.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
     ],
     keyboard: [

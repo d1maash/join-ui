@@ -131,7 +131,7 @@
       "name": "agent-hive",
       "type": "registry:ui",
       "title": "Agent Hive",
-      "description": "A honeycomb of models with a marker hanging over the selected cell, one action, and the queue of runs it dispatches.",
+      "description": "A honeycomb of models with one filled cell that travels to your choice, an action, and the queue of runs it dispatches.",
       "author": "Join Way",
       "dependencies": [
         "motion"
