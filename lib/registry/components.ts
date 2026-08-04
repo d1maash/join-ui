@@ -757,7 +757,7 @@ export function Example() {
             type: "boolean",
             defaultValue: "true",
             description:
-              "The marker hanging over the selected cell. It tracks the cell's horizontal centre, so it can point down the corridor between two cells of the row below.",
+              "The plumb line hanging over the selected cell. It tracks the cell's horizontal centre, so it can point down the corridor between two cells of the row below, and it swings on its own travelling velocity — a hop to the next cell tilts it, a jump across the comb throws it.",
           },
           {
             name: "maxRuns",
@@ -839,7 +839,7 @@ export function Example() {
             name: "accent",
             type: "string",
             description:
-              "Any CSS colour. Tints the cell's outline, the glyph, the action and the avatar of every run the model produces. Omit it and the component falls back to its ink tokens.",
+              "Any CSS colour. Fills the cell while the model holds the selection, tints its glyph while it does not, colours the action, and marks every run the model produced. Omit it and the component falls back to its ink tokens.",
           },
           {
             name: "disabled",
@@ -884,7 +884,7 @@ export function Example() {
             name: "modelId",
             type: "string",
             description:
-              "Ties the run to a model, which lends the row its glyph and accent. Leave it out and the row gets a plain avatar.",
+              "Ties the run to a model, which marks the row with that model's cell in miniature. Leave it out and the marker stays neutral.",
           },
         ],
       },
@@ -1006,14 +1006,13 @@ export function Example() {
 <AgentHive models={models} runs={runs} typing={false} />`,
       },
       {
-        title: "Retint the glyph and the lift",
+        title: "Retint the glyph on a filled cell",
         description:
-          "Accents are per model and can be any CSS colour, so the palette belongs to your content rather than to the component. The glyph over a filled surface is near-white by default; if your accents are pale, redeclare it once instead of threading a second colour through every model. The shadow under the selected cell is a filter rather than a box shadow — a box shadow would draw the rectangle the hexagon is cut out of.",
+          "Accents are per model and can be any CSS colour, so the palette belongs to your content rather than to the component. The glyph on the one filled cell is near-white by default; if your accents are pale, redeclare it once in CSS instead of threading a second colour through every model.",
         language: "css",
         code: `/* app/globals.css */
 :root {
   --agent-hive-glyph: oklch(0.24 0.02 60);
-  --agent-hive-lift: drop-shadow(0 8px 16px oklch(0.55 0.2 268 / 0.35));
 }`,
       },
     ],
