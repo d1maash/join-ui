@@ -124,6 +124,7 @@ const SIZES = {
     gapX: 7,
     gapY: 2.5,
     line: 26,
+    bob: 7,
     pip: 11,
     blur: 4,
     glyph: "size-[1.125rem]",
@@ -140,6 +141,7 @@ const SIZES = {
     gapX: 8,
     gapY: 3,
     line: 32,
+    bob: 8,
     pip: 13,
     blur: 6,
     glyph: "size-6",
@@ -471,6 +473,7 @@ export function AgentHive({
         <Plumb
           width={layout.width}
           height={scale.line}
+          bob={scale.bob}
           x={home ? home.cx : layout.width / 2}
           accent={accent}
           visible={Boolean(home)}
@@ -1155,6 +1158,7 @@ function Tile({
 function Plumb({
   width,
   height,
+  bob,
   x,
   accent,
   visible,
@@ -1162,6 +1166,8 @@ function Plumb({
 }: {
   width: number
   height: number
+  /** Width of the weight on the end, in pixels. */
+  bob: number
   x: number
   accent?: string
   visible: boolean
@@ -1180,26 +1186,35 @@ function Plumb({
   return (
     <div aria-hidden="true" className="relative mx-auto" style={{ width, height }}>
       <motion.div
-        className="absolute top-0 flex w-3 flex-col items-center"
+        /*
+         * Thread and weight are one object, so they are one colour: the wrapper
+         * holds it and both children take `currentColor`. A grey line under a
+         * tinted bead reads as two things that happen to be touching, and no
+         * amount of drawing the bead better fixes that.
+         */
+        className="absolute top-0 flex flex-col items-center transition-colors duration-500"
         style={{
           height,
-          left: -6,
+          width: bob * 2,
+          left: -bob,
+          color: accent ?? "var(--border-strong)",
           transformOrigin: "top center",
           x: still ? x : travel,
           rotate: still ? 0 : swing,
         }}
         initial={false}
         animate={{ opacity: visible ? 1 : 0 }}
-        transition={{ duration: 0.2, ease: EASE }}
+        transition={{ duration: 0.24, ease: EASE }}
       >
-        <span className="w-px flex-1 bg-linear-to-b from-transparent to-border-strong/80" />
+        {/* Fading in from nothing, so the thread has no cut end at the top. */}
+        <span className="w-px flex-1 bg-linear-to-b from-transparent to-current opacity-70" />
+        {/* The weight is a cell of the comb, at a fiftieth of the area. */}
         <span
-          className={cn(
-            "size-1.5 rounded-full transition-colors duration-500",
-            accent ? undefined : "bg-border-strong"
-          )}
-          style={accent ? { backgroundColor: accent } : undefined}
-        />
+          className="relative block shrink-0"
+          style={{ width: bob, height: bob * HEX_RATIO }}
+        >
+          <Hex className="fill-current" />
+        </span>
       </motion.div>
     </div>
   )
