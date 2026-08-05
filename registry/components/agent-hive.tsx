@@ -690,12 +690,13 @@ export function AgentHive({
         )}
       >
         <AnimatePresence initial={false}>
-          {visible.map((run) => (
+          {visible.map((run, index) => (
             <Row
               key={run.id}
               run={run}
               accent={models.find((model) => model.id === run.modelId)?.accent}
               fresh={!history.has(run.id)}
+              newest={index === 0}
               typing={typing && !reduceMotion}
               typeSpeed={typeSpeed}
               reduceMotion={Boolean(reduceMotion)}
@@ -1327,6 +1328,7 @@ function Row({
   run,
   accent,
   fresh,
+  newest,
   typing,
   typeSpeed,
   reduceMotion,
@@ -1335,6 +1337,8 @@ function Row({
   run: AgentHiveRun
   accent?: string
   fresh: boolean
+  /** Top of the queue. Only this row is still being written.  */
+  newest: boolean
   typing: boolean
   typeSpeed: number
   reduceMotion: boolean
@@ -1343,8 +1347,15 @@ function Row({
   const state = run.state ?? "queued"
   const tone = RUN_TONE[state]
   /* Captured at mount: a re-render must not restart, or cancel, the typing. */
-  const [types] = React.useState(fresh && typing)
-  const typed = useTypedLength(run.prompt, types, typeSpeed)
+  const [types] = React.useState(fresh && typing && newest)
+  /*
+   * Only ever the newest row. One run is being written at a time, so one line
+   * is being written at a time — and the moment another arrives this one is
+   * finished text, whether or not it had got to the end of itself. That is also
+   * what stops a row being left half-typed forever if it is scrolled out of the
+   * window, or dropped past `maxRuns`, before its last character lands.
+   */
+  const typed = useTypedLength(run.prompt, types && newest, typeSpeed)
   const done = typed >= run.prompt.length
 
   return (
@@ -1382,7 +1393,7 @@ function Row({
         </span>
         <span aria-hidden="true" className={cn("absolute inset-0 block", tone.prompt)}>
           {run.prompt.slice(0, typed)}
-          {state === "working" || !done ? (
+          {newest && (state === "working" || !done) ? (
             <motion.span
               className="ml-px inline-block h-[1.05em] w-px translate-y-[0.2em] align-baseline"
               style={{ backgroundColor: accent ?? "var(--foreground)" }}
