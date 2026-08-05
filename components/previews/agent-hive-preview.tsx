@@ -213,7 +213,7 @@ export default function AgentHivePreview() {
       <Panel
         className={ALIGNED}
         caption="Pick, then generate"
-        description="The comb is frosted glass over a wash of the selected model's colour, and one tinted tile slides between the cells — stretching along its own direction of travel, with the plumb line swinging after it. Press the action and a run drops in, types itself out and reports back."
+        description="The comb is frosted glass over a wash of the selected model's colour, and one tinted tile slides between the cells — stretching along its own direction of travel, with the marker smearing along the rail above. Press the action: a run drops in and types itself out, and the one below it is finished text the moment it does."
       >
         <AgentHive
           label="Model"
