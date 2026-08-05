@@ -35,6 +35,45 @@ function formatProps(component: ComponentMetadata): string {
     .join("\n\n")
 }
 
+/**
+ * The component's own design tokens, as CSS ready to paste.
+ *
+ * The registry item carries these so `shadcn add` can write them into the
+ * consumer's stylesheet, but an agent working from this prompt is taking the
+ * other route — it is pasting the source — and would otherwise land a component
+ * whose colours resolve to nothing. Both themes are emitted, because a
+ * component that themes purely through custom properties has no other way to
+ * cover the dark one.
+ */
+function formatTokens(component: ComponentMetadata): string | null {
+  const vars = component.cssVars
+  if (!vars) return null
+
+  const block = (selector: string, entries?: Record<string, string>) => {
+    if (!entries || Object.keys(entries).length === 0) return null
+    const body = Object.entries(entries)
+      .map(([name, value]) => `  --${name}: ${value};`)
+      .join("\n")
+    return `${selector} {\n${body}\n}`
+  }
+
+  const blocks = [
+    block("@theme inline", vars.theme),
+    block(":root,\n.light", vars.light),
+    block(".dark", vars.dark),
+  ].filter((entry): entry is string => entry !== null)
+
+  if (blocks.length === 0) return null
+
+  return `Design tokens:
+- The implementation below reads the custom properties in this block. Add any the project does not already declare to its global stylesheet, keeping both themes — the component carries no \`dark:\` variants, so the dark theme exists only here.
+- Values already present in the project win: match the names, not these numbers.
+
+\`\`\`css
+${blocks.join("\n\n")}
+\`\`\``
+}
+
 function formatKeyboard(component: ComponentMetadata): string {
   if (component.keyboard.length === 0) {
     return "- Not applicable: the component exposes no interactive controls of its own."
@@ -72,6 +111,8 @@ export function buildComponentPrompt({
     component.registryDependencies.length > 0
       ? component.registryDependencies.join(", ")
       : "none"
+
+  const tokens = formatTokens(component)
 
   const implementation = sources
     .map(
@@ -112,16 +153,18 @@ ${formatProps(component)}
 
 Accessibility requirements:
 ${bullets(component.accessibility)}
+${tokens ? `\n${tokens}\n` : ""}
 
 Keyboard interactions:
 ${formatKeyboard(component)}
 
 Animation requirements:
 - Reach for transform and opacity first: they are the two the compositor carries on its own, and they are what most of the motion below is built from.
-- Where the implementation animates something costlier than those — a filter, a shadow — it is deliberate, bounded, and usually behind a prop that turns it off. Keep both the effect and the escape hatch rather than optimising the effect away.
-- Add no motion of your own. Nothing may animate on mount, and nothing may loop at rest unless the implementation below already does.
+- Where the implementation animates something costlier than those — a filter, a backdrop filter, a shadow — it is deliberate, bounded, and usually behind a prop or a token that turns it off. Keep both the effect and the escape hatch rather than optimising the effect away.
+- Add no motion of your own, and take none away. Mount animations, loops at rest, hover responses and springs belong in the result exactly where the implementation below has them — copy what is there rather than deciding for yourself which of them a component of this kind ought to have.
+- Where motion is derived from a shared value — one spring read by several elements, a velocity several transforms are computed from — keep it shared. Recreating it per element is not equivalent: independent springs with identical settings still drift apart by a frame, which is visible.
 - Pause or skip animation when the element is outside the viewport where the implementation already does so.
-- Every animation must degrade to a static, fully functional state under reduced motion.
+- Every animation must degrade to a static, fully functional state under reduced motion, and it must do so the way the implementation does it — by not starting the animation rather than by shortening its duration.
 
 Integration notes:
 - Category: ${component.category}
