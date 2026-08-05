@@ -634,7 +634,7 @@ export function Example() {
     description:
       "A honeycomb of frosted glass with one tinted tile that travels to whatever you pick, an action, and the queue of runs it dispatches.",
     overview:
-      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. The comb is glass. Every cell is a frosted hexagon with a lit top edge and a shaded bottom one, and behind them sits a soft wash of the selected model's own colour — so the light in the material belongs to the selection, and moving the selection moves the light. The selected cell is not a state each cell paints for itself but a single tinted tile that slides over the frosting, stretching along its own direction of travel and settling out of it, with a plumb line swinging above. The comb underneath is a radio group wearing a shape, filled from the middle outwards, so four models sit in the centre of a ten-cell hive and the leftovers stay as comb around the rim. Below it the action takes the selected accent and pushes a ring out every couple of seconds for exactly as long as something is running. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone.",
+      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. The comb is glass — frosted hexagons with a lit top edge and a shaded bottom one, over a wash of the selected model's own colour that is masked to the cells, so the light lives inside the material rather than behind it. The selection is not a state each cell paints for itself but a single tinted tile that travels: it stretches along its own direction of movement, its reflection slides to the trailing edge, the cells it passes are shoved aside and drawn back a beat later, and a plumb line swings after it. Every one of those is driven off one shared spring, so nothing lags the shape making it. The comb assembles from the middle outwards on mount, a cell thickens and lifts under the cursor, and the light swells while work is in flight. Below it the action takes the selected accent and pushes a ring out for as long as something is running. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone.",
     category: "Data Display",
     tags: [
       "ai",
@@ -661,7 +661,8 @@ export function Example() {
       "Run states never rest on hue alone — every row prints its status in words next to the pip, and `status` overrides that word rather than removing it.",
       'The queue is an ordered list with `aria-live="polite"`, so a run arriving or landing is announced without stealing focus.',
       "A typing row renders its prompt twice: the full text, invisible but in the accessibility tree, under the prefix typed so far, which is `aria-hidden`. Assistive technology reads the whole line at once instead of a character at a time, and the row reserves its final height so nothing below it reflows while it types.",
-      "The only continuous motion is the ring leaving the action and the pip on a working run, and both stop when the queue does; `prefers-reduced-motion` drops the typewriter, the caret blink, the ring, the swing and every spring, leaving a still component that still works.",
+      "The only continuous motion is the ring leaving the action, the pip on a working run and the swell in the light behind the comb — all three tied to the queue, and all three stopping when it does.",
+      "`prefers-reduced-motion` is honoured structurally rather than by shortening durations: the mount wave, the typewriter, the caret, the ring, the swing, the wake and every spring are not started at all, and the tile is positioned rather than animated. What is left is a still component that still works.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
     ],
     keyboard: [
@@ -1016,15 +1017,26 @@ export function Example() {
 <AgentHive models={models} runs={runs} typing={false} />`,
       },
       {
+        title: "Slow the whole thing down, or take the motion out",
+        description:
+          "The comb answers a pointer, a press and the tile going past it, and all three are gestures rather than decorations — so the component never moves on its own except while the queue is working. If a hive sits somewhere the motion would compete with the page, `arm={false}` drops the plumb line and the busy states carry on regardless; anyone who has asked their system for reduced motion already gets a still drawing without you doing anything.",
+        code: `{/* No plumb line, and a comb that only moves when it is touched. */}
+<AgentHive models={models} arm={false} runs={runs} />
+
+{/* The busy signal, driven by you rather than read off the queue. */}
+<AgentHive models={models} busy={isDispatching} runs={runs} />`,
+      },
+      {
         title: "Tune the material",
         description:
           "The glass is four numbers, and all four are custom properties rather than props, because they are a decision about the surface the component was installed onto rather than about any one hive. The frosting is a wash of the theme's own ink, which is what lets a single value serve both themes; the glow is the one exception, since the same 45% that reads as light on paper reads as a whisper on charcoal, so a product that lives in one theme should say so. The glyph on the tinted tile is near-white by default — if your accents are pale, redeclare it once instead of threading a second colour through every model.",
         language: "css",
         code: `/* app/globals.css */
 :root {
-  /* The frosting, and the emptier frosting of a cell with no model in it. */
+  /* The frosting: at rest, empty, and under the cursor. */
   --agent-hive-glass: color-mix(in oklab, var(--foreground) 7%, transparent);
   --agent-hive-glass-empty: color-mix(in oklab, var(--foreground) 4%, transparent);
+  --agent-hive-glass-lit: color-mix(in oklab, var(--foreground) 11%, transparent);
   /* How brightly the selected accent lights the comb from behind. */
   --agent-hive-glow: 0.45;
   /* The glyph on the tinted tile. */
