@@ -123,8 +123,8 @@ const SIZES = {
     cell: 50,
     gapX: 7,
     gapY: 2.5,
-    line: 26,
-    bob: 7,
+    line: 18,
+    marker: 16,
     pip: 11,
     blur: 4,
     glyph: "size-[1.125rem]",
@@ -140,8 +140,8 @@ const SIZES = {
     cell: 62,
     gapX: 8,
     gapY: 3,
-    line: 32,
-    bob: 8,
+    line: 22,
+    marker: 20,
     pip: 13,
     blur: 6,
     glyph: "size-6",
@@ -166,8 +166,6 @@ const SPRING = { type: "spring", stiffness: 380, damping: 30, mass: 0.7 } as con
  * stopping dead, which is the difference between glass and a sliding box.
  */
 const TRAVEL = { type: "spring", stiffness: 190, damping: 22, mass: 1 } as const
-/** Looser again, and underdamped — this one is a weight on a thread. */
-const PLUMB = { type: "spring", stiffness: 150, damping: 16, mass: 0.9 } as const
 /** The wake settling back. Slower than the tile, so the comb closes behind it. */
 const WAKE = { type: "spring", stiffness: 160, damping: 20, mass: 1 } as const
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -189,6 +187,10 @@ const LIQUID_STRETCH = 0.16
 const WAKE_PUSH = 5
 const WAKE_REACH = 1.9
 const WAKE_SQUASH = 0.06
+
+/** How far the rail marker smears at full speed, and how thick it is at rest. */
+const RAIL_STRETCH = 0.85
+const RAIL_THICK = 3
 
 /** Seconds between one ring of the comb settling in and the next. */
 const MOUNT_STEP = 0.045
@@ -215,8 +217,8 @@ export interface AgentHiveProps extends Omit<
   /** Widths of the comb's rows. Grown automatically when the models overflow. */
   comb?: number[]
   size?: "sm" | "md"
-  /** The plumb line that hangs over the selected cell. */
-  arm?: boolean
+  /** The rail above the comb, and the marker riding it. */
+  rail?: boolean
   /** Rows drawn before the queue fades out. */
   maxRuns?: number
   /** Type each arriving run out a character at a time. */
@@ -260,7 +262,7 @@ export function AgentHive({
   disabled = false,
   comb = DEFAULT_COMB,
   size = "md",
-  arm = true,
+  rail = true,
   maxRuns = 3,
   typing = true,
   typeSpeed = 26,
@@ -380,7 +382,7 @@ export function AgentHive({
    * optimisation — four springs with identical settings would still drift apart
    * by a frame, and a wake that lags the shape making it is just a wobble.
    */
-  const travel = useTravel(home)
+  const travel = useTravel(home, Boolean(reduceMotion))
 
   /* When the cell the tile lands in settles, so the tile is not there first. */
   const homeDelay = React.useMemo(() => {
@@ -469,12 +471,12 @@ export function AgentHive({
         </defs>
       </svg>
 
-      {arm ? (
-        <Plumb
+      {rail ? (
+        <Rail
           width={layout.width}
           height={scale.line}
-          bob={scale.bob}
-          x={home ? home.cx : layout.width / 2}
+          marker={scale.marker}
+          travel={travel}
           accent={accent}
           visible={Boolean(home)}
           still={Boolean(reduceMotion)}
@@ -723,13 +725,19 @@ export function AgentHive({
 interface Travel {
   x: MotionValue<number>
   y: MotionValue<number>
+  /** Signed, and horizontal only — the rail moves on one axis. */
+  velocityX: MotionValue<number>
   speed: MotionValue<number>
   angle: MotionValue<number>
 }
 
-function useTravel(home?: { cx: number; cy: number }): Travel {
+function useTravel(
+  home: { cx: number; cy: number } | undefined,
+  still: boolean
+): Travel {
   const targetX = useMotionValue(home?.cx ?? 0)
   const targetY = useMotionValue(home?.cy ?? 0)
+  const zero = useMotionValue(0)
 
   React.useEffect(() => {
     if (!home) return
@@ -737,10 +745,10 @@ function useTravel(home?: { cx: number; cy: number }): Travel {
     targetY.set(home.cy)
   }, [home, targetX, targetY])
 
-  const x = useSpring(targetX, TRAVEL)
-  const y = useSpring(targetY, TRAVEL)
-  const velocityX = useVelocity(x)
-  const velocityY = useVelocity(y)
+  const springX = useSpring(targetX, TRAVEL)
+  const springY = useSpring(targetY, TRAVEL)
+  const velocityX = useVelocity(springX)
+  const velocityY = useVelocity(springY)
 
   const speed = useTransform([velocityX, velocityY], ([vx = 0, vy = 0]: number[]) =>
     Math.hypot(vx, vy)
@@ -750,7 +758,18 @@ function useTravel(home?: { cx: number; cy: number }): Travel {
     Math.hypot(vx, vy) < 1 ? 0 : (Math.atan2(vy, vx) * 180) / Math.PI
   )
 
-  return { x, y, speed, angle }
+  /*
+   * Reduced motion is answered here rather than at each of the six places that
+   * read this, which is both less code and less to get wrong: the targets are
+   * handed back unsprung, so positions are still correct and simply arrive at
+   * once, and every velocity is a constant zero, so the stretch, the swing, the
+   * wake and the smear all evaluate to their resting values without a single
+   * conditional downstream.
+   */
+  if (still) {
+    return { x: targetX, y: targetY, velocityX: zero, speed: zero, angle: zero }
+  }
+  return { x: springX, y: springY, velocityX, speed, angle }
 }
 
 /**
@@ -1076,7 +1095,11 @@ function Tile({
   mountDelay: number
   still: boolean
 }) {
-  /* The journey is measured centre to centre; only the tile has a corner. */
+  /*
+   * The journey is measured centre to centre; only the tile has a corner. Every
+   * transform below is an identity when the travel is still, so none of them
+   * needs to ask whether it is.
+   */
   const x = useTransform(travel.x, (value) => value - width / 2)
   const y = useTransform(travel.y, (value) => value - height / 2)
   const counter = useTransform(travel.angle, (value) => -value)
@@ -1104,23 +1127,17 @@ function Tile({
       style={{
         width,
         height,
-        x: still ? undefined : x,
-        y: still ? undefined : y,
-        rotate: still ? 0 : travel.angle,
+        x,
+        y,
+        rotate: travel.angle,
       }}
       /* Arrives with the ring of comb it lands in, not before it. */
       initial={still ? false : { opacity: 0, scale: 0.8 }}
       animate={{ opacity: visible ? 1 : 0, scale: visible ? 1 : 0.85 }}
       transition={still ? { duration: 0 } : { ...TRAVEL, delay: mountDelay }}
     >
-      <motion.div
-        className="size-full"
-        style={still ? undefined : { scaleX: stretch, scaleY: squash }}
-      >
-        <motion.div
-          className="relative size-full"
-          style={still ? undefined : { rotate: counter }}
-        >
+      <motion.div className="size-full" style={{ scaleX: stretch, scaleY: squash }}>
+        <motion.div className="relative size-full" style={{ rotate: counter }}>
           <span
             className={cn(
               "absolute inset-0 block transition-colors duration-300",
@@ -1135,8 +1152,8 @@ function Tile({
               clipPath: clip,
               backgroundImage:
                 "linear-gradient(to bottom, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.06) 48%, rgb(255 255 255 / 0) 52%)",
-              backgroundSize: still ? undefined : "100% 200%",
-              backgroundPositionY: still ? undefined : sheenPosition,
+              backgroundSize: "100% 200%",
+              backgroundPositionY: sheenPosition,
             }}
           />
           <Hex stroke={`url(#${gloss})`} strokeWidth={1.25} />
@@ -1147,74 +1164,73 @@ function Tile({
 }
 
 /**
- * The plumb line over the selected cell.
+ * The index above the comb.
  *
- * It tracks the cell's horizontal centre and nothing else — a cable drawn down
- * to the third row would have to cross the two rows above it — and it swings
- * while it travels. The swing is read off the line's own velocity rather than
- * scripted, so a hop to the next cell tilts it slightly and a jump across the
- * comb throws it, then it settles late, after the tile has already arrived.
+ * A rail fixed at both ends with a marker riding it, which is a different claim
+ * from the one a hanging pointer makes: a plumb line is an object suspended in
+ * space, and it has to be believed as one — it needs a thickness, a weight and
+ * somewhere to hang from, and above a flat comb there is nowhere. A rail is an
+ * axis, the marker is a reading on it, and neither has to be believed as a
+ * physical thing at all.
+ *
+ * The marker smears along the rail as it travels — the same trick as the tile,
+ * off the same shared spring, but keyed to horizontal velocity alone, because a
+ * hop between two cells in the same column moves it nowhere and should not
+ * stretch it.
  */
-function Plumb({
+function Rail({
   width,
   height,
-  bob,
-  x,
+  marker,
+  travel,
   accent,
   visible,
   still,
 }: {
   width: number
   height: number
-  /** Width of the weight on the end, in pixels. */
-  bob: number
-  x: number
+  /** Length of the marker at rest, in pixels. */
+  marker: number
+  travel: Travel
   accent?: string
   visible: boolean
   still: boolean
 }) {
-  const target = useMotionValue(x)
-  React.useEffect(() => {
-    target.set(x)
-  }, [target, x])
-
-  const travel = useSpring(target, PLUMB)
-  const velocity = useVelocity(travel)
-  const tilt = useTransform(velocity, [-900, 900], [14, -14])
-  const swing = useSpring(tilt, { stiffness: 130, damping: 14, mass: 0.6 })
+  const x = useTransform(travel.x, (value) => value - marker / 2)
+  const stretch = useTransform(
+    travel.velocityX,
+    (value) => 1 + Math.min(1, Math.abs(value) / LIQUID_AT) * RAIL_STRETCH
+  )
+  /* The rail lights up under the marker, and further out the faster it goes. */
+  const spill = useTransform(
+    travel.velocityX,
+    (value) => 0.22 + Math.min(1, Math.abs(value) / LIQUID_AT) * 0.3
+  )
 
   return (
     <div aria-hidden="true" className="relative mx-auto" style={{ width, height }}>
+      {/* Fixed at both ends, and fading into them so it has no cut edge. */}
+      <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-linear-to-r from-transparent via-border-strong/40 to-transparent" />
+
       <motion.div
-        /*
-         * Thread and weight are one object, so they are one colour: the wrapper
-         * holds it and both children take `currentColor`. A grey line under a
-         * tinted bead reads as two things that happen to be touching, and no
-         * amount of drawing the bead better fixes that.
-         */
-        className="absolute top-0 flex flex-col items-center transition-colors duration-500"
+        className="absolute top-1/2 transition-colors duration-500"
         style={{
-          height,
-          width: bob * 2,
-          left: -bob,
+          width: marker,
+          height: RAIL_THICK,
+          marginTop: -RAIL_THICK / 2,
           color: accent ?? "var(--border-strong)",
-          transformOrigin: "top center",
-          x: still ? x : travel,
-          rotate: still ? 0 : swing,
+          x,
+          scaleX: stretch,
         }}
         initial={false}
         animate={{ opacity: visible ? 1 : 0 }}
         transition={{ duration: 0.24, ease: EASE }}
       >
-        {/* Fading in from nothing, so the thread has no cut end at the top. */}
-        <span className="w-px flex-1 bg-linear-to-b from-transparent to-current opacity-70" />
-        {/* The weight is a cell of the comb, at a fiftieth of the area. */}
-        <span
-          className="relative block shrink-0"
-          style={{ width: bob, height: bob * HEX_RATIO }}
-        >
-          <Hex className="fill-current" />
-        </span>
+        <motion.span
+          className="absolute -inset-x-2 -inset-y-1.5 rounded-full bg-current blur-[5px]"
+          style={{ opacity: still ? 0.22 : spill }}
+        />
+        <span className="absolute inset-0 rounded-full bg-current" />
       </motion.div>
     </div>
   )
