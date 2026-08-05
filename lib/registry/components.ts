@@ -634,7 +634,7 @@ export function Example() {
     description:
       "A honeycomb of frosted glass with one tinted tile that travels to whatever you pick, an action, and the queue of runs it dispatches.",
     overview:
-      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. The comb is glass — frosted hexagons with a lit top edge and a shaded bottom one, over a wash of the selected model's own colour that is masked to the cells, so the light lives inside the material rather than behind it. The selection is not a state each cell paints for itself but a single tinted tile that travels: it stretches along its own direction of movement, its reflection slides to the trailing edge, the cells it passes are shoved aside and drawn back a beat later, and a plumb line swings after it. Every one of those is driven off one shared spring, so nothing lags the shape making it. The comb assembles from the middle outwards on mount, a cell thickens and lifts under the cursor, and the light swells while work is in flight. Below it the action takes the selected accent and pushes a ring out for as long as something is running. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone.",
+      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. The comb is glass — frosted hexagons with a lit top edge and a shaded bottom one, over a wash of the selected model's own colour that is masked to the cells, so the light lives inside the material rather than behind it. The selection is not a state each cell paints for itself but a single tinted tile that travels: it stretches along its own direction of movement, its reflection slides to the trailing edge, the cells it passes are shoved aside and drawn back a beat later, and a marker smears along a rail above the comb to keep the reading. Everything is driven off one shared spring, so nothing lags the shape making it. The comb assembles from the middle outwards on mount, a cell thickens and lifts under the cursor, and the light swells while work is in flight. Below it the action takes the selected accent and pushes a ring out for as long as something is running. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone.",
     category: "Data Display",
     tags: [
       "ai",
@@ -653,8 +653,8 @@ export function Example() {
     files: [uiFile("agent-hive")],
     accessibility: [
       'The comb is a real radio group: `role="radiogroup"` on the frame, `role="radio"` with `aria-checked` on every occupied cell, and a roving tabindex — so a nine-model hive costs one tab stop and the arrows move inside it.',
-      "Cells are glyph-only, so each carries its model name as `aria-label`, and the name is also printed under the comb where a sighted user can read it. The plumb line and the fill are decoration on top of that, never the only cue.",
-      "Empty comb, the travelling fill and the plumb line are all `aria-hidden` and non-interactive; they are scenery, and they are not announced or focusable.",
+      "Cells are glyph-only, so each carries its model name as `aria-label`, and the name is also printed under the comb where a sighted user can read it. The rail and the fill are decoration on top of that, never the only cue.",
+      "Empty comb, the travelling tile and the rail are all `aria-hidden` and non-interactive; they are scenery, and they are not announced or focusable.",
       "The focus ring is drawn as a hexagon rather than left as the default outline, which would trace the cell's bounding box instead of the cell.",
       "The selected cell is the only filled one, so the selection survives a monochrome rendering, a forced-colours mode and any accent a consumer picks — fill and position carry it, not hue and not translucency.",
       "The material is decoration and degrades to a flat tint: a browser without `backdrop-filter` still gets a frosted wash, a lit edge and the tinted tile, because none of the three depends on the blur.",
@@ -662,7 +662,7 @@ export function Example() {
       'The queue is an ordered list with `aria-live="polite"`, so a run arriving or landing is announced without stealing focus.',
       "A typing row renders its prompt twice: the full text, invisible but in the accessibility tree, under the prefix typed so far, which is `aria-hidden`. Assistive technology reads the whole line at once instead of a character at a time, and the row reserves its final height so nothing below it reflows while it types.",
       "The only continuous motion is the ring leaving the action, the pip on a working run and the swell in the light behind the comb — all three tied to the queue, and all three stopping when it does.",
-      "`prefers-reduced-motion` is honoured structurally rather than by shortening durations: the mount wave, the typewriter, the caret, the ring, the swing, the wake and every spring are not started at all, and the tile is positioned rather than animated. What is left is a still component that still works.",
+      "`prefers-reduced-motion` is honoured structurally rather than by shortening durations: the mount wave, the typewriter, the caret, the ring, the smear, the wake and every spring are not started at all, and the tile and the marker are positioned rather than animated. What is left is a still component that still works.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
     ],
     keyboard: [
@@ -755,11 +755,11 @@ export function Example() {
             description: "Cell, action, row and type scale.",
           },
           {
-            name: "arm",
+            name: "rail",
             type: "boolean",
             defaultValue: "true",
             description:
-              "The plumb line hanging over the selected cell. It tracks the cell's horizontal centre, so it can point down the corridor between two cells of the row below, and it swings on its own travelling velocity — a hop to the next cell tilts it, a jump across the comb throws it.",
+              "The rail above the comb and the marker riding it. The marker tracks the selected cell's horizontal centre and smears along the rail as it goes, keyed to horizontal velocity alone — so a hop between two cells in the same column moves it nowhere and does not stretch it.",
           },
           {
             name: "maxRuns",
@@ -773,7 +773,7 @@ export function Example() {
             type: "boolean",
             defaultValue: "true",
             description:
-              "Type each arriving run out a character at a time. Runs present at mount are treated as history and never type.",
+              "Type the newest run out a character at a time. Only ever the newest: one run is being written at a time, so the moment another arrives the row below it is finished text. Runs present at mount are history and never type at all.",
           },
           {
             name: "typeSpeed",
@@ -1019,9 +1019,9 @@ export function Example() {
       {
         title: "Slow the whole thing down, or take the motion out",
         description:
-          "The comb answers a pointer, a press and the tile going past it, and all three are gestures rather than decorations — so the component never moves on its own except while the queue is working. If a hive sits somewhere the motion would compete with the page, `arm={false}` drops the plumb line and the busy states carry on regardless; anyone who has asked their system for reduced motion already gets a still drawing without you doing anything.",
-        code: `{/* No plumb line, and a comb that only moves when it is touched. */}
-<AgentHive models={models} arm={false} runs={runs} />
+          "The comb answers a pointer, a press and the tile going past it, and all three are gestures rather than decorations — so the component never moves on its own except while the queue is working. If a hive sits somewhere the motion would compete with the page, `rail={false}` drops the index above the comb and the busy states carry on regardless; anyone who has asked their system for reduced motion already gets a still drawing without you doing anything.",
+        code: `{/* No rail, and a comb that only moves when it is touched. */}
+<AgentHive models={models} rail={false} runs={runs} />
 
 {/* The busy signal, driven by you rather than read off the queue. */}
 <AgentHive models={models} busy={isDispatching} runs={runs} />`,
