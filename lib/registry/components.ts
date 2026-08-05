@@ -733,7 +733,7 @@ export function Example() {
             name: "busy",
             type: "boolean",
             description:
-              "Overrides the busy state, which is otherwise true whenever a run is working. Busy is what sets the halo breathing and aria-busy on the frame.",
+              "Overrides the busy state, which is otherwise true whenever a run is working. Busy is what sets the rings leaving the action, the swell in the light behind the comb, and aria-busy on the frame — so a dispatch that has not reached the queue yet can still say so.",
           },
           {
             name: "disabled",
