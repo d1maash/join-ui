@@ -29,13 +29,12 @@ export interface MastheadProps {
 /**
  * Photographic masthead.
  *
- * Everything inside the frame sits in a forced `.dark` subtree rather than in
- * hand-picked whites. The photograph is dark in both themes — see the note on
- * `.ridge` in `globals.css` — so the controls on top of it need the dark
- * theme's tokens no matter what the rest of the page resolved to, and letting
- * the variables do it means the primary button, the focus ring and the muted
- * text all stay in step with the design system instead of drifting into a
- * private set of `white/70`s.
+ * The chrome renders dark-only, so the primary button and the focus ring
+ * already resolve to something that reads on a photograph and are left on the
+ * design system's tokens. Only the pieces that sit directly on the picture —
+ * the chip, the rules, the secondary button's glass — are written as explicit
+ * whites, because those are keyed to the frame's own highlight rather than to
+ * the page, and they must not move if the chrome's ink ever does.
  */
 export function Masthead({ eyebrow, facts }: MastheadProps) {
   return (
@@ -52,16 +51,20 @@ export function Masthead({ eyebrow, facts }: MastheadProps) {
           /*
            * The frame is 16:9 and the band is wider than that at every
            * breakpoint above `sm`, so `cover` crops vertically and barely at
-           * all. Holding it a little above centre keeps the ridge line off the
-           * headline on the tall, narrow crop a phone gets.
+           * all — centred is the whole photograph.
+           *
+           * A phone crops the other way, hard, and the middle of this frame is
+           * its emptiest part: centred, the band comes out a smooth grey wash
+           * with the ridge pushed off the right edge. Sliding the window across
+           * to the high shoulder puts the silhouette and the coarse screen back
+           * on screen, which is the only reason the picture is here.
            */
-          className="object-cover object-[52%_42%] sm:object-center"
+          className="object-cover object-[72%_46%] sm:object-center"
         />
         <div className="ridge-grade absolute inset-0" />
-        <div className="ridge-veil absolute inset-0" />
       </div>
 
-      <div className="dark relative flex min-h-[34rem] flex-col justify-end sm:min-h-[38rem] lg:min-h-[min(90svh,46rem)]">
+      <div className="relative flex min-h-[34rem] flex-col justify-end sm:min-h-[38rem] lg:min-h-[min(90svh,46rem)]">
         <div className="mx-auto w-full max-w-[100rem] px-4 pt-28 pb-12 sm:px-6 lg:pt-40 lg:pb-16">
           <p className="label-micro inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-white/85 backdrop-blur-md">
             <span

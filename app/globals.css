@@ -559,12 +559,11 @@
    * of the token layer above. They describe one photograph; they are not a
    * second theme.
    *
-   * That band reads the same in both themes, which is the one decision here
-   * worth defending. A photograph is already graded, and no amount of
-   * re-declaring variables underneath it will re-light it — trying to blend
-   * the sky into warm paper in one theme and into near-black in the other
-   * gives two mediocre results instead of one good one. So the masthead is
-   * dark, always, and the page picks up its own theme again below it.
+   * The band does not follow the theme, which is the one decision here worth
+   * defending. A photograph arrives already graded and no amount of
+   * re-declaring variables underneath it will re-light it, so the masthead is
+   * fixed to the tones it was shot in — including inside the forced-light
+   * preview islands, where every other surface flips.
    */
   .ridge {
     --ridge-0: #fdfdfd; /* the lit centre of the sky */
@@ -579,14 +578,20 @@
   }
 
   /*
-   * The grade. Two passes, both of them following the photograph rather than
-   * fighting it: one down the frame, which leaves the sky roughly where it was
-   * shot and sinks the lower third into the shadow the headline sits in, and
-   * one across it, which keeps the left column quiet on wide screens where the
-   * crop otherwise pushes lit scree up behind the type.
+   * The grade. Three passes, all of them following the photograph rather than
+   * fighting it: a flat veil, because on a near-black page an unmodified misted
+   * sky is the brightest thing on screen by a wide margin and the header ends
+   * up sitting on it like a cut-out; then one down the frame, which sinks the
+   * lower third into the shadow the headline sits in; then one across it, which
+   * keeps the left column quiet on wide screens where the crop otherwise pushes
+   * lit scree up behind the type.
    */
   .ridge-grade {
     background-image:
+      linear-gradient(
+        rgb(var(--ridge-shadow) / 0.32),
+        rgb(var(--ridge-shadow) / 0.32)
+      ),
       linear-gradient(
         to bottom,
         rgb(var(--ridge-shadow) / 0.16) 0%,
@@ -601,19 +606,6 @@
         rgb(var(--ridge-shadow) / 0.3) 40%,
         rgb(var(--ridge-shadow) / 0) 72%
       );
-  }
-
-  /*
-   * On a dark page the sky would otherwise be the brightest thing on screen by
-   * a wide margin, and the header would sit on it like a cut-out. One more
-   * veil pulls it back to a luminous grey without flattening the ridge.
-   */
-  .ridge-veil {
-    background-color: rgb(var(--ridge-shadow) / 0);
-  }
-
-  .dark .ridge-veil {
-    background-color: rgb(var(--ridge-shadow) / 0.32);
   }
 
   /*
