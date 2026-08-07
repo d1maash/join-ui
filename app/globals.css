@@ -547,6 +547,116 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
   }
+
+  /*
+   * The masthead photograph — and the panel that answers it.
+   * -------------------------------------------------------------------------
+   * `--ridge-*` is sampled straight out of `public/hero-ridge.webp`: a
+   * monochrome ridge line under a misted sky, printed through a coarse
+   * halftone screen. The frame carries almost no chroma at all — mean channel
+   * spread across it is under 2/255 — so these are true greys, not the warm
+   * greige everything else is built from, and they are deliberately kept out
+   * of the token layer above. They describe one photograph; they are not a
+   * second theme.
+   *
+   * That band reads the same in both themes, which is the one decision here
+   * worth defending. A photograph is already graded, and no amount of
+   * re-declaring variables underneath it will re-light it — trying to blend
+   * the sky into warm paper in one theme and into near-black in the other
+   * gives two mediocre results instead of one good one. So the masthead is
+   * dark, always, and the page picks up its own theme again below it.
+   */
+  .ridge {
+    --ridge-0: #fdfdfd; /* the lit centre of the sky */
+    --ridge-100: #e9e9e9; /* mist */
+    --ridge-300: #a4a3a4; /* the far ridge, dissolving */
+    --ridge-500: #504f51; /* lit scree */
+    --ridge-700: #272528; /* the near slope */
+    --ridge-900: #0d0c0f; /* the shadow the type sits in */
+
+    /* `--ridge-900` as bare channels, so the grades below can vary alpha. */
+    --ridge-shadow: 13 12 15;
+  }
+
+  /*
+   * The grade. Two passes, both of them following the photograph rather than
+   * fighting it: one down the frame, which leaves the sky roughly where it was
+   * shot and sinks the lower third into the shadow the headline sits in, and
+   * one across it, which keeps the left column quiet on wide screens where the
+   * crop otherwise pushes lit scree up behind the type.
+   */
+  .ridge-grade {
+    background-image:
+      linear-gradient(
+        to bottom,
+        rgb(var(--ridge-shadow) / 0.16) 0%,
+        rgb(var(--ridge-shadow) / 0) 26%,
+        rgb(var(--ridge-shadow) / 0.5) 58%,
+        rgb(var(--ridge-shadow) / 0.86) 84%,
+        rgb(var(--ridge-shadow) / 0.96) 100%
+      ),
+      linear-gradient(
+        to right,
+        rgb(var(--ridge-shadow) / 0.62) 0%,
+        rgb(var(--ridge-shadow) / 0.3) 40%,
+        rgb(var(--ridge-shadow) / 0) 72%
+      );
+  }
+
+  /*
+   * On a dark page the sky would otherwise be the brightest thing on screen by
+   * a wide margin, and the header would sit on it like a cut-out. One more
+   * veil pulls it back to a luminous grey without flattening the ridge.
+   */
+  .ridge-veil {
+    background-color: rgb(var(--ridge-shadow) / 0);
+  }
+
+  .dark .ridge-veil {
+    background-color: rgb(var(--ridge-shadow) / 0.32);
+  }
+
+  /*
+   * A wide, weak shadow under the display type. Not a drop shadow — at this
+   * radius it never reads as an edge, it just keeps the counters open where
+   * the headline crosses from shadow onto lit rock.
+   */
+  .ridge-type {
+    text-shadow: 0 1px 44px rgb(var(--ridge-shadow) / 0.6);
+  }
+
+  /*
+   * The closing panel. No photograph — the same shadow the masthead ends on,
+   * with the sky's light coming back over the top edge, so the page shuts on
+   * the frame it opened with instead of on a second copy of the picture.
+   */
+  .ridge-panel {
+    background-color: var(--ridge-900);
+    background-image: radial-gradient(
+      120% 88% at 50% -12%,
+      rgb(253 253 253 / 0.17) 0%,
+      rgb(253 253 253 / 0.05) 34%,
+      transparent 66%
+    );
+  }
+
+  /*
+   * The halftone echo.
+   *
+   * The photograph is screened through a square cell, and drawing that same
+   * cell as a hairline grid lets the texture carry onto surfaces where there
+   * is no picture at all. It is only used where the photograph is not — over
+   * the frame itself two grids of near-enough pitch would beat against each
+   * other and moiré at half the zoom levels a reader might be at.
+   */
+  .mosaic {
+    --mosaic-cell: 13px;
+    --mosaic-line: rgb(253 253 253 / 0.055);
+    background-image:
+      linear-gradient(to right, var(--mosaic-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--mosaic-line) 1px, transparent 1px);
+    background-size: var(--mosaic-cell) var(--mosaic-cell);
+  }
 }
 
 /*
