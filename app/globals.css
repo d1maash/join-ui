@@ -632,71 +632,38 @@
   }
 
   /*
-   * The torch.
+   * The frame leans.
    *
-   * Four passes of grade are what make the type legible, and what they cost is
-   * the picture: the coarse screen the frame was printed through survives in
-   * the midtones and is crushed out of the shadow entirely. This gives it back
-   * under the pointer. A `screen` blend lifts blacks and leaves highlights
-   * almost alone, so the beam does not fog the sky — it surfaces the cell
-   * structure in the slope, which is the part of the photograph the grade
-   * takes away.
+   * The whole picture answers the pointer instead of a spot on it: move across
+   * the page and the ridge drifts against you, the way a view through a window
+   * shifts when you move your head. It is the one gesture a photograph can make
+   * that is about the photograph rather than about the cursor — nothing is lit,
+   * nothing is drawn on top, the frame is simply somewhere slightly different.
    *
-   * A lens rather than a wash — no colour of its own, just `brightness` over
-   * whatever is already there. That distinction is the whole effect: a pale
-   * radial gradient laid on top adds the same value to every pixel, which fogs
-   * the frame and reads as a smudge chasing the cursor. A gain multiplies, so
-   * it acts hardest where the frame already has light and barely at all in the
-   * shadow — which on this picture means the beam opens the mist over the
-   * shoulder and sharpens the cells along the ridge, close to what the sun
-   * behind it was doing when the frame was taken.
+   * Only the picture moves. The grade sits outside this element on purpose: it
+   * carries the gradient that keeps the nav readable at the top and the shadow
+   * the headline sits in at the bottom, and both of those are anchored to the
+   * layout, not to the photograph. Sliding them would put the whole contrast
+   * budget on a moving target.
    *
-   * Multiplying is also what makes it safe over the type. The copy and the
-   * figures are set in white at 60–75% and composite against this background,
-   * and the deep shadow they sit in has almost nothing to multiply — with the
-   * beam parked on the figures the background moves from #0f0f0f to #0e0d11
-   * and the quietest label holds 7.3:1.
-   *
-   * Fixed square moved with `translate3d`, not a gradient repositioned on a
-   * full-bleed layer: the mask travels with the box, so a frame costs a
-   * composite rather than a repaint of a 1440-wide element.
+   * The scale is the travel allowance. At 1.08 there is 4% of frame outside the
+   * band on each edge — 58px horizontally, 31px vertically at this size — which
+   * is comfortably more than the drift can spend, so no edge can ever swing
+   * into view.
    */
-  .ridge-torch {
+  .ridge-parallax {
     position: absolute;
-    top: 0;
-    left: 0;
-    height: 34rem;
-    width: 34rem;
-    margin: -17rem 0 0 -17rem;
-    opacity: 0;
-    transform: translate3d(var(--torch-x, 50%), var(--torch-y, 50%), 0);
-    -webkit-backdrop-filter: brightness(1.5) contrast(1.04);
-    backdrop-filter: brightness(1.5) contrast(1.04);
-    /*
-     * The falloff runs all the way to the edge of the box. A gain applied to a
-     * gradient as smooth as this sky will show its own boundary as a ring the
-     * moment the mask reaches zero early, and a ring is the one thing that
-     * turns a light into a decal.
-     */
-    -webkit-mask-image: radial-gradient(
-      closest-side,
-      rgb(0 0 0 / 1) 0%,
-      rgb(0 0 0 / 0.6) 30%,
-      rgb(0 0 0 / 0.2) 60%,
-      rgb(0 0 0 / 0) 100%
-    );
-    mask-image: radial-gradient(
-      closest-side,
-      rgb(0 0 0 / 1) 0%,
-      rgb(0 0 0 / 0.6) 30%,
-      rgb(0 0 0 / 0.2) 60%,
-      rgb(0 0 0 / 0) 100%
-    );
-    transition: opacity var(--duration-slow) var(--ease-out-soft);
+    inset: 0;
   }
 
-  .ridge-torch[data-lit="true"] {
-    opacity: 1;
+  /*
+   * Applied by the script rather than sitting in the base rule, so a device
+   * that never gets the effect never gets the crop either: without this the
+   * 8% enlargement would be permanent on every phone and under reduced motion,
+   * paid for by everyone and enjoyed by no one.
+   */
+  .ridge-parallax[data-drift] {
+    transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px), 0) scale(1.08);
   }
 
   /*

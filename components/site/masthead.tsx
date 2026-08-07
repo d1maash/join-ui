@@ -3,7 +3,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { MASTHEAD_ID } from "@/components/site/header-shell"
-import { RidgeTorch } from "@/components/site/ridge-torch"
+import { RidgeParallax } from "@/components/site/ridge-parallax"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -57,30 +57,32 @@ export function Masthead({ eyebrow, facts }: MastheadProps) {
       className="ridge relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden border-b border-border"
     >
       <div aria-hidden="true" className="absolute inset-0">
-        <Image
-          src="/hero-ridge.webp"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          placeholder="blur"
-          blurDataURL={RIDGE_PLACEHOLDER}
-          /*
-           * The frame is 16:9 and the band is wider than that at every
-           * breakpoint above `sm`, so `cover` crops vertically and barely at
-           * all — centred is the whole photograph.
-           *
-           * A phone crops the other way, hard, and the middle of this frame is
-           * its emptiest part: centred, the band comes out a smooth grey wash
-           * with the ridge pushed off the right edge. Sliding the window across
-           * to the high shoulder puts the silhouette and the coarse screen back
-           * on screen, which is the only reason the picture is here.
-           */
-          className="object-cover object-[72%_46%] sm:object-center"
-        />
+        <RidgeParallax>
+          <Image
+            src="/hero-ridge.webp"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            placeholder="blur"
+            blurDataURL={RIDGE_PLACEHOLDER}
+            /*
+             * The frame is 16:9 and the band is wider than that at every
+             * breakpoint above `sm`, so `cover` crops vertically and barely at
+             * all — centred is the whole photograph.
+             *
+             * A phone crops the other way, hard, and the middle of this frame
+             * is its emptiest part: centred, the band comes out a smooth grey
+             * wash with the ridge pushed off the right edge. Sliding the window
+             * across to the high shoulder puts the silhouette and the coarse
+             * screen back on screen, which is the only reason the picture is
+             * here.
+             */
+            className="object-cover object-[72%_46%] sm:object-center"
+          />
+        </RidgeParallax>
+        {/* Outside the drift: the grade is anchored to the layout, not the frame. */}
         <div className="ridge-grade absolute inset-0" />
-        {/* Sits above the grade so it lifts the graded result, not the raw file. */}
-        <RidgeTorch />
       </div>
 
       <div className="relative flex min-h-[34rem] flex-col justify-end sm:min-h-[38rem] lg:min-h-[min(90svh,46rem)]">
