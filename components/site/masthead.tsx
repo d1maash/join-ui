@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
+import { MASTHEAD_ID } from "@/components/site/header-shell"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -38,7 +39,22 @@ export interface MastheadProps {
  */
 export function Masthead({ eyebrow, facts }: MastheadProps) {
   return (
-    <section className="ridge relative isolate overflow-hidden border-b border-border">
+    /*
+     * The negative margin cancels the bar's own height so the photograph starts
+     * at the top of the document and the nav sits on the picture rather than on
+     * a strip of its own. `HeaderShell` finds this section by id and goes clear
+     * for it.
+     *
+     * `3.5rem + 1px`, not `3.5rem`: the bar is a 56px row plus a hairline it
+     * keeps in both states — transparent while clear — so that flipping to the
+     * solid background cannot shift the page by a pixel. That hairline is part
+     * of its height, and pulling up by only the row leaves a thread of page
+     * colour above the sky.
+     */
+    <section
+      id={MASTHEAD_ID}
+      className="ridge relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden border-b border-border"
+    >
       <div aria-hidden="true" className="absolute inset-0">
         <Image
           src="/hero-ridge.webp"

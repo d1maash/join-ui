@@ -578,16 +578,30 @@
   }
 
   /*
-   * The grade. Three passes, all of them following the photograph rather than
-   * fighting it: a flat veil, because on a near-black page an unmodified misted
-   * sky is the brightest thing on screen by a wide margin and the header ends
-   * up sitting on it like a cut-out; then one down the frame, which sinks the
-   * lower third into the shadow the headline sits in; then one across it, which
-   * keeps the left column quiet on wide screens where the crop otherwise pushes
-   * lit scree up behind the type.
+   * The grade. Four passes, all of them following the photograph rather than
+   * fighting it.
+   *
+   * First the head of the frame, which is the one pass that exists for a
+   * reason outside the picture: the nav bar has no surface of its own here, it
+   * sits directly on the photograph, and unlit sky behind it leaves the
+   * inactive links at about 2.9:1. Deep at the very top and gone by the time
+   * the sky has opened up, it reads as the vignette a lens would have given it
+   * anyway.
+   *
+   * Then a flat veil, because on a near-black page an ungraded misted sky is
+   * the brightest thing on screen by a wide margin; then one down the frame,
+   * which sinks the lower third into the shadow the headline sits in; then one
+   * across it, which keeps the left column quiet on wide screens where the crop
+   * otherwise pushes lit scree up behind the type.
    */
   .ridge-grade {
     background-image:
+      linear-gradient(
+        to bottom,
+        rgb(var(--ridge-shadow) / 0.86) 0,
+        rgb(var(--ridge-shadow) / 0.74) 5rem,
+        rgb(var(--ridge-shadow) / 0) 13rem
+      ),
       linear-gradient(
         rgb(var(--ridge-shadow) / 0.32),
         rgb(var(--ridge-shadow) / 0.32)
