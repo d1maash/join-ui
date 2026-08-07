@@ -643,16 +643,19 @@
    * takes away.
    *
    * A lens rather than a wash — no colour of its own, just `brightness` over
-   * whatever is already there. That distinction is the whole effect: laying a
-   * pale radial gradient on top adds the same value to every pixel, which fogs
-   * the frame and reads as a smudge following the cursor, whereas brightness
-   * multiplies, so it opens the cells of the screen and leaves true black
-   * black. The texture appears to be lit rather than painted over.
+   * whatever is already there. That distinction is the whole effect: a pale
+   * radial gradient laid on top adds the same value to every pixel, which fogs
+   * the frame and reads as a smudge chasing the cursor. A gain multiplies, so
+   * it acts hardest where the frame already has light and barely at all in the
+   * shadow — which on this picture means the beam opens the mist over the
+   * shoulder and sharpens the cells along the ridge, close to what the sun
+   * behind it was doing when the frame was taken.
    *
    * Multiplying is also what makes it safe over the type. The copy and the
    * figures are set in white at 60–75% and composite against this background,
-   * and the deep shadow they sit in has almost nothing to multiply — measured
-   * with the beam parked on it, the quietest label holds around 7:1.
+   * and the deep shadow they sit in has almost nothing to multiply — with the
+   * beam parked on the figures the background moves from #0f0f0f to #0e0d11
+   * and the quietest label holds 7.3:1.
    *
    * Fixed square moved with `translate3d`, not a gradient repositioned on a
    * full-bleed layer: the mask travels with the box, so a frame costs a
@@ -667,19 +670,27 @@
     margin: -17rem 0 0 -17rem;
     opacity: 0;
     transform: translate3d(var(--torch-x, 50%), var(--torch-y, 50%), 0);
-    -webkit-backdrop-filter: brightness(1.7) contrast(1.06);
-    backdrop-filter: brightness(1.7) contrast(1.06);
+    -webkit-backdrop-filter: brightness(1.5) contrast(1.04);
+    backdrop-filter: brightness(1.5) contrast(1.04);
+    /*
+     * The falloff runs all the way to the edge of the box. A gain applied to a
+     * gradient as smooth as this sky will show its own boundary as a ring the
+     * moment the mask reaches zero early, and a ring is the one thing that
+     * turns a light into a decal.
+     */
     -webkit-mask-image: radial-gradient(
       closest-side,
       rgb(0 0 0 / 1) 0%,
-      rgb(0 0 0 / 0.5) 44%,
-      rgb(0 0 0 / 0) 76%
+      rgb(0 0 0 / 0.6) 30%,
+      rgb(0 0 0 / 0.2) 60%,
+      rgb(0 0 0 / 0) 100%
     );
     mask-image: radial-gradient(
       closest-side,
       rgb(0 0 0 / 1) 0%,
-      rgb(0 0 0 / 0.5) 44%,
-      rgb(0 0 0 / 0) 76%
+      rgb(0 0 0 / 0.6) 30%,
+      rgb(0 0 0 / 0.2) 60%,
+      rgb(0 0 0 / 0) 100%
     );
     transition: opacity var(--duration-slow) var(--ease-out-soft);
   }

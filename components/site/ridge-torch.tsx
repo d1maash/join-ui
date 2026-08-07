@@ -77,7 +77,7 @@ export function RidgeTorch() {
   }, [])
 
   return (
-    <div ref={fieldRef} className="absolute inset-0">
+    <div ref={fieldRef} className="pointer-events-none absolute inset-0">
       <div ref={torchRef} className="ridge-torch" data-lit="false" />
     </div>
   )
