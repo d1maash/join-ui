@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { HeaderShell } from "@/components/site/header-shell"
 import { GitHubIcon } from "@/components/site/icons"
 import { Logo } from "@/components/site/logo"
 import { MobileNav } from "@/components/site/mobile-nav"
@@ -27,7 +28,7 @@ export function SiteHeader() {
   const searchEntries = buildSearchIndex()
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
+    <HeaderShell>
       <div className="mx-auto flex h-14 max-w-[100rem] items-center gap-3 px-4 sm:px-6">
         <MobileNav sections={sections} />
         <Logo />
@@ -56,7 +57,7 @@ export function SiteHeader() {
           </Button>
         </div>
       </div>
-    </header>
+    </HeaderShell>
   )
 }
 

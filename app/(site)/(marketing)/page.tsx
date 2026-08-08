@@ -3,6 +3,8 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { ComponentCard } from "@/components/site/component-card"
+import { GitHubIcon } from "@/components/site/icons"
+import { Masthead, type MastheadFact } from "@/components/site/masthead"
 import { PackageManagerTabs } from "@/components/site/package-manager-tabs"
 import { Button } from "@/components/ui/button"
 import { shadcnCommands } from "@/lib/commands"
@@ -14,6 +16,7 @@ import {
 } from "@/lib/registry"
 import { toCatalogItem } from "@/lib/registry/catalog"
 import { siteConfig } from "@/lib/site"
+import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
   // No `title` — the root layout's `title.default` already reads
@@ -56,123 +59,92 @@ const PRINCIPLES = [
   },
 ]
 
+const pad = (value: number) => String(value).padStart(2, "0")
+
 export default function HomePage() {
   const stats = getRegistryStats()
   const featured = getFeaturedComponents(4)
-  const latest = getLatestComponents(3)
   const categories = getCategorySummaries().filter((category) => category.count > 0)
   const heroInstall = shadcnCommands(`${siteConfig.namespace}/<component>`)
   const empty = stats.total === 0
 
+  /*
+   * "Recently added" is only worth a section when it is actually showing
+   * something the reader has not just scrolled past. While the registry is
+   * small every component is both featured and recent, and running the same
+   * three cards twice down one page made the catalog look padded — so the
+   * latest list is drawn from what the featured row did not already take, and
+   * disappears entirely when that leaves nothing.
+   */
+  const featuredSlugs = new Set(featured.map((component) => component.slug))
+  const latest = getLatestComponents(8)
+    .filter((component) => !featuredSlugs.has(component.slug))
+    .slice(0, 3)
+
+  const facts: MastheadFact[] = [
+    { label: "Components", value: pad(stats.total) },
+    {
+      label: stats.categories === 1 ? "Category" : "Categories",
+      value: pad(stats.categories),
+    },
+    { label: "WCAG 2.2", value: "AA" },
+    { label: "Licence", value: "MIT" },
+  ]
+
   return (
     <main id="main-content">
-      {/* Masthead */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-[100rem] px-4 sm:px-6">
-          <div className="grid gap-10 py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
-            <div className="lg:col-span-8">
-              <p className="label-micro mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-muted-foreground shadow-xs">
-                {siteConfig.namespace} — open-code component registry
-              </p>
-              {/*
-                Held to ~4rem rather than the 6.5 it was. Past that the headline
-                stops being type and becomes a shape, and a shape this dark is
-                the thing that made the page feel hard.
-              */}
-              <h1 className="text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.04] font-semibold tracking-[-0.038em] text-balance">
-                Components
-                <br />
-                you actually own
-              </h1>
-            </div>
-
-            <div className="flex flex-col justify-end gap-6 lg:col-span-4">
-              <p className="max-w-[42ch] leading-relaxed text-pretty text-muted-foreground">
-                Accessible, animated React components for Next.js. Install them with the
-                shadcn CLI, copy the source, or hand the generated prompt to your coding
-                agent.
-              </p>
-              <div className="flex flex-wrap items-center gap-3">
-                <Button asChild size="lg">
-                  <Link href="/components">
-                    Browse components
-                    <ArrowRight />
-                  </Link>
-                </Button>
-                <Button asChild variant="secondary" size="lg">
-                  <Link href="/docs/installation">Get started</Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Figures */}
-      <section aria-label="Registry at a glance" className="border-b border-border">
-        <div className="mx-auto max-w-[100rem] px-4 sm:px-6">
-          <dl className="grid sm:grid-cols-3">
-            <Figure label="Components" value={stats.total} />
-            <Figure label="Categories" value={stats.categories} bordered />
-            <Figure label="Zero-dependency" value={stats.zeroDependency} bordered />
-          </dl>
-        </div>
-      </section>
+      <Masthead
+        eyebrow={`${siteConfig.namespace} — open-code component registry`}
+        facts={facts}
+      />
 
       <div className="mx-auto max-w-[100rem] px-4 sm:px-6">
         {empty ? (
-          <section aria-labelledby="empty-heading" className="border-b border-border py-16">
-            <div className="grid gap-8 lg:grid-cols-12">
-              <div className="lg:col-span-3">
-                <p className="label-section text-muted-foreground">Status</p>
-              </div>
-              <div className="flex max-w-2xl flex-col gap-4 lg:col-span-9">
-                <h2 id="empty-heading" className="text-2xl font-semibold">
-                  The registry is being rebuilt
-                </h2>
-                <p className="leading-relaxed text-pretty text-muted-foreground">
-                  No components are published right now. The registry pipeline, the
-                  documentation, the search index and the installable JSON endpoints are
-                  all in place and wired to a single metadata file — the first component
-                  added to{" "}
-                  <code className="rounded-sm border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
-                    lib/registry/components.ts
-                  </code>{" "}
-                  will appear across every surface of this site automatically.
-                </p>
-                <div className="flex flex-wrap gap-3 pt-1">
-                  <Button asChild variant="secondary" size="sm">
-                    <Link href="/docs/contributing">How to add a component</Link>
-                  </Button>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link href="/docs/registry-setup">
-                      Registry setup
-                      <ArrowRight />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
+          <Section
+            id="empty"
+            eyebrow="Status"
+            title="The registry is being rebuilt"
+            aside={
+              <p className="leading-relaxed text-pretty text-muted-foreground">
+                No components are published right now. The registry pipeline, the
+                documentation, the search index and the installable JSON endpoints
+                are all in place and wired to a single metadata file — the first
+                component added to{" "}
+                <code className="rounded-sm border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
+                  lib/registry/components.ts
+                </code>{" "}
+                will appear across every surface of this site automatically.
+              </p>
+            }
+          >
+            <div className="flex flex-wrap gap-3">
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/docs/contributing">How to add a component</Link>
+              </Button>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/docs/registry-setup">
+                  Registry setup
+                  <ArrowRight />
+                </Link>
+              </Button>
             </div>
-          </section>
+          </Section>
         ) : null}
 
         {/* Install */}
-        <section aria-labelledby="install-heading" className="border-b border-border py-16">
-          <div className="grid gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-3">
-              <p className="label-section text-muted-foreground">Install</p>
-            </div>
-            <div className="flex max-w-xl flex-col gap-4 lg:col-span-5">
-              <h2 id="install-heading" className="text-2xl font-semibold">
-                Straight into your project
-              </h2>
+        <Section
+          id="install"
+          eyebrow="Install"
+          title="Straight into your project"
+          aside={
+            <>
               <p className="leading-relaxed text-pretty text-muted-foreground">
                 Join UI is a shadcn-compatible registry. Point the CLI at the{" "}
-                <code className="border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
+                <code className="rounded-sm border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
                   {siteConfig.namespace}
                 </code>{" "}
-                namespace and it resolves dependencies, writes the files and leaves the
-                rest of your codebase alone.
+                namespace and it resolves dependencies, writes the files and leaves
+                the rest of your codebase alone.
               </p>
               <div className="flex flex-wrap gap-3 pt-1">
                 <Button asChild variant="secondary" size="sm">
@@ -185,46 +157,11 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-            </div>
-            <div className="lg:col-span-4">
-              <PackageManagerTabs commands={heroInstall} label="Install a component" />
-            </div>
-          </div>
-        </section>
-
-        {/* Principles */}
-        <section aria-labelledby="principles-heading" className="border-b border-border py-16">
-          <div className="grid gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-3">
-              <p className="label-section text-muted-foreground">Principles</p>
-              <h2
-                id="principles-heading"
-                className="mt-3 text-2xl font-semibold"
-              >
-                Built like a developer tool
-              </h2>
-            </div>
-
-            <ol className="grid gap-3 lg:col-span-9 sm:grid-cols-2 xl:grid-cols-3">
-              {PRINCIPLES.map((principle, index) => (
-                <li
-                  key={principle.title}
-                  className="flex flex-col gap-2 rounded-xl border border-border bg-card p-5 shadow-xs"
-                >
-                  <span className="numeral text-[0.6875rem] text-muted-foreground">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="text-[0.9375rem] font-semibold">
-                    {principle.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {principle.description}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
+            </>
+          }
+        >
+          <PackageManagerTabs commands={heroInstall} label="Install a component" />
+        </Section>
 
         {featured.length > 0 ? (
           <Collection
@@ -234,7 +171,18 @@ export default function HomePage() {
             description="The components most projects reach for first."
             action={{ href: "/components", label: "View all components" }}
           >
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/*
+              The track count follows the number of cards. A fixed four-column
+              grid holding three components leaves a column of nothing at the
+              end of the row, which reads as a card that failed to load rather
+              than as a registry that is still small.
+            */}
+            <ul
+              className={cn(
+                "grid gap-4 sm:grid-cols-2",
+                featured.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"
+              )}
+            >
               {featured.map((component, index) => (
                 <li key={component.slug} className="flex">
                   <ComponentCard
@@ -245,33 +193,36 @@ export default function HomePage() {
                 </li>
               ))}
             </ul>
-          </Collection>
-        ) : null}
 
-        {categories.length > 0 ? (
-          <Collection
-            id="categories"
-            eyebrow="Catalog"
-            title="Browse by category"
-            description="Every category that currently holds at least one component."
-          >
-            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-              {categories.map((category) => (
-                <li key={category.slug} className="flex">
-                  <Link
-                    href={`/components?category=${encodeURIComponent(category.name)}`}
-                    className="group flex w-full flex-col gap-1 rounded-xl border border-border bg-card p-4 shadow-xs transition-[border-color,box-shadow] hover:border-border-hover hover:shadow-sm focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
-                  >
-                    <span className="text-sm font-medium transition-colors group-hover:text-foreground">
-                      {category.name}
-                    </span>
-                    <span className="numeral text-xs text-muted-foreground">
-                      {String(category.count).padStart(2, "0")}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/*
+              Categories ride under the grid instead of holding a section of
+              their own. As a section it was a heading, a sentence and — on a
+              registry this young — one pill, stranded in the middle of an
+              otherwise empty band; as a strip it reads correctly at one
+              category and at twelve.
+            */}
+            {categories.length > 0 ? (
+              <div className="mt-10 flex flex-col gap-4 border-t border-border pt-8 sm:flex-row sm:items-center sm:gap-6">
+                <p className="label-section shrink-0 text-muted-foreground">
+                  Browse by category
+                </p>
+                <ul className="flex flex-wrap gap-2">
+                  {categories.map((category) => (
+                    <li key={category.slug} className="flex">
+                      <Link
+                        href={`/components?category=${encodeURIComponent(category.name)}`}
+                        className="inline-flex items-center gap-2.5 rounded-full border border-border bg-card py-2 pr-3 pl-4 text-sm font-medium shadow-xs transition-[border-color,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-out-soft)] hover:border-border-hover hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                      >
+                        {category.name}
+                        <span className="numeral rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                          {pad(category.count)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </Collection>
         ) : null}
 
@@ -297,35 +248,69 @@ export default function HomePage() {
           </Collection>
         ) : null}
 
+        {/* Principles */}
+        <Section
+          id="principles"
+          eyebrow="Principles"
+          title="Built like a developer tool"
+          aside={
+            <p className="leading-relaxed text-pretty text-muted-foreground">
+              Six rules the registry is held to. They are the reason a component
+              can be dropped into an existing codebase without a migration, and
+              the reason the source is worth reading once it lands there.
+            </p>
+          }
+          wide
+        >
+          <ol className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {PRINCIPLES.map((principle, index) => (
+              <li
+                key={principle.title}
+                className="flex flex-col gap-2.5 rounded-xl border border-border bg-card p-5 shadow-xs transition-[border-color,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-out-soft)] hover:border-border-hover hover:shadow-sm"
+              >
+                <span
+                  aria-hidden="true"
+                  className="numeral flex size-7 items-center justify-center rounded-full border border-border text-[0.6875rem] text-muted-foreground"
+                >
+                  {pad(index + 1)}
+                </span>
+                <h3 className="text-[0.9375rem] font-semibold">{principle.title}</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {principle.description}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </Section>
+
         {/* Prompt */}
-        <section aria-labelledby="prompt-heading" className="py-16">
-          <div className="grid gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-3">
-              <p className="label-section text-muted-foreground">For agents</p>
-            </div>
-            <div className="flex max-w-xl flex-col gap-4 lg:col-span-5">
-              <h2 id="prompt-heading" className="text-2xl font-semibold">
-                Hand the whole component to your agent
-              </h2>
+        <Section
+          id="prompt"
+          eyebrow="For agents"
+          title="Hand the whole component to your agent"
+          aside={
+            <>
               <p className="leading-relaxed text-pretty text-muted-foreground">
                 One button copies a structured brief: the stack, the install path,
                 dependencies, every supported prop, the accessibility and motion
-                requirements, and the complete source. Built from the same metadata as
-                the component page, so it can never describe a prop that does not exist.
+                requirements, and the complete source. Built from the same metadata
+                as the component page, so it can never describe a prop that does not
+                exist.
               </p>
               <div className="flex flex-wrap gap-3 pt-1">
                 <Button asChild variant="secondary" size="sm">
                   <Link href="/docs/ai">How the prompt is built</Link>
                 </Button>
               </div>
-            </div>
-
-            <div className="overflow-hidden rounded-xl border border-border bg-code-bg shadow-xs lg:col-span-4">
-              <p className="label-micro border-b border-border bg-card/40 px-4 py-2.5 text-muted-foreground">
-                prompt.txt
-              </p>
-              <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-muted-foreground">
-                {`Add the <Component> component to my existing
+            </>
+          }
+        >
+          <div className="overflow-hidden rounded-xl border border-border bg-code-bg shadow-xs">
+            <p className="label-micro border-b border-border bg-card/40 px-4 py-2.5 text-muted-foreground">
+              prompt.txt
+            </p>
+            <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-muted-foreground">
+              {`Add the <Component> component to my existing
 Next.js application.
 
 Project stack:
@@ -341,7 +326,53 @@ Requirements:
 - Use the project's existing \`cn\` utility …
 - Respect \`prefers-reduced-motion: reduce\`.
 - Do not modify unrelated files.`}
-              </pre>
+            </pre>
+          </div>
+        </Section>
+
+        {/* Closing panel — the masthead's shadow, without the photograph. */}
+        <section
+          aria-labelledby="closing-heading"
+          className="ridge relative isolate my-16 overflow-hidden rounded-3xl lg:my-24"
+        >
+          <div aria-hidden="true" className="ridge-panel absolute inset-0" />
+          <div aria-hidden="true" className="mosaic absolute inset-0" />
+
+          <div className="relative flex flex-col items-center gap-6 px-6 py-20 text-center lg:py-28">
+            <p className="label-micro text-white/60">Get started</p>
+            <h2
+              id="closing-heading"
+              className="ridge-type max-w-[18ch] text-[clamp(1.875rem,3.6vw,2.875rem)] leading-[1.08] font-semibold tracking-[-0.034em] text-white text-balance"
+            >
+              Own the components you ship
+            </h2>
+            <p className="max-w-[54ch] leading-relaxed text-pretty text-white/70">
+              One CLI command writes the source into your repository. No wrapper
+              package, no runtime, nothing to upgrade around — just files you can
+              read, edit and keep.
+            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+              <Button asChild size="lg">
+                <Link href="/docs/installation">
+                  Get started
+                  <ArrowRight />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="border-white/25 bg-white/10 text-white backdrop-blur-md hover:border-white/45 hover:bg-white/20 hover:text-white"
+              >
+                <a
+                  href={siteConfig.links.github}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <GitHubIcon aria-hidden="true" />
+                  View on GitHub
+                </a>
+              </Button>
             </div>
           </div>
         </section>
@@ -350,25 +381,74 @@ Requirements:
   )
 }
 
-function Figure({
-  label,
-  value,
-  bordered = false,
+/**
+ * Rail section: a label and heading held in a narrow left column, the prose
+ * beside it, and whatever the section is actually showing in the last four
+ * columns. `wide` hands those four columns back to the content, for the grids
+ * that need the full measure.
+ */
+function Section({
+  id,
+  eyebrow,
+  title,
+  aside,
+  wide = false,
+  children,
 }: {
-  label: string
-  value: number
-  bordered?: boolean
+  id: string
+  eyebrow: string
+  title: string
+  aside?: React.ReactNode
+  wide?: boolean
+  children: React.ReactNode
 }) {
   return (
-    <div className={bordered ? "border-border py-8 sm:border-l sm:pl-8" : "py-8"}>
-      <dt className="label-section text-muted-foreground">{label}</dt>
-      <dd className="numeral mt-2 text-4xl font-semibold">
-        {String(value).padStart(2, "0")}
-      </dd>
-    </div>
+    <section
+      aria-labelledby={`${id}-heading`}
+      className="border-b border-border py-20 lg:py-24"
+    >
+      {/*
+        `min-w-0` on every cell, because a grid item defaults to `min-width:
+        auto` and so refuses to shrink below its content's minimum. Two of
+        these sections hold a code block whose longest line does not break —
+        `pnpm dlx shadcn@latest add @joinui/<component>` — and without this the
+        column widens to fit it, taking the whole page with it and putting a
+        horizontal scrollbar on the document at phone widths. `overflow-x-auto`
+        on the block itself cannot help until the column is allowed to be
+        narrower than the line it is scrolling.
+      */}
+      <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
+        <div className="flex min-w-0 flex-col gap-3 lg:col-span-3">
+          <p className="label-section text-muted-foreground">{eyebrow}</p>
+          <h2
+            id={`${id}-heading`}
+            className="text-[1.5rem] leading-[1.2] font-semibold text-balance"
+          >
+            {title}
+          </h2>
+          {wide && aside ? (
+            <div className="flex max-w-[46ch] flex-col gap-4">{aside}</div>
+          ) : null}
+        </div>
+
+        {!wide && aside ? (
+          <div className="flex min-w-0 max-w-xl flex-col gap-4 lg:col-span-5">
+            {aside}
+          </div>
+        ) : null}
+
+        <div className={cn("min-w-0", wide ? "lg:col-span-9" : "lg:col-span-4")}>
+          {children}
+        </div>
+      </div>
+    </section>
   )
 }
 
+/**
+ * Collection section: a full-width header row over a grid, for the places where
+ * the content is the point and the copy is a caption.
+ */
 function Collection({
   id,
   eyebrow,
@@ -385,11 +465,17 @@ function Collection({
   children: React.ReactNode
 }) {
   return (
-    <section aria-labelledby={`${id}-heading`} className="border-b border-border py-16">
-      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex max-w-2xl flex-col gap-2">
+    <section
+      aria-labelledby={`${id}-heading`}
+      className="border-b border-border py-20 lg:py-24"
+    >
+      <div className="mb-9 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex max-w-2xl flex-col gap-3">
           <p className="label-section text-muted-foreground">{eyebrow}</p>
-          <h2 id={`${id}-heading`} className="text-2xl font-semibold">
+          <h2
+            id={`${id}-heading`}
+            className="text-[1.5rem] leading-[1.2] font-semibold text-balance"
+          >
             {title}
           </h2>
           <p className="leading-relaxed text-pretty text-muted-foreground">
