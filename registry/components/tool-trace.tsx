@@ -310,8 +310,13 @@ export function ToolTrace({
   const buttons = React.useRef<Array<HTMLButtonElement | null>>([])
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLOListElement>) {
+    /*
+     * Sparse by design: a step with nothing to show never registers, so the
+     * slots between the toggles are empty rather than null, and a step that
+     * stopped being expandable can leave a detached node behind.
+     */
     const order = buttons.current.filter(
-      (node): node is HTMLButtonElement => node !== null
+      (node): node is HTMLButtonElement => node instanceof HTMLElement && node.isConnected
     )
     if (order.length === 0) return
 
