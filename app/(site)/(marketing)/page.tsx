@@ -379,11 +379,17 @@ Requirements:
             </p>
 
             <ul className="min-w-0 border-t border-border lg:col-span-9">
+              {/*
+                The rule belongs to the row and the tint to the link, inset by
+                the padding it gains. Put both on the same element and the
+                highlight starts hard against the first letter, which reads as
+                a selection rather than as a target.
+              */}
               {NEXT.map((item) => (
-                <li key={item.href}>
+                <li key={item.href} className="border-b border-border">
                   <Link
                     href={item.href}
-                    className="group flex items-start justify-between gap-6 border-b border-border py-5 transition-colors duration-[var(--duration-fast)] hover:bg-subtle focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+                    className="group -mx-3 flex items-start justify-between gap-6 rounded-lg px-3 py-5 transition-colors duration-[var(--duration-fast)] hover:bg-subtle focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                   >
                     <span className="min-w-0">
                       <span className="block text-[0.9375rem] font-medium">
