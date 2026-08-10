@@ -202,6 +202,84 @@
           "critical-foreground": "oklch(0.16 0.04 23)"
         }
       }
+    },
+    {
+      "name": "tool-trace",
+      "type": "registry:ui",
+      "title": "Tool Trace",
+      "description": "A run log for agent tool calls: the step in flight opens itself, writes its output a line at a time, then folds away and goes still.",
+      "author": "Join Way",
+      "dependencies": [
+        "motion",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "feedback",
+        "ai",
+        "agent",
+        "log",
+        "console",
+        "accordion",
+        "disclosure",
+        "stream",
+        "run",
+        "steps"
+      ],
+      "docs": "https://ui.join-way.com/components/tool-trace",
+      "meta": {
+        "status": "new",
+        "since": "2026-08-11",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinui/tool-trace"
+      },
+      "files": [
+        {
+          "path": "registry/components/tool-trace.tsx",
+          "type": "registry:ui",
+          "target": "components/joinui/tool-trace.tsx"
+        }
+      ],
+      "cssVars": {
+        "theme": {
+          "color-info": "var(--info)",
+          "color-info-soft": "var(--info-soft)",
+          "color-info-foreground": "var(--info-foreground)",
+          "color-positive": "var(--positive)",
+          "color-positive-soft": "var(--positive-soft)",
+          "color-positive-foreground": "var(--positive-foreground)",
+          "color-critical": "var(--critical)",
+          "color-critical-soft": "var(--critical-soft)",
+          "color-critical-foreground": "var(--critical-foreground)",
+          "radius-soft-sm": "0.375rem",
+          "radius-soft": "0.625rem",
+          "radius-soft-lg": "1rem"
+        },
+        "light": {
+          "info": "oklch(0.5 0.17 253)",
+          "info-soft": "oklch(0.965 0.022 253)",
+          "info-foreground": "oklch(0.99 0.005 253)",
+          "positive": "oklch(0.5 0.13 158)",
+          "positive-soft": "oklch(0.965 0.03 158)",
+          "positive-foreground": "oklch(0.99 0.008 158)",
+          "critical": "oklch(0.52 0.19 23)",
+          "critical-soft": "oklch(0.965 0.025 23)",
+          "critical-foreground": "oklch(0.99 0.006 23)"
+        },
+        "dark": {
+          "info": "oklch(0.76 0.14 253)",
+          "info-soft": "oklch(0.255 0.058 253)",
+          "info-foreground": "oklch(0.16 0.04 253)",
+          "positive": "oklch(0.78 0.14 158)",
+          "positive-soft": "oklch(0.25 0.05 158)",
+          "positive-foreground": "oklch(0.16 0.035 158)",
+          "critical": "oklch(0.72 0.17 23)",
+          "critical-soft": "oklch(0.26 0.07 23)",
+          "critical-foreground": "oklch(0.16 0.04 23)"
+        }
+      }
     }
   ]
 }

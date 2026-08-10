@@ -356,7 +356,7 @@ export function Example() {
         "critical-foreground": "oklch(0.16 0.04 23)",
       },
     },
-    related: [],
+    related: ["tool-trace"],
     since: "2026-08-02",
   }),
 
@@ -1091,7 +1091,422 @@ export function Example() {
         "critical-foreground": "oklch(0.16 0.04 23)",
       },
     },
-    related: ["status-timeline", "focus-stack"],
+    related: ["status-timeline", "focus-stack", "tool-trace"],
     since: "2026-08-04",
+  }),
+
+  defineComponent({
+    name: "ToolTrace",
+    slug: "tool-trace",
+    title: "Tool Trace",
+    description:
+      "A run log for agent tool calls: the step in flight opens itself, writes its output a line at a time, then folds away and goes still.",
+    overview:
+      "ToolTrace is what one run looks like from the inside — every tool the agent reached for, in order, and what came back. Pass the steps with a state on each and it draws a rail through them: dashed markers for what has not happened yet, tinted ones for what has, a hairline filling behind each step as it resolves. The motion is spent on the step in flight and nowhere else. It opens as it starts, its console fills a line at a time, and the moment it lands the panel folds away and hands the rail to the next tool — so an unattended trace always shows the work that is actually happening without the reader touching anything. Every other step is a still drawing. Open one yourself and follow yields for good, because a reader who went looking should not have the page close under them. States carry a glyph and a spoken label as well as a hue, transitions are announced through a single polite live region rather than by streaming the console at a screen reader, and the whole thing resolves instantly under prefers-reduced-motion.",
+    category: "Feedback",
+    tags: [
+      "ai",
+      "agent",
+      "log",
+      "console",
+      "accordion",
+      "disclosure",
+      "stream",
+      "run",
+      "steps",
+    ],
+    status: "new",
+    featured: true,
+    dependencies: ["motion", "lucide-react"],
+    registryDependencies: ["utils"],
+    files: [uiFile("tool-trace")],
+    accessibility: [
+      "Steps render as an ordered list, so assistive technology reports both position and total.",
+      'The step in flight carries `aria-current="step"`.',
+      "Only a step with a `detail` or an `output` becomes a button; one with nothing to show stays a plain row, which keeps the tab order down to the steps worth opening.",
+      'Each toggle carries `aria-expanded` and `aria-controls`, and the panel it opens is a `region` named by it — the WAI accordion pattern, including the optional arrow-key navigation between headers.',
+      "Colour is never the only signal, which is what satisfies WCAG 1.4.1: every state also has its own glyph — a spinner, a tick, a cross, a dash, a pip — and appends a visually hidden label reading “Running”, “Done”, “Failed”, “Skipped” or “Queued”.",
+      "A failed step additionally shifts its name to the critical hue and tints its console, so the failure is findable without opening every panel.",
+      "State changes are announced once each through a single polite live region (`announce`), and the console itself is not live — a log writing itself line by line is unreadable through a screen reader, but “run_tests, Failed” is exactly what someone following the run needs.",
+      "The console scrolls to its newest line only while the reader is already at the bottom, so reading back through output is never yanked forward.",
+      "Nothing animates on mount: a trace rendered with a step already running shows that step open and its output whole, rather than replaying a run that happened before the page loaded.",
+      "The one loop in the component — the marker's pulse and the caret — runs only while a tool is genuinely in flight, and stops when it resolves.",
+      "Under `prefers-reduced-motion` every transition resolves at zero duration: panels open instantly, output arrives whole, and neither the pulse nor the caret runs.",
+      "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
+    ],
+    keyboard: [
+      {
+        keys: ["Enter", "Space"],
+        description: "Opens or closes the focused step, and pins it against `follow`.",
+      },
+      {
+        keys: ["↓"],
+        description: "Moves the focus to the next step that can be opened.",
+      },
+      {
+        keys: ["↑"],
+        description: "Moves the focus to the previous step that can be opened.",
+      },
+      {
+        keys: ["Home", "End"],
+        description: "Jumps to the first or last step that can be opened.",
+      },
+      {
+        keys: ["Tab"],
+        description:
+          "Leaves the trace. Steps with nothing to show are skipped entirely, and an open panel adds nothing of its own unless you put a control in `detail`.",
+      },
+    ],
+    props: [
+      {
+        name: "ToolTrace",
+        props: [
+          {
+            name: "steps",
+            type: "ToolTraceStep[]",
+            required: true,
+            description: "The tool calls to render, in order.",
+          },
+          {
+            name: "label",
+            type: "string",
+            defaultValue: '"Run"',
+            description:
+              "Header eyebrow, and the accessible name of the list when the header is hidden.",
+          },
+          {
+            name: "status",
+            type: "string",
+            description:
+              "Overrides the header chip copy, which is otherwise rolled up from the steps.",
+          },
+          {
+            name: "variant",
+            type: '"card" | "plain"',
+            defaultValue: '"card"',
+            description:
+              "Plain drops the surrounding rule, background and padding so the trace can sit inside your own container.",
+          },
+          {
+            name: "showHeader",
+            type: "boolean",
+            defaultValue: "true",
+            description: "Renders the eyebrow and status chip above the steps.",
+          },
+          {
+            name: "size",
+            type: '"sm" | "md"',
+            defaultValue: '"md"',
+            description: "Marker, type and spacing scale.",
+          },
+          {
+            name: "expanded",
+            type: "string[]",
+            description:
+              "Controlled disclosure — the ids of the open steps. Passing it hands the whole disclosure over to you, and turns follow off.",
+          },
+          {
+            name: "defaultExpanded",
+            type: "string[]",
+            description:
+              "Where an uncontrolled trace starts. Falls back to the steps that set defaultOpen.",
+          },
+          {
+            name: "onExpandedChange",
+            type: "(expanded: string[]) => void",
+            description:
+              "Fires with the new set when the reader opens or closes a step. Follow does not fire it — what it opens is derived from the steps you already own.",
+          },
+          {
+            name: "multiple",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Allows more than one step to be open at a time. Off, the trace behaves like an accordion.",
+          },
+          {
+            name: "follow",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Opens the step that starts running and closes it again when it resolves. Yields permanently on any step the reader opens or closes themselves, and is ignored while expanded is controlled.",
+          },
+          {
+            name: "stream",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Reveals a running step's output a line at a time. Only a step that starts running after mount streams; one that was already running when the page loaded renders whole.",
+          },
+          {
+            name: "lineSpeed",
+            type: "number",
+            defaultValue: "90",
+            description: "Milliseconds per revealed line.",
+          },
+          {
+            name: "maxConsoleHeight",
+            type: "string",
+            defaultValue: '"11rem"',
+            description:
+              "Height the console scrolls within. Any CSS length.",
+          },
+          {
+            name: "announce",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Announces each step's state change through a polite live region. Turn it off when several traces share a page.",
+          },
+          {
+            name: "footer",
+            type: "React.ReactNode",
+            description:
+              "Content placed below a rule — an action, a note, a summary row.",
+          },
+          {
+            name: "className",
+            type: "string",
+            description: "Merged onto the root element through `cn`.",
+          },
+        ],
+      },
+      {
+        name: "ToolTraceStep",
+        description: "Shape of a single entry in the `steps` array.",
+        props: [
+          {
+            name: "id",
+            type: "string",
+            required: true,
+            description:
+              "Stable identity for the rendered list item, and the value reported by onExpandedChange.",
+          },
+          {
+            name: "name",
+            type: "string",
+            required: true,
+            description: "The tool that ran. Set in mono, because it is an identifier.",
+          },
+          {
+            name: "summary",
+            type: "string",
+            description:
+              "Its arguments in one line, set beside the name in the interface face.",
+          },
+          {
+            name: "state",
+            type: '"pending" | "running" | "done" | "failed" | "skipped"',
+            defaultValue: '"pending"',
+            description:
+              "Picks the hue and the glyph: blue while running, green when it lands, red when it does not, grey for a step that is queued or was skipped.",
+          },
+          {
+            name: "meta",
+            type: "string",
+            description:
+              "Trailing meta, set in mono with tabular figures — a duration, a token count.",
+          },
+          {
+            name: "detail",
+            type: "React.ReactNode",
+            description:
+              "Markup revealed under the row, above the console. A step with a detail or an output is the only kind that can be opened.",
+          },
+          {
+            name: "output",
+            type: "string[]",
+            description:
+              "The console body, one entry per line. Revealed a line at a time while the step is running.",
+          },
+          {
+            name: "icon",
+            type: "React.ReactNode",
+            description:
+              "Replaces the state glyph inside the marker. The ring, the rail and the hidden label keep carrying the state. Sized by the component, so pass a bare icon element.",
+          },
+          {
+            name: "defaultOpen",
+            type: "boolean",
+            description: "Opens the step on first render.",
+          },
+        ],
+      },
+    ],
+    usage: `import { ToolTrace } from "@/components/joinui/tool-trace"
+
+export function Example() {
+  return (
+    <ToolTrace
+      label="Agent run"
+      steps={[
+        {
+          id: "read",
+          name: "read_file",
+          summary: "lib/registry/components.ts",
+          state: "done",
+          meta: "0.3s",
+          output: ["→ 1096 lines, 38.2 kB"],
+        },
+        {
+          id: "test",
+          name: "run_tests",
+          summary: "pnpm check",
+          state: "running",
+          output: ["✓ typecheck", "✓ lint"],
+        },
+        { id: "pr", name: "open_pull_request" },
+      ]}
+    />
+  )
+}`,
+    customization: [
+      {
+        title: "Drive it from a real run",
+        description:
+          "The trace is stateless — it draws whatever the steps say — so streaming one is a matter of mapping your events onto states. Everything past a failure reads better as skipped than as queued, because those tools are never going to run.",
+        code: `const steps = plan.map((tool, index) => ({
+  id: tool.id,
+  name: tool.name,
+  summary: tool.args,
+  meta: tool.duration,
+  output: tool.stdout,
+  state:
+    index < cursor
+      ? tool.error
+        ? "failed"
+        : "done"
+      : failed
+        ? "skipped"
+        : index === cursor
+          ? "running"
+          : "pending",
+}))
+
+<ToolTrace label="Agent run" steps={steps} />`,
+      },
+      {
+        title: "One panel at a time",
+        description:
+          "Off, multiple turns the trace into an accordion: opening a step folds the last one shut, which keeps a long chain of retrieval calls to a single screen.",
+        code: `<ToolTrace
+  label="Retrieval"
+  size="sm"
+  multiple={false}
+  defaultExpanded={["search"]}
+  steps={steps}
+/>`,
+      },
+      {
+        title: "Hold the panels open yourself",
+        description:
+          "Pass expanded and the disclosure is entirely yours — follow steps aside, and nothing opens or closes unless you say so. Useful when the open step has to survive a re-mount, or when it belongs in the URL.",
+        code: `const [open, setOpen] = React.useState<string[]>(["test"])
+
+<ToolTrace
+  label="Agent run"
+  steps={steps}
+  expanded={open}
+  onExpandedChange={setOpen}
+/>`,
+      },
+      {
+        title: "Let it sit still",
+        description:
+          "A finished run is a document, not a performance. Turn follow and stream off and every step renders exactly as its state says, which is what you want for a trace loaded from history.",
+        code: `<ToolTrace
+  label="Run 4812"
+  steps={steps}
+  follow={false}
+  stream={false}
+  defaultExpanded={steps.filter((step) => step.state === "failed").map((s) => s.id)}
+/>`,
+      },
+      {
+        title: "Give each tool its own glyph",
+        description:
+          "An icon replaces the state glyph while the ring, the rail and the hidden state label keep carrying the meaning. The component sizes it, so pass the element bare.",
+        code: `import { FileText, PenLine, Search, TestTube } from "lucide-react"
+
+<ToolTrace
+  label="Run 4812"
+  steps={[
+    { id: "read", name: "read_file", state: "done", icon: <FileText /> },
+    { id: "grep", name: "grep_search", state: "done", icon: <Search /> },
+    { id: "edit", name: "edit_file", state: "done", icon: <PenLine /> },
+    { id: "test", name: "run_tests", state: "failed", icon: <TestTube /> },
+  ]}
+/>`,
+      },
+      {
+        title: "Retint the states, and the console",
+        description:
+          "The states read the component palette rather than literal colours, so a brand hue is a token override — no props to thread and no variants to add. The console surface is a wash of the theme's own ink over the card, which is what lets one declaration cover both themes; redeclare it only if you want a console that is a surface in its own right.",
+        language: "css",
+        code: `/* app/globals.css */
+:root,
+.light {
+  /* A violet running state instead of the default blue. */
+  --info: oklch(0.5 0.19 292);
+  --info-soft: oklch(0.965 0.025 292);
+  --info-foreground: oklch(0.99 0.005 292);
+
+  /* Any CSS colour. The default is 4% of the foreground over whatever is behind it. */
+  --tool-trace-console: oklch(0.21 0.011 48 / 0.04);
+}
+
+.dark {
+  --info: oklch(0.76 0.15 292);
+  --info-soft: oklch(0.255 0.06 292);
+  --info-foreground: oklch(0.16 0.04 292);
+  --tool-trace-console: oklch(0 0 0 / 0.25);
+}`,
+      },
+    ],
+    /**
+     * Shipped with the registry item so `shadcn add` writes the palette into the
+     * consumer's `globals.css`. Both themes are declared, which is what lets the
+     * component avoid `dark:` variants entirely.
+     */
+    cssVars: {
+      theme: {
+        "color-info": "var(--info)",
+        "color-info-soft": "var(--info-soft)",
+        "color-info-foreground": "var(--info-foreground)",
+        "color-positive": "var(--positive)",
+        "color-positive-soft": "var(--positive-soft)",
+        "color-positive-foreground": "var(--positive-foreground)",
+        "color-critical": "var(--critical)",
+        "color-critical-soft": "var(--critical-soft)",
+        "color-critical-foreground": "var(--critical-foreground)",
+        "radius-soft-sm": "0.375rem",
+        "radius-soft": "0.625rem",
+        "radius-soft-lg": "1rem",
+      },
+      light: {
+        info: "oklch(0.5 0.17 253)",
+        "info-soft": "oklch(0.965 0.022 253)",
+        "info-foreground": "oklch(0.99 0.005 253)",
+        positive: "oklch(0.5 0.13 158)",
+        "positive-soft": "oklch(0.965 0.03 158)",
+        "positive-foreground": "oklch(0.99 0.008 158)",
+        critical: "oklch(0.52 0.19 23)",
+        "critical-soft": "oklch(0.965 0.025 23)",
+        "critical-foreground": "oklch(0.99 0.006 23)",
+      },
+      dark: {
+        info: "oklch(0.76 0.14 253)",
+        "info-soft": "oklch(0.255 0.058 253)",
+        "info-foreground": "oklch(0.16 0.04 253)",
+        positive: "oklch(0.78 0.14 158)",
+        "positive-soft": "oklch(0.25 0.05 158)",
+        "positive-foreground": "oklch(0.16 0.035 158)",
+        critical: "oklch(0.72 0.17 23)",
+        "critical-soft": "oklch(0.26 0.07 23)",
+        "critical-foreground": "oklch(0.16 0.04 23)",
+      },
+    },
+    related: ["agent-hive", "status-timeline"],
+    since: "2026-08-11",
   }),
 ]
