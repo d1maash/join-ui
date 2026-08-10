@@ -280,27 +280,27 @@ export default function ToolTracePreview() {
  */
 function useScriptedRun() {
   const [cursor, setCursor] = React.useState(0)
-  const [running, setRunning] = React.useState(false)
-
-  React.useEffect(() => {
-    if (!running) return
-    const current = SCRIPT[cursor]
-    if (!current) {
-      setRunning(false)
-      return
-    }
-
-    const timer = window.setTimeout(() => {
-      if (current.result === "failed") setRunning(false)
-      setCursor((index) => index + 1)
-    }, current.dwell)
-
-    return () => window.clearTimeout(timer)
-  }, [running, cursor])
+  const [playing, setPlaying] = React.useState(false)
 
   const failedAt = SCRIPT.findIndex(
     (entry, index) => entry.result === "failed" && index < cursor
   )
+
+  /*
+   * Derived rather than held: the run stops because it reached the end or
+   * because a tool failed, and both of those are already in `cursor`. Nothing
+   * has to be switched off after the fact.
+   */
+  const running = playing && failedAt === -1 && cursor < SCRIPT.length
+
+  React.useEffect(() => {
+    if (!running) return
+    const timer = window.setTimeout(
+      () => setCursor((index) => index + 1),
+      SCRIPT[cursor]?.dwell ?? 0
+    )
+    return () => window.clearTimeout(timer)
+  }, [running, cursor])
 
   const steps = SCRIPT.map((entry, index) => {
     const resolved = index < cursor
@@ -325,10 +325,10 @@ function useScriptedRun() {
     running,
     start: () => {
       setCursor(0)
-      setRunning(true)
+      setPlaying(true)
     },
     reset: () => {
-      setRunning(false)
+      setPlaying(false)
       setCursor(0)
     },
   }

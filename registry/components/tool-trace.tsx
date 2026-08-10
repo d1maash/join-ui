@@ -162,8 +162,9 @@ export interface ToolTraceProps extends Omit<
   size?: "sm" | "md"
   /** Controlled disclosure — the ids of the steps that are open. */
   expanded?: string[]
-  /** Where an uncontrolled trace starts. Falls back to the steps' `defaultOpen`. */
+  /** Open unless the reader says otherwise. Falls back to the steps' `defaultOpen`. */
   defaultExpanded?: string[]
+  /** Fires when the reader opens or closes a step. `follow` does not fire it. */
   onExpandedChange?: (expanded: string[]) => void
   /** Allows more than one step to be open at a time. */
   multiple?: boolean
@@ -232,111 +233,78 @@ export function ToolTrace({
 
   const controlled = expanded !== undefined
 
-  /*
-   * Seeded rather than corrected after the fact: a trace that arrives with a
-   * step already running renders it open on the first paint instead of
-   * unfolding it once the effect below has run.
+  /**
+   * Steps the reader has opened or closed themselves, and which way.
+   *
+   * This is the only disclosure state the component keeps, because `follow` is
+   * a rule rather than an event: the step that is running is open *because* it
+   * is running, so there is nothing to switch on when it starts and nothing to
+   * switch off when it lands. It falls out of the steps you already pass, and
+   * an entry here simply outranks it — which is what makes a panel the reader
+   * opened stay open for good.
    */
-  const [internal, setInternal] = React.useState<string[]>(() => {
-    const seeded = defaultExpanded ?? steps.filter((step) => step.defaultOpen).map((s) => s.id)
-    if (!follow) return seeded
-    const running = steps.find((step) => (step.state ?? "pending") === "running")
-    if (!running) return seeded
-    return multiple ? Array.from(new Set([...seeded, running.id])) : [running.id]
-  })
+  const [claimed, setClaimed] = React.useState<Record<string, boolean>>({})
 
-  const open = controlled ? expanded : internal
-  /* Read by the follow effect, which must not re-run when the set changes. */
-  const openRef = React.useRef(open)
-  openRef.current = open
-
-  const commit = React.useCallback(
-    (next: string[]) => {
-      if (!controlled) setInternal(next)
-      onExpandedChange?.(next)
-    },
-    [controlled, onExpandedChange]
-  )
-
-  /** Steps the reader has opened or closed themselves. `follow` leaves these alone. */
-  const claimed = React.useRef(new Set<string>())
-
-  const toggle = React.useCallback(
-    (id: string) => {
-      claimed.current.add(id)
-      const isOpen = openRef.current.includes(id)
-      const next = isOpen
-        ? openRef.current.filter((entry) => entry !== id)
-        : multiple
-          ? [...openRef.current, id]
-          : [id]
-      commit(next)
-    },
-    [commit, multiple]
-  )
+  const derived = resolved
+    .filter((step) => {
+      const own = claimed[step.id]
+      if (own !== undefined) return own
+      if (follow && step.state === "running") return true
+      return defaultExpanded ? defaultExpanded.includes(step.id) : Boolean(step.defaultOpen)
+    })
+    .map((step) => step.id)
 
   /*
-   * A signature rather than the array itself, so the effects below fire when a
-   * state actually moves and not on every render of the parent.
+   * One panel at a time, decided in a fixed order so the answer never depends
+   * on which of two reasons to be open arrived first: what the reader opened
+   * wins, then what is running, then whatever was open by default.
    */
-  const signature = resolved.map((step) => `${step.id}:${step.state}`).join("|")
+  const single =
+    derived.find((id) => claimed[id]) ??
+    derived.find((id) => resolved.find((step) => step.id === id)?.state === "running") ??
+    derived[0]
 
-  const previous = React.useRef(new Map<string, ToolTraceStepState>())
-  const settled = React.useRef(false)
+  const open = controlled
+    ? expanded
+    : multiple || derived.length < 2
+      ? derived
+      : single
+        ? [single]
+        : []
 
-  /*
-   * The one thing announced out loud. A console writing itself line by line is
-   * unreadable through a live region, but the moment a tool starts or finishes
-   * is exactly what someone following the run needs — and it is only ever set
-   * from a transition, so a trace that merely rendered says nothing.
-   */
-  const [spoken, setSpoken] = React.useState("")
+  function toggle(id: string) {
+    const isOpen = open.includes(id)
+    const next = isOpen
+      ? open.filter((entry) => entry !== id)
+      : multiple
+        ? [...open, id]
+        : [id]
 
-  React.useEffect(() => {
-    const before = previous.current
-    const now = new Map<string, ToolTraceStepState>()
-    for (const step of resolved) now.set(step.id, step.state)
-
-    /*
-     * The first pass only records. Without it every step would read as having
-     * just changed into its initial state, and the whole trace would unfold on
-     * mount — which is exactly the performance this component avoids.
-     */
-    if (!settled.current) {
-      settled.current = true
-      previous.current = now
-      return
+    if (!controlled) {
+      /* Closing keeps the other claims; opening alone clears them, because the
+         panel that was open has just been closed by this one. */
+      setClaimed((current) =>
+        isOpen || multiple ? { ...current, [id]: !isOpen } : { [id]: true }
+      )
     }
-
-    if (follow && !controlled) {
-      let next = openRef.current
-      for (const step of resolved) {
-        const was = before.get(step.id)
-        if (was === step.state || claimed.current.has(step.id)) continue
-        if (step.state === "running") {
-          next = multiple ? (next.includes(step.id) ? next : [...next, step.id]) : [step.id]
-        } else if (was === "running") {
-          next = next.filter((id) => id !== step.id)
-        }
-      }
-      if (next !== openRef.current) commit(next)
-    }
-
-    if (announce) {
-      const moved = resolved
-        .filter((step) => before.get(step.id) !== step.state)
-        .map((step) => `${step.name}, ${STATE_LABEL[step.state]}`)
-      if (moved.length > 0) setSpoken(moved.join(". "))
-    }
-
-    previous.current = now
-    // `resolved` is rebuilt every render; `signature` is what actually moved.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signature, follow, controlled, multiple, announce, commit])
+    onExpandedChange?.(next)
+  }
 
   const summary = summarise(resolved)
   const summaryTone = TONES[summary.state]
   const summaryLabel = status ?? summary.label
+
+  /*
+   * The one thing said out loud: the tool that is in flight, and the outcome
+   * once nothing is. Both are read straight off the steps, so the live region's
+   * text changes exactly when the run does — a console writing itself a line at
+   * a time is unreadable through a screen reader, but "run_tests, Running" is
+   * precisely what someone following along needs, and it is said once.
+   */
+  const inFlight = resolved.find((step) => step.state === "running")
+  const spoken = inFlight
+    ? `${inFlight.name}, ${STATE_LABEL.running}`
+    : `${label}, ${summaryLabel}`
 
   /** Toggle buttons, in document order, for the roving arrow keys. */
   const buttons = React.useRef<Array<HTMLButtonElement | null>>([])
@@ -470,9 +438,11 @@ export function ToolTrace({
         </div>
       ) : null}
 
-      <span aria-live="polite" className="sr-only">
-        {spoken}
-      </span>
+      {announce ? (
+        <span aria-live="polite" className="sr-only">
+          {spoken}
+        </span>
+      ) : null}
     </div>
   )
 }
