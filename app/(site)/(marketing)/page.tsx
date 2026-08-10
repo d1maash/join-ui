@@ -3,7 +3,6 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { ComponentCard } from "@/components/site/component-card"
-import { GitHubIcon } from "@/components/site/icons"
 import { Masthead, type MastheadFact } from "@/components/site/masthead"
 import { PackageManagerTabs } from "@/components/site/package-manager-tabs"
 import { Button } from "@/components/ui/button"
@@ -56,6 +55,34 @@ const PRINCIPLES = [
     title: "Typed end to end",
     description:
       "Strict TypeScript with exported prop types. No `any`, no ambient globals, no build-time surprises.",
+  },
+]
+
+/**
+ * The three directions out of this page.
+ *
+ * Deliberately not the install links — those already have a section of their
+ * own further up, and repeating them at the bottom would be the page arguing
+ * with someone who has finished reading it.
+ */
+const NEXT = [
+  {
+    href: "/components",
+    title: "Browse the catalog",
+    description:
+      "Every component with a live preview, its props, and the source the CLI installs.",
+  },
+  {
+    href: "/docs",
+    title: "Read the documentation",
+    description:
+      "Setup, theming, accessibility and the prompt format, from the same metadata as the registry.",
+  },
+  {
+    href: "/docs/contributing",
+    title: "Add a component",
+    description:
+      "What a registry entry needs, and how a new component reaches every surface of this site.",
   },
 ]
 
@@ -330,52 +357,52 @@ Requirements:
           </div>
         </Section>
 
-        {/* Closing panel — the masthead's shadow, without the photograph. */}
-        <section
-          aria-labelledby="closing-heading"
-          className="ridge relative isolate my-16 overflow-hidden rounded-3xl lg:my-24"
-        >
-          <div aria-hidden="true" className="ridge-panel absolute inset-0" />
-          <div aria-hidden="true" className="mosaic absolute inset-0" />
+        {/*
+          The close.
+          ---------------------------------------------------------------------
+          This was a call to action: a dark rounded panel, a slogan set centred
+          at 2.9rem, two buttons under it. It was the only thing on the page
+          addressed to a visitor rather than to a reader, and it showed — every
+          other band here is a hairline, a label in the left column and content
+          in the grid, and the panel arrived like an advertisement stapled to
+          the end of a reference page.
 
-          <div className="relative flex flex-col items-center gap-6 px-6 py-20 text-center lg:py-28">
-            <p className="label-micro text-white/60">Get started</p>
-            <h2
-              id="closing-heading"
-              className="ridge-type max-w-[18ch] text-[clamp(1.875rem,3.6vw,2.875rem)] leading-[1.08] font-semibold tracking-[-0.034em] text-white text-balance"
-            >
-              Own the components you ship
-            </h2>
-            <p className="max-w-[54ch] leading-relaxed text-pretty text-white/70">
-              One CLI command writes the source into your repository. No wrapper
-              package, no runtime, nothing to upgrade around — just files you can
-              read, edit and keep.
+          What replaces it is not a quieter version of the same thing. There is
+          no heading, no fill and no button: three destinations set as rows,
+          which is the plainest way a documentation page can say where to go
+          next. Anyone who has read this far has already decided.
+        */}
+        <nav aria-labelledby="next-label" className="py-20 lg:py-24">
+          <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
+            <p id="next-label" className="label-section text-muted-foreground lg:col-span-3">
+              Next
             </p>
-            <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-              <Button asChild size="lg">
-                <Link href="/docs/installation">
-                  Get started
-                  <ArrowRight />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-white/25 bg-white/10 text-white backdrop-blur-md hover:border-white/45 hover:bg-white/20 hover:text-white"
-              >
-                <a
-                  href={siteConfig.links.github}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <GitHubIcon aria-hidden="true" />
-                  View on GitHub
-                </a>
-              </Button>
-            </div>
+
+            <ul className="min-w-0 border-t border-border lg:col-span-9">
+              {NEXT.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="group flex items-start justify-between gap-6 border-b border-border py-5 transition-colors duration-[var(--duration-fast)] hover:bg-subtle focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-[0.9375rem] font-medium">
+                        {item.title}
+                      </span>
+                      <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+                        {item.description}
+                      </span>
+                    </span>
+                    <ArrowRight
+                      aria-hidden="true"
+                      className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-[transform,color] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)] group-hover:translate-x-0.5 group-hover:text-foreground"
+                    />
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-        </section>
+        </nav>
       </div>
     </main>
   )
