@@ -116,6 +116,20 @@ const MICRO_LABEL = "text-[0.6875rem] leading-none font-medium tracking-[-0.005e
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+/*
+ * The two scales.
+ *
+ * `line`, `lead` and `lane` are one calculation rather than three settings. The
+ * marker is a square in a column of its own, so nothing centres it against the
+ * row beside it — `lead` does that by hand, and it can only be right if the
+ * row's line box is a known height, which is what `line` pins down:
+ *
+ *   lead = row padding + line / 2 - marker / 2
+ *
+ * `lane` then gives the same amount back off its bottom margin, because every
+ * marker below this one has been pushed down by its own `lead`. Without that
+ * the rail hangs high in the gap it is meant to bridge.
+ */
 const SIZES = {
   sm: {
     marker: "size-6",
@@ -126,8 +140,10 @@ const SIZES = {
     meta: "text-[0.6875rem]",
     console: "text-[0.6875rem]",
     row: "py-2",
+    line: "leading-5",
+    lead: "pt-1.5",
     columnGap: "gap-2.5",
-    lane: "my-1.5",
+    lane: "mt-1.5 mb-0",
     padding: "p-4",
     panel: "pt-1 pb-2.5",
   },
@@ -140,8 +156,10 @@ const SIZES = {
     meta: "text-xs",
     console: "text-xs",
     row: "py-2.5",
+    line: "leading-5",
+    lead: "pt-1.5",
     columnGap: "gap-3",
-    lane: "my-2",
+    lane: "mt-2 mb-0.5",
     padding: "p-5",
     panel: "pt-1.5 pb-3.5",
   },
@@ -504,6 +522,9 @@ function Step({
         className={cn(
           "min-w-0 flex-1 truncate font-mono tracking-tight",
           "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
+          /* Pins the row's height, which is what `lead` is measured against —
+             an inherited line-height would slide the marker off centre. */
+          scale.line,
           scale.name,
           tone.name,
           step.state === "skipped" && "line-through decoration-border-strong"
@@ -553,7 +574,8 @@ function Step({
       aria-current={step.state === "running" ? "step" : undefined}
       className={cn("flex min-w-0 items-stretch", scale.columnGap)}
     >
-      <div className="flex shrink-0 flex-col items-center">
+      {/* `lead` drops the square onto the centre of the row's first line. */}
+      <div className={cn("flex shrink-0 flex-col items-center", scale.lead)}>
         <Marker
           state={step.state}
           icon={step.icon}
