@@ -184,17 +184,17 @@
    * ramp below is not the old one desaturated; it is respaced.
    */
   --grey-0: oklch(0.116 0.003 265); /* #050506 — the page, and the plate's black */
-  --grey-50: oklch(0.181 0.003 265); /* #131315 — cards */
-  --grey-100: oklch(0.222 0.003 265); /* #1c1c1f — popovers */
+  --grey-50: oklch(0.181 0.003 265); /* #111213 — cards */
+  --grey-100: oklch(0.222 0.003 265); /* #1a1b1c — popovers */
   --grey-200: oklch(0.262 0.003 265);
   --grey-300: oklch(0.318 0.003 265); /* the hairline */
   --grey-400: oklch(0.408 0.003 265);
   --grey-500: oklch(0.525 0.003 265);
   --grey-600: oklch(0.642 0.003 265);
-  --grey-700: oklch(0.755 0.003 265); /* #b2b3b7 — secondary text */
+  --grey-700: oklch(0.755 0.003 265); /* #aeafb1 — secondary text */
   --grey-800: oklch(0.852 0.002 265);
   --grey-900: oklch(0.922 0.002 265);
-  --grey-1000: oklch(0.975 0.001 265); /* #f7f7f8 — the ink */
+  --grey-1000: oklch(0.975 0.001 265); /* #f6f7f7 — the ink */
 
   --background: var(--grey-0);
   --foreground: var(--grey-1000);
@@ -594,8 +594,12 @@
    * fetched.
    *
    * One colour is declared and nothing else. `--masthead-void` is the black the
-   * dots are printed on — near-neutral, a shade below the page, and
-   * deliberately not `--grey-0`, because the page is warm and the plate is not.
+   * dots are printed on, and it is the same value as `--grey-0` — the page was
+   * moved onto it rather than the other way round, for the reason set out on
+   * the dark ramp above. It is kept as its own token, in bare channels, because
+   * every rule here needs it at a dozen different alphas and `rgb(var(--…) / a)`
+   * needs the channels separated; and because if the page ever moves again, the
+   * plate must not follow it. This picture is printed on black.
    */
   .masthead {
     --masthead-void: 5 5 6;

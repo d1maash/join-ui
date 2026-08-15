@@ -15,11 +15,11 @@ export const contentType = "image/png"
  * site renders dark, and a social card that opened light would be the one
  * surface that disagreed with it. Keep this in sync with `globals.css`.
  */
-const PAGE = "#13110f"
-const INK = "#f5f3f1"
-const MUTED = "#b5b1ad"
-const HAIRLINE = "#3e3a37"
-const PANEL = "#1e1c1a"
+const PAGE = "#050506"
+const INK = "#f6f7f7"
+const MUTED = "#aeafb1"
+const HAIRLINE = "#313234"
+const PANEL = "#111213"
 
 export default function OpengraphImage() {
   return new ImageResponse(

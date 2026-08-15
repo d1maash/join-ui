@@ -15,8 +15,8 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     display: "standalone",
     // The site renders dark only, so the splash and the chrome agree with it.
-    background_color: "#141210",
-    theme_color: "#141210",
+    background_color: "#050506",
+    theme_color: "#050506",
     lang: "en",
     categories: ["developer", "productivity"],
     icons: [

@@ -55,13 +55,15 @@ export function Masthead({ facts }: MastheadProps) {
      * of its height, and pulling up by only the row leaves a thread of page
      * colour above the plate.
      *
-     * The plate runs black all the way to the bottom edge and the page starts
-     * under a hairline, rather than the band fading into the page colour behind
-     * the figures. See the note on `.masthead-grade`.
+     * No bottom border, and nothing fading into anything. The page's own
+     * `--grey-0` was moved onto the plate's black, so the band and the document
+     * under it are now literally the same colour — there is no join left to
+     * draw. A hairline here would be a rule announcing an edge that does not
+     * exist, and the figures' own top border is already closing the frame.
      */
     <section
       id={MASTHEAD_ID}
-      className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden border-b border-border bg-[rgb(var(--masthead-void))]"
+      className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden bg-[rgb(var(--masthead-void))]"
     >
       <div aria-hidden="true" className="absolute inset-0">
         {/*
