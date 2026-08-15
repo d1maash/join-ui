@@ -549,119 +549,101 @@
   }
 
   /*
-   * The masthead photograph.
+   * The masthead plate.
    * -------------------------------------------------------------------------
-   * `public/hero-ridge.webp` is a monochrome ridge line under a misted sky,
-   * printed through a coarse halftone screen. The frame carries almost no
-   * chroma at all — mean channel spread across it is under 2/255 — so it runs
-   * on true greys rather than on the warm greige everything else is built
-   * from, and those are deliberately kept out of the token layer above: they
-   * describe one photograph, they are not a second theme.
+   * `public/hero-dither-*.webp` is a one-bit picture. There is no grey in it at
+   * all: every pixel is either pure black or pure white, and the tone is
+   * carried entirely by how densely the white pixels are scattered — a
+   * Floyd–Steinberg error diffusion run over a lit greyscale study, then blown
+   * up with nearest-neighbour so a dot stays a hard square.
    *
-   * Only the shadow is declared. The rest of the frame's range — #fdfdfd at
-   * the lit centre of the sky, #e9e9e9 mist, #a4a3a4 on the dissolving far
-   * ridge, #504f51 lit scree, #272528 on the near slope — is in the picture
-   * itself and nothing draws it, so it stays sampled rather than declared.
+   * That constraint is the reason for most of the rules below. A one-bit image
+   * has no sub-pixel and no midtone to give up, so anything laid over it that
+   * would normally be free — a scrim, a film grain, a fractional transform —
+   * turns white dots into grey ones and the picture into mush. The plate is
+   * therefore left almost completely alone: it is drawn at device resolution,
+   * it does not move, and what little grading survives is kept off the subject.
    *
-   * The band does not follow the theme, which is the one decision here worth
-   * defending. A photograph arrives already graded and no amount of
-   * re-declaring variables underneath it will re-light it, so the masthead is
-   * fixed to the tones it was shot in — including inside the forced-light
-   * preview islands, where every other surface flips.
+   * Two plates, not one crop. The subject sits in the upper half of the wide
+   * plate and runs off both edges; a portrait crop of that is a detail of a
+   * forearm. The tall plate is dithered from a composition redrawn for the
+   * shape, and `<picture>` picks between them on `media`, so only one is
+   * fetched.
+   *
+   * One colour is declared and nothing else. `--masthead-void` is the black the
+   * dots are printed on — near-neutral, a shade below the page, and
+   * deliberately not `--grey-0`, because the page is warm and the plate is not.
    */
-  .ridge {
-    /* #0d0c0f, the shadow the type sits in, as bare channels so the grades
-       below can vary alpha against it. */
-    --ridge-shadow: 13 12 15;
+  .masthead {
+    --masthead-void: 5 5 6;
   }
 
   /*
-   * The grade. Four passes, all of them following the photograph rather than
-   * fighting it.
+   * Nearest-neighbour on the way down as well as on the way up.
    *
-   * First the head of the frame, which is the one pass that exists for a
-   * reason outside the picture: the nav bar has no surface of its own here, it
-   * sits directly on the photograph, and unlit sky behind it leaves the
-   * inactive links at about 2.9:1. Deep at the very top and gone by the time
-   * the sky has opened up, it reads as the vignette a lens would have given it
-   * anyway.
-   *
-   * Then a flat veil, because on a near-black page an ungraded misted sky is
-   * the brightest thing on screen by a wide margin; then one down the frame,
-   * which sinks the lower third into the shadow the headline sits in; then one
-   * across it, which keeps the left column quiet on wide screens where the crop
-   * otherwise pushes lit scree up behind the type.
+   * `srcset` hands the browser a plate a little wider than the box and it
+   * resamples to fit, which on a dither means averaging neighbouring dots into
+   * the greys the format does not contain — the picture goes soft and silver at
+   * exactly the sizes most people will see it at. `pixelated` makes that
+   * resample pick a dot rather than blend two, so the field stays one-bit at
+   * every scale, at the cost of the dot grid beating very slightly. That beat
+   * is what a dither looks like on a screen it was not authored for, and it is
+   * the honest failure mode of the two.
    */
-  .ridge-grade {
+  .masthead-plate {
+    image-rendering: pixelated;
+  }
+
+  /*
+   * The grade. Two passes.
+   *
+   * The first is a short fall under the bar, so the nav's links are not read
+   * against bare dots. It is a compromise — it greys the dots it crosses — so
+   * it is shallow, stops at 7rem, and the plates are composed with their
+   * subject clear of the top of the frame.
+   *
+   * The second is the floor, and it is doing real work. The picture is
+   * full-bleed, so the hands are drawn larger on a wide monitor than on a
+   * laptop while the band's height barely changes — at 1920 the lower hand
+   * hangs a hundred and fifty pixels further down than it does at 1440, and
+   * lands in the middle of the sub-heading. No crop or object-position fixes
+   * that, because the subject's size is tied to the viewport's width and the
+   * copy's position is tied to its height.
+   *
+   * So the bottom of the frame is simply painted out. Solid void to a fifth of
+   * the band and clear by half of it: anything that hangs into the copy
+   * dissolves into black rather than colliding with it, which is what a dither
+   * on black does naturally anyway. Being in percentages, it holds the same
+   * proportion of the picture at every height the band can take.
+   *
+   * The band does not fade into the page. That was tried, and the fade had to
+   * reach the floor before the figures at the bottom of the band, which left
+   * the darkest part of the picture in the middle and both ends lighter — a
+   * hero that gets brighter as it ends. Ending on black and letting the page's
+   * own warm charcoal start below a hairline is the same join, drawn once.
+   */
+  .masthead-grade {
     background-image:
       linear-gradient(
         to bottom,
-        rgb(var(--ridge-shadow) / 0.86) 0,
-        rgb(var(--ridge-shadow) / 0.74) 5rem,
-        rgb(var(--ridge-shadow) / 0) 13rem
+        rgb(var(--masthead-void) / 0.72) 0,
+        rgb(var(--masthead-void) / 0) 7rem
       ),
       linear-gradient(
-        rgb(var(--ridge-shadow) / 0.32),
-        rgb(var(--ridge-shadow) / 0.32)
-      ),
-      linear-gradient(
-        to bottom,
-        rgb(var(--ridge-shadow) / 0.16) 0%,
-        rgb(var(--ridge-shadow) / 0) 26%,
-        rgb(var(--ridge-shadow) / 0.5) 58%,
-        rgb(var(--ridge-shadow) / 0.86) 84%,
-        rgb(var(--ridge-shadow) / 0.96) 100%
-      ),
-      linear-gradient(
-        to right,
-        rgb(var(--ridge-shadow) / 0.62) 0%,
-        rgb(var(--ridge-shadow) / 0.3) 40%,
-        rgb(var(--ridge-shadow) / 0) 72%
+        to top,
+        rgb(var(--masthead-void)) 0,
+        rgb(var(--masthead-void)) 26%,
+        rgb(var(--masthead-void) / 0) 58%
       );
   }
 
   /*
    * A wide, weak shadow under the display type. Not a drop shadow — at this
-   * radius it never reads as an edge, it just keeps the counters open where
-   * the headline crosses from shadow onto lit rock.
+   * radius it never reads as an edge, it just keeps the counters open where the
+   * headline crosses the bottom of the dot field.
    */
-  .ridge-type {
-    text-shadow: 0 1px 44px rgb(var(--ridge-shadow) / 0.6);
-  }
-
-  /*
-   * The frame leans.
-   *
-   * The whole picture answers the pointer instead of a spot on it: move across
-   * the page and the ridge drifts against you, the way a view through a window
-   * shifts when you move your head. It is the one gesture a photograph can make
-   * that is about the photograph rather than about the cursor — nothing is lit,
-   * nothing is drawn on top, the frame is simply somewhere slightly different.
-   *
-   * Only the picture moves. The grade sits outside this element on purpose: it
-   * carries the gradient that keeps the nav readable at the top and the shadow
-   * the headline sits in at the bottom, and both of those are anchored to the
-   * layout, not to the photograph. Sliding them would put the whole contrast
-   * budget on a moving target.
-   *
-   * The scale is the travel allowance. At 1.08 there is 4% of frame outside the
-   * band on each edge — 58px horizontally, 31px vertically at this size — which
-   * is comfortably more than the drift can spend, so no edge can ever swing
-   * into view.
-   */
-  .ridge-parallax {
-    position: absolute;
-    inset: 0;
-  }
-
-  /*
-   * Applied by the script rather than sitting in the base rule, so a device
-   * that never gets the effect never gets the crop either: without this the
-   * 8% enlargement would be permanent on every phone and under reduced motion,
-   * paid for by everyone and enjoyed by no one.
-   */
-  .ridge-parallax[data-drift] {
-    transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px), 0) scale(1.08);
+  .masthead-type {
+    text-shadow: 0 1px 48px rgb(var(--masthead-void) / 0.7);
   }
 }
 

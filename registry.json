@@ -29,7 +29,7 @@
       ],
       "docs": "https://ui.join-way.com/components/status-timeline",
       "meta": {
-        "status": "new",
+        "status": "stable",
         "since": "2026-08-02",
         "featured": true,
         "installCommand": "pnpm dlx shadcn@latest add @joinui/status-timeline"
@@ -114,7 +114,7 @@
       ],
       "docs": "https://ui.join-way.com/components/focus-stack",
       "meta": {
-        "status": "new",
+        "status": "stable",
         "since": "2026-08-03",
         "featured": true,
         "installCommand": "pnpm dlx shadcn@latest add @joinui/focus-stack"
@@ -152,7 +152,7 @@
       ],
       "docs": "https://ui.join-way.com/components/agent-hive",
       "meta": {
-        "status": "new",
+        "status": "stable",
         "since": "2026-08-04",
         "featured": true,
         "installCommand": "pnpm dlx shadcn@latest add @joinui/agent-hive"
