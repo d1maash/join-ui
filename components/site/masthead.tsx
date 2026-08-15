@@ -2,7 +2,6 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { MASTHEAD_ID } from "@/components/site/header-shell"
-import { MastheadDrift } from "@/components/site/masthead-drift"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -12,30 +11,36 @@ export interface MastheadFact {
 }
 
 export interface MastheadProps {
-  eyebrow: string
   facts: MastheadFact[]
 }
 
 /**
  * The masthead.
  *
- * A black plate with a ring field drawn on it, and the page's one piece of
- * display type set in the middle of it. The composition is centred, which is a
- * decision worth stating because the rest of this site is not: every section
+ * A one-bit picture of two hands reaching for each other, and the page's one
+ * piece of display type hanging under it. The composition is centred, which is
+ * a decision worth stating because the rest of this site is not: every section
  * below runs a label down a left rail with its content beside it, and the
  * masthead deliberately does not join in. It is the only band on the page with
  * nothing to reference and nothing to scan — one line, one sentence, two ways
  * in — so it is set the way a title page is rather than the way a document is.
  *
+ * There is no eyebrow. One was written — the namespace and a five-word
+ * description, set small above the headline — and it could not survive this
+ * plate: at 12px it landed in the middle of the dot field and came out as
+ * texture. Moving it above the hands would have put it under the nav, and
+ * moving it below the buttons would have made it a caption for nothing. The
+ * same sentence already opens the Install section a screen further down, where
+ * it is being read rather than looked at.
+ *
  * The chrome renders dark-only, so the primary button and the focus ring
  * already resolve to something that reads on black and are left on the design
  * system's tokens. Only the pieces that sit directly on the plate — the
- * eyebrow's rules, the corner marks, the secondary button's glass, the hairline
- * under the figures — are written as explicit whites, because those are keyed
- * to the plate's own highlight rather than to the page, and they must not move
- * if the chrome's ink ever does.
+ * secondary button's glass, the hairline under the figures — are written as
+ * explicit whites, because those are keyed to the plate's own white rather than
+ * to the page, and they must not move if the chrome's ink ever does.
  */
-export function Masthead({ eyebrow, facts }: MastheadProps) {
+export function Masthead({ facts }: MastheadProps) {
   return (
     /*
      * The negative margin cancels the bar's own height so the plate starts at
@@ -58,77 +63,66 @@ export function Masthead({ eyebrow, facts }: MastheadProps) {
       className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden border-b border-border bg-[rgb(var(--masthead-void))]"
     >
       <div aria-hidden="true" className="absolute inset-0">
-        <MastheadDrift>
-          {/*
-            Hand-written `<picture>` rather than `next/image`, for one reason:
-            this is an art-directed pair, and the optimiser has no `media`. Two
-            `next/image`s toggled with `hidden` would have both files fetched on
-            every load — `display: none` does not stop a request — and a single
-            wide plate letterboxed onto a phone throws away the geometry the
-            picture exists for. There is nothing else to buy back: the files are
-            already WebP, already sized, and the largest of them is 38 KB.
+        {/*
+          Hand-written `<picture>` rather than `next/image`, for one reason:
+          this is an art-directed pair, and the optimiser has no `media`. Two
+          `next/image`s toggled with `hidden` would have both files fetched on
+          every load — `display: none` does not stop a request — and a single
+          wide plate letterboxed onto a phone throws away the composition the
+          picture exists for. There is nothing else to buy back: the files are
+          already WebP, already sized, and the largest of them is well under
+          100 KB.
 
-            In the markup rather than behind an effect, so the preload scanner
-            finds it in the first packet; `fetchPriority` puts it ahead of the
-            font, since the plate is the whole of the first paint and the type
-            arrives over it either way.
-          */}
-          <picture>
-            <source
-              media="(max-width: 639px)"
-              srcSet="/hero-orbit-mobile-750.webp 750w, /hero-orbit-mobile-1290.webp 1290w"
-              sizes="100vw"
-            />
-            <source
-              srcSet="/hero-orbit-1920.webp 1920w, /hero-orbit-2880.webp 2880w, /hero-orbit-3840.webp 3840w"
-              sizes="100vw"
-            />
-            <img
-              src="/hero-orbit-1920.webp"
-              alt=""
-              fetchPriority="high"
-              decoding="async"
-              className="absolute inset-0 size-full object-cover"
-            />
-          </picture>
-        </MastheadDrift>
+          `fetchPriority` puts it ahead of the font, since the plate is the
+          whole of the first paint and the type arrives over it either way.
 
-        {/* Outside the drift: both are anchored to the layout, not the plate. */}
+          The plate does not move. A pointer parallax was built for it and then
+          taken out: this picture is one-bit, and a dither has no sub-pixel to
+          translate into — every frame of a fractional transform resamples the
+          dot grid into grey mush, which is the one thing a 1-bit image must
+          never do. It is also, at this size, a full-screen repaint bought with
+          nothing but a cursor.
+        */}
+        <picture>
+          <source
+            media="(max-width: 639px)"
+            srcSet="/hero-dither-mobile-860.webp 860w, /hero-dither-mobile-1290.webp 1290w"
+            sizes="100vw"
+          />
+          <source
+            srcSet="/hero-dither-1920.webp 1920w, /hero-dither-2880.webp 2880w, /hero-dither-3840.webp 3840w"
+            sizes="100vw"
+          />
+          <img
+            src="/hero-dither-1920.webp"
+            alt=""
+            fetchPriority="high"
+            decoding="async"
+            className="masthead-plate absolute inset-0 size-full object-cover"
+          />
+        </picture>
+
         <div className="masthead-grade absolute inset-0" />
-        <div className="masthead-grain absolute inset-0" />
       </div>
 
       {/*
         The copy hangs from the bottom of the band rather than sitting in the
         middle of it, and that is the plate's decision rather than a taste one.
-        The light point is a third of the way down the frame; centring the stack
-        put the eyebrow directly through it, with the rules either side crossing
-        a blown highlight and the label unreadable inside it. Bottom-aligned,
-        the light gets clear air above the first line, the headline lands in the
-        ray fan where the picture is brightest behind it, and the dead band that
-        centring left between the buttons and the figures goes away.
+        The hands come in across the top third and reach down toward the middle;
+        anything centred in the band lands inside them. Bottom-aligned, the
+        fingers stop just short of the headline — close enough that the type
+        reads as the thing they are reaching for, far enough that the dot field
+        is never behind more than the first line's ascenders.
       */}
-      <div className="relative flex min-h-[46rem] flex-col lg:min-h-[min(100svh,52rem)]">
+      <div className="relative flex min-h-[54rem] flex-col lg:min-h-[min(100svh,52rem)]">
         <div className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col items-center justify-end px-4 pt-40 pb-12 text-center sm:px-6 lg:pb-16">
-          {/*
-            The eyebrow is a line of type and nothing else. A pill with a dot in
-            it is the single most over-used object on a dark landing page, and
-            it puts a filled shape directly above the one place on this site
-            where the type is supposed to be the only thing happening. Rules
-            either side were tried instead and were worse in a way that is
-            specific to this plate: they run out horizontally into the ring
-            arcs, and two sets of thin light lines crossing at a shallow angle
-            is noise wherever they happen to meet.
-          */}
-          <p className="masthead-type label-micro text-white/55">{eyebrow}</p>
-
           {/*
             Held to 5rem and to a 13-character measure, so the line breaks where
             it is written to break rather than wherever the viewport puts it.
             Centred display type that rewraps on its own reads as an accident
             every time it lands on a width nobody checked.
           */}
-          <h1 className="masthead-type mt-8 max-w-[13ch] text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white text-balance">
+          <h1 className="masthead-type max-w-[13ch] text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white text-balance">
             Components you actually own
           </h1>
 

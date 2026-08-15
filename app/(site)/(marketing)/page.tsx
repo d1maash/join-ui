@@ -120,10 +120,7 @@ export default function HomePage() {
 
   return (
     <main id="main-content">
-      <Masthead
-        eyebrow={`${siteConfig.namespace} — open-code component registry`}
-        facts={facts}
-      />
+      <Masthead facts={facts} />
 
       <div className="mx-auto max-w-[100rem] px-4 sm:px-6">
         {empty ? (

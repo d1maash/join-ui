@@ -551,27 +551,27 @@
   /*
    * The masthead plate.
    * -------------------------------------------------------------------------
-   * `public/hero-orbit-*.webp` is not a photograph. A single blown point of
-   * cool white sits a third of the way down the frame; a system of hairline
-   * rings recedes from it in steep perspective, running off both edges; light
-   * falls away from the point in faint volumetric rays that dissolve before
-   * they reach the bottom, and everything below is crushed to black.
+   * `public/hero-dither-*.webp` is a one-bit picture. There is no grey in it at
+   * all: every pixel is either pure black or pure white, and the tone is
+   * carried entirely by how densely the white pixels are scattered — a
+   * Floyd–Steinberg error diffusion run over a lit greyscale study, then blown
+   * up with nearest-neighbour so a dot stays a hard square.
    *
-   * The point is the composition, and it is deliberately not in the middle. The
-   * copy hangs under it in the rays — the headline reads as the thing the light
-   * is falling on rather than as type parked over a texture, which is what the
-   * first version of this plate was: an evenly-lit ring field, symmetrical,
-   * with nothing anywhere to look at.
+   * That constraint is the reason for most of the rules below. A one-bit image
+   * has no sub-pixel and no midtone to give up, so anything laid over it that
+   * would normally be free — a scrim, a film grain, a fractional transform —
+   * turns white dots into grey ones and the picture into mush. The plate is
+   * therefore left almost completely alone: it is drawn at device resolution,
+   * it does not move, and what little grading survives is kept off the subject.
    *
-   * Two plates, not one crop. The rings run off the left and right edges of the
-   * wide plate, and cropping that to a phone leaves a slice of arc and a grey
-   * wash — the geometry that makes the frame worth having is exactly what a
-   * portrait crop throws away. The tall plate redraws it for the shape instead,
-   * steeper, with the same light point and the same black floor under the copy.
-   * `<picture>` picks between them on `media`, so only one is fetched.
+   * Two plates, not one crop. The subject sits in the upper half of the wide
+   * plate and runs off both edges; a portrait crop of that is a detail of a
+   * forearm. The tall plate is dithered from a composition redrawn for the
+   * shape, and `<picture>` picks between them on `media`, so only one is
+   * fetched.
    *
    * One colour is declared and nothing else. `--masthead-void` is the black the
-   * rings are printed on — near-neutral, a shade below the page, and
+   * dots are printed on — near-neutral, a shade below the page, and
    * deliberately not `--grey-0`, because the page is warm and the plate is not.
    */
   .masthead {
@@ -579,15 +579,33 @@
   }
 
   /*
-   * The grade. Two passes, and both of them are restraint rather than rescue.
+   * Nearest-neighbour on the way down as well as on the way up.
    *
-   * The plate arrives graded — corners already crushed, floor already black —
-   * so the heavy four-pass wash the previous photographic masthead needed would
-   * only flatten what makes this one worth looking at. What is left is a short
-   * fall under the bar, so the nav's links are read against a settled tone
-   * instead of against the top of the ray fan, and a very shallow radial that
-   * takes the last of the light out of the left and right margins. Both stop
-   * well clear of the light point: nothing here is allowed to touch it.
+   * `srcset` hands the browser a plate a little wider than the box and it
+   * resamples to fit, which on a dither means averaging neighbouring dots into
+   * the greys the format does not contain — the picture goes soft and silver at
+   * exactly the sizes most people will see it at. `pixelated` makes that
+   * resample pick a dot rather than blend two, so the field stays one-bit at
+   * every scale, at the cost of the dot grid beating very slightly. That beat
+   * is what a dither looks like on a screen it was not authored for, and it is
+   * the honest failure mode of the two.
+   */
+  .masthead-plate {
+    image-rendering: pixelated;
+  }
+
+  /*
+   * The grade, and it is almost nothing.
+   *
+   * One short fall under the bar, so the nav's links are not read against bare
+   * dots, and that is the entire list. The radial vignette that shaped the
+   * previous plate is gone: the source is already pure black everywhere the
+   * subject is not, so there was nothing left for it to darken except the
+   * subject itself.
+   *
+   * Even this one pass is a compromise — it greys the dots it crosses — which
+   * is why it is shallow, stops at 7rem, and why the plates are composed with
+   * their subject clear of the top of the frame.
    *
    * The band does not fade into the page. That was tried, and the fade had to
    * reach the floor before the figures at the bottom of the band, which left
@@ -596,79 +614,20 @@
    * own warm charcoal start below a hairline is the same join, drawn once.
    */
   .masthead-grade {
-    background-image:
-      linear-gradient(
-        to bottom,
-        rgb(var(--masthead-void) / 0.62) 0,
-        rgb(var(--masthead-void) / 0) 9rem
-      ),
-      radial-gradient(
-        118% 96% at 50% 40%,
-        rgb(var(--masthead-void) / 0) 58%,
-        rgb(var(--masthead-void) / 0.55) 100%
-      );
-  }
-
-  /*
-   * Grain.
-   *
-   * The plate is generated at 4K and then drawn at a third of that on a laptop,
-   * which is enough downsampling to smooth away every trace of the grain it was
-   * made with — a large area of pure gradient, and the ring field's own
-   * banding with it. This puts a fixed-size film grain back on top at device
-   * resolution, where it stays one pixel regardless of how the plate is scaled.
-   *
-   * A 180px tile of `feTurbulence` rather than a noise bitmap: the whole thing
-   * is 300 bytes in the stylesheet, the browser rasterises the tile once, and
-   * there is no second request on the critical path for a texture nobody is
-   * meant to consciously see.
-   */
-  .masthead-grain {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
-    background-size: 180px 180px;
-    opacity: 0.04;
+    background-image: linear-gradient(
+      to bottom,
+      rgb(var(--masthead-void) / 0.72) 0,
+      rgb(var(--masthead-void) / 0) 7rem
+    );
   }
 
   /*
    * A wide, weak shadow under the display type. Not a drop shadow — at this
    * radius it never reads as an edge, it just keeps the counters open where the
-   * headline crosses the lit middle of the ring field.
+   * headline crosses the bottom of the dot field.
    */
   .masthead-type {
-    text-shadow: 0 1px 48px rgb(var(--masthead-void) / 0.55);
-  }
-
-  /*
-   * The plate leans.
-   *
-   * The whole picture answers the pointer instead of a spot on it: move across
-   * the page and the rings drift against you, the way a view through a window
-   * shifts when you move your head. On a centred radial composition this is the
-   * one gesture available that is about the picture rather than about the
-   * cursor — nothing is lit, nothing is drawn on top, the rings are simply
-   * somewhere slightly different.
-   *
-   * Only the picture moves. The grade and the grain sit outside this element on
-   * purpose: they are anchored to the layout, and a gradient that keeps the nav
-   * readable is worth nothing if it slides out from under the nav.
-   *
-   * The scale is the travel allowance. At 1.06 there is 3% of plate outside the
-   * band on each edge, which is comfortably more than the 16px the drift can
-   * spend, so no edge can ever swing into view.
-   */
-  .masthead-drift {
-    position: absolute;
-    inset: 0;
-  }
-
-  /*
-   * Applied by the script rather than sitting in the base rule, so a device
-   * that never gets the effect never gets the crop either: without this the
-   * 6% enlargement would be permanent on every phone and under reduced motion,
-   * paid for by everyone and enjoyed by no one.
-   */
-  .masthead-drift[data-drift] {
-    transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px), 0) scale(1.06);
+    text-shadow: 0 1px 48px rgb(var(--masthead-void) / 0.7);
   }
 }
 
