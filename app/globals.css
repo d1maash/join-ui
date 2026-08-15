@@ -162,25 +162,39 @@
 
 .dark {
   /*
-   * The dark ramp is warm charcoal rather than the light ramp negated.
-   * `--grey-0` is still the page and `--grey-1000` is still the ink, so every
-   * semantic alias below keeps its meaning; only the direction of travel flips.
-   * The darkest step stops well short of black, which is what keeps a large
-   * surface from looking like a hole and a hairline from looking like a
-   * scratch.
+   * The dark ramp is the masthead's black, extended into a scale.
+   * -------------------------------------------------------------------------
+   * This used to be a warm charcoal — `#13110f`, a soft brown-black, hue 58 all
+   * the way up — chosen so a large dark surface would not read as a hole. The
+   * masthead broke it. A one-bit picture is printed on true black by
+   * definition, and next to it the page was visibly a *different, browner*
+   * black: the hero read as a panel dropped onto the site rather than as the
+   * top of it, and the join between them was a colour change rather than a
+   * transition.
+   *
+   * So the page follows the picture. `--grey-0` is now exactly the plate's own
+   * black, the hue is a whisper of blue instead of a warm brown, and chroma is
+   * held at 0.003 across the whole scale — enough that the greys are not
+   * clinically dead, far too little to read as a tint.
+   *
+   * The old rule about stopping short of black still applies, and it now
+   * applies one step up: the page is the floor, and *every surface on it* — a
+   * card, a popover, a hairline — is lifted further than it used to be, because
+   * a step that was legible against `#13110f` disappears against `#050506`. The
+   * ramp below is not the old one desaturated; it is respaced.
    */
-  --grey-0: oklch(0.178 0.004 58); /* #13110f — the page */
-  --grey-50: oklch(0.228 0.005 58); /* #1e1c1a — cards */
-  --grey-100: oklch(0.268 0.006 58); /* #282523 — popovers */
-  --grey-200: oklch(0.302 0.006 58);
-  --grey-300: oklch(0.352 0.007 58); /* the hairline */
-  --grey-400: oklch(0.435 0.008 56);
-  --grey-500: oklch(0.545 0.008 56);
-  --grey-600: oklch(0.655 0.008 58);
-  --grey-700: oklch(0.762 0.007 60); /* #b5b1ad — secondary text */
-  --grey-800: oklch(0.855 0.006 62);
-  --grey-900: oklch(0.923 0.005 65);
-  --grey-1000: oklch(0.965 0.004 70); /* #f5f3f1 — the ink */
+  --grey-0: oklch(0.116 0.003 265); /* #050506 — the page, and the plate's black */
+  --grey-50: oklch(0.181 0.003 265); /* #131315 — cards */
+  --grey-100: oklch(0.222 0.003 265); /* #1c1c1f — popovers */
+  --grey-200: oklch(0.262 0.003 265);
+  --grey-300: oklch(0.318 0.003 265); /* the hairline */
+  --grey-400: oklch(0.408 0.003 265);
+  --grey-500: oklch(0.525 0.003 265);
+  --grey-600: oklch(0.642 0.003 265);
+  --grey-700: oklch(0.755 0.003 265); /* #b2b3b7 — secondary text */
+  --grey-800: oklch(0.852 0.002 265);
+  --grey-900: oklch(0.922 0.002 265);
+  --grey-1000: oklch(0.975 0.001 265); /* #f7f7f8 — the ink */
 
   --background: var(--grey-0);
   --foreground: var(--grey-1000);
@@ -218,27 +232,36 @@
   --warning-soft: var(--caution-soft);
 
   --code-bg: var(--grey-50);
-  --selection: oklch(0.965 0.004 70 / 0.16);
+  --selection: oklch(0.975 0.001 265 / 0.18);
 
   /*
    * The hues invert their roles rather than their values: the ink lightens so
    * it reads on a dark surface, the tint darkens, and the colour that sits on
    * a solid fill becomes dark ink.
+   *
+   * The tints came down with the page. They are read as a step above the
+   * surface behind them rather than as an absolute value, and the page dropped
+   * by 0.06 of lightness when it went from warm charcoal to the plate's black —
+   * left where they were, a callout would have sat higher off the page than a
+   * card does, which puts a coloured panel above the elevation that is supposed
+   * to mean "raised". The inks and the foregrounds are unchanged: one is read
+   * against the tint and the other against a solid fill, and neither of those
+   * moved.
    */
   --info: oklch(0.775 0.095 245);
-  --info-soft: oklch(0.315 0.045 245);
+  --info-soft: oklch(0.255 0.045 245);
   --info-foreground: oklch(0.18 0.035 245);
 
   --positive: oklch(0.785 0.1 155);
-  --positive-soft: oklch(0.31 0.04 155);
+  --positive-soft: oklch(0.25 0.04 155);
   --positive-foreground: oklch(0.18 0.03 155);
 
   --caution: oklch(0.825 0.1 78);
-  --caution-soft: oklch(0.325 0.042 66);
+  --caution-soft: oklch(0.265 0.042 66);
   --caution-foreground: oklch(0.19 0.03 66);
 
   --critical: oklch(0.75 0.115 22);
-  --critical-soft: oklch(0.325 0.055 22);
+  --critical-soft: oklch(0.265 0.055 22);
   --critical-foreground: oklch(0.18 0.035 22);
 
   /*
