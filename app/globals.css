@@ -549,107 +549,111 @@
   }
 
   /*
-   * The masthead photograph.
+   * The masthead plate.
    * -------------------------------------------------------------------------
-   * `public/hero-ridge.webp` is a monochrome ridge line under a misted sky,
-   * printed through a coarse halftone screen. The frame carries almost no
-   * chroma at all — mean channel spread across it is under 2/255 — so it runs
-   * on true greys rather than on the warm greige everything else is built
-   * from, and those are deliberately kept out of the token layer above: they
-   * describe one photograph, they are not a second theme.
+   * `public/hero-orbit-*.webp` is not a photograph. It is a black field with a
+   * system of hairline concentric rings drawn on it, a very wide diffuse bloom
+   * behind them, and two rules running the full width of the frame. There is no
+   * subject: the picture is a field for type to sit in the middle of, which is
+   * why the composition below is centred rather than set into a corner.
    *
-   * Only the shadow is declared. The rest of the frame's range — #fdfdfd at
-   * the lit centre of the sky, #e9e9e9 mist, #a4a3a4 on the dissolving far
-   * ridge, #504f51 lit scree, #272528 on the near slope — is in the picture
-   * itself and nothing draws it, so it stays sampled rather than declared.
+   * Two plates, not one crop. The rings run off the left and right edges of the
+   * wide plate, and cropping that to a phone leaves a slice of arc and a grey
+   * wash — the geometry that makes the frame worth having is exactly what a
+   * portrait crop throws away. The tall plate redraws it for the shape instead,
+   * with the ring centre higher and the lower third falling to black under the
+   * copy. `<picture>` picks between them on `media`, so only one is fetched.
    *
-   * The band does not follow the theme, which is the one decision here worth
-   * defending. A photograph arrives already graded and no amount of
-   * re-declaring variables underneath it will re-light it, so the masthead is
-   * fixed to the tones it was shot in — including inside the forced-light
-   * preview islands, where every other surface flips.
+   * Two colours are declared and nothing else. `--masthead-void` is the black
+   * the rings are printed on — near-neutral, a shade below the page, and
+   * deliberately not `--grey-0`, because the page is warm and the plate is not.
+   * `--masthead-floor` *is* the page, and it is here so the band can dissolve
+   * into what follows rather than meet it at a seam.
    */
-  .ridge {
-    /* #0d0c0f, the shadow the type sits in, as bare channels so the grades
-       below can vary alpha against it. */
-    --ridge-shadow: 13 12 15;
+  .masthead {
+    --masthead-void: 5 5 6;
+    --masthead-floor: 19 17 15; /* #13110f — `--grey-0`, as bare channels */
   }
 
   /*
-   * The grade. Four passes, all of them following the photograph rather than
-   * fighting it.
+   * The grade. Three passes, none of them about legibility.
    *
-   * First the head of the frame, which is the one pass that exists for a
-   * reason outside the picture: the nav bar has no surface of its own here, it
-   * sits directly on the photograph, and unlit sky behind it leaves the
-   * inactive links at about 2.9:1. Deep at the very top and gone by the time
-   * the sky has opened up, it reads as the vignette a lens would have given it
-   * anyway.
-   *
-   * Then a flat veil, because on a near-black page an ungraded misted sky is
-   * the brightest thing on screen by a wide margin; then one down the frame,
-   * which sinks the lower third into the shadow the headline sits in; then one
-   * across it, which keeps the left column quiet on wide screens where the crop
-   * otherwise pushes lit scree up behind the type.
+   * White on the brightest part of this plate is already past 12:1, so nothing
+   * here is darkening the picture to rescue the type. What they do is shape it:
+   * one under the bar, so the nav's links are read against a settled tone
+   * rather than against whatever the rings are doing at the top of the frame;
+   * one lifting off the bottom, which carries the band into the page colour so
+   * the section below starts without an edge; and a radial that pulls the four
+   * corners down, so the ring field reads as a single object floating in the
+   * middle of the band instead of as a texture tiled across it.
    */
-  .ridge-grade {
+  .masthead-grade {
     background-image:
       linear-gradient(
         to bottom,
-        rgb(var(--ridge-shadow) / 0.86) 0,
-        rgb(var(--ridge-shadow) / 0.74) 5rem,
-        rgb(var(--ridge-shadow) / 0) 13rem
+        rgb(var(--masthead-void) / 0.7) 0,
+        rgb(var(--masthead-void) / 0) 11rem
       ),
       linear-gradient(
-        rgb(var(--ridge-shadow) / 0.32),
-        rgb(var(--ridge-shadow) / 0.32)
+        to top,
+        rgb(var(--masthead-floor)) 0,
+        rgb(var(--masthead-floor) / 0) 15rem
       ),
-      linear-gradient(
-        to bottom,
-        rgb(var(--ridge-shadow) / 0.16) 0%,
-        rgb(var(--ridge-shadow) / 0) 26%,
-        rgb(var(--ridge-shadow) / 0.5) 58%,
-        rgb(var(--ridge-shadow) / 0.86) 84%,
-        rgb(var(--ridge-shadow) / 0.96) 100%
-      ),
-      linear-gradient(
-        to right,
-        rgb(var(--ridge-shadow) / 0.62) 0%,
-        rgb(var(--ridge-shadow) / 0.3) 40%,
-        rgb(var(--ridge-shadow) / 0) 72%
+      radial-gradient(
+        118% 76% at 50% 44%,
+        rgb(var(--masthead-void) / 0) 40%,
+        rgb(var(--masthead-void) / 0.78) 100%
       );
   }
 
   /*
-   * A wide, weak shadow under the display type. Not a drop shadow — at this
-   * radius it never reads as an edge, it just keeps the counters open where
-   * the headline crosses from shadow onto lit rock.
+   * Grain.
+   *
+   * The plate is generated at 4K and then drawn at a third of that on a laptop,
+   * which is enough downsampling to smooth away every trace of the grain it was
+   * made with — a large area of pure gradient, and the ring field's own
+   * banding with it. This puts a fixed-size film grain back on top at device
+   * resolution, where it stays one pixel regardless of how the plate is scaled.
+   *
+   * A 180px tile of `feTurbulence` rather than a noise bitmap: the whole thing
+   * is 300 bytes in the stylesheet, the browser rasterises the tile once, and
+   * there is no second request on the critical path for a texture nobody is
+   * meant to consciously see.
    */
-  .ridge-type {
-    text-shadow: 0 1px 44px rgb(var(--ridge-shadow) / 0.6);
+  .masthead-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    opacity: 0.055;
   }
 
   /*
-   * The frame leans.
+   * A wide, weak shadow under the display type. Not a drop shadow — at this
+   * radius it never reads as an edge, it just keeps the counters open where the
+   * headline crosses the lit middle of the ring field.
+   */
+  .masthead-type {
+    text-shadow: 0 1px 48px rgb(var(--masthead-void) / 0.55);
+  }
+
+  /*
+   * The plate leans.
    *
    * The whole picture answers the pointer instead of a spot on it: move across
-   * the page and the ridge drifts against you, the way a view through a window
-   * shifts when you move your head. It is the one gesture a photograph can make
-   * that is about the photograph rather than about the cursor — nothing is lit,
-   * nothing is drawn on top, the frame is simply somewhere slightly different.
+   * the page and the rings drift against you, the way a view through a window
+   * shifts when you move your head. On a centred radial composition this is the
+   * one gesture available that is about the picture rather than about the
+   * cursor — nothing is lit, nothing is drawn on top, the rings are simply
+   * somewhere slightly different.
    *
-   * Only the picture moves. The grade sits outside this element on purpose: it
-   * carries the gradient that keeps the nav readable at the top and the shadow
-   * the headline sits in at the bottom, and both of those are anchored to the
-   * layout, not to the photograph. Sliding them would put the whole contrast
-   * budget on a moving target.
+   * Only the picture moves. The grade and the grain sit outside this element on
+   * purpose: they are anchored to the layout, and a gradient that keeps the nav
+   * readable is worth nothing if it slides out from under the nav.
    *
-   * The scale is the travel allowance. At 1.08 there is 4% of frame outside the
-   * band on each edge — 58px horizontally, 31px vertically at this size — which
-   * is comfortably more than the drift can spend, so no edge can ever swing
-   * into view.
+   * The scale is the travel allowance. At 1.06 there is 3% of plate outside the
+   * band on each edge, which is comfortably more than the 16px the drift can
+   * spend, so no edge can ever swing into view.
    */
-  .ridge-parallax {
+  .masthead-drift {
     position: absolute;
     inset: 0;
   }
@@ -657,11 +661,11 @@
   /*
    * Applied by the script rather than sitting in the base rule, so a device
    * that never gets the effect never gets the crop either: without this the
-   * 8% enlargement would be permanent on every phone and under reduced motion,
+   * 6% enlargement would be permanent on every phone and under reduced motion,
    * paid for by everyone and enjoyed by no one.
    */
-  .ridge-parallax[data-drift] {
-    transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px), 0) scale(1.08);
+  .masthead-drift[data-drift] {
+    transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px), 0) scale(1.06);
   }
 }
 
