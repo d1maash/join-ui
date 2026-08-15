@@ -49,13 +49,13 @@ export function Masthead({ eyebrow, facts }: MastheadProps) {
      * of its height, and pulling up by only the row leaves a thread of page
      * colour above the plate.
      *
-     * No bottom border. The grade's second pass already carries the band into
-     * the page colour over the last 15rem, and a hairline drawn across the end
-     * of a fade is a seam announcing a join that is not there.
+     * The plate runs black all the way to the bottom edge and the page starts
+     * under a hairline, rather than the band fading into the page colour behind
+     * the figures. See the note on `.masthead-grade`.
      */
     <section
       id={MASTHEAD_ID}
-      className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden bg-[rgb(var(--masthead-void))]"
+      className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden border-b border-border bg-[rgb(var(--masthead-void))]"
     >
       <div aria-hidden="true" className="absolute inset-0">
         <MastheadDrift>
@@ -98,23 +98,6 @@ export function Masthead({ eyebrow, facts }: MastheadProps) {
         <div className="masthead-grain absolute inset-0" />
       </div>
 
-      {/*
-        Corner marks. Four hairline brackets set inside the band's edges, which
-        is the oldest trick there is for making a full-bleed picture read as a
-        frame rather than as a wall. They are held to `lg` — at phone widths the
-        band is barely wider than the copy and the marks land close enough to
-        the type to look like a border on it.
-      */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-6 hidden lg:block"
-      >
-        <span className="absolute top-0 left-0 size-3.5 border-t border-l border-white/20" />
-        <span className="absolute top-0 right-0 size-3.5 border-t border-r border-white/20" />
-        <span className="absolute bottom-0 left-0 size-3.5 border-b border-l border-white/20" />
-        <span className="absolute right-0 bottom-0 size-3.5 border-r border-b border-white/20" />
-      </div>
-
       <div className="relative flex min-h-[38rem] flex-col sm:min-h-[42rem] lg:min-h-[min(100svh,52rem)]">
         <div className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col items-center justify-center px-4 pt-32 pb-14 text-center sm:px-6 lg:pt-36 lg:pb-20">
           {/*
@@ -138,12 +121,12 @@ export function Masthead({ eyebrow, facts }: MastheadProps) {
           </p>
 
           {/*
-            Held to ~5.5rem and to a 13-character measure, so the line breaks
-            where it is written to break rather than wherever the viewport puts
-            it. Centred display type that rewraps on its own reads as an
-            accident every time it lands on a width nobody checked.
+            Held to 5rem and to a 13-character measure, so the line breaks where
+            it is written to break rather than wherever the viewport puts it.
+            Centred display type that rewraps on its own reads as an accident
+            every time it lands on a width nobody checked.
           */}
-          <h1 className="masthead-type mt-8 max-w-[13ch] text-[clamp(2.875rem,7vw,5.5rem)] leading-[0.98] font-semibold tracking-[-0.045em] text-white text-balance">
+          <h1 className="masthead-type mt-8 max-w-[13ch] text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white text-balance">
             Components you actually own
           </h1>
 

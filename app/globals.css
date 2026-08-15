@@ -564,28 +564,30 @@
    * with the ring centre higher and the lower third falling to black under the
    * copy. `<picture>` picks between them on `media`, so only one is fetched.
    *
-   * Two colours are declared and nothing else. `--masthead-void` is the black
-   * the rings are printed on — near-neutral, a shade below the page, and
+   * One colour is declared and nothing else. `--masthead-void` is the black the
+   * rings are printed on — near-neutral, a shade below the page, and
    * deliberately not `--grey-0`, because the page is warm and the plate is not.
-   * `--masthead-floor` *is* the page, and it is here so the band can dissolve
-   * into what follows rather than meet it at a seam.
    */
   .masthead {
     --masthead-void: 5 5 6;
-    --masthead-floor: 19 17 15; /* #13110f — `--grey-0`, as bare channels */
   }
 
   /*
-   * The grade. Three passes, none of them about legibility.
+   * The grade. Two passes, neither of them about legibility.
    *
    * White on the brightest part of this plate is already past 12:1, so nothing
    * here is darkening the picture to rescue the type. What they do is shape it:
    * one under the bar, so the nav's links are read against a settled tone
-   * rather than against whatever the rings are doing at the top of the frame;
-   * one lifting off the bottom, which carries the band into the page colour so
-   * the section below starts without an edge; and a radial that pulls the four
-   * corners down, so the ring field reads as a single object floating in the
-   * middle of the band instead of as a texture tiled across it.
+   * rather than against whatever the rings are doing at the top of the frame,
+   * and a radial that pulls the four corners down so the ring field reads as a
+   * single object floating in the middle of the band rather than as a texture
+   * tiled across it.
+   *
+   * The band does not fade into the page. That was tried, and the fade had to
+   * reach the floor before the figures at the bottom of the band, which left
+   * the darkest part of the picture in the middle and both ends lighter — a
+   * hero that gets brighter as it ends. Ending on black and letting the page's
+   * own warm charcoal start below a hairline is the same join, drawn once.
    */
   .masthead-grade {
     background-image:
@@ -594,15 +596,10 @@
         rgb(var(--masthead-void) / 0.7) 0,
         rgb(var(--masthead-void) / 0) 11rem
       ),
-      linear-gradient(
-        to top,
-        rgb(var(--masthead-floor)) 0,
-        rgb(var(--masthead-floor) / 0) 15rem
-      ),
       radial-gradient(
-        118% 76% at 50% 44%,
-        rgb(var(--masthead-void) / 0) 40%,
-        rgb(var(--masthead-void) / 0.78) 100%
+        124% 82% at 50% 46%,
+        rgb(var(--masthead-void) / 0) 46%,
+        rgb(var(--masthead-void) / 0.72) 100%
       );
   }
 
