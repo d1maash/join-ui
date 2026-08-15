@@ -98,27 +98,29 @@ export function Masthead({ eyebrow, facts }: MastheadProps) {
         <div className="masthead-grain absolute inset-0" />
       </div>
 
-      <div className="relative flex min-h-[38rem] flex-col sm:min-h-[42rem] lg:min-h-[min(100svh,52rem)]">
-        <div className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col items-center justify-center px-4 pt-32 pb-14 text-center sm:px-6 lg:pt-36 lg:pb-20">
+      {/*
+        The copy hangs from the bottom of the band rather than sitting in the
+        middle of it, and that is the plate's decision rather than a taste one.
+        The light point is a third of the way down the frame; centring the stack
+        put the eyebrow directly through it, with the rules either side crossing
+        a blown highlight and the label unreadable inside it. Bottom-aligned,
+        the light gets clear air above the first line, the headline lands in the
+        ray fan where the picture is brightest behind it, and the dead band that
+        centring left between the buttons and the figures goes away.
+      */}
+      <div className="relative flex min-h-[46rem] flex-col lg:min-h-[min(100svh,52rem)]">
+        <div className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col items-center justify-end px-4 pt-40 pb-12 text-center sm:px-6 lg:pb-16">
           {/*
-            The eyebrow is a line, not a chip. A pill with a dot in it is the
-            single most over-used object on a dark landing page, and it puts a
-            filled shape directly above the one place on this site where the
-            type is supposed to be the only thing happening. Rules either side
-            do the same job — this is an annotation, read it first — without
-            drawing a second object.
+            The eyebrow is a line of type and nothing else. A pill with a dot in
+            it is the single most over-used object on a dark landing page, and
+            it puts a filled shape directly above the one place on this site
+            where the type is supposed to be the only thing happening. Rules
+            either side were tried instead and were worse in a way that is
+            specific to this plate: they run out horizontally into the ring
+            arcs, and two sets of thin light lines crossing at a shallow angle
+            is noise wherever they happen to meet.
           */}
-          <p className="flex w-full max-w-[34rem] items-center gap-4 text-white/45">
-            <span
-              aria-hidden="true"
-              className="h-px flex-1 bg-gradient-to-r from-transparent to-white/25"
-            />
-            <span className="label-micro">{eyebrow}</span>
-            <span
-              aria-hidden="true"
-              className="h-px flex-1 bg-gradient-to-l from-transparent to-white/25"
-            />
-          </p>
+          <p className="masthead-type label-micro text-white/55">{eyebrow}</p>
 
           {/*
             Held to 5rem and to a 13-character measure, so the line breaks where

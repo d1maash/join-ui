@@ -551,18 +551,24 @@
   /*
    * The masthead plate.
    * -------------------------------------------------------------------------
-   * `public/hero-orbit-*.webp` is not a photograph. It is a black field with a
-   * system of hairline concentric rings drawn on it, a very wide diffuse bloom
-   * behind them, and two rules running the full width of the frame. There is no
-   * subject: the picture is a field for type to sit in the middle of, which is
-   * why the composition below is centred rather than set into a corner.
+   * `public/hero-orbit-*.webp` is not a photograph. A single blown point of
+   * cool white sits a third of the way down the frame; a system of hairline
+   * rings recedes from it in steep perspective, running off both edges; light
+   * falls away from the point in faint volumetric rays that dissolve before
+   * they reach the bottom, and everything below is crushed to black.
+   *
+   * The point is the composition, and it is deliberately not in the middle. The
+   * copy hangs under it in the rays — the headline reads as the thing the light
+   * is falling on rather than as type parked over a texture, which is what the
+   * first version of this plate was: an evenly-lit ring field, symmetrical,
+   * with nothing anywhere to look at.
    *
    * Two plates, not one crop. The rings run off the left and right edges of the
    * wide plate, and cropping that to a phone leaves a slice of arc and a grey
    * wash — the geometry that makes the frame worth having is exactly what a
    * portrait crop throws away. The tall plate redraws it for the shape instead,
-   * with the ring centre higher and the lower third falling to black under the
-   * copy. `<picture>` picks between them on `media`, so only one is fetched.
+   * steeper, with the same light point and the same black floor under the copy.
+   * `<picture>` picks between them on `media`, so only one is fetched.
    *
    * One colour is declared and nothing else. `--masthead-void` is the black the
    * rings are printed on — near-neutral, a shade below the page, and
@@ -573,15 +579,15 @@
   }
 
   /*
-   * The grade. Two passes, neither of them about legibility.
+   * The grade. Two passes, and both of them are restraint rather than rescue.
    *
-   * White on the brightest part of this plate is already past 12:1, so nothing
-   * here is darkening the picture to rescue the type. What they do is shape it:
-   * one under the bar, so the nav's links are read against a settled tone
-   * rather than against whatever the rings are doing at the top of the frame,
-   * and a radial that pulls the four corners down so the ring field reads as a
-   * single object floating in the middle of the band rather than as a texture
-   * tiled across it.
+   * The plate arrives graded — corners already crushed, floor already black —
+   * so the heavy four-pass wash the previous photographic masthead needed would
+   * only flatten what makes this one worth looking at. What is left is a short
+   * fall under the bar, so the nav's links are read against a settled tone
+   * instead of against the top of the ray fan, and a very shallow radial that
+   * takes the last of the light out of the left and right margins. Both stop
+   * well clear of the light point: nothing here is allowed to touch it.
    *
    * The band does not fade into the page. That was tried, and the fade had to
    * reach the floor before the figures at the bottom of the band, which left
@@ -593,13 +599,13 @@
     background-image:
       linear-gradient(
         to bottom,
-        rgb(var(--masthead-void) / 0.7) 0,
-        rgb(var(--masthead-void) / 0) 11rem
+        rgb(var(--masthead-void) / 0.62) 0,
+        rgb(var(--masthead-void) / 0) 9rem
       ),
       radial-gradient(
-        124% 82% at 50% 46%,
-        rgb(var(--masthead-void) / 0) 46%,
-        rgb(var(--masthead-void) / 0.72) 100%
+        118% 96% at 50% 40%,
+        rgb(var(--masthead-void) / 0) 58%,
+        rgb(var(--masthead-void) / 0.55) 100%
       );
   }
 
@@ -620,7 +626,7 @@
   .masthead-grain {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
     background-size: 180px 180px;
-    opacity: 0.055;
+    opacity: 0.04;
   }
 
   /*
