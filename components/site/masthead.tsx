@@ -77,12 +77,12 @@ export function Masthead({ facts }: MastheadProps) {
           `fetchPriority` puts it ahead of the font, since the plate is the
           whole of the first paint and the type arrives over it either way.
 
-          The plate does not move. A pointer parallax was built for it and then
-          taken out: this picture is one-bit, and a dither has no sub-pixel to
-          translate into — every frame of a fractional transform resamples the
-          dot grid into grey mush, which is the one thing a 1-bit image must
-          never do. It is also, at this size, a full-screen repaint bought with
-          nothing but a cursor.
+          The plate itself never moves. A pointer parallax was built for it and
+          then taken out: this picture is one-bit, and a dither has no sub-pixel
+          to translate into — every frame of a fractional transform resamples
+          the dot grid into grey mush, which is the one thing a 1-bit image must
+          never do. What answers the pointer instead is `MastheadLens` below,
+          which lights the picture without touching a pixel of it.
         */}
         <picture>
           <source
