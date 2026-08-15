@@ -589,9 +589,68 @@
    * every scale, at the cost of the dot grid beating very slightly. That beat
    * is what a dither looks like on a screen it was not authored for, and it is
    * the honest failure mode of the two.
+   *
+   * Printed at half strength. At full white the dot field was the brightest
+   * thing on the page by a distance — a 1-bit picture has no midtone to hold
+   * itself back with, so a lit forearm is simply #fff across a third of the
+   * screen, and the headline it is behind has nowhere left to go. Dropping the
+   * layer's opacity is the one dimming move available that does not touch the
+   * grid: the black stays black because it is being composited onto black, and
+   * only the white comes down, to the grey the torch below reads as its
+   * undeveloped state.
    */
   .masthead-plate {
     image-rendering: pixelated;
+    opacity: 0.5;
+  }
+
+  /*
+   * The torch. `MastheadLens` moves it; this describes it.
+   *
+   * `overlay` is the whole trick and it is worth stating why, because `screen`
+   * or `plus-lighter` are the obvious choices and both are wrong here. Those
+   * add light to everything under them, so the black between the dots lifts to
+   * grey and the disc reads as a smudge on the picture. `overlay` is
+   * conditional on the backdrop: below half luminance it multiplies, above it
+   * it screens. Black stays black, the half-strength dots go to white, and the
+   * result reads as a circle of the picture being developed rather than as a
+   * light being shone on it.
+   *
+   * The gradient ends at zero alpha rather than at neutral grey, so the disc
+   * simply stops contributing at its edge — there is no rim, and nothing to
+   * line up with the band's own black.
+   *
+   * The offset margin is half the size, so the transform can be handed raw
+   * pointer coordinates and the disc lands centred on them.
+   */
+  .masthead-lens {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 44rem;
+    height: 44rem;
+    margin: -22rem 0 0 -22rem;
+    pointer-events: none;
+    background-image: radial-gradient(
+      closest-side,
+      rgb(255 255 255 / 0.95),
+      rgb(255 255 255 / 0.62) 34%,
+      rgb(255 255 255 / 0.22) 58%,
+      rgb(255 255 255 / 0) 76%
+    );
+    mix-blend-mode: overlay;
+    transform: translate3d(var(--lens-x, 50%), var(--lens-y, 50%), 0);
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out-soft);
+  }
+
+  /*
+   * Set by the script once a pointer has actually been somewhere, so the torch
+   * fades up where the reader is rather than appearing pre-lit in the middle of
+   * the band on a page nobody has touched yet.
+   */
+  .masthead-lens[data-on] {
+    opacity: 1;
   }
 
   /*

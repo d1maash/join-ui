@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { MASTHEAD_ID } from "@/components/site/header-shell"
+import { MastheadLens } from "@/components/site/masthead-lens"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -111,6 +112,15 @@ export function Masthead({ facts }: MastheadProps) {
         </picture>
 
         <div className="masthead-grade absolute inset-0" />
+
+        {/*
+          Last in the layer, because what it blends with is everything painted
+          before it — the plate and the grade — and nothing painted after. The
+          copy lives in the next sibling, which is `relative` and therefore
+          paints above this: the headline is never touched by the torch, only
+          the picture behind it is.
+        */}
+        <MastheadLens />
       </div>
 
       {/*
