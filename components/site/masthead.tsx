@@ -98,7 +98,15 @@ export function Masthead({ facts }: MastheadProps) {
             alt=""
             fetchPriority="high"
             decoding="async"
-            className="masthead-plate absolute inset-0 size-full object-cover"
+            /*
+             * Anchored to the top, not centred. The plate is 16:9 and the band
+             * is wider than that on a large monitor, so `cover` crops it
+             * vertically — and a centred crop takes the same amount off the
+             * top, which walks the forearms up under the nav until they are
+             * running behind the logo. Every pixel the crop can take from the
+             * bottom is black, so it takes it all from there instead.
+             */
+            className="masthead-plate absolute inset-0 size-full object-cover object-top"
           />
         </picture>
 
@@ -115,7 +123,7 @@ export function Masthead({ facts }: MastheadProps) {
         is never behind more than the first line's ascenders.
       */}
       <div className="relative flex min-h-[54rem] flex-col lg:min-h-[min(100svh,52rem)]">
-        <div className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col items-center justify-end px-4 pt-40 pb-12 text-center sm:px-6 lg:pb-16">
+        <div className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col items-center justify-end px-4 pt-40 pb-12 text-center sm:px-6 lg:pb-10">
           {/*
             Held to 5rem and to a 13-character measure, so the line breaks where
             it is written to break rather than wherever the viewport puts it.

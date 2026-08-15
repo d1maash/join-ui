@@ -595,17 +595,26 @@
   }
 
   /*
-   * The grade, and it is almost nothing.
+   * The grade. Two passes.
    *
-   * One short fall under the bar, so the nav's links are not read against bare
-   * dots, and that is the entire list. The radial vignette that shaped the
-   * previous plate is gone: the source is already pure black everywhere the
-   * subject is not, so there was nothing left for it to darken except the
-   * subject itself.
+   * The first is a short fall under the bar, so the nav's links are not read
+   * against bare dots. It is a compromise — it greys the dots it crosses — so
+   * it is shallow, stops at 7rem, and the plates are composed with their
+   * subject clear of the top of the frame.
    *
-   * Even this one pass is a compromise — it greys the dots it crosses — which
-   * is why it is shallow, stops at 7rem, and why the plates are composed with
-   * their subject clear of the top of the frame.
+   * The second is the floor, and it is doing real work. The picture is
+   * full-bleed, so the hands are drawn larger on a wide monitor than on a
+   * laptop while the band's height barely changes — at 1920 the lower hand
+   * hangs a hundred and fifty pixels further down than it does at 1440, and
+   * lands in the middle of the sub-heading. No crop or object-position fixes
+   * that, because the subject's size is tied to the viewport's width and the
+   * copy's position is tied to its height.
+   *
+   * So the bottom of the frame is simply painted out. Solid void to a fifth of
+   * the band and clear by half of it: anything that hangs into the copy
+   * dissolves into black rather than colliding with it, which is what a dither
+   * on black does naturally anyway. Being in percentages, it holds the same
+   * proportion of the picture at every height the band can take.
    *
    * The band does not fade into the page. That was tried, and the fade had to
    * reach the floor before the figures at the bottom of the band, which left
@@ -614,11 +623,18 @@
    * own warm charcoal start below a hairline is the same join, drawn once.
    */
   .masthead-grade {
-    background-image: linear-gradient(
-      to bottom,
-      rgb(var(--masthead-void) / 0.72) 0,
-      rgb(var(--masthead-void) / 0) 7rem
-    );
+    background-image:
+      linear-gradient(
+        to bottom,
+        rgb(var(--masthead-void) / 0.72) 0,
+        rgb(var(--masthead-void) / 0) 7rem
+      ),
+      linear-gradient(
+        to top,
+        rgb(var(--masthead-void)) 0,
+        rgb(var(--masthead-void)) 26%,
+        rgb(var(--masthead-void) / 0) 58%
+      );
   }
 
   /*
