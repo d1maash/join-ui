@@ -691,8 +691,8 @@
       linear-gradient(
         to top,
         rgb(var(--masthead-void)) 0,
-        rgb(var(--masthead-void)) 26%,
-        rgb(var(--masthead-void) / 0) 58%
+        rgb(var(--masthead-void)) 14%,
+        rgb(var(--masthead-void) / 0) 48%
       );
   }
 
