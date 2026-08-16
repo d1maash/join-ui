@@ -109,19 +109,23 @@ export function Masthead({ facts }: MastheadProps) {
       <div className="relative flex min-h-[54rem] flex-col lg:min-h-[min(100svh,52rem)]">
         <div className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col items-center justify-end px-4 pt-40 pb-12 text-center sm:px-6 lg:pb-10">
           {/*
-            Held to 5rem and to a 13-character measure, so the line breaks where
-            it is written to break rather than wherever the viewport puts it.
-            Centred display type that rewraps on its own reads as an accident
-            every time it lands on a width nobody checked.
+            Two sentences, and the break between them is written rather than
+            left to the viewport. `max-w` was doing that job before, back when
+            the line was one clause and could be squeezed until it folded in the
+            right place; two sentences of almost identical length have exactly
+            one correct break and no width can be trusted to find it. Centred
+            display type that rewraps on its own reads as an accident every time
+            it lands on a size nobody checked.
           */}
-          <h1 className="masthead-type max-w-[13ch] text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white text-balance">
-            Components you actually own
+          <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white">
+            Copy the code.
+            <br />
+            Keep the code.
           </h1>
 
-          <p className="masthead-type mt-7 max-w-[52ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60">
-            Accessible, animated React components for Next.js. Install them with
-            the shadcn CLI, copy the source, or hand the generated prompt to your
-            coding agent.
+          <p className="masthead-type mt-7 max-w-[46ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60">
+            Animated React components that install into your repo and stay
+            there.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
