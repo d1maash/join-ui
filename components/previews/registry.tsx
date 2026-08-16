@@ -22,12 +22,14 @@ const StatusTimelinePreview = dynamic(() => import("./status-timeline-preview"))
 const FocusStackPreview = dynamic(() => import("./focus-stack-preview"))
 const AgentHivePreview = dynamic(() => import("./agent-hive-preview"))
 const ToolTracePreview = dynamic(() => import("./tool-trace-preview"))
+const GlassCrestPreview = dynamic(() => import("./glass-crest-preview"))
 
 export const previews: Record<string, () => ReactNode> = {
   "status-timeline": () => <StatusTimelinePreview />,
   "focus-stack": () => <FocusStackPreview />,
   "agent-hive": () => <AgentHivePreview />,
   "tool-trace": () => <ToolTracePreview />,
+  "glass-crest": () => <GlassCrestPreview />,
 }
 
 export function renderPreview(slug: string): ReactNode | null {
