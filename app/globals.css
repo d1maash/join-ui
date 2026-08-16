@@ -672,7 +672,7 @@
    * for one paint, rather than collapsed to nothing.
    */
   .masthead-wind {
-    --gust-w: 30rem;
+    --gust-w: 42rem;
     /* Vertical room for the gust to bend into without exposing its own edge. */
     --gust-slack: 6rem;
     position: absolute;
@@ -704,11 +704,11 @@
     transform: translate3d(var(--wind-x, -100%), var(--wind-y, 0px), 0);
 
     --gust-wisps:
-      radial-gradient(58% 11% at 34% 14%, #000 0%, transparent 72%),
-      radial-gradient(70% 8% at 58% 31%, #000 0%, transparent 74%),
-      radial-gradient(52% 14% at 41% 49%, #000 0%, transparent 70%),
-      radial-gradient(64% 7% at 66% 66%, #000 0%, transparent 74%),
-      radial-gradient(46% 10% at 28% 83%, #000 0%, transparent 72%);
+      radial-gradient(66% 12% at 32% 13%, #000 0%, transparent 74%),
+      radial-gradient(78% 9% at 56% 30%, #000 0%, transparent 76%),
+      radial-gradient(60% 15% at 39% 48%, #000 0%, transparent 72%),
+      radial-gradient(72% 8% at 64% 65%, #000 0%, transparent 76%),
+      radial-gradient(53% 11% at 26% 82%, #000 0%, transparent 74%);
 
     -webkit-mask-image: var(--gust-wisps);
     mask-image: var(--gust-wisps);

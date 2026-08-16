@@ -2,8 +2,16 @@
 
 import * as React from "react"
 
-/** Seconds for one gust to cross the band, left edge to right. */
-const PERIOD = 13
+/**
+ * Seconds for one gust to cross the band, left edge to right.
+ *
+ * Long, and it has to be. The gust is now wider than half a large monitor, so
+ * at a quicker period the leading wisps would still be entering as the trailing
+ * ones left — the band would never be at rest and the movement would read as a
+ * loop rather than as weather. This is slow enough that a reader gets a still
+ * picture, then a crossing, then a still picture again.
+ */
+const PERIOD = 18
 
 /** Furthest the gust bends from the band's middle, in pixels. */
 const BEND = 54
