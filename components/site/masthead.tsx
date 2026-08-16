@@ -190,17 +190,12 @@ function Plate({ className }: { className?: string }) {
          * Anchored to the top, not centred. The plate is 16:9 and the band is
          * wider than that on a large monitor, so `cover` crops it vertically —
          * and a centred crop takes the same amount off the top, which walks the
-         * forearms up under the nav until they are running behind the logo.
-         * Every pixel the crop can take from the bottom is black, so it takes it
-         * all from there instead.
-         *
-         * Both copies are laid out identically, against boxes that are the same
-         * size by construction. If that ever stopped being true the developed
-         * disc would show the picture at a different crop from the ghost around
-         * it, and the loupe would read as a misregistered print.
+         * dust up under the nav until it is running behind the logo. Every pixel
+         * the crop can take from the bottom is black, so it takes it all from
+         * there instead.
          */
         className={cn(
-          "masthead-shot absolute inset-0 size-full object-cover object-top",
+          "masthead-plate absolute inset-0 size-full object-cover object-top",
           className
         )}
       />

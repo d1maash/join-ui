@@ -624,105 +624,50 @@
    * every scale, at the cost of the dot grid beating very slightly. That beat
    * is what a dither looks like on a screen it was not authored for, and it is
    * the honest failure mode of the two.
-   */
-  .masthead-shot {
-    image-rendering: pixelated;
-  }
-
-  /*
-   * The resting print.
    *
+   * The opacity is the one dimming move available that does not touch the grid.
    * At full white the dot field was the brightest thing on the page by a
-   * distance — a 1-bit picture has no midtone to hold itself back with, so a
-   * lit forearm is simply #fff across a third of the screen and the headline in
-   * front of it has nowhere left to go. Dropping the layer's opacity is the one
-   * dimming move available that does not touch the grid: the black stays black
-   * because it is being composited onto black, and only the white comes down.
-   *
-   * Two values, because the plate has two jobs depending on what the device can
-   * do. Where there is a pointer this is the *undeveloped* state and it is held
-   * well back, so that the loupe has somewhere to travel to. Where there is
-   * not, there is no loupe and no second state, and the picture has to carry
-   * the band on its own — so it is printed considerably stronger and that is
-   * simply how it looks.
+   * distance — a one-bit picture has no midtone to hold itself back with, so a
+   * lit cloud is simply #fff across a third of the screen and the headline in
+   * front of it has nowhere left to go. Dropping the layer instead leaves the
+   * black black, because it is being composited onto black, and brings only the
+   * white down.
    */
   .masthead-plate {
-    opacity: 0.62;
-  }
-
-  @media (hover: hover) {
-    .masthead-plate {
-      opacity: 0.34;
-    }
+    image-rendering: pixelated;
+    opacity: 0.5;
   }
 
   /*
-   * The loupe. `MastheadLoupe` moves it; this is its geometry.
+   * The plate leans, one cell at a time.
    *
-   * A fixed disc with a fixed mask, translated across the band, holding a full
-   * strength copy of the plate that is translated by exactly the opposite
-   * amount so it stays pinned to the band underneath. Both transforms stay on
-   * the compositor and the mask never changes, so the window slides without a
-   * single repaint and without resampling one dot. The long note in the
-   * component covers why that mattered enough to build it this way.
+   * The whole picture answers the pointer instead of a spot on it: move across
+   * the page and the dust drifts against you, the way a view through a window
+   * shifts when you move your head. But it does not glide. Every position it
+   * can take is a whole number of dither cells from centre, so it holds, clicks
+   * over by one, and holds again — the long note in `MastheadDrift` covers why
+   * a fractional translation would turn the entire picture to grey mush for the
+   * duration of the movement, and why the cell has to be measured rather than
+   * declared here.
    *
-   * `--band-w` and `--band-h` are written by the script. The fallbacks are the
-   * viewport width and the inner copy's own box, which is what the element
-   * would have measured anyway before the first frame lands — wrong by a little
-   * for one paint, rather than collapsed to nothing.
+   * The overscan is the travel allowance, and it is a box rather than a scale
+   * for the same reason: `scale(1.05)` would resample the plate permanently on
+   * every device that gets the effect. Growing the element by 2.5rem on each
+   * edge instead lets `cover` crop a little more off a picture whose margins
+   * are black anyway, and no pixel is filtered. At 40px of slack against 26px
+   * of drift, no edge can swing into view.
+   *
+   * The box is only applied once the script has confirmed the effect is running,
+   * so a phone and a reader under reduced motion never pay for the crop.
    */
-  .masthead-loupe {
-    --loupe-size: 34rem;
+  .masthead-drift {
     position: absolute;
     inset: 0;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity var(--duration-slow) var(--ease-out-soft);
   }
 
-  /*
-   * Set by the script once a pointer has actually been somewhere, so the loupe
-   * fades up where the reader is rather than appearing pre-developed in the
-   * middle of the band on a page nobody has touched yet.
-   */
-  .masthead-loupe[data-on] {
-    opacity: 1;
-  }
-
-  .masthead-loupe-disc {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--loupe-size);
-    height: var(--loupe-size);
-    /* Half the size back, so the transform can take raw pointer coordinates. */
-    margin: calc(var(--loupe-size) / -2) 0 0 calc(var(--loupe-size) / -2);
-    transform: translate3d(var(--loupe-x, 50vw), var(--loupe-y, 40vh), 0);
-    /*
-     * Solid across the middle third and out to nothing by three quarters. A
-     * hard edge would read as a cut-out sitting on the picture; this reads as
-     * the picture resolving, which is the only difference between the two.
-     */
-    -webkit-mask-image: radial-gradient(
-      closest-side,
-      #000 0%,
-      #000 30%,
-      transparent 74%
-    );
-    mask-image: radial-gradient(closest-side, #000 0%, #000 30%, transparent 74%);
-  }
-
-  .masthead-loupe-shot {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--band-w, 100vw);
-    height: var(--band-h, 100%);
-    transform: translate3d(
-      calc(var(--loupe-size) / 2 - var(--loupe-x, 50vw)),
-      calc(var(--loupe-size) / 2 - var(--loupe-y, 40vh)),
-      0
-    );
+  .masthead-drift[data-drift] {
+    inset: -2.5rem;
+    transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px), 0);
   }
 
   /*
