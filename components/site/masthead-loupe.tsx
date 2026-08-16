@@ -15,6 +15,39 @@ const EASE = 0.16
 /** Below this the loupe has effectively arrived and the loop can stop. */
 const SETTLED = 0.15
 
+const HOVERS = "(hover: hover)"
+const CALM = "(prefers-reduced-motion: reduce)"
+
+/**
+ * Whether this device should get the loupe at all.
+ *
+ * A lens that follows a pointer needs a pointer that hovers, and under reduced
+ * motion an unrequested thing chasing the cursor is exactly what the setting is
+ * asking not to happen.
+ *
+ * Read through `useSyncExternalStore` rather than mirrored into state in an
+ * effect, because that is what these are: external, mutable and able to change
+ * under a running page — plug in a mouse, or turn the motion preference off in
+ * system settings, and this re-arms on its own.
+ */
+function readArmed() {
+  return window.matchMedia(HOVERS).matches && !window.matchMedia(CALM).matches
+}
+
+function subscribeArmed(onStoreChange: () => void) {
+  const hover = window.matchMedia(HOVERS)
+  const calm = window.matchMedia(CALM)
+  hover.addEventListener("change", onStoreChange)
+  calm.addEventListener("change", onStoreChange)
+  return () => {
+    hover.removeEventListener("change", onStoreChange)
+    calm.removeEventListener("change", onStoreChange)
+  }
+}
+
+/** The server has no pointer and no preference to read, so it answers no. */
+const armedOnServer = () => false
+
 /**
  * The loupe.
  *
@@ -49,14 +82,17 @@ export function MastheadLoupe({ children }: { children: React.ReactNode }) {
   /*
    * Whether the colour print is in the document at all.
    *
-   * Not a styling concern — a request one. `opacity: 0` does not stop an image
-   * loading, so leaving the colour plate in the markup would put 34 KB of
-   * photograph onto every phone that can never show it, which is the worst
-   * place on the site to spend bytes. Held false through the server render and
-   * flipped on only once the effect below has confirmed a pointer, so the file
-   * is asked for exactly when it can be used.
+   * This is not a styling concern, it is a request one. `opacity: 0` does not
+   * stop an image loading, so leaving the colour plate in the markup would put
+   * 34 KB of photograph onto every phone that can never show it — the worst
+   * place on the site to spend bytes. False on the server and on any device
+   * without a pointer, so the file is asked for exactly when it can be used.
    */
-  const [armed, setArmed] = React.useState(false)
+  const armed = React.useSyncExternalStore(
+    subscribeArmed,
+    readArmed,
+    armedOnServer
+  )
 
   React.useEffect(() => {
     const node = ref.current
@@ -64,14 +100,11 @@ export function MastheadLoupe({ children }: { children: React.ReactNode }) {
     if (!node || !band) return
 
     /*
-     * A lens that follows a pointer needs a pointer that hovers, and under
-     * reduced motion an unrequested thing chasing the cursor is exactly what
-     * the setting is asking not to happen. In both cases nothing here runs and
-     * the loupe keeps its zero opacity — the band stays monochrome, which is a
-     * complete state rather than a degraded one.
+     * Nothing below runs on a device without a pointer, and the loupe keeps its
+     * zero opacity — the band stays monochrome, which is a complete state
+     * rather than a degraded one.
      */
-    if (!window.matchMedia("(hover: hover)").matches) return
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    if (!armed) return
 
     /*
      * The band's box, written back onto the node for the inner copy to size
@@ -169,12 +202,12 @@ export function MastheadLoupe({ children }: { children: React.ReactNode }) {
       if (frame) cancelAnimationFrame(frame)
       delete node.dataset.on
     }
-  }, [])
+  }, [armed])
 
   return (
     <div ref={ref} aria-hidden="true" className="masthead-loupe">
       <div className="masthead-loupe-disc">
-        <div className="masthead-loupe-shot">{children}</div>
+        <div className="masthead-loupe-shot">{armed ? children : null}</div>
       </div>
     </div>
   )

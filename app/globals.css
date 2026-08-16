@@ -639,35 +639,92 @@
   }
 
   /*
-   * The plate leans, one cell at a time.
+   * The colour print.
    *
-   * The whole picture answers the pointer instead of a spot on it: move across
-   * the page and the dust drifts against you, the way a view through a window
-   * shifts when you move your head. But it does not glide. Every position it
-   * can take is a whole number of dither cells from centre, so it holds, clicks
-   * over by one, and holds again — the long note in `MastheadDrift` covers why
-   * a fractional translation would turn the entire picture to grey mush for the
-   * duration of the movement, and why the cell has to be measured rather than
-   * declared here.
+   * Deliberately *not* `pixelated`, and deliberately not dithered. Matching the
+   * mono plate's texture was the obvious move and it is the wrong one: the
+   * whole event is that the picture stops being a print and becomes the
+   * photograph, and a colour dither would only have been the same print in more
+   * inks. Smooth, continuous tone, inside a circle cut out of a halftone — the
+   * contrast between the two surfaces is the effect.
    *
-   * The overscan is the travel allowance, and it is a box rather than a scale
-   * for the same reason: `scale(1.05)` would resample the plate permanently on
-   * every device that gets the effect. Growing the element by 2.5rem on each
-   * edge instead lets `cover` crop a little more off a picture whose margins
-   * are black anyway, and no pixel is filtered. At 40px of slack against 26px
-   * of drift, no edge can swing into view.
-   *
-   * The box is only applied once the script has confirmed the effect is running,
-   * so a phone and a reader under reduced motion never pay for the crop.
+   * Held at 0.9 so it sits in the same room as the rest of the band. At full
+   * strength the disc read as a hole in the page rather than as the layer
+   * underneath it.
    */
-  .masthead-drift {
-    position: absolute;
-    inset: 0;
+  .masthead-colour {
+    opacity: 0.9;
   }
 
-  .masthead-drift[data-drift] {
-    inset: -2.5rem;
-    transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px), 0);
+  /*
+   * The loupe. `MastheadLoupe` moves it; this is its geometry.
+   *
+   * A fixed disc with a fixed mask, translated across the band, holding the
+   * colour print translated by exactly the opposite amount so it stays pinned
+   * to the band underneath. Both transforms stay on the compositor and the mask
+   * never changes, so the window slides without a single repaint — and, since
+   * what it slides over is a dither, without a frame in which the dot grid is
+   * resampled. The long note in the component covers why that mattered enough
+   * to build it this way.
+   *
+   * `--band-w` and `--band-h` are written by the script. The fallbacks are the
+   * viewport width and the inner copy's own box, which is what the element
+   * would have measured anyway before the first frame lands — wrong by a little
+   * for one paint, rather than collapsed to nothing.
+   */
+  .masthead-loupe {
+    --loupe-size: 34rem;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out-soft);
+  }
+
+  /*
+   * Set by the script once a pointer has actually been somewhere, so the colour
+   * fades up where the reader is rather than appearing in the middle of the
+   * band on a page nobody has touched yet.
+   */
+  .masthead-loupe[data-on] {
+    opacity: 1;
+  }
+
+  .masthead-loupe-disc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--loupe-size);
+    height: var(--loupe-size);
+    /* Half the size back, so the transform can take raw pointer coordinates. */
+    margin: calc(var(--loupe-size) / -2) 0 0 calc(var(--loupe-size) / -2);
+    transform: translate3d(var(--loupe-x, 50vw), var(--loupe-y, 40vh), 0);
+    /*
+     * Solid across the middle third and out to nothing by three quarters. A
+     * hard edge would read as a cut-out sitting on the picture; this reads as
+     * the colour bleeding through it, which is the only difference between the
+     * two.
+     */
+    -webkit-mask-image: radial-gradient(
+      closest-side,
+      #000 0%,
+      #000 30%,
+      transparent 74%
+    );
+    mask-image: radial-gradient(closest-side, #000 0%, #000 30%, transparent 74%);
+  }
+
+  .masthead-loupe-shot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--band-w, 100vw);
+    height: var(--band-h, 100%);
+    transform: translate3d(
+      calc(var(--loupe-size) / 2 - var(--loupe-x, 50vw)),
+      calc(var(--loupe-size) / 2 - var(--loupe-y, 40vh)),
+      0
+    );
   }
 
   /*
