@@ -767,6 +767,84 @@
   }
 
   /*
+   * The trail. `MastheadTrail` lays it down; this is one puff of it.
+   *
+   * Sixteen of these, pooled and recycled, each a small window onto the colour
+   * print left behind by the pointer and fading over about a second. The
+   * geometry is the gust's, scaled down: a fixed box with a fixed mask,
+   * positioned by transform, holding the plate translated by exactly the
+   * opposite amount so it stays pinned to the band. Only `--puff-o` and the two
+   * offsets change, and both are composited, so a trail of sixteen windows
+   * costs sixteen transforms a frame and no repaint at all.
+   *
+   * The plate arrives as a background rather than as an `<img>` for one reason:
+   * at sixteen copies the markup mattered more than the art direction did, and
+   * a background can carry the same three sources through media queries with no
+   * elements at all. It is the only place on the page where the picture is not
+   * a `<picture>`.
+   */
+  .masthead-trail {
+    --puff-size: 15rem;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .masthead-puff {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--puff-size);
+    height: var(--puff-size);
+    /* Half the size back, so the transform can take raw pointer coordinates. */
+    margin: calc(var(--puff-size) / -2) 0 0 calc(var(--puff-size) / -2);
+    transform: translate3d(var(--puff-x, 0px), var(--puff-y, 0px), 0);
+    opacity: var(--puff-o, 0);
+    /*
+     * Softer than the gust's wisps, and deliberately so: a puff is what is left
+     * of a disturbance rather than the disturbance itself, so it has no edge to
+     * speak of — solid across barely a fifth of itself and gone by two thirds.
+     */
+    -webkit-mask-image: radial-gradient(
+      closest-side,
+      #000 0%,
+      #000 18%,
+      transparent 68%
+    );
+    mask-image: radial-gradient(closest-side, #000 0%, #000 18%, transparent 68%);
+  }
+
+  .masthead-puff-shot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--band-w, 100vw);
+    height: var(--band-h, 100%);
+    transform: translate3d(
+      calc(var(--puff-size) / 2 - var(--puff-x, 0px)),
+      calc(var(--puff-size) / 2 - var(--puff-y, 0px)),
+      0
+    );
+    background-image: url("/hero-colour-1280.webp");
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    opacity: 0.9;
+  }
+
+  @media (min-width: 1600px) {
+    .masthead-puff-shot {
+      background-image: url("/hero-colour-1920.webp");
+    }
+  }
+
+  @media (max-width: 639px) {
+    .masthead-puff-shot {
+      background-image: url("/hero-colour-mobile-860.webp");
+    }
+  }
+
+  /*
    * The grade. Two passes.
    *
    * The first is a short fall under the bar, so the nav's links are not read

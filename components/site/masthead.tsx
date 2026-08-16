@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { MASTHEAD_ID } from "@/components/site/header-shell"
+import { MastheadTrail } from "@/components/site/masthead-trail"
 import { MastheadWind } from "@/components/site/masthead-wind"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -78,6 +79,13 @@ export function Masthead({ facts }: MastheadProps) {
         <MastheadWind>
           <Plate colour />
         </MastheadWind>
+
+        {/*
+          What the reader disturbs. The gust knows nothing about the pointer;
+          this does, and it settles downwind at roughly the gust's speed so the
+          two read as one system rather than as two effects sharing a band.
+        */}
+        <MastheadTrail />
 
         {/*
           Last, so it grades the colour as well as the mono. The floor is meant
