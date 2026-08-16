@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { MASTHEAD_ID } from "@/components/site/header-shell"
-import { MastheadDrift } from "@/components/site/masthead-drift"
+import { MastheadLoupe } from "@/components/site/masthead-loupe"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -161,39 +161,48 @@ export function Masthead({ facts }: MastheadProps) {
 }
 
 /**
- * The plate, as markup.
+ * The plate, as markup, in either of its two prints.
  *
- * Hand-written `<picture>` rather than `next/image`, for one reason: this is an
- * art-directed pair, and the optimiser has no `media`. Two `next/image`s
+ * Hand-written `<picture>` rather than `next/image`, for one reason: each print
+ * is an art-directed pair and the optimiser has no `media`. Two `next/image`s
  * toggled with `hidden` would have both files fetched on every load —
  * `display: none` does not stop a request — and a single wide plate letterboxed
- * onto a phone throws away the composition the picture exists for. There is
- * nothing else to buy back: the files are already WebP, already sized, and the
- * largest of the five is 3 KB.
+ * onto a phone throws away the composition the picture exists for.
  *
- * `fetchPriority` puts it ahead of the font, since the plate is the whole of
- * the first paint and the type arrives over it either way.
+ * The two prints are laid out identically and cropped identically, which is not
+ * a coincidence and is not free: the colour source is cut with the same slice
+ * off the top that the tall mono plate takes, because the loupe reveals one
+ * directly over the other and a few pixels of drift between them would read as
+ * a misregistered print rather than as the same photograph.
  *
- * `MastheadDrift` reads this element to work out how far one dither cell is on
- * screen, from `naturalWidth` and whatever `cover` is doing with it. Changing
- * the layout here changes the step size there.
+ * The mono print carries the first paint, so it gets `fetchPriority="high"` —
+ * ahead of the font, since the type arrives over it either way. The colour
+ * print is a hover reward that nothing is waiting on, so it goes out at low
+ * priority and is only rendered at all once `MastheadLoupe` has established
+ * that this device has a pointer.
  */
-function Plate({ className }: { className?: string }) {
+function Plate({ colour = false }: { colour?: boolean }) {
+  const stem = colour ? "hero-colour" : "hero-dither"
+
   return (
     <picture>
       <source
         media="(max-width: 639px)"
-        srcSet="/hero-dither-mobile-860.webp 860w, /hero-dither-mobile-1290.webp 1290w"
+        srcSet={`/${stem}-mobile-860.webp 860w, /${stem}-mobile-1290.webp 1290w`}
         sizes="100vw"
       />
       <source
-        srcSet="/hero-dither-1920.webp 1920w, /hero-dither-2880.webp 2880w, /hero-dither-3840.webp 3840w"
+        srcSet={
+          colour
+            ? "/hero-colour-1280.webp 1280w, /hero-colour-1920.webp 1920w"
+            : "/hero-dither-1920.webp 1920w, /hero-dither-2880.webp 2880w, /hero-dither-3840.webp 3840w"
+        }
         sizes="100vw"
       />
       <img
-        src="/hero-dither-1920.webp"
+        src={colour ? "/hero-colour-1280.webp" : "/hero-dither-1920.webp"}
         alt=""
-        fetchPriority="high"
+        fetchPriority={colour ? "low" : "high"}
         decoding="async"
         /*
          * Anchored to the top, not centred. The plate is 16:9 and the band is
@@ -204,8 +213,8 @@ function Plate({ className }: { className?: string }) {
          * there instead.
          */
         className={cn(
-          "masthead-plate absolute inset-0 size-full object-cover object-top",
-          className
+          "absolute inset-0 size-full object-cover object-top",
+          colour ? "masthead-colour" : "masthead-plate"
         )}
       />
     </picture>

@@ -46,6 +46,18 @@ const SETTLED = 0.15
 export function MastheadLoupe({ children }: { children: React.ReactNode }) {
   const ref = React.useRef<HTMLDivElement>(null)
 
+  /*
+   * Whether the colour print is in the document at all.
+   *
+   * Not a styling concern — a request one. `opacity: 0` does not stop an image
+   * loading, so leaving the colour plate in the markup would put 34 KB of
+   * photograph onto every phone that can never show it, which is the worst
+   * place on the site to spend bytes. Held false through the server render and
+   * flipped on only once the effect below has confirmed a pointer, so the file
+   * is asked for exactly when it can be used.
+   */
+  const [armed, setArmed] = React.useState(false)
+
   React.useEffect(() => {
     const node = ref.current
     const band = node?.parentElement
