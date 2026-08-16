@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { MASTHEAD_ID } from "@/components/site/header-shell"
-import { MastheadLoupe } from "@/components/site/masthead-loupe"
+import { MastheadDrift } from "@/components/site/masthead-drift"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -66,24 +66,15 @@ export function Masthead({ facts }: MastheadProps) {
       className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden bg-[rgb(var(--masthead-void))]"
     >
       <div aria-hidden="true" className="absolute inset-0">
-        {/* The ghost: the plate at rest, printed weak. */}
-        <Plate className="masthead-plate" />
-
-        {/*
-          The developed copy, windowed to a disc that follows the pointer. Same
-          five files as the ghost — the browser has them cached from the markup
-          above, so the second `<picture>` is a second decode and not a second
-          request.
-        */}
-        <MastheadLoupe>
+        <MastheadDrift>
           <Plate />
-        </MastheadLoupe>
+        </MastheadDrift>
 
         {/*
-          Last, so it grades the loupe as well as the ghost. The floor is meant
-          to keep the picture out of the copy, and a window that could develop
-          the hands back through it would be a hole in exactly the place the
-          floor exists to protect.
+          Outside the drift: the grade is anchored to the layout, not to the
+          plate. A veil that keeps the nav legible is worth nothing if it slides
+          out from under the nav, and a floor that keeps the dust off the copy
+          is worth nothing if it steps sideways with the dust.
         */}
         <div className="masthead-grade absolute inset-0" />
       </div>
@@ -163,10 +154,6 @@ export function Masthead({ facts }: MastheadProps) {
 /**
  * The plate, as markup.
  *
- * Rendered twice — once weak as the resting picture, once at full strength
- * inside the loupe's window — which is the only reason it is a function rather
- * than fifteen lines written inline where they are used.
- *
  * Hand-written `<picture>` rather than `next/image`, for one reason: this is an
  * art-directed pair, and the optimiser has no `media`. Two `next/image`s
  * toggled with `hidden` would have both files fetched on every load —
@@ -176,14 +163,11 @@ export function Masthead({ facts }: MastheadProps) {
  * largest of the five is 3 KB.
  *
  * `fetchPriority` puts it ahead of the font, since the plate is the whole of
- * the first paint and the type arrives over it either way. It is set on both
- * copies because they resolve to the same URL, so the second is a cache hit and
- * the flag costs nothing to repeat.
+ * the first paint and the type arrives over it either way.
  *
- * The plate itself never moves. A pointer parallax was built for it and then
- * taken out: this picture is one-bit, and a dither has no sub-pixel to
- * translate into — every frame of a fractional transform resamples the dot grid
- * into grey mush, which is the one thing a 1-bit image must never do.
+ * `MastheadDrift` reads this element to work out how far one dither cell is on
+ * screen, from `naturalWidth` and whatever `cover` is doing with it. Changing
+ * the layout here changes the step size there.
  */
 function Plate({ className }: { className?: string }) {
   return (
