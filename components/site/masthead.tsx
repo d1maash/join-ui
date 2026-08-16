@@ -18,9 +18,9 @@ export interface MastheadProps {
 /**
  * The masthead.
  *
- * A one-bit picture of two hands reaching for each other, and the page's one
- * piece of display type hanging under it. The composition is centred, which is
- * a decision worth stating because the rest of this site is not: every section
+ * A one-bit picture of a dust cloud in deep space, and the page's one piece of
+ * display type hanging under it. The composition is centred, which is a
+ * decision worth stating because the rest of this site is not: every section
  * below runs a label down a left rail with its content beside it, and the
  * masthead deliberately does not join in. It is the only band on the page with
  * nothing to reference and nothing to scan — one line, one sentence, two ways
@@ -91,11 +91,12 @@ export function Masthead({ facts }: MastheadProps) {
       {/*
         The copy hangs from the bottom of the band rather than sitting in the
         middle of it, and that is the plate's decision rather than a taste one.
-        The hands come in across the top third and reach down toward the middle;
-        anything centred in the band lands inside them. Bottom-aligned, the
-        fingers stop just short of the headline — close enough that the type
-        reads as the thing they are reaching for, far enough that the dot field
-        is never behind more than the first line's ascenders.
+        The dust runs across the top third and thins as it falls; anything
+        centred in the band lands in the middle of it. Bottom-aligned, the
+        headline crosses only the cloud's trailing edge — near enough that the
+        type sits inside the picture rather than under it, far enough that the
+        pattern is never behind more than the first line's ascenders, and the
+        sentence and the buttons stay on plain black.
       */}
       <div className="relative flex min-h-[54rem] flex-col lg:min-h-[min(100svh,52rem)]">
         <div className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col items-center justify-end px-4 pt-40 pb-12 text-center sm:px-6 lg:pb-10">

@@ -574,24 +574,32 @@
   /*
    * The masthead plate.
    * -------------------------------------------------------------------------
-   * `public/hero-dither-*.webp` is a one-bit picture. There is no grey in it at
-   * all: every pixel is either pure black or pure white, and the tone is
-   * carried entirely by how densely the white pixels are scattered — a
-   * Floyd–Steinberg error diffusion run over a lit greyscale study, then blown
-   * up with nearest-neighbour so a dot stays a hard square.
+   * `public/hero-dither-*.webp` is a one-bit picture: a river of interstellar
+   * dust running across the upper third of the frame, with a star field in the
+   * black below it. There is no grey in the file at all. Every pixel is either
+   * pure black or pure white, and the tone is carried entirely by how densely
+   * the white ones are packed — an ordered Bayer dither over a smooth greyscale
+   * study, blown up with nearest-neighbour so a dot stays a hard square.
    *
-   * That constraint is the reason for most of the rules below. A one-bit image
-   * has no sub-pixel and no midtone to give up, so anything laid over it that
-   * would normally be free — a scrim, a film grain, a fractional transform —
-   * turns white dots into grey ones and the picture into mush. The plate is
-   * therefore left almost completely alone: it is drawn at device resolution,
-   * it does not move, and what little grading survives is kept off the subject.
+   * Ordered, not error diffusion, and the difference is the whole look. Error
+   * diffusion scatters: on a slow gradient like a nebula it produces an organic
+   * cloud of unstructured dots, which reads as a photocopy. A Bayer matrix is
+   * periodic, so every tone resolves to a *pattern* — a checkerboard at half, a
+   * diagonal hatch at a third, sparse regular dots near black. That regularity
+   * is what reads as pixel art, and it is what the picture was made to be.
    *
-   * Two plates, not one crop. The subject sits in the upper half of the wide
-   * plate and runs off both edges; a portrait crop of that is a detail of a
-   * forearm. The tall plate is dithered from a composition redrawn for the
-   * shape, and `<picture>` picks between them on `media`, so only one is
-   * fetched.
+   * The one-bit constraint is the reason for most of the rules below. Such an
+   * image has no sub-pixel and no midtone to give up, so anything laid over it
+   * that would normally be free — a scrim, a film grain, a fractional transform
+   * — turns white dots into grey ones and the pattern into mush. The plate is
+   * therefore left almost completely alone: drawn at device resolution, never
+   * moved, and graded only where it must be.
+   *
+   * Two plates, not one crop. The dust runs off both edges of the wide plate,
+   * and a portrait crop of that is a detail of one cloud. The tall plate is
+   * dithered from a composition redrawn for the shape — mass in the upper
+   * third, two thirds of black under it — and `<picture>` picks between them on
+   * `media`, so only one is fetched.
    *
    * One colour is declared and nothing else. `--masthead-void` is the black the
    * dots are printed on, and it is the same value as `--grey-0` — the page was
@@ -749,8 +757,8 @@
     background-image:
       linear-gradient(
         to bottom,
-        rgb(var(--masthead-void) / 0.72) 0,
-        rgb(var(--masthead-void) / 0) 7rem
+        rgb(var(--masthead-void) / 0.85) 0,
+        rgb(var(--masthead-void) / 0) 9rem
       ),
       linear-gradient(
         to top,
