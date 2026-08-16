@@ -24,13 +24,20 @@ export interface MastheadProps {
  * decision worth stating because the rest of this site is not: every section
  * below runs a label down a left rail with its content beside it, and the
  * masthead deliberately does not join in. It is the only band on the page with
- * nothing to reference and nothing to scan — one line, one sentence, two ways
- * in — so it is set the way a title page is rather than the way a document is.
+ * nothing to reference and nothing to scan — two short lines, one sentence,
+ * two ways in — so it is set the way a title page is rather than the way a
+ * document is.
+ *
+ * The copy carries less than it used to on purpose. It used to name the
+ * framework, the CLI, the source and the agent prompt in one breath, which is
+ * four facts in a place that can hold about one; every one of them is stated
+ * properly a screen further down, where it is being read rather than glanced
+ * at. What is left says what the thing is and what happens to it, and stops.
  *
  * There is no eyebrow. One was written — the namespace and a five-word
  * description, set small above the headline — and it could not survive this
  * plate: at 12px it landed in the middle of the dot field and came out as
- * texture. Moving it above the hands would have put it under the nav, and
+ * texture. Moving it above the cloud would have put it under the nav, and
  * moving it below the buttons would have made it a caption for nothing. The
  * same sentence already opens the Install section a screen further down, where
  * it is being read rather than looked at.
