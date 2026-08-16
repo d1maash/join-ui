@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { MASTHEAD_ID } from "@/components/site/header-shell"
-import { MastheadLens } from "@/components/site/masthead-lens"
+import { MastheadLoupe } from "@/components/site/masthead-loupe"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -66,63 +66,26 @@ export function Masthead({ facts }: MastheadProps) {
       className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden bg-[rgb(var(--masthead-void))]"
     >
       <div aria-hidden="true" className="absolute inset-0">
+        {/* The ghost: the plate at rest, printed weak. */}
+        <Plate className="masthead-plate" />
+
         {/*
-          Hand-written `<picture>` rather than `next/image`, for one reason:
-          this is an art-directed pair, and the optimiser has no `media`. Two
-          `next/image`s toggled with `hidden` would have both files fetched on
-          every load — `display: none` does not stop a request — and a single
-          wide plate letterboxed onto a phone throws away the composition the
-          picture exists for. There is nothing else to buy back: the files are
-          already WebP, already sized, and the largest of them is well under
-          100 KB.
-
-          `fetchPriority` puts it ahead of the font, since the plate is the
-          whole of the first paint and the type arrives over it either way.
-
-          The plate itself never moves. A pointer parallax was built for it and
-          then taken out: this picture is one-bit, and a dither has no sub-pixel
-          to translate into — every frame of a fractional transform resamples
-          the dot grid into grey mush, which is the one thing a 1-bit image must
-          never do. What answers the pointer instead is `MastheadLens` below,
-          which lights the picture without touching a pixel of it.
+          The developed copy, windowed to a disc that follows the pointer. Same
+          five files as the ghost — the browser has them cached from the markup
+          above, so the second `<picture>` is a second decode and not a second
+          request.
         */}
-        <picture>
-          <source
-            media="(max-width: 639px)"
-            srcSet="/hero-dither-mobile-860.webp 860w, /hero-dither-mobile-1290.webp 1290w"
-            sizes="100vw"
-          />
-          <source
-            srcSet="/hero-dither-1920.webp 1920w, /hero-dither-2880.webp 2880w, /hero-dither-3840.webp 3840w"
-            sizes="100vw"
-          />
-          <img
-            src="/hero-dither-1920.webp"
-            alt=""
-            fetchPriority="high"
-            decoding="async"
-            /*
-             * Anchored to the top, not centred. The plate is 16:9 and the band
-             * is wider than that on a large monitor, so `cover` crops it
-             * vertically — and a centred crop takes the same amount off the
-             * top, which walks the forearms up under the nav until they are
-             * running behind the logo. Every pixel the crop can take from the
-             * bottom is black, so it takes it all from there instead.
-             */
-            className="masthead-plate absolute inset-0 size-full object-cover object-top"
-          />
-        </picture>
+        <MastheadLoupe>
+          <Plate />
+        </MastheadLoupe>
 
+        {/*
+          Last, so it grades the loupe as well as the ghost. The floor is meant
+          to keep the picture out of the copy, and a window that could develop
+          the hands back through it would be a hole in exactly the place the
+          floor exists to protect.
+        */}
         <div className="masthead-grade absolute inset-0" />
-
-        {/*
-          Last in the layer, because what it blends with is everything painted
-          before it — the plate and the grade — and nothing painted after. The
-          copy lives in the next sibling, which is `relative` and therefore
-          paints above this: the headline is never touched by the torch, only
-          the picture behind it is.
-        */}
-        <MastheadLens />
       </div>
 
       {/*
@@ -193,5 +156,69 @@ export function Masthead({ facts }: MastheadProps) {
         </dl>
       </div>
     </section>
+  )
+}
+
+/**
+ * The plate, as markup.
+ *
+ * Rendered twice — once weak as the resting picture, once at full strength
+ * inside the loupe's window — which is the only reason it is a function rather
+ * than fifteen lines written inline where they are used.
+ *
+ * Hand-written `<picture>` rather than `next/image`, for one reason: this is an
+ * art-directed pair, and the optimiser has no `media`. Two `next/image`s
+ * toggled with `hidden` would have both files fetched on every load —
+ * `display: none` does not stop a request — and a single wide plate letterboxed
+ * onto a phone throws away the composition the picture exists for. There is
+ * nothing else to buy back: the files are already WebP, already sized, and the
+ * largest of the five is 3 KB.
+ *
+ * `fetchPriority` puts it ahead of the font, since the plate is the whole of
+ * the first paint and the type arrives over it either way. It is set on both
+ * copies because they resolve to the same URL, so the second is a cache hit and
+ * the flag costs nothing to repeat.
+ *
+ * The plate itself never moves. A pointer parallax was built for it and then
+ * taken out: this picture is one-bit, and a dither has no sub-pixel to
+ * translate into — every frame of a fractional transform resamples the dot grid
+ * into grey mush, which is the one thing a 1-bit image must never do.
+ */
+function Plate({ className }: { className?: string }) {
+  return (
+    <picture>
+      <source
+        media="(max-width: 639px)"
+        srcSet="/hero-dither-mobile-860.webp 860w, /hero-dither-mobile-1290.webp 1290w"
+        sizes="100vw"
+      />
+      <source
+        srcSet="/hero-dither-1920.webp 1920w, /hero-dither-2880.webp 2880w, /hero-dither-3840.webp 3840w"
+        sizes="100vw"
+      />
+      <img
+        src="/hero-dither-1920.webp"
+        alt=""
+        fetchPriority="high"
+        decoding="async"
+        /*
+         * Anchored to the top, not centred. The plate is 16:9 and the band is
+         * wider than that on a large monitor, so `cover` crops it vertically —
+         * and a centred crop takes the same amount off the top, which walks the
+         * forearms up under the nav until they are running behind the logo.
+         * Every pixel the crop can take from the bottom is black, so it takes it
+         * all from there instead.
+         *
+         * Both copies are laid out identically, against boxes that are the same
+         * size by construction. If that ever stopped being true the developed
+         * disc would show the picture at a different crop from the ghost around
+         * it, and the loupe would read as a misregistered print.
+         */
+        className={cn(
+          "masthead-shot absolute inset-0 size-full object-cover object-top",
+          className
+        )}
+      />
+    </picture>
   )
 }

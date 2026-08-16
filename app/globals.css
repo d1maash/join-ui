@@ -616,68 +616,105 @@
    * every scale, at the cost of the dot grid beating very slightly. That beat
    * is what a dither looks like on a screen it was not authored for, and it is
    * the honest failure mode of the two.
-   *
-   * Printed at half strength. At full white the dot field was the brightest
-   * thing on the page by a distance — a 1-bit picture has no midtone to hold
-   * itself back with, so a lit forearm is simply #fff across a third of the
-   * screen, and the headline it is behind has nowhere left to go. Dropping the
-   * layer's opacity is the one dimming move available that does not touch the
-   * grid: the black stays black because it is being composited onto black, and
-   * only the white comes down, to the grey the torch below reads as its
-   * undeveloped state.
    */
-  .masthead-plate {
+  .masthead-shot {
     image-rendering: pixelated;
-    opacity: 0.5;
   }
 
   /*
-   * The torch. `MastheadLens` moves it; this describes it.
+   * The resting print.
    *
-   * `overlay` is the whole trick and it is worth stating why, because `screen`
-   * or `plus-lighter` are the obvious choices and both are wrong here. Those
-   * add light to everything under them, so the black between the dots lifts to
-   * grey and the disc reads as a smudge on the picture. `overlay` is
-   * conditional on the backdrop: below half luminance it multiplies, above it
-   * it screens. Black stays black, the half-strength dots go to white, and the
-   * result reads as a circle of the picture being developed rather than as a
-   * light being shone on it.
+   * At full white the dot field was the brightest thing on the page by a
+   * distance — a 1-bit picture has no midtone to hold itself back with, so a
+   * lit forearm is simply #fff across a third of the screen and the headline in
+   * front of it has nowhere left to go. Dropping the layer's opacity is the one
+   * dimming move available that does not touch the grid: the black stays black
+   * because it is being composited onto black, and only the white comes down.
    *
-   * The gradient ends at zero alpha rather than at neutral grey, so the disc
-   * simply stops contributing at its edge — there is no rim, and nothing to
-   * line up with the band's own black.
-   *
-   * The offset margin is half the size, so the transform can be handed raw
-   * pointer coordinates and the disc lands centred on them.
+   * Two values, because the plate has two jobs depending on what the device can
+   * do. Where there is a pointer this is the *undeveloped* state and it is held
+   * well back, so that the loupe has somewhere to travel to. Where there is
+   * not, there is no loupe and no second state, and the picture has to carry
+   * the band on its own — so it is printed considerably stronger and that is
+   * simply how it looks.
    */
-  .masthead-lens {
+  .masthead-plate {
+    opacity: 0.58;
+  }
+
+  @media (hover: hover) {
+    .masthead-plate {
+      opacity: 0.26;
+    }
+  }
+
+  /*
+   * The loupe. `MastheadLoupe` moves it; this is its geometry.
+   *
+   * A fixed disc with a fixed mask, translated across the band, holding a full
+   * strength copy of the plate that is translated by exactly the opposite
+   * amount so it stays pinned to the band underneath. Both transforms stay on
+   * the compositor and the mask never changes, so the window slides without a
+   * single repaint and without resampling one dot. The long note in the
+   * component covers why that mattered enough to build it this way.
+   *
+   * `--band-w` and `--band-h` are written by the script. The fallbacks are the
+   * viewport width and the inner copy's own box, which is what the element
+   * would have measured anyway before the first frame lands — wrong by a little
+   * for one paint, rather than collapsed to nothing.
+   */
+  .masthead-loupe {
+    --loupe-size: 34rem;
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 44rem;
-    height: 44rem;
-    margin: -22rem 0 0 -22rem;
+    inset: 0;
     pointer-events: none;
-    background-image: radial-gradient(
-      closest-side,
-      rgb(255 255 255 / 0.95),
-      rgb(255 255 255 / 0.62) 34%,
-      rgb(255 255 255 / 0.22) 58%,
-      rgb(255 255 255 / 0) 76%
-    );
-    mix-blend-mode: overlay;
-    transform: translate3d(var(--lens-x, 50%), var(--lens-y, 50%), 0);
     opacity: 0;
     transition: opacity var(--duration-slow) var(--ease-out-soft);
   }
 
   /*
-   * Set by the script once a pointer has actually been somewhere, so the torch
-   * fades up where the reader is rather than appearing pre-lit in the middle of
-   * the band on a page nobody has touched yet.
+   * Set by the script once a pointer has actually been somewhere, so the loupe
+   * fades up where the reader is rather than appearing pre-developed in the
+   * middle of the band on a page nobody has touched yet.
    */
-  .masthead-lens[data-on] {
+  .masthead-loupe[data-on] {
     opacity: 1;
+  }
+
+  .masthead-loupe-disc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--loupe-size);
+    height: var(--loupe-size);
+    /* Half the size back, so the transform can take raw pointer coordinates. */
+    margin: calc(var(--loupe-size) / -2) 0 0 calc(var(--loupe-size) / -2);
+    transform: translate3d(var(--loupe-x, 50vw), var(--loupe-y, 40vh), 0);
+    /*
+     * Solid across the middle third and out to nothing by three quarters. A
+     * hard edge would read as a cut-out sitting on the picture; this reads as
+     * the picture resolving, which is the only difference between the two.
+     */
+    -webkit-mask-image: radial-gradient(
+      closest-side,
+      #000 0%,
+      #000 30%,
+      transparent 74%
+    );
+    mask-image: radial-gradient(closest-side, #000 0%, #000 30%, transparent 74%);
+  }
+
+  .masthead-loupe-shot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--band-w, 100vw);
+    height: var(--band-h, 100%);
+    transform: translate3d(
+      calc(var(--loupe-size) / 2 - var(--loupe-x, 50vw)),
+      calc(var(--loupe-size) / 2 - var(--loupe-y, 40vh)),
+      0
+    );
   }
 
   /*
