@@ -15,7 +15,7 @@ const PUFFS = 16
 const STEP = 26
 
 /** Seconds a puff takes to fade from full to nothing. */
-const LIFE = 1.1
+const LIFE = 1.45
 
 /**
  * Pixels per second a puff drifts once it has been laid down.

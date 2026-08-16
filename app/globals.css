@@ -784,7 +784,7 @@
    * a `<picture>`.
    */
   .masthead-trail {
-    --puff-size: 15rem;
+    --puff-size: 18rem;
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -801,17 +801,24 @@
     transform: translate3d(var(--puff-x, 0px), var(--puff-y, 0px), 0);
     opacity: var(--puff-o, 0);
     /*
-     * Softer than the gust's wisps, and deliberately so: a puff is what is left
-     * of a disturbance rather than the disturbance itself, so it has no edge to
-     * speak of — solid across barely a fifth of itself and gone by two thirds.
+     * Much softer than the gust's wisps, and deliberately so: a puff is what is
+     * left of a disturbance rather than the disturbance itself, so it has no
+     * edge at all. There is no solid plateau — the mask is already falling from
+     * the centre outward and does not reach the box, so what the reader sees is
+     * a breath of colour with no boundary anywhere in it.
      */
     -webkit-mask-image: radial-gradient(
       closest-side,
-      #000 0%,
-      #000 18%,
-      transparent 68%
+      rgb(0 0 0 / 0.85) 0%,
+      rgb(0 0 0 / 0.45) 34%,
+      transparent 80%
     );
-    mask-image: radial-gradient(closest-side, #000 0%, #000 18%, transparent 68%);
+    mask-image: radial-gradient(
+      closest-side,
+      rgb(0 0 0 / 0.85) 0%,
+      rgb(0 0 0 / 0.45) 34%,
+      transparent 80%
+    );
   }
 
   .masthead-puff-shot {
@@ -829,7 +836,14 @@
     background-size: cover;
     background-position: top center;
     background-repeat: no-repeat;
-    opacity: 0.9;
+    /*
+     * Half strength, where the gust prints at nine tenths. The gust is the
+     * picture's own weather and is allowed to be the brightest thing in the
+     * band; the trail is a residue of the reader passing through it, and a
+     * residue that arrives at full saturation stops reading as one — it becomes
+     * a cursor again, which is the thing this replaced.
+     */
+    opacity: 0.5;
   }
 
   @media (min-width: 1600px) {
