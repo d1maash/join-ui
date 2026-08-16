@@ -47,14 +47,10 @@ const blowingOnServer = () => false
  * wisps happen to cover, so the picture is never revealed whole: it is blown
  * across, in streaks, the way weather crosses a landscape.
  *
- * The pointer does not get a window of its own. A second, separate reveal
- * chasing the cursor was built first and it was the obvious thing — a lens, a
- * circle, a spotlight — which is precisely what was wrong with it. Here the
- * cursor has no shape at all; it disturbs the weather that is already there.
- * Move across the band and the gust bends toward you; sweep along it and you
- * push its phase, so it surges ahead or drags behind its own clock and then
- * settles back. There is one thing happening in this band, and the reader is
- * inside it rather than pointing at it.
+ * The gust knows nothing about the pointer. It blows on its own clock whether
+ * anyone is there or not, which is what makes it weather rather than an
+ * interaction — `MastheadTrail` is what the reader disturbs, and it settles
+ * downwind at roughly this gust's speed so the two read as one system.
  *
  * Why it is built out of two counter-moving transforms
  * ---------------------------------------------------
@@ -141,28 +137,15 @@ export function MastheadWind({ children }: { children: React.ReactNode }) {
 
     let frame = 0
     let last = 0
-    /** Position along the crossing, 0 to 1, advanced by the clock. */
+    /** Position along the crossing, 0 to 1, advanced by the clock and nothing else. */
     let phase = 0
-    /** Extra phase pushed in by the pointer, decaying back to nothing. */
-    let shove = 0
-    let bend = 0
-    let bendTarget = 0
 
     const tick = (now: number) => {
       const dt = last ? Math.min((now - last) / 1000, 0.1) : 0
       last = now
 
       phase = (phase + dt / PERIOD) % 1
-      shove *= DECAY
-      bend += (bendTarget - bend) * EASE
-
-      /* `phase + shove` can leave [0, 1); wrap it rather than clamping, so a
-         hard sweep carries the gust round instead of piling it against an end. */
-      const at = ((phase + shove) % 1 + 1) % 1
-      const x = at * travel - gust
-
-      node.style.setProperty("--wind-x", `${x.toFixed(1)}px`)
-      node.style.setProperty("--wind-y", `${bend.toFixed(1)}px`)
+      node.style.setProperty("--wind-x", `${(phase * travel - gust).toFixed(1)}px`)
 
       frame = visible ? requestAnimationFrame(tick) : 0
     }
@@ -175,54 +158,7 @@ export function MastheadWind({ children }: { children: React.ReactNode }) {
     }
     start()
 
-    /*
-     * The pointer only ever perturbs the loop above; it never drives it. On a
-     * device without hover none of this is attached and the wind simply blows
-     * on its own, which is the whole animation rather than a fallback for it.
-     */
-    let detachPointer: (() => void) | undefined
-
-    if (window.matchMedia(HOVERS).matches) {
-      let lastX = 0
-      let seen = false
-
-      const onMove = (event: PointerEvent) => {
-        const rect = band.getBoundingClientRect()
-        const inside = event.clientY >= rect.top && event.clientY <= rect.bottom
-
-        if (!inside) {
-          bendTarget = 0
-          seen = false
-          return
-        }
-
-        bendTarget =
-          (((event.clientY - rect.top) / (rect.height || 1)) * 2 - 1) * BEND
-
-        if (seen) {
-          shove += ((event.clientX - lastX) / (travel || 1)) * PUSH
-        }
-        lastX = event.clientX
-        seen = true
-
-        start()
-      }
-
-      const onLeave = () => {
-        bendTarget = 0
-        seen = false
-      }
-
-      window.addEventListener("pointermove", onMove, { passive: true })
-      document.documentElement.addEventListener("pointerleave", onLeave)
-      detachPointer = () => {
-        window.removeEventListener("pointermove", onMove)
-        document.documentElement.removeEventListener("pointerleave", onLeave)
-      }
-    }
-
     return () => {
-      detachPointer?.()
       observer.disconnect()
       watcher.disconnect()
       if (frame) cancelAnimationFrame(frame)
