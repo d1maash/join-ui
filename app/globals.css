@@ -639,12 +639,12 @@
    * simply how it looks.
    */
   .masthead-plate {
-    opacity: 0.58;
+    opacity: 0.62;
   }
 
   @media (hover: hover) {
     .masthead-plate {
-      opacity: 0.26;
+      opacity: 0.34;
     }
   }
 
@@ -755,8 +755,8 @@
       linear-gradient(
         to top,
         rgb(var(--masthead-void)) 0,
-        rgb(var(--masthead-void)) 14%,
-        rgb(var(--masthead-void) / 0) 48%
+        rgb(var(--masthead-void)) 10%,
+        rgb(var(--masthead-void) / 0) 40%
       );
   }
 
