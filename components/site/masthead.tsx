@@ -2,6 +2,8 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { MASTHEAD_ID } from "@/components/site/header-shell"
+import { MastheadTrail } from "@/components/site/masthead-trail"
+import { MastheadWind } from "@/components/site/masthead-wind"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -17,9 +19,9 @@ export interface MastheadProps {
 /**
  * The masthead.
  *
- * A one-bit picture of two hands reaching for each other, and the page's one
- * piece of display type hanging under it. The composition is centred, which is
- * a decision worth stating because the rest of this site is not: every section
+ * A one-bit picture of a dust cloud in deep space, and the page's one piece of
+ * display type hanging under it. The composition is centred, which is a
+ * decision worth stating because the rest of this site is not: every section
  * below runs a label down a left rail with its content beside it, and the
  * masthead deliberately does not join in. It is the only band on the page with
  * nothing to reference and nothing to scan — one line, one sentence, two ways
@@ -54,90 +56,76 @@ export function Masthead({ facts }: MastheadProps) {
      * of its height, and pulling up by only the row leaves a thread of page
      * colour above the plate.
      *
-     * The plate runs black all the way to the bottom edge and the page starts
-     * under a hairline, rather than the band fading into the page colour behind
-     * the figures. See the note on `.masthead-grade`.
+     * No bottom border, and nothing fading into anything. The page's own
+     * `--grey-0` was moved onto the plate's black, so the band and the document
+     * under it are now literally the same colour — there is no join left to
+     * draw. A hairline here would be a rule announcing an edge that does not
+     * exist, and the figures' own top border is already closing the frame.
      */
     <section
       id={MASTHEAD_ID}
-      className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden border-b border-border bg-[rgb(var(--masthead-void))]"
+      className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden bg-[rgb(var(--masthead-void))]"
     >
       <div aria-hidden="true" className="absolute inset-0">
+        {/* The band as it rests: the nebula as a one-bit dither. */}
+        <Plate />
+
         {/*
-          Hand-written `<picture>` rather than `next/image`, for one reason:
-          this is an art-directed pair, and the optimiser has no `media`. Two
-          `next/image`s toggled with `hidden` would have both files fetched on
-          every load — `display: none` does not stop a request — and a single
-          wide plate letterboxed onto a phone throws away the composition the
-          picture exists for. There is nothing else to buy back: the files are
-          already WebP, already sized, and the largest of them is well under
-          100 KB.
-
-          `fetchPriority` puts it ahead of the font, since the plate is the
-          whole of the first paint and the type arrives over it either way.
-
-          The plate does not move. A pointer parallax was built for it and then
-          taken out: this picture is one-bit, and a dither has no sub-pixel to
-          translate into — every frame of a fractional transform resamples the
-          dot grid into grey mush, which is the one thing a 1-bit image must
-          never do. It is also, at this size, a full-screen repaint bought with
-          nothing but a cursor.
+          The same photograph in colour, blown across the band in streaks. A
+          different file, not a filter — there is no way to get from one bit per
+          pixel back to a hue, so the colour has to arrive as its own print,
+          registered against the mono one.
         */}
-        <picture>
-          <source
-            media="(max-width: 639px)"
-            srcSet="/hero-dither-mobile-860.webp 860w, /hero-dither-mobile-1290.webp 1290w"
-            sizes="100vw"
-          />
-          <source
-            srcSet="/hero-dither-1920.webp 1920w, /hero-dither-2880.webp 2880w, /hero-dither-3840.webp 3840w"
-            sizes="100vw"
-          />
-          <img
-            src="/hero-dither-1920.webp"
-            alt=""
-            fetchPriority="high"
-            decoding="async"
-            /*
-             * Anchored to the top, not centred. The plate is 16:9 and the band
-             * is wider than that on a large monitor, so `cover` crops it
-             * vertically — and a centred crop takes the same amount off the
-             * top, which walks the forearms up under the nav until they are
-             * running behind the logo. Every pixel the crop can take from the
-             * bottom is black, so it takes it all from there instead.
-             */
-            className="masthead-plate absolute inset-0 size-full object-cover object-top"
-          />
-        </picture>
+        <MastheadWind>
+          <Plate colour />
+        </MastheadWind>
 
+        {/*
+          What the reader disturbs. The gust knows nothing about the pointer;
+          this does, and it settles downwind at roughly the gust's speed so the
+          two read as one system rather than as two effects sharing a band.
+        */}
+        <MastheadTrail />
+
+        {/*
+          Last, so it grades the colour as well as the mono. The floor is meant
+          to keep the picture out of the copy, and a gust that could bring the
+          dust back through it in full colour would be a hole in exactly the
+          place the floor exists to protect.
+        */}
         <div className="masthead-grade absolute inset-0" />
       </div>
 
       {/*
         The copy hangs from the bottom of the band rather than sitting in the
         middle of it, and that is the plate's decision rather than a taste one.
-        The hands come in across the top third and reach down toward the middle;
-        anything centred in the band lands inside them. Bottom-aligned, the
-        fingers stop just short of the headline — close enough that the type
-        reads as the thing they are reaching for, far enough that the dot field
-        is never behind more than the first line's ascenders.
+        The dust runs across the top third and thins as it falls; anything
+        centred in the band lands in the middle of it. Bottom-aligned, the
+        headline crosses only the cloud's trailing edge — near enough that the
+        type sits inside the picture rather than under it, far enough that the
+        pattern is never behind more than the first line's ascenders, and the
+        sentence and the buttons stay on plain black.
       */}
       <div className="relative flex min-h-[54rem] flex-col lg:min-h-[min(100svh,52rem)]">
         <div className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col items-center justify-end px-4 pt-40 pb-12 text-center sm:px-6 lg:pb-10">
           {/*
-            Held to 5rem and to a 13-character measure, so the line breaks where
-            it is written to break rather than wherever the viewport puts it.
-            Centred display type that rewraps on its own reads as an accident
-            every time it lands on a width nobody checked.
+            Two sentences, and the break between them is written rather than
+            left to the viewport. `max-w` was doing that job before, back when
+            the line was one clause and could be squeezed until it folded in the
+            right place; two sentences of almost identical length have exactly
+            one correct break and no width can be trusted to find it. Centred
+            display type that rewraps on its own reads as an accident every time
+            it lands on a size nobody checked.
           */}
-          <h1 className="masthead-type max-w-[13ch] text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white text-balance">
-            Components you actually own
+          <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white">
+            Copy the code.
+            <br />
+            Keep the code.
           </h1>
 
-          <p className="masthead-type mt-7 max-w-[52ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60">
-            Accessible, animated React components for Next.js. Install them with
-            the shadcn CLI, copy the source, or hand the generated prompt to your
-            coding agent.
+          <p className="masthead-type mt-7 max-w-[46ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60">
+            Animated React components that install into your repo and stay
+            there.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -181,5 +169,66 @@ export function Masthead({ facts }: MastheadProps) {
         </dl>
       </div>
     </section>
+  )
+}
+
+/**
+ * The plate, as markup, in either of its two prints.
+ *
+ * Hand-written `<picture>` rather than `next/image`, for one reason: each print
+ * is an art-directed pair and the optimiser has no `media`. Two `next/image`s
+ * toggled with `hidden` would have both files fetched on every load —
+ * `display: none` does not stop a request — and a single wide plate letterboxed
+ * onto a phone throws away the composition the picture exists for.
+ *
+ * The two prints are laid out identically and cropped identically, which is not
+ * a coincidence and is not free: the colour source is cut with the same slice
+ * off the top that the tall mono plate takes, because the loupe reveals one
+ * directly over the other and a few pixels of drift between them would read as
+ * a misregistered print rather than as the same photograph.
+ *
+ * The mono print carries the first paint, so it gets `fetchPriority="high"` —
+ * ahead of the font, since the type arrives over it either way. The colour
+ * print is a hover reward that nothing is waiting on, so it goes out at low
+ * priority and is only rendered at all once `MastheadLoupe` has established
+ * that this device has a pointer.
+ */
+function Plate({ colour = false }: { colour?: boolean }) {
+  const stem = colour ? "hero-colour" : "hero-dither"
+
+  return (
+    <picture>
+      <source
+        media="(max-width: 639px)"
+        srcSet={`/${stem}-mobile-860.webp 860w, /${stem}-mobile-1290.webp 1290w`}
+        sizes="100vw"
+      />
+      <source
+        srcSet={
+          colour
+            ? "/hero-colour-1280.webp 1280w, /hero-colour-1920.webp 1920w"
+            : "/hero-dither-1920.webp 1920w, /hero-dither-2880.webp 2880w, /hero-dither-3840.webp 3840w"
+        }
+        sizes="100vw"
+      />
+      <img
+        src={colour ? "/hero-colour-1280.webp" : "/hero-dither-1920.webp"}
+        alt=""
+        fetchPriority={colour ? "low" : "high"}
+        decoding="async"
+        /*
+         * Anchored to the top, not centred. The plate is 16:9 and the band is
+         * wider than that on a large monitor, so `cover` crops it vertically —
+         * and a centred crop takes the same amount off the top, which walks the
+         * dust up under the nav until it is running behind the logo. Every pixel
+         * the crop can take from the bottom is black, so it takes it all from
+         * there instead.
+         */
+        className={cn(
+          "absolute inset-0 size-full object-cover object-top",
+          colour ? "masthead-colour" : "masthead-plate"
+        )}
+      />
+    </picture>
   )
 }

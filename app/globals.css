@@ -162,25 +162,39 @@
 
 .dark {
   /*
-   * The dark ramp is warm charcoal rather than the light ramp negated.
-   * `--grey-0` is still the page and `--grey-1000` is still the ink, so every
-   * semantic alias below keeps its meaning; only the direction of travel flips.
-   * The darkest step stops well short of black, which is what keeps a large
-   * surface from looking like a hole and a hairline from looking like a
-   * scratch.
+   * The dark ramp is the masthead's black, extended into a scale.
+   * -------------------------------------------------------------------------
+   * This used to be a warm charcoal — `#13110f`, a soft brown-black, hue 58 all
+   * the way up — chosen so a large dark surface would not read as a hole. The
+   * masthead broke it. A one-bit picture is printed on true black by
+   * definition, and next to it the page was visibly a *different, browner*
+   * black: the hero read as a panel dropped onto the site rather than as the
+   * top of it, and the join between them was a colour change rather than a
+   * transition.
+   *
+   * So the page follows the picture. `--grey-0` is now exactly the plate's own
+   * black, the hue is a whisper of blue instead of a warm brown, and chroma is
+   * held at 0.003 across the whole scale — enough that the greys are not
+   * clinically dead, far too little to read as a tint.
+   *
+   * The old rule about stopping short of black still applies, and it now
+   * applies one step up: the page is the floor, and *every surface on it* — a
+   * card, a popover, a hairline — is lifted further than it used to be, because
+   * a step that was legible against `#13110f` disappears against `#050506`. The
+   * ramp below is not the old one desaturated; it is respaced.
    */
-  --grey-0: oklch(0.178 0.004 58); /* #13110f — the page */
-  --grey-50: oklch(0.228 0.005 58); /* #1e1c1a — cards */
-  --grey-100: oklch(0.268 0.006 58); /* #282523 — popovers */
-  --grey-200: oklch(0.302 0.006 58);
-  --grey-300: oklch(0.352 0.007 58); /* the hairline */
-  --grey-400: oklch(0.435 0.008 56);
-  --grey-500: oklch(0.545 0.008 56);
-  --grey-600: oklch(0.655 0.008 58);
-  --grey-700: oklch(0.762 0.007 60); /* #b5b1ad — secondary text */
-  --grey-800: oklch(0.855 0.006 62);
-  --grey-900: oklch(0.923 0.005 65);
-  --grey-1000: oklch(0.965 0.004 70); /* #f5f3f1 — the ink */
+  --grey-0: oklch(0.116 0.003 265); /* #050506 — the page, and the plate's black */
+  --grey-50: oklch(0.181 0.003 265); /* #111213 — cards */
+  --grey-100: oklch(0.222 0.003 265); /* #1a1b1c — popovers */
+  --grey-200: oklch(0.262 0.003 265);
+  --grey-300: oklch(0.318 0.003 265); /* the hairline */
+  --grey-400: oklch(0.408 0.003 265);
+  --grey-500: oklch(0.525 0.003 265);
+  --grey-600: oklch(0.642 0.003 265);
+  --grey-700: oklch(0.755 0.003 265); /* #aeafb1 — secondary text */
+  --grey-800: oklch(0.852 0.002 265);
+  --grey-900: oklch(0.922 0.002 265);
+  --grey-1000: oklch(0.975 0.001 265); /* #f6f7f7 — the ink */
 
   --background: var(--grey-0);
   --foreground: var(--grey-1000);
@@ -218,27 +232,36 @@
   --warning-soft: var(--caution-soft);
 
   --code-bg: var(--grey-50);
-  --selection: oklch(0.965 0.004 70 / 0.16);
+  --selection: oklch(0.975 0.001 265 / 0.18);
 
   /*
    * The hues invert their roles rather than their values: the ink lightens so
    * it reads on a dark surface, the tint darkens, and the colour that sits on
    * a solid fill becomes dark ink.
+   *
+   * The tints came down with the page. They are read as a step above the
+   * surface behind them rather than as an absolute value, and the page dropped
+   * by 0.06 of lightness when it went from warm charcoal to the plate's black —
+   * left where they were, a callout would have sat higher off the page than a
+   * card does, which puts a coloured panel above the elevation that is supposed
+   * to mean "raised". The inks and the foregrounds are unchanged: one is read
+   * against the tint and the other against a solid fill, and neither of those
+   * moved.
    */
   --info: oklch(0.775 0.095 245);
-  --info-soft: oklch(0.315 0.045 245);
+  --info-soft: oklch(0.255 0.045 245);
   --info-foreground: oklch(0.18 0.035 245);
 
   --positive: oklch(0.785 0.1 155);
-  --positive-soft: oklch(0.31 0.04 155);
+  --positive-soft: oklch(0.25 0.04 155);
   --positive-foreground: oklch(0.18 0.03 155);
 
   --caution: oklch(0.825 0.1 78);
-  --caution-soft: oklch(0.325 0.042 66);
+  --caution-soft: oklch(0.265 0.042 66);
   --caution-foreground: oklch(0.19 0.03 66);
 
   --critical: oklch(0.75 0.115 22);
-  --critical-soft: oklch(0.325 0.055 22);
+  --critical-soft: oklch(0.265 0.055 22);
   --critical-foreground: oklch(0.18 0.035 22);
 
   /*
@@ -551,28 +574,40 @@
   /*
    * The masthead plate.
    * -------------------------------------------------------------------------
-   * `public/hero-dither-*.webp` is a one-bit picture. There is no grey in it at
-   * all: every pixel is either pure black or pure white, and the tone is
-   * carried entirely by how densely the white pixels are scattered — a
-   * Floyd–Steinberg error diffusion run over a lit greyscale study, then blown
-   * up with nearest-neighbour so a dot stays a hard square.
+   * `public/hero-dither-*.webp` is a one-bit picture: a river of interstellar
+   * dust running across the upper third of the frame, with a star field in the
+   * black below it. There is no grey in the file at all. Every pixel is either
+   * pure black or pure white, and the tone is carried entirely by how densely
+   * the white ones are packed — an ordered Bayer dither over a smooth greyscale
+   * study, blown up with nearest-neighbour so a dot stays a hard square.
    *
-   * That constraint is the reason for most of the rules below. A one-bit image
-   * has no sub-pixel and no midtone to give up, so anything laid over it that
-   * would normally be free — a scrim, a film grain, a fractional transform —
-   * turns white dots into grey ones and the picture into mush. The plate is
-   * therefore left almost completely alone: it is drawn at device resolution,
-   * it does not move, and what little grading survives is kept off the subject.
+   * Ordered, not error diffusion, and the difference is the whole look. Error
+   * diffusion scatters: on a slow gradient like a nebula it produces an organic
+   * cloud of unstructured dots, which reads as a photocopy. A Bayer matrix is
+   * periodic, so every tone resolves to a *pattern* — a checkerboard at half, a
+   * diagonal hatch at a third, sparse regular dots near black. That regularity
+   * is what reads as pixel art, and it is what the picture was made to be.
    *
-   * Two plates, not one crop. The subject sits in the upper half of the wide
-   * plate and runs off both edges; a portrait crop of that is a detail of a
-   * forearm. The tall plate is dithered from a composition redrawn for the
-   * shape, and `<picture>` picks between them on `media`, so only one is
-   * fetched.
+   * The one-bit constraint is the reason for most of the rules below. Such an
+   * image has no sub-pixel and no midtone to give up, so anything laid over it
+   * that would normally be free — a scrim, a film grain, a fractional transform
+   * — turns white dots into grey ones and the pattern into mush. The plate is
+   * therefore left almost completely alone: drawn at device resolution, never
+   * moved, and graded only where it must be.
+   *
+   * Two plates, not one crop. The dust runs off both edges of the wide plate,
+   * and a portrait crop of that is a detail of one cloud. The tall plate is
+   * dithered from a composition redrawn for the shape — mass in the upper
+   * third, two thirds of black under it — and `<picture>` picks between them on
+   * `media`, so only one is fetched.
    *
    * One colour is declared and nothing else. `--masthead-void` is the black the
-   * dots are printed on — near-neutral, a shade below the page, and
-   * deliberately not `--grey-0`, because the page is warm and the plate is not.
+   * dots are printed on, and it is the same value as `--grey-0` — the page was
+   * moved onto it rather than the other way round, for the reason set out on
+   * the dark ramp above. It is kept as its own token, in bare channels, because
+   * every rule here needs it at a dozen different alphas and `rgb(var(--…) / a)`
+   * needs the channels separated; and because if the page ever moves again, the
+   * plate must not follow it. This picture is printed on black.
    */
   .masthead {
     --masthead-void: 5 5 6;
@@ -589,9 +624,238 @@
    * every scale, at the cost of the dot grid beating very slightly. That beat
    * is what a dither looks like on a screen it was not authored for, and it is
    * the honest failure mode of the two.
+   *
+   * The opacity is the one dimming move available that does not touch the grid.
+   * At full white the dot field was the brightest thing on the page by a
+   * distance — a one-bit picture has no midtone to hold itself back with, so a
+   * lit cloud is simply #fff across a third of the screen and the headline in
+   * front of it has nowhere left to go. Dropping the layer instead leaves the
+   * black black, because it is being composited onto black, and brings only the
+   * white down.
    */
   .masthead-plate {
     image-rendering: pixelated;
+    opacity: 0.5;
+  }
+
+  /*
+   * The colour print.
+   *
+   * Deliberately *not* `pixelated`, and deliberately not dithered. Matching the
+   * mono plate's texture was the obvious move and it is the wrong one: the
+   * whole event is that the picture stops being a print and becomes the
+   * photograph, and a colour dither would only have been the same print in more
+   * inks. Smooth, continuous tone, inside a circle cut out of a halftone — the
+   * contrast between the two surfaces is the effect.
+   *
+   * Held at 0.9 so it sits in the same room as the rest of the band. At full
+   * strength the disc read as a hole in the page rather than as the layer
+   * underneath it.
+   */
+  .masthead-colour {
+    opacity: 0.9;
+  }
+
+  /*
+   * The wind. `MastheadWind` moves it; this is its geometry and its shape.
+   *
+   * A fixed box with a fixed mask on it, translated across the band, holding
+   * the colour print translated by exactly the opposite amount so it stays
+   * pinned to the band underneath. Both transforms stay on the compositor and
+   * the mask never changes, so a gust crosses the whole hero without a single
+   * repaint — which matters more here than anywhere else on the site, because
+   * unlike a hover this animation never stops.
+   *
+   * `--band-w` and `--band-h` are written by the script. The fallbacks are the
+   * viewport width and the inner copy's own box, which is what the element
+   * would have measured anyway before the first frame lands — wrong by a little
+   * for one paint, rather than collapsed to nothing.
+   */
+  .masthead-wind {
+    --gust-w: 42rem;
+    /* Vertical room for the gust to bend into without exposing its own edge. */
+    --gust-slack: 6rem;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /*
+   * The gust, and the mask is the whole design of it.
+   *
+   * A single soft-edged column would have been a searchlight sweeping the band:
+   * it reveals a full-height slice, so at any moment the reader is looking at
+   * one complete vertical cut of the photograph. Wind does not do that. This is
+   * five flattened ellipses at different heights, widths and offsets, unioned
+   * together — so what crosses the band is a loose cluster of streaks with gaps
+   * between them, and the colour arrives in patches that never add up to the
+   * whole picture.
+   *
+   * They are wide and short on purpose. An ellipse three times wider than it is
+   * tall reads as something moving horizontally even when it is standing still,
+   * which is most of what sells the direction.
+   */
+  .masthead-wind-gust {
+    position: absolute;
+    left: 0;
+    top: calc(var(--gust-slack) * -1);
+    width: var(--gust-w);
+    height: calc(100% + var(--gust-slack) * 2);
+    transform: translate3d(var(--wind-x, -100%), var(--wind-y, 0px), 0);
+
+    /*
+     * Six layers, and the first one is doing something different from the other
+     * five.
+     *
+     * The wisps are unioned together — that is the cluster of streaks. But a
+     * wisp is a wide ellipse placed by percentage, so several of them run past
+     * the ends of their own box, and a mask stops at its element's edge: the
+     * gust entered the band with those wisps sliced off down a hard vertical
+     * line, which is the one moment in the whole animation that announced there
+     * was a box. The leading edge has to dissolve, not arrive.
+     *
+     * So the union is then *intersected* with a long horizontal fade, and the
+     * gust has no ends at all — it thins into nothing over its first and last
+     * quarter, in and out of the band, the way a gust of wind actually reaches
+     * a place and then stops being there.
+     */
+    --gust-wisps:
+      linear-gradient(
+        to right,
+        transparent 0%,
+        rgb(0 0 0 / 0.35) 12%,
+        #000 30%,
+        #000 70%,
+        rgb(0 0 0 / 0.35) 88%,
+        transparent 100%
+      ),
+      radial-gradient(66% 12% at 32% 13%, #000 0%, transparent 74%),
+      radial-gradient(78% 9% at 56% 30%, #000 0%, transparent 76%),
+      radial-gradient(60% 15% at 39% 48%, #000 0%, transparent 72%),
+      radial-gradient(72% 8% at 64% 65%, #000 0%, transparent 76%),
+      radial-gradient(53% 11% at 26% 82%, #000 0%, transparent 74%);
+
+    -webkit-mask-image: var(--gust-wisps);
+    mask-image: var(--gust-wisps);
+    /*
+     * Read bottom-up: the five wisps union into one shape, then the fade on top
+     * cuts that shape down. `-webkit-` spells the same two operations
+     * `source-in` and `source-over`.
+     */
+    -webkit-mask-composite: source-in, source-over, source-over, source-over,
+      source-over, source-over;
+    mask-composite: intersect, add, add, add, add, add;
+  }
+
+  .masthead-wind-shot {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--band-w, 100vw);
+    height: var(--band-h, 100%);
+    /*
+     * The gust's own origin is `--gust-slack` above the band and `--wind-x`
+     * along it, so this cancels both and the plate sits exactly where the mono
+     * print does. Any error here shows up as the colour sliding against the
+     * dither, which is the one thing that would give the trick away.
+     */
+    transform: translate3d(
+      calc(var(--wind-x, 0px) * -1),
+      calc(var(--gust-slack) - var(--wind-y, 0px)),
+      0
+    );
+  }
+
+  /*
+   * The trail. `MastheadTrail` lays it down; this is one puff of it.
+   *
+   * Sixteen of these, pooled and recycled, each a small window onto the colour
+   * print left behind by the pointer and fading over about a second. The
+   * geometry is the gust's, scaled down: a fixed box with a fixed mask,
+   * positioned by transform, holding the plate translated by exactly the
+   * opposite amount so it stays pinned to the band. Only `--puff-o` and the two
+   * offsets change, and both are composited, so a trail of sixteen windows
+   * costs sixteen transforms a frame and no repaint at all.
+   *
+   * The plate arrives as a background rather than as an `<img>` for one reason:
+   * at sixteen copies the markup mattered more than the art direction did, and
+   * a background can carry the same three sources through media queries with no
+   * elements at all. It is the only place on the page where the picture is not
+   * a `<picture>`.
+   */
+  .masthead-trail {
+    --puff-size: 18rem;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .masthead-puff {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--puff-size);
+    height: var(--puff-size);
+    /* Half the size back, so the transform can take raw pointer coordinates. */
+    margin: calc(var(--puff-size) / -2) 0 0 calc(var(--puff-size) / -2);
+    transform: translate3d(var(--puff-x, 0px), var(--puff-y, 0px), 0);
+    opacity: var(--puff-o, 0);
+    /*
+     * Much softer than the gust's wisps, and deliberately so: a puff is what is
+     * left of a disturbance rather than the disturbance itself, so it has no
+     * edge at all. There is no solid plateau — the mask is already falling from
+     * the centre outward and does not reach the box, so what the reader sees is
+     * a breath of colour with no boundary anywhere in it.
+     */
+    -webkit-mask-image: radial-gradient(
+      closest-side,
+      rgb(0 0 0 / 0.85) 0%,
+      rgb(0 0 0 / 0.45) 34%,
+      transparent 80%
+    );
+    mask-image: radial-gradient(
+      closest-side,
+      rgb(0 0 0 / 0.85) 0%,
+      rgb(0 0 0 / 0.45) 34%,
+      transparent 80%
+    );
+  }
+
+  .masthead-puff-shot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--band-w, 100vw);
+    height: var(--band-h, 100%);
+    transform: translate3d(
+      calc(var(--puff-size) / 2 - var(--puff-x, 0px)),
+      calc(var(--puff-size) / 2 - var(--puff-y, 0px)),
+      0
+    );
+    background-image: url("/hero-colour-1280.webp");
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    /*
+     * Half strength, where the gust prints at nine tenths. The gust is the
+     * picture's own weather and is allowed to be the brightest thing in the
+     * band; the trail is a residue of the reader passing through it, and a
+     * residue that arrives at full saturation stops reading as one — it becomes
+     * a cursor again, which is the thing this replaced.
+     */
+    opacity: 0.5;
+  }
+
+  @media (min-width: 1600px) {
+    .masthead-puff-shot {
+      background-image: url("/hero-colour-1920.webp");
+    }
+  }
+
+  @media (max-width: 639px) {
+    .masthead-puff-shot {
+      background-image: url("/hero-colour-mobile-860.webp");
+    }
   }
 
   /*
@@ -626,14 +890,14 @@
     background-image:
       linear-gradient(
         to bottom,
-        rgb(var(--masthead-void) / 0.72) 0,
-        rgb(var(--masthead-void) / 0) 7rem
+        rgb(var(--masthead-void) / 0.85) 0,
+        rgb(var(--masthead-void) / 0) 9rem
       ),
       linear-gradient(
         to top,
         rgb(var(--masthead-void)) 0,
-        rgb(var(--masthead-void)) 26%,
-        rgb(var(--masthead-void) / 0) 58%
+        rgb(var(--masthead-void)) 10%,
+        rgb(var(--masthead-void) / 0) 40%
       );
   }
 

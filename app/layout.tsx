@@ -81,7 +81,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   // The site renders dark only, so there is one answer here rather than a pair.
-  themeColor: "#141210",
+  themeColor: "#050506",
   colorScheme: "dark",
 }
 
