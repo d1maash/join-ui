@@ -66,15 +66,24 @@ export function Masthead({ facts }: MastheadProps) {
       className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden bg-[rgb(var(--masthead-void))]"
     >
       <div aria-hidden="true" className="absolute inset-0">
-        <MastheadDrift>
-          <Plate />
-        </MastheadDrift>
+        {/* The band as it rests: the nebula as a one-bit dither. */}
+        <Plate />
 
         {/*
-          Outside the drift: the grade is anchored to the layout, not to the
-          plate. A veil that keeps the nav legible is worth nothing if it slides
-          out from under the nav, and a floor that keeps the dust off the copy
-          is worth nothing if it steps sideways with the dust.
+          The same photograph in colour, windowed to a disc that follows the
+          pointer. A different file, not a filter — there is no way to get from
+          one bit per pixel back to a hue, so the colour has to arrive as its own
+          print, registered against the mono one.
+        */}
+        <MastheadLoupe>
+          <Plate colour />
+        </MastheadLoupe>
+
+        {/*
+          Last, so it grades the colour as well as the mono. The floor is meant
+          to keep the picture out of the copy, and a window that could bring the
+          dust back through it in full colour would be a hole in exactly the
+          place the floor exists to protect.
         */}
         <div className="masthead-grade absolute inset-0" />
       </div>
