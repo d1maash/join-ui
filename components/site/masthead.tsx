@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { MASTHEAD_ID } from "@/components/site/header-shell"
-import { MastheadLoupe } from "@/components/site/masthead-loupe"
+import { MastheadWind } from "@/components/site/masthead-wind"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -70,18 +70,18 @@ export function Masthead({ facts }: MastheadProps) {
         <Plate />
 
         {/*
-          The same photograph in colour, windowed to a disc that follows the
-          pointer. A different file, not a filter — there is no way to get from
-          one bit per pixel back to a hue, so the colour has to arrive as its own
-          print, registered against the mono one.
+          The same photograph in colour, blown across the band in streaks. A
+          different file, not a filter — there is no way to get from one bit per
+          pixel back to a hue, so the colour has to arrive as its own print,
+          registered against the mono one.
         */}
-        <MastheadLoupe>
+        <MastheadWind>
           <Plate colour />
-        </MastheadLoupe>
+        </MastheadWind>
 
         {/*
           Last, so it grades the colour as well as the mono. The floor is meant
-          to keep the picture out of the copy, and a window that could bring the
+          to keep the picture out of the copy, and a gust that could bring the
           dust back through it in full colour would be a hole in exactly the
           place the floor exists to protect.
         */}

@@ -143,8 +143,8 @@ export function MastheadWind({ children }: { children: React.ReactNode }) {
      */
     let visible = true
     const watcher = new IntersectionObserver(
-      ([entry]) => {
-        visible = entry.isIntersecting
+      (entries) => {
+        visible = entries.some((entry) => entry.isIntersecting)
         if (visible) start()
       },
       { threshold: 0 }
