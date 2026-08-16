@@ -25,36 +25,55 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 }
 
+/**
+ * The six rules, each with the thing that proves it.
+ *
+ * `proof` is the point of the redesign below. A principle is a claim, and six
+ * claims set in six identical cards is a slogan wall — the reader has no way to
+ * tell "WCAG 2.2 AA as the baseline" from the same sentence on a site that does
+ * not mean it. So every rule carries the artefact it cashes out as: the path the
+ * files land at, the two properties the animations are allowed to touch, the
+ * command that has to pass. They are written in mono because each one is a
+ * string a machine would also have to read, which is the site's rule for that
+ * family, and because a claim next to its own evidence reads as a
+ * specification rather than as marketing.
+ */
 const PRINCIPLES = [
   {
     title: "Open code, not a black box",
     description:
       "The CLI writes real files into your repository. Read them, edit them, delete the parts you do not need — there is no wrapper package to fight.",
+    proof: `${siteConfig.installTarget}/*.tsx`,
   },
   {
     title: "One click to an AI-ready prompt",
     description:
       "Every component page ships a structured prompt with props, accessibility rules and the full source, generated from the same metadata that builds the page.",
+    proof: "Copy prompt → prompt.txt",
   },
   {
     title: "WCAG 2.2 AA as the baseline",
     description:
       "Keyboard paths, focus management, live regions and reduced-motion fallbacks are part of each component, not a later pass.",
+    proof: ":focus-visible · aria-live",
   },
   {
     title: "Animation that stays cheap",
     description:
       "Transform and opacity only, listeners scoped to the viewport, and every effect degrading to a static state when motion is turned down.",
+    proof: "transform · opacity",
   },
   {
     title: "A real shadcn registry",
     description:
       "Namespaced items, resolved dependencies and validated schemas — installable by name or by URL, from any project.",
+    proof: `${siteConfig.namespace}/<component>`,
   },
   {
     title: "Typed end to end",
     description:
       "Strict TypeScript with exported prop types. No `any`, no ambient globals, no build-time surprises.",
+    proof: "tsc --noEmit",
   },
 ]
 
@@ -279,32 +298,92 @@ export default function HomePage() {
           title="Built like a developer tool"
           aside={
             <p className="leading-relaxed text-pretty text-muted-foreground">
-              Six rules the registry is held to. They are the reason a component
-              can be dropped into an existing codebase without a migration, and
-              the reason the source is worth reading once it lands there.
+              Six rules the registry is held to, each one carrying the artefact
+              it cashes out as — the path, the property, the command. They are
+              the reason a component can be dropped into an existing codebase
+              without a migration, and the reason the source is worth reading
+              once it lands there.
             </p>
           }
           wide
         >
-          <ol className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {PRINCIPLES.map((principle, index) => (
-              <li
-                key={principle.title}
-                className="flex flex-col gap-2.5 rounded-xl border border-border bg-card p-5 shadow-xs transition-[border-color,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-out-soft)] hover:border-border-hover hover:shadow-sm"
-              >
-                <span
-                  aria-hidden="true"
-                  className="numeral flex size-7 items-center justify-center rounded-full border border-border text-[0.6875rem] text-muted-foreground"
+          {/*
+            One sheet, not six cards.
+            -----------------------------------------------------------------
+            This was a grid of rounded panels, each with a fill, a shadow and a
+            counter in a pill, floating three-across with a gap between them.
+            Nothing was wrong with any one of them and the set was still the
+            weakest band on the page: six raised objects in a row read as six
+            unrelated things, the gaps put more air inside the section than the
+            section has around it, and the drop shadows are the one material on
+            this site that is supposed to mean "this surface is above the page"
+            — spent here on six paragraphs that are not.
+
+            What replaces them is a single framed sheet divided by hairlines.
+            The cells share their rules rather than each carrying their own, so
+            the six rules look like one document, which is what they are. It
+            also lets the block sit on the page's own colour instead of on a
+            fill, so the only lit surfaces left in this section are the ones the
+            pointer is on.
+
+            The negative margins are what make that possible in one grid at
+            three different column counts: every cell draws its right and bottom
+            rule unconditionally, the track is pulled a pixel past the frame's
+            inner edge, and `overflow-hidden` on the frame clips the last
+            column's and last row's rules away. No `:nth-child` arithmetic that
+            has to be rewritten at every breakpoint.
+          */}
+          <div className="overflow-hidden rounded-xl border border-border">
+            <ol className="-mr-px -mb-px grid sm:grid-cols-2 xl:grid-cols-3">
+              {PRINCIPLES.map((principle, index) => (
+                <li
+                  key={principle.title}
+                  className="group relative flex flex-col border-r border-b border-border p-6 transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)] hover:bg-subtle"
                 >
-                  {pad(index + 1)}
-                </span>
-                <h3 className="text-[0.9375rem] font-semibold">{principle.title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {principle.description}
-                </p>
-              </li>
-            ))}
-          </ol>
+                  {/*
+                    The counter and the rule it starts. The rule is drawn twice:
+                    a hairline that is always there, and an ink line over it
+                    scaled to nothing until the pointer arrives. Scaling a 1px
+                    line is a transform on a layer that never repaints — the
+                    section about animation that stays cheap is not allowed to
+                    animate any other way, and at reduced motion the global
+                    override lands it instantly rather than removing it.
+                  */}
+                  <div className="flex items-center gap-3">
+                    <span
+                      aria-hidden="true"
+                      className="numeral text-[0.6875rem] text-muted-foreground transition-colors duration-[var(--duration-base)] group-hover:text-foreground"
+                    >
+                      {pad(index + 1)}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="relative h-px flex-1 bg-border"
+                    >
+                      <span className="absolute inset-0 origin-left scale-x-0 bg-foreground/45 transition-transform duration-[var(--duration-slow)] ease-[var(--ease-out-soft)] group-hover:scale-x-100" />
+                    </span>
+                  </div>
+
+                  <h3 className="mt-5 text-[0.9375rem] font-semibold text-balance">
+                    {principle.title}
+                  </h3>
+                  <p className="mt-2.5 flex-1 text-sm leading-relaxed text-muted-foreground">
+                    {principle.description}
+                  </p>
+
+                  {/*
+                    The evidence, on a rule of its own so it reads as a field of
+                    the record rather than as the end of the paragraph. `pt-4`
+                    against the description's `mt-6` keeps the line sitting
+                    closer to what it proves than to the cell below it.
+                  */}
+                  <p className="mt-6 border-t border-border pt-4 font-mono text-[0.6875rem] text-muted-foreground transition-colors duration-[var(--duration-base)] group-hover:text-foreground">
+                    {principle.proof}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
         </Section>
 
         {/* Prompt */}
