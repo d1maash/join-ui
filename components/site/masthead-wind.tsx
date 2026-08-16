@@ -13,27 +13,7 @@ import * as React from "react"
  */
 const PERIOD = 18
 
-/** Furthest the gust bends from the band's middle, in pixels. */
-const BEND = 54
-
-/** How much of the remaining bend is covered each frame. */
-const EASE = 0.05
-
-/**
- * How much of a pointer's horizontal movement is pushed into the gust's phase.
- *
- * This is the interaction. Sweep the cursor right and the wind surges ahead of
- * its own timing; sweep it left and it drags against you. It is deliberately
- * not a big number — the gust should feel like it is being *disturbed* by the
- * hand passing through it, not steered by it.
- */
-const PUSH = 0.42
-
-/** Per-frame decay on that push, so a flick fades instead of accumulating. */
-const DECAY = 0.94
-
 const CALM = "(prefers-reduced-motion: reduce)"
-const HOVERS = "(hover: hover)"
 
 /**
  * Whether the wind should blow at all.

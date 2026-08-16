@@ -703,7 +703,32 @@
     height: calc(100% + var(--gust-slack) * 2);
     transform: translate3d(var(--wind-x, -100%), var(--wind-y, 0px), 0);
 
+    /*
+     * Six layers, and the first one is doing something different from the other
+     * five.
+     *
+     * The wisps are unioned together — that is the cluster of streaks. But a
+     * wisp is a wide ellipse placed by percentage, so several of them run past
+     * the ends of their own box, and a mask stops at its element's edge: the
+     * gust entered the band with those wisps sliced off down a hard vertical
+     * line, which is the one moment in the whole animation that announced there
+     * was a box. The leading edge has to dissolve, not arrive.
+     *
+     * So the union is then *intersected* with a long horizontal fade, and the
+     * gust has no ends at all — it thins into nothing over its first and last
+     * quarter, in and out of the band, the way a gust of wind actually reaches
+     * a place and then stops being there.
+     */
     --gust-wisps:
+      linear-gradient(
+        to right,
+        transparent 0%,
+        rgb(0 0 0 / 0.35) 12%,
+        #000 30%,
+        #000 70%,
+        rgb(0 0 0 / 0.35) 88%,
+        transparent 100%
+      ),
       radial-gradient(66% 12% at 32% 13%, #000 0%, transparent 74%),
       radial-gradient(78% 9% at 56% 30%, #000 0%, transparent 76%),
       radial-gradient(60% 15% at 39% 48%, #000 0%, transparent 72%),
@@ -712,8 +737,14 @@
 
     -webkit-mask-image: var(--gust-wisps);
     mask-image: var(--gust-wisps);
-    -webkit-mask-composite: source-over;
-    mask-composite: add;
+    /*
+     * Read bottom-up: the five wisps union into one shape, then the fade on top
+     * cuts that shape down. `-webkit-` spells the same two operations
+     * `source-in` and `source-over`.
+     */
+    -webkit-mask-composite: source-in, source-over, source-over, source-over,
+      source-over, source-over;
+    mask-composite: intersect, add, add, add, add, add;
   }
 
   .masthead-wind-shot {
