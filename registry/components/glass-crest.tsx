@@ -24,13 +24,14 @@ export interface GlassCrestMark {
 }
 
 /**
- * The disc, in fractions of its own diameter.
+ * The glyph, as a fraction of the disc it stands on.
  *
- * Everything inside a mark is a percentage rather than a length, because the
- * crest is fluid: the same component draws a 96px disc on a phone and a 200px
- * one on a wide monitor, and a 3px specular highlight authored for one of those
- * is a smear on the other. Percentages make the drawing scale-invariant, which
- * is the whole reason the glass survives being resized.
+ * Every position and every size inside a mark is a percentage rather than a
+ * length, because the crest is fluid: the same component draws a 90px disc on a
+ * phone and a 200px one on a wide monitor, and a specular highlight authored in
+ * pixels for one of those is a smear on the other. Only the blurs are absolute,
+ * and deliberately so — a shadow is a property of the light in the room, not of
+ * how large the thing casting it happens to be rendered.
  */
 const GLYPH = "42%"
 
@@ -70,14 +71,14 @@ const SIZES = {
   },
   md: {
     crest: "max-w-xl",
-    copy: "max-w-xl",
+    copy: "max-w-2xl",
     headline: "text-4xl leading-[1.08] sm:text-5xl lg:text-[3.5rem]",
     description: "text-base",
     gap: "gap-5",
   },
   lg: {
     crest: "max-w-3xl",
-    copy: "max-w-3xl",
+    copy: "max-w-4xl",
     headline: "text-5xl leading-[1.05] sm:text-6xl lg:text-7xl",
     description: "text-lg",
     gap: "gap-6",
@@ -187,7 +188,15 @@ export function GlassCrest({
   const springX = useSpring(pointerX, { stiffness: 110, damping: 24, mass: 0.7 })
   const springY = useSpring(pointerY, { stiffness: 110, damping: 24, mass: 0.7 })
 
-  const live = parallax && animate
+  /*
+   * The parallax is wired up after hydration rather than during it.
+   *
+   * A motion value in `style` renders as a computed transform on the client and
+   * as nothing at all on the server, which is a hydration mismatch for a crest
+   * that has not moved yet. Nothing is lost by waiting: a pointer cannot be
+   * over an element that has not been painted.
+   */
+  const live = useHydrated() && parallax && animate
 
   const swing = useTransform(springX, (value) => value * 2.4)
   const driftX = useTransform(springX, (value) => value * 10)
@@ -260,16 +269,27 @@ export function GlassCrest({
               /*
                 Each radial is placed at its own mark's percentage on this box,
                 which is the same box the marks are positioned in — so the wash
-                cannot drift out of register with the crest at any width. The
-                radii are far wider than a disc, so the colour bleeds past the
-                edges instead of ending inside them.
+                cannot drift out of register with the crest at any width.
+                Percentages in a radial's ending shape are read per axis, and
+                this box is roughly twice as wide as it is tall, so the vertical
+                radius is scaled by the ratio to keep the halo round rather than
+                letting it stretch into a lens.
               */
               backgroundImage: arc.slots
                 .map((slot, index) => {
                   const accent = marks[index]?.accent ?? "currentColor"
-                  return `radial-gradient(${arc.diameter * 2.2}% ${arc.diameter * 2.2}% at ${slot.x}% ${slot.y}%, color-mix(in oklab, ${accent} 30%, transparent) 0%, transparent 72%)`
+                  const r = trim(arc.diameter * 0.95)
+                  return `radial-gradient(${r}% ${trim(r * arc.ratio)}% at ${slot.x}% ${slot.y}%, color-mix(in oklab, ${accent} 34%, transparent) 0%, transparent 74%)`
                 })
                 .join(", "),
+              /*
+                A background stops at its element's edge, and a wash that is
+                still tinted when it gets there draws a rectangle around the
+                crest — the one shape this section must not have. The mask
+                takes the whole layer to nothing before the box does.
+              */
+              maskImage:
+                "radial-gradient(72% 78% at 50% 52%, rgb(0, 0, 0) 30%, transparent 100%)",
             }}
           />
         ) : null}
@@ -546,8 +566,7 @@ function Mark({
         style={{
           background: `color-mix(in oklab, ${accent} 38%, transparent)`,
           opacity: active ? 0.85 : 0.6,
-          transition:
-            "opacity var(--duration-base) var(--ease-out-soft)",
+          transition: "opacity var(--duration-base) var(--ease-out-soft)",
         }}
       />
 
@@ -569,12 +588,12 @@ function Mark({
               authored for a 200px disc is a black band on a 90px one. Listed
               first, so it paints over the tint.
             */
-            `radial-gradient(88% 70% at 50% 116%, color-mix(in oklab, ${accent} 58%, transparent) 0%, transparent 62%)`,
-            `radial-gradient(120% 120% at 30% 20%, color-mix(in oklab, ${accent} 34%, transparent) 0%, color-mix(in oklab, ${accent} 13%, transparent) 52%, color-mix(in oklab, ${accent} 34%, transparent) 100%)`,
+            `radial-gradient(86% 66% at 50% 112%, color-mix(in oklab, ${accent} 72%, transparent) 0%, transparent 58%)`,
+            `radial-gradient(118% 118% at 30% 20%, color-mix(in oklab, ${accent} 42%, transparent) 0%, color-mix(in oklab, ${accent} 17%, transparent) 52%, color-mix(in oklab, ${accent} 44%, transparent) 100%)`,
           ].join(", "),
           boxShadow: [
             /* The rim, in the mark's own colour rather than in grey. */
-            `inset 0 0 0 1px color-mix(in oklab, ${accent} 30%, transparent)`,
+            `inset 0 0 0 1px color-mix(in oklab, ${accent} 48%, transparent)`,
             /* The lit top edge — the light is above, and this is the one hairline. */
             `inset 0 2px 3px -1px ${SHEEN}`,
             /* A close contact shadow, so the disc sits on the page rather than over it. */
@@ -628,7 +647,7 @@ function Mark({
         left: `${slot.x}%`,
         top: `${slot.y}%`,
         width: `${diameter}%`,
-        aspectRatio: 1,
+        aspectRatio: "1 / 1",
         /*
          * Nearest the apex sits highest. It is the only order that is symmetric
          * the way the arc is — shingling one way makes the crest read as a fan
@@ -640,7 +659,15 @@ function Mark({
     >
       <motion.div
         className="size-full"
-        initial={animate ? { opacity: 0, y: 26, scale: 0.82 } : false}
+        /*
+         * Declared unconditionally, and cancelled by the transition rather than
+         * by the prop. Whether motion is reduced is unknowable on the server, so
+         * branching the markup on it means a reduced-motion reader hydrates a
+         * different tree than the one they were sent. A zero-duration
+         * transition lands the disc on its final values in the first frame,
+         * which is the same outcome with none of the mismatch.
+         */
+        initial={{ opacity: 0, y: 26, scale: 0.82 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={
           animate
@@ -739,12 +766,44 @@ function layOut(
 
   return {
     slots: angles.map((angle, index) => ({
-      x: ((xs[index]! - minX + diameter / 2) / width) * 100,
-      y: ((ys[index]! - minY + diameter / 2) / height) * 100,
-      angle: (angle * 180) / Math.PI,
+      x: trim(((xs[index]! - minX + diameter / 2) / width) * 100),
+      y: trim(((ys[index]! - minY + diameter / 2) / height) * 100),
+      angle: trim((angle * 180) / Math.PI),
       depth: (index - (count - 1) / 2) / ((count - 1) / 2),
     })),
-    diameter: (diameter / width) * 100,
-    ratio: width / height,
+    diameter: trim((diameter / width) * 100),
+    ratio: trim(width / height),
   }
+}
+
+/**
+ * False through the server render and the hydrating one, true after.
+ *
+ * A store that never changes, whose two snapshots disagree: React reads the
+ * server one while it is matching the markup it was sent and the client one
+ * immediately afterwards, which is exactly the signal wanted here and is a
+ * re-render rather than a mismatch. An effect flipping a piece of state would
+ * do the same job a beat later and a lint rule at a time.
+ */
+function useHydrated(): boolean {
+  return React.useSyncExternalStore(
+    subscribeToNothing,
+    () => true,
+    () => false
+  )
+}
+
+const subscribeToNothing = () => () => {}
+
+/**
+ * Rounds a number that is on its way into a style attribute.
+ *
+ * Browsers re-serialise CSS to six significant figures, so a raw
+ * `34.82959163394012%` comes back out of the DOM as `34.8296%` — which React
+ * reads as the server and the client disagreeing about the markup. Three
+ * decimals is finer than a device pixel at any size this draws at, and it is a
+ * value that survives the round trip untouched.
+ */
+function trim(value: number): number {
+  return Math.round(value * 1000) / 1000
 }
