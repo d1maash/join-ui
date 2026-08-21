@@ -1509,4 +1509,372 @@ export function Example() {
     related: ["agent-hive", "status-timeline"],
     since: "2026-08-11",
   }),
+
+  defineComponent({
+    name: "GlassCrest",
+    slug: "glass-crest",
+    title: "Glass Crest",
+    description:
+      "A hero section led by an arc of tinted glass discs, solved from a count and a spread, that assembles on mount and then answers only the pointer.",
+    overview:
+      "GlassCrest is the section a product opens with: a crescent of glass marks over the sentence that explains them. The crest is drawn rather than photographed — each disc is tinted glass with a lit top edge, a shaded belly, an off-centre specular and a rim in its own accent, and the glyph stands on it as a relief, printed twice so the blurred copy underneath gives the extrusion its thickness. Nothing is an image, so a mark is any icon you pass and any colour you name, and the whole crest recolours with the page instead of being lit for one theme. The arc is geometry rather than layout: give it a count and a spread and it solves for the radius that fits the marks across their own box, the diameter that laps them by overlap, and the aspect ratio that leaves room for the bow — so three marks on a phone and eleven on a monitor are the same calculation, expressed entirely in percentages and needing no measurement at all. It moves twice and only twice. It assembles apex-first on mount, because a hero arriving is the one moment a page may perform, and after that it answers the pointer: the arc swings from a pivot below itself while the outer marks travel further than the inner ones. Pass onMarkSelect and every disc becomes a real button behind a single tab stop, with the arrow keys walking the arc.",
+    category: "Marketing",
+    tags: [
+      "hero",
+      "section",
+      "landing",
+      "glass",
+      "arc",
+      "crypto",
+      "logos",
+      "parallax",
+      "marquee",
+    ],
+    status: "new",
+    featured: true,
+    dependencies: ["motion"],
+    registryDependencies: ["utils"],
+    files: [uiFile("glass-crest")],
+    accessibility: [
+      "The section is a landmark named by its own headline through `aria-labelledby`, so it is reachable by region rather than only by scrolling.",
+      "The headline renders at the level you ask for — `headingLevel` — so a crest used twice on a page does not put two `h1`s on it.",
+      "The arc is a list named by `crestLabel`, and every mark carries its `label` in the accessibility tree: as the button's `aria-label` when the crest is interactive, and as visually hidden text when it is not. A screen reader gets the names of all the assets, not a row of unlabelled decoration.",
+      "Every layer of the glass — the wash, the tint, the specular, the cast shadow and both copies of the glyph — is `aria-hidden`. They are the drawing, and none of them is announced.",
+      "With `onMarkSelect` the arc is a roving tabindex: an eleven-mark crest is one tab stop and the arrows move inside it, rather than eleven stops between the headline and the call to action.",
+      "The hover caption under the arc is `aria-hidden`, because it repeats a name the marks already carry; it reserves its line at all times, so the headline never jumps when the cursor crosses the crest.",
+      "The focus ring is drawn on the button rather than on the glass, so it traces the disc it belongs to and survives a forced-colours mode where the tint does not.",
+      "Nothing loops. The crest performs once on mount and is otherwise still — every other movement is a response to the pointer or the caret, which is what keeps a hero from competing with the page it is heading.",
+      "`prefers-reduced-motion` is honoured structurally rather than by shortening durations: the mount is not started at all and the parallax is never wired up, leaving a still section that still works.",
+      "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
+    ],
+    keyboard: [
+      {
+        keys: ["Tab"],
+        description:
+          "Enters the arc at the marked disc and leaves it again — the whole crest is one stop. Without onMarkSelect the arc is skipped entirely.",
+      },
+      {
+        keys: ["→", "↓"],
+        description: "Moves along the arc to the next mark.",
+      },
+      {
+        keys: ["←", "↑"],
+        description: "Moves along the arc to the previous mark.",
+      },
+      { keys: ["Home", "End"], description: "Jumps to the first or last mark." },
+      {
+        keys: ["Enter", "Space"],
+        description: "Fires onMarkSelect with the focused mark.",
+      },
+    ],
+    props: [
+      {
+        name: "GlassCrest",
+        props: [
+          {
+            name: "marks",
+            type: "GlassCrestMark[]",
+            required: true,
+            description: "The discs laid along the arc, left to right.",
+          },
+          {
+            name: "headline",
+            type: "React.ReactNode",
+            required: true,
+            description:
+              "The display type. Wrap phrases in CrestQuiet to set them in the second voice.",
+          },
+          {
+            name: "eyebrow",
+            type: "React.ReactNode",
+            description: "Small tracked line above the headline.",
+          },
+          {
+            name: "eyebrowIcon",
+            type: "React.ReactNode",
+            description:
+              "Glyph before the eyebrow. Sized by the component, so pass a bare icon element.",
+          },
+          {
+            name: "description",
+            type: "React.ReactNode",
+            description: "Supporting paragraph under the headline, held to 46 characters a line.",
+          },
+          {
+            name: "actions",
+            type: "React.ReactNode",
+            description:
+              "The call to action. CrestAction is the pill this section was drawn with, but anything goes here.",
+          },
+          {
+            name: "spread",
+            type: "number",
+            defaultValue: "150",
+            description:
+              "Degrees the marks are laid across. It sets the bow and the span together — wider is a deeper arc — and is clamped to 1–340.",
+          },
+          {
+            name: "overlap",
+            type: "number",
+            defaultValue: "0.3",
+            description:
+              "How far each disc laps the one beside it, as a fraction of its own diameter. It is what sets the disc size, since the gap between two centres is fixed by the arc. Clamped to 0–0.75.",
+          },
+          {
+            name: "size",
+            type: '"sm" | "md" | "lg"',
+            defaultValue: '"md"',
+            description:
+              "Crest width and type ramp. The discs size themselves off the arc's box, so this is a max-width rather than a pixel budget.",
+          },
+          {
+            name: "tilt",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Leans each disc to its own angle on the circle, so the crest reads as one curve rather than as a row of coins on a bend.",
+          },
+          {
+            name: "parallax",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "The crest answers the pointer: the arc swings from a pivot below itself and the outer marks travel furthest. Off, it never moves once it has assembled.",
+          },
+          {
+            name: "glow",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "The wash of accent behind the arc — one soft radial per mark, placed at that mark's own position, so the colour behind the crest is the crest's colour.",
+          },
+          {
+            name: "labels",
+            type: '"hover" | "none"',
+            defaultValue: '"hover"',
+            description:
+              "Prints the name of the disc under the cursor or the caret beneath the arc. The line is reserved either way, so nothing reflows.",
+          },
+          {
+            name: "onMarkSelect",
+            type: "(mark: GlassCrestMark) => void",
+            description:
+              "Passing it makes every disc a button behind one tab stop, and fires with the mark that was pressed.",
+          },
+          {
+            name: "headingLevel",
+            type: "1 | 2 | 3",
+            defaultValue: "1",
+            description: "Heading level of the display type, and of the section's label.",
+          },
+          {
+            name: "crestLabel",
+            type: "string",
+            defaultValue: '"Featured"',
+            description: "Accessible name of the arc.",
+          },
+          {
+            name: "className",
+            type: "string",
+            description: "Merged onto the section through `cn`.",
+          },
+        ],
+      },
+      {
+        name: "GlassCrestMark",
+        description: "Shape of a single entry in the `marks` array.",
+        props: [
+          {
+            name: "id",
+            type: "string",
+            required: true,
+            description: "Stable identity for the rendered list item.",
+          },
+          {
+            name: "label",
+            type: "string",
+            required: true,
+            description:
+              "What the mark is. Printed under the arc on hover, and the name assistive technology reads.",
+          },
+          {
+            name: "icon",
+            type: "React.ReactNode",
+            description:
+              "Drawn inside the disc, and printed twice so the blurred copy underneath gives it thickness. Solid shapes read best; the component sizes it, so pass the element bare.",
+          },
+          {
+            name: "accent",
+            type: "string",
+            description:
+              "Any CSS colour. Tints the glass, its rim, the shade under its belly, the shadow it casts and the wash behind it. Omit it and the disc falls back to the surrounding ink.",
+          },
+        ],
+      },
+      {
+        name: "CrestQuiet",
+        description:
+          "The second voice inside a headline — lighter in weight and in ink. A registry component cannot ship a typeface, so the family is left as a custom property for a project that has a second face to give it.",
+        props: [
+          {
+            name: "children",
+            type: "React.ReactNode",
+            required: true,
+            description: "The phrase to set quietly.",
+          },
+          {
+            name: "className",
+            type: "string",
+            description: "Merged onto the span through `cn`.",
+          },
+        ],
+      },
+      {
+        name: "CrestAction",
+        description:
+          "The pill the section was drawn with: solid ink, and a badge that rolls its arrow away and brings a second one in behind it.",
+        props: [
+          {
+            name: "children",
+            type: "React.ReactNode",
+            required: true,
+            description: "Copy on the pill.",
+          },
+          {
+            name: "href",
+            type: "string",
+            description: "Renders an anchor instead of a button, so the action is a real link.",
+          },
+          {
+            name: "onClick",
+            type: "() => void",
+            description: "Fires when the pill is pressed, in its button form.",
+          },
+        ],
+      },
+    ],
+    usage: `import {
+  CrestAction,
+  CrestQuiet,
+  GlassCrest,
+} from "@/components/joinui/glass-crest"
+import { Sparkle } from "lucide-react"
+
+const marks = [
+  { id: "prism", label: "Prism", accent: "#2f7a63", icon: <PrismMark /> },
+  { id: "obol", label: "Obol", accent: "#dda15e", icon: <ObolMark /> },
+  { id: "helix", label: "Helix", accent: "#5cc396", icon: <HelixMark /> },
+  { id: "azimuth", label: "Azimuth", accent: "#8fa2ee", icon: <AzimuthMark /> },
+]
+
+export function Example() {
+  return (
+    <GlassCrest
+      marks={marks}
+      crestLabel="Supported assets"
+      eyebrow="Easy to explore"
+      eyebrowIcon={<Sparkle />}
+      headline={
+        <>
+          A simple <CrestQuiet>approach to the complex</CrestQuiet> world of{" "}
+          <CrestQuiet>digital assets</CrestQuiet>
+        </>
+      }
+      description="No special knowledge required. It is easy to use and open to anyone who wants to put their savings to work."
+      actions={<CrestAction href="/docs">Learn more</CrestAction>}
+    />
+  )
+}`,
+    customization: [
+      {
+        title: "Bring your own marks",
+        description:
+          "An icon is any node, so the crest carries real brand marks as inline SVG rather than an icon-set approximation. Draw them as solid shapes: the disc prints each glyph twice — once blurred and offset underneath — and a hairline stroke has nothing to cast, so it reads as a sticker instead of an extrusion.",
+        code: `const marks = [
+  {
+    id: "prism",
+    label: "Prism",
+    accent: "#2f7a63",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 1.5 19.2 12 12 16.2 4.8 12z" />
+        <path d="M12 17.7 19.2 13.5 12 22.5 4.8 13.5z" opacity={0.72} />
+      </svg>
+    ),
+  },
+]`,
+      },
+      {
+        title: "Reshape the arc",
+        description:
+          "Two numbers own the whole drawing, and they are solved rather than guessed. spread is the angle the marks are laid across, so it sets the span and the bow together; overlap is how far a disc laps its neighbour, which is what fixes the disc size once the arc has fixed the spacing. A wide spread and a heavy overlap give the deep shingled crescent; a shallow spread and a light overlap give a near-flat row.",
+        code: `{/* The default: a deep crescent of overlapping coins. */}
+<GlassCrest marks={marks} spread={150} overlap={0.3} headline={headline} />
+
+{/* A shallow bow, discs barely touching. */}
+<GlassCrest marks={marks} spread={72} overlap={0.12} headline={headline} />
+
+{/* A tight ring of small marks. */}
+<GlassCrest marks={marks} spread={260} overlap={0.42} size="sm" headline={headline} />`,
+      },
+      {
+        title: "Make it a picker",
+        description:
+          "onMarkSelect turns the scenery into a control: every disc becomes a real button, the arc becomes a single tab stop with the arrows walking it, and the label of whatever is focused prints under the crest. Nothing else about the section changes.",
+        code: `const [asset, setAsset] = React.useState(marks[0])
+
+<GlassCrest
+  marks={marks}
+  crestLabel="Pick an asset"
+  headline={<>Start with <CrestQuiet>{asset.label}</CrestQuiet></>}
+  onMarkSelect={setAsset}
+  actions={<CrestAction onClick={() => open(asset.id)}>Continue</CrestAction>}
+/>`,
+      },
+      {
+        title: "Let it sit still",
+        description:
+          "The crest performs once on mount and then answers only the pointer, which is already quiet — but a hero above a page that moves on its own should not move at all. Turning parallax off leaves the arc fixed after it assembles; dropping the glow and the lean leaves the discs upright on bare paper.",
+        code: `<GlassCrest
+  marks={marks}
+  headline={headline}
+  parallax={false}
+  tilt={false}
+  glow={false}
+  labels="none"
+/>`,
+      },
+      {
+        title: "Give the headline a second face",
+        description:
+          "CrestQuiet is the other half of the sentence. A registry component has no business shipping a typeface, so out of the box the difference is weight and ink — which works in any project. Point the custom property at a face you already load and the same markup gets the serif the design was drawn with.",
+        language: "css",
+        code: `/* app/globals.css */
+:root {
+  --glass-crest-quiet-font: var(--font-instrument-serif), Georgia, serif;
+}`,
+      },
+      {
+        title: "Tune the material",
+        description:
+          "The glass is three custom properties rather than three props, because they are a decision about the surface the component was installed onto rather than about any one crest. The frost is a wash of the theme's own ink, which is what lets a single value serve both themes; the sheen and the glyph are near-white in both, because glass is lit from above whatever colour the room is. If your accents are pale, bring the glyph down rather than threading a second colour through every mark.",
+        language: "css",
+        code: `/* app/globals.css */
+:root {
+  /* The frosting behind the tint. */
+  --glass-crest-frost: color-mix(in oklab, var(--foreground) 5%, transparent);
+  /* The light on the top edge and the specular. */
+  --glass-crest-sheen: oklch(1 0 0 / 0.55);
+  /* The face of the extruded glyph. */
+  --glass-crest-glyph: oklch(0.985 0.002 90);
+}
+
+.dark {
+  --glass-crest-sheen: oklch(1 0 0 / 0.4);
+}`,
+      },
+    ],
+    related: ["focus-stack", "agent-hive"],
+    since: "2026-08-16",
+  }),
 ]

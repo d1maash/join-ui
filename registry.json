@@ -280,6 +280,45 @@
           "critical-foreground": "oklch(0.16 0.04 23)"
         }
       }
+    },
+    {
+      "name": "glass-crest",
+      "type": "registry:ui",
+      "title": "Glass Crest",
+      "description": "A hero section led by an arc of tinted glass discs, solved from a count and a spread, that assembles on mount and then answers only the pointer.",
+      "author": "Join Way",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "marketing",
+        "hero",
+        "section",
+        "landing",
+        "glass",
+        "arc",
+        "crypto",
+        "logos",
+        "parallax",
+        "marquee"
+      ],
+      "docs": "https://ui.join-way.com/components/glass-crest",
+      "meta": {
+        "status": "new",
+        "since": "2026-08-16",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinui/glass-crest"
+      },
+      "files": [
+        {
+          "path": "registry/components/glass-crest.tsx",
+          "type": "registry:ui",
+          "target": "components/joinui/glass-crest.tsx"
+        }
+      ]
     }
   ]
 }
