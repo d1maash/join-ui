@@ -196,9 +196,12 @@ export interface StatusTimelineProps extends Omit<
  * At rest it is a still drawing — dashed rings for what has not happened yet,
  * tinted ones for what has, a hairline running between them. Nothing loops and
  * nothing breathes. The motion is spent entirely on the one moment worth
- * showing: when `activeStep` moves on, the connector above the cleared step
- * draws downward, the marker it reaches cross-fades into its new ring, and a
- * single pulse leaves the step now in flight.
+ * showing, and it is spent as a sequence rather than as a flash: when
+ * `activeStep` moves on, the cleared step's marker turns first, a tenth of a
+ * second later the connector below it runs down to the next one, and only when
+ * it arrives does that step announce itself with a pair of rings spreading out
+ * of it. Three beats, a tenth of a second apart, which is the difference
+ * between an order you can follow and three things happening at once.
  *
  * Each state gets its own hue — green behind a finished step, blue on the one
  * in flight, amber on one that is waiting, red on one that failed — and each

@@ -169,6 +169,14 @@ export interface FocusStackProps
  * two pills can straddle the centre mid-turn, half-focused each. `auto` drives
  * it with a spring on a timer, `scroll` maps it to the stack's own transit
  * through the viewport.
+ *
+ * Two things are read off its rate of change rather than its value. While the
+ * coil is genuinely turning, every pill stretches a little along its travel and
+ * narrows across it — area roughly conserved, the way something with weight
+ * behaves when it is swung — and at rest both terms are exactly 1, so the stack
+ * is a still drawing again. An interactive pill also answers the hand: it lifts
+ * under the cursor and gives under the press, which is what tells a reader
+ * which of nine overlapping shapes they are actually on.
  */
 export function FocusStack({
   items,

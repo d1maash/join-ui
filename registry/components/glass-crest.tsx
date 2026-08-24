@@ -162,12 +162,17 @@ export interface GlassCrestProps
  * bow — so the same markup draws three marks or eleven without a magic number
  * anywhere, and the crest stays fluid because every position is a percentage.
  *
- * It moves twice and only twice. It assembles on mount, apex first and outward,
- * because a hero arriving is the one moment a page is allowed to perform. After
- * that it answers the pointer: the arc swings from a pivot below itself and the
- * outer marks travel further than the inner ones, which is parallax rather than
- * decoration — a gesture, so the section is perfectly still when nobody is
- * touching it. Under `prefers-reduced-motion` neither happens.
+ * It moves only when something moves it. It assembles on mount, apex first and
+ * outward and sprung rather than tweened, so each disc rises, goes a hair past
+ * its place on the arc and settles onto it — a hero arriving is the one moment
+ * a page is allowed to perform, and a thing with mass does not stop dead on its
+ * mark. After that it answers the pointer: the arc swings from a pivot below
+ * itself and the outer marks travel further than the inner ones, which is
+ * parallax rather than decoration, and the disc under the cursor lifts on a
+ * spring of its own. Given `onMarkSelect` it answers the hand as well, pressing
+ * into the page and coming back. All of it is a gesture, so the section is
+ * perfectly still when nobody is touching it. Under `prefers-reduced-motion`
+ * none of it happens.
  */
 export function GlassCrest({
   marks,
