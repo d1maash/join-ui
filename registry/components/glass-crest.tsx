@@ -589,84 +589,84 @@ function Mark({
         animate={{ scale: active ? 1.07 : 1, y: active ? "-5%" : "0%" }}
         transition={animate ? LIFT : { duration: 0 }}
       >
-      {/* What the disc drops onto the page, kept off the glass itself. */}
-      <span
-        aria-hidden="true"
-        className="absolute inset-x-[14%] bottom-[-4%] h-[38%] rounded-[50%] blur-[10px]"
-        style={{
-          background: `color-mix(in oklab, ${accent} 38%, transparent)`,
-          opacity: active ? 0.85 : 0.6,
-          transition: "opacity var(--duration-base) var(--ease-out-soft)",
-        }}
-      />
+        {/* What the disc drops onto the page, kept off the glass itself. */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-[14%] bottom-[-4%] h-[38%] rounded-[50%] blur-[10px]"
+          style={{
+            background: `color-mix(in oklab, ${accent} 38%, transparent)`,
+            opacity: active ? 0.85 : 0.6,
+            transition: "opacity var(--duration-base) var(--ease-out-soft)",
+          }}
+        />
 
-      {/*
-        The body. The tint is a radial run from a lit shoulder at the top left
-        down to a denser edge, over a frost of the theme's own ink — which is
-        the one formulation that survives both themes, because 5% of near-black
-        on paper and 5% of near-white on charcoal are the same material.
-      */}
-      <span
-        aria-hidden="true"
-        className="absolute inset-0 rounded-full backdrop-blur-[6px] backdrop-saturate-[1.4]"
-        style={{
-          backgroundColor: FROST,
-          backgroundImage: [
-            /*
-              The shade under the belly, drawn as a gradient rather than as an
-              inset shadow: a shadow's spread can only be a length, and a length
-              authored for a 200px disc is a black band on a 90px one. Listed
-              first, so it paints over the tint.
-            */
-            `radial-gradient(86% 66% at 50% 112%, color-mix(in oklab, ${accent} 72%, transparent) 0%, transparent 58%)`,
-            `radial-gradient(118% 118% at 30% 20%, color-mix(in oklab, ${accent} 42%, transparent) 0%, color-mix(in oklab, ${accent} 17%, transparent) 52%, color-mix(in oklab, ${accent} 44%, transparent) 100%)`,
-          ].join(", "),
-          boxShadow: [
-            /* The rim, in the mark's own colour rather than in grey. */
-            `inset 0 0 0 1px color-mix(in oklab, ${accent} 48%, transparent)`,
-            /* The lit top edge — the light is above, and this is the one hairline. */
-            `inset 0 2px 3px -1px ${SHEEN}`,
-            /* A close contact shadow, so the disc sits on the page rather than over it. */
-            `0 6px 14px -8px color-mix(in oklab, ${accent} 60%, transparent)`,
-          ].join(", "),
-        }}
-      />
+        {/*
+          The body. The tint is a radial run from a lit shoulder at the top left
+          down to a denser edge, over a frost of the theme's own ink — which is
+          the one formulation that survives both themes, because 5% of near-black
+          on paper and 5% of near-white on charcoal are the same material.
+        */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 rounded-full backdrop-blur-[6px] backdrop-saturate-[1.4]"
+          style={{
+            backgroundColor: FROST,
+            backgroundImage: [
+              /*
+                The shade under the belly, drawn as a gradient rather than as an
+                inset shadow: a shadow's spread can only be a length, and a length
+                authored for a 200px disc is a black band on a 90px one. Listed
+                first, so it paints over the tint.
+              */
+              `radial-gradient(86% 66% at 50% 112%, color-mix(in oklab, ${accent} 72%, transparent) 0%, transparent 58%)`,
+              `radial-gradient(118% 118% at 30% 20%, color-mix(in oklab, ${accent} 42%, transparent) 0%, color-mix(in oklab, ${accent} 17%, transparent) 52%, color-mix(in oklab, ${accent} 44%, transparent) 100%)`,
+            ].join(", "),
+            boxShadow: [
+              /* The rim, in the mark's own colour rather than in grey. */
+              `inset 0 0 0 1px color-mix(in oklab, ${accent} 48%, transparent)`,
+              /* The lit top edge — the light is above, and this is the one hairline. */
+              `inset 0 2px 3px -1px ${SHEEN}`,
+              /* A close contact shadow, so the disc sits on the page rather than over it. */
+              `0 6px 14px -8px color-mix(in oklab, ${accent} 60%, transparent)`,
+            ].join(", "),
+          }}
+        />
 
-      {/* The specular. Off-centre, because a highlight in the middle reads as a hole. */}
-      <span
-        aria-hidden="true"
-        className="absolute top-[9%] left-[15%] h-[28%] w-[44%] rounded-[50%] blur-[5px]"
-        style={{ background: SHEEN }}
-      />
+        {/* The specular. Off-centre, because a highlight in the middle reads as a hole. */}
+        <span
+          aria-hidden="true"
+          className="absolute top-[9%] left-[15%] h-[28%] w-[44%] rounded-[50%] blur-[5px]"
+          style={{ background: SHEEN }}
+        />
 
-      {mark.icon ? (
-        <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
-          {/* The thickness: the same glyph, offset and blurred, under the face. */}
-          <span
-            className="absolute flex items-center justify-center opacity-70 blur-[2.5px] [&_svg]:size-full [&_svg]:shrink-0"
-            style={{
-              width: GLYPH,
-              height: GLYPH,
-              translate: "2% 5%",
-              color: `color-mix(in oklab, ${accent} 72%, transparent)`,
-            }}
-          >
-            {mark.icon}
+        {mark.icon ? (
+          <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+            {/* The thickness: the same glyph, offset and blurred, under the face. */}
+            <span
+              className="absolute flex items-center justify-center opacity-70 blur-[2.5px] [&_svg]:size-full [&_svg]:shrink-0"
+              style={{
+                width: GLYPH,
+                height: GLYPH,
+                translate: "2% 5%",
+                color: `color-mix(in oklab, ${accent} 72%, transparent)`,
+              }}
+            >
+              {mark.icon}
+            </span>
+
+            <span
+              className="relative flex items-center justify-center [&_svg]:size-full [&_svg]:shrink-0"
+              style={{
+                width: GLYPH,
+                height: GLYPH,
+                color: GLYPH_INK,
+                filter: `drop-shadow(0 1px 1px color-mix(in oklab, ${accent} 55%, transparent))`,
+              }}
+            >
+              {mark.icon}
+            </span>
           </span>
-
-          <span
-            className="relative flex items-center justify-center [&_svg]:size-full [&_svg]:shrink-0"
-            style={{
-              width: GLYPH,
-              height: GLYPH,
-              color: GLYPH_INK,
-              filter: `drop-shadow(0 1px 1px color-mix(in oklab, ${accent} 55%, transparent))`,
-            }}
-          >
-            {mark.icon}
-          </span>
-        </span>
-      ) : null}
+        ) : null}
       </motion.span>
     </span>
   )
