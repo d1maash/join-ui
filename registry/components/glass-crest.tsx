@@ -54,6 +54,29 @@ const QUIET_FONT = "var(--glass-crest-quiet-font, inherit)"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+/**
+ * The crest assembling.
+ *
+ * Damped to about 0.83 of critical — one soft overshoot, so each disc rises,
+ * goes a hair past its place on the arc and settles back onto it. A tween
+ * arriving exactly on its mark is the tell that these are pictures being moved
+ * rather than objects being set down, and this is the one moment in the section
+ * where that distinction is worth paying for.
+ */
+const ARRIVAL = { type: "spring", stiffness: 210, damping: 24, mass: 1 } as const
+
+/**
+ * A disc answering the hand.
+ *
+ * Stiff and nearly critical: a lift under the cursor has to be there before the
+ * eye has finished arriving, and a wobble on something the size of a hero mark
+ * is a lot of wobble. Sprung rather than transitioned because a pointer running
+ * along the arc leaves and enters marks faster than any fixed duration can
+ * follow — a tween restarted mid-lift plays its whole length again from wherever
+ * it stood, so the discs behind the cursor visibly lag it.
+ */
+const LIFT = { type: "spring", stiffness: 420, damping: 30, mass: 0.6 } as const
+
 /*
  * Three scales, and the only thing they really set is width.
  *
@@ -549,16 +572,23 @@ function Mark({
 
   const disc = (
     <span
-      className={cn(
-        "relative block size-full rounded-full",
-        "transition-[scale,translate] duration-[var(--duration-base)] ease-[var(--ease-out-soft)]"
-      )}
-      style={{
-        rotate: tilt ? `${slot.angle}deg` : undefined,
-        scale: active ? 1.07 : 1,
-        translate: active ? "0 -5%" : "0 0",
-      }}
+      className="relative block size-full"
+      /*
+       * The lean, and nothing else. Kept on a box of its own and written as the
+       * individual `rotate` property rather than folded into the lift below it,
+       * because this angle is a fact about where the disc sits on the arc: it is
+       * the same on the server as on the client and it never changes, so it has
+       * no business being re-serialised into a transform matrix every time a
+       * cursor goes past.
+       */
+      style={{ rotate: tilt ? `${slot.angle}deg` : undefined }}
     >
+      <motion.span
+        className="relative block size-full rounded-full"
+        initial={false}
+        animate={{ scale: active ? 1.07 : 1, y: active ? "-5%" : "0%" }}
+        transition={animate ? LIFT : { duration: 0 }}
+      >
       {/* What the disc drops onto the page, kept off the glass itself. */}
       <span
         aria-hidden="true"
@@ -637,6 +667,7 @@ function Mark({
           </span>
         </span>
       ) : null}
+      </motion.span>
     </span>
   )
 
@@ -669,20 +700,34 @@ function Mark({
          */
         initial={{ opacity: 0, y: 26, scale: 0.82 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
+        /*
+         * The rise is sprung and the fade is not, because they are answering
+         * different questions. The rise is the disc's arrival and wants weight
+         * behind it; the opacity is only there so the disc is not visible
+         * below the arc on its way up, and a spring easing asymptotically into
+         * full would leave it a few percent short for as long again.
+         *
+         * `delay` is what makes this a crest assembling rather than seven
+         * things appearing: apex first, then outward, close enough together
+         * that the marks are still in the air alongside each other.
+         */
         transition={
           animate
             ? {
-                duration: 0.62,
-                ease: EASE,
-                /* Apex first, then outward — the crest lifts rather than wipes. */
-                delay: 0.06 + Math.abs(slot.depth) * 0.16,
+                y: { ...ARRIVAL, delay: 0.06 + Math.abs(slot.depth) * 0.14 },
+                scale: { ...ARRIVAL, delay: 0.06 + Math.abs(slot.depth) * 0.14 },
+                opacity: {
+                  duration: 0.42,
+                  ease: EASE,
+                  delay: 0.06 + Math.abs(slot.depth) * 0.14,
+                },
               }
             : { duration: 0 }
         }
       >
         <motion.div className="size-full" style={{ x: live ? x : 0, y: live ? y : 0 }}>
           {interactive ? (
-            <button
+            <motion.button
               type="button"
               ref={register}
               tabIndex={tabbable ? 0 : -1}
@@ -692,13 +737,22 @@ function Mark({
               onPointerLeave={onLeave}
               onFocus={onEnter}
               onBlur={onLeave}
+              /*
+               * The press. A mark that can be clicked and gives nothing back on
+               * the way down is the single loudest tell that a hero is a picture
+               * of a control rather than a control — and on glass this size, a
+               * few percent is all it takes to read as the thing being pushed
+               * into the page and let go.
+               */
+              whileTap={animate ? { scale: 0.94 } : undefined}
+              transition={LIFT}
               className={cn(
                 "block size-full cursor-pointer rounded-full",
                 "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               )}
             >
               {disc}
-            </button>
+            </motion.button>
           ) : (
             <div
               onPointerEnter={onEnter}
