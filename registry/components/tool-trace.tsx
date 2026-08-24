@@ -954,9 +954,15 @@ function Console({
         <motion.span
           key={index}
           className="block"
-          initial={index < base || !animate ? false : { opacity: 0, y: -3 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.18, ease: EASE }}
+          /*
+           * In from the left rather than down from above. A line of output is
+           * written, not dropped in: the couple of pixels it travels are the
+           * direction the text itself runs, which is the difference between a
+           * console filling up and a list receiving an item.
+           */
+          initial={index < base || !animate ? false : { opacity: 0, x: -5 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2, ease: EASE }}
         >
           {line || " "}
           {running && index === visible.length - 1 ? (
@@ -987,9 +993,15 @@ function Caret({ animate }: { animate: boolean }) {
 }
 
 /**
- * Cross-fades whatever it wraps whenever `token` changes, and stays perfectly
- * still otherwise — including on mount, which is what keeps a freshly rendered
- * trace from performing.
+ * Swaps whatever it wraps whenever `token` changes, and stays perfectly still
+ * otherwise — including on mount, which is what keeps a freshly rendered trace
+ * from performing.
+ *
+ * The outgoing glyph leaves upward and the incoming one arrives from below,
+ * because a step only ever resolves in one direction and the swap should say
+ * so. The scale rides a loose spring, so a tick landing in a finished step has
+ * a fraction of overshoot on it — that overshoot is the whole difference
+ * between a mark being placed and two images being dissolved into each other.
  */
 function Swap({
   token,
@@ -1007,10 +1019,25 @@ function Swap({
       <motion.span
         key={token}
         className={className}
-        initial={{ opacity: 0, scale: 0.7 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.7 }}
-        transition={animate ? { duration: 0.16, ease: EASE } : { duration: 0 }}
+        initial={{ opacity: 0, scale: 0.5, y: 4 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        /*
+         * The way out is a tween and not the spring, because `mode="wait"`
+         * holds the incoming glyph until this one has finished: a spring
+         * settling on its own terms would put a quarter of a second of empty
+         * marker between the two.
+         */
+        exit={{
+          opacity: 0,
+          scale: 0.5,
+          y: -4,
+          transition: animate ? { duration: 0.12, ease: EASE } : { duration: 0 },
+        }}
+        transition={
+          animate
+            ? { scale: GLYPH, y: GLYPH, opacity: { duration: 0.14, ease: EASE } }
+            : { duration: 0 }
+        }
       >
         {children}
       </motion.span>
