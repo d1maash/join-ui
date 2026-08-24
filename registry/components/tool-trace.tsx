@@ -114,7 +114,31 @@ const CONSOLE =
  */
 const MICRO_LABEL = "text-[0.6875rem] leading-none font-medium tracking-[-0.005em]"
 
+/*
+ * The vocabulary.
+ *
+ * Which of these a move gets is decided by one question: can anything
+ * countermand it half way through? A rail drawing down its lane cannot — it is
+ * a finished statement, it takes the time it takes — so it is a tween on a
+ * decisive curve. A ring blooming, a glyph landing, a chevron turning: all of
+ * those can be overtaken by the next state or the next click a fraction of a
+ * second later, and a tween restarted from where it stood plays its whole
+ * duration again from a standstill. A spring carries the velocity it already
+ * had into the new target, which is the difference between a trace that
+ * stutters through a fast sequence and one that flows through it.
+ */
 const EASE = [0.22, 1, 0.36, 1] as const
+const RING = { type: "spring", stiffness: 420, damping: 34, mass: 0.8 } as const
+const GLYPH = { type: "spring", stiffness: 620, damping: 26, mass: 0.6 } as const
+const CHEVRON = { type: "spring", stiffness: 500, damping: 32, mass: 0.7 } as const
+
+/*
+ * A step resolving is three events, and they used to be one flash. The rail
+ * waits a beat so the marker above it has visibly turned before the line
+ * leaves it, which is enough to make the order legible without making the
+ * whole thing feel slow.
+ */
+const TRAIL_DELAY = 0.1
 
 /*
  * The two scales.
@@ -561,7 +585,14 @@ function Step({
           className="flex shrink-0 items-center text-muted-foreground"
           animate={{ rotate: open ? 90 : 0 }}
           initial={false}
-          transition={animate ? { duration: 0.22, ease: EASE } : { duration: 0 }}
+          /*
+           * Sprung, because this is the one thing in the component a reader can
+           * hammer. Clicking a step twice inside a fifth of a second with a
+           * tween on the chevron plays the second turn from wherever the first
+           * had got to and takes the full duration to do it, so the arrow
+           * visibly falls behind the panel it is describing.
+           */
+          transition={animate ? CHEVRON : { duration: 0 }}
         >
           <ChevronRight className="size-4" />
         </motion.span>
@@ -634,10 +665,47 @@ function Step({
               className="overflow-hidden"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={animate ? { duration: 0.26, ease: EASE } : { duration: 0 }}
+              /*
+               * Opening and closing are not each other's reverse. On the way
+               * out the panel is a shape being folded away, so the height is
+               * the whole move and it goes quickly; on the way in the content
+               * waits two frames behind the box, which is what stops a console
+               * from appearing to be squeezed out of a slot. Height stays a
+               * tween in both directions — it is the one property here that
+               * must land exactly on `auto`, and a spring's overshoot past
+               * `auto` is a panel that visibly bounces open.
+               */
+              exit={{
+                height: 0,
+                opacity: 0,
+                transition: animate
+                  ? {
+                      height: { duration: 0.22, ease: EASE },
+                      opacity: { duration: 0.12, ease: "linear" },
+                    }
+                  : { duration: 0 },
+              }}
+              transition={
+                animate
+                  ? {
+                      height: { duration: 0.3, ease: EASE },
+                      opacity: { duration: 0.22, ease: EASE, delay: 0.06 },
+                    }
+                  : { duration: 0 }
+              }
             >
-              <div className={cn("flex flex-col gap-2.5", scale.panel)}>
+              <motion.div
+                className={cn("flex flex-col gap-2.5", scale.panel)}
+                /*
+                 * The contents rise the last few pixels into place rather than
+                 * arriving where the box left them. Held on its own element so
+                 * the panel measuring itself for `height: auto` never has a
+                 * transform of its own to measure around.
+                 */
+                initial={animate ? { y: -6 } : false}
+                animate={{ y: 0 }}
+                transition={animate ? { duration: 0.32, ease: EASE } : { duration: 0 }}
+              >
                 {step.detail ? (
                   <div
                     className={cn(
@@ -660,7 +728,7 @@ function Step({
                     scale={scale}
                   />
                 ) : null}
-              </div>
+              </motion.div>
             </motion.div>
           ) : null}
         </AnimatePresence>
@@ -713,7 +781,18 @@ function Marker({
           initial={{ opacity: 0, scale: 0.62 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 1.18 }}
-          transition={animate ? { duration: 0.34, ease: EASE } : { duration: 0 }}
+          /*
+           * Split, because the two properties are doing different jobs. The
+           * scale is the move and wants the spring's carry; the opacity is only
+           * the handover between the outgoing ring and the incoming one, and a
+           * spring settling asymptotically towards zero would hold a ring that
+           * has finished expanding on screen at 2% for as long again.
+           */
+          transition={
+            animate
+              ? { scale: RING, opacity: { duration: 0.24, ease: EASE } }
+              : { duration: 0 }
+          }
         />
       </AnimatePresence>
 
@@ -728,10 +807,23 @@ function Marker({
             key="ping"
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 rounded-soft-sm border border-info"
-            initial={{ opacity: 0.45, scale: 1 }}
-            animate={{ opacity: [0.45, 0], scale: [1, 1.55] }}
+            initial={{ opacity: 0, scale: 1 }}
+            animate={{ opacity: [0, 0.45, 0], scale: [1, 1.55, 1.62] }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+            /*
+             * A beat, then a rest, rather than a continuous throb. The ring
+             * takes a tenth of the cycle to come up and the rest of it to
+             * spread out and go, and `repeatDelay` leaves half a second of
+             * still marker before the next one — which is what makes this read
+             * as a pulse with a rate rather than as something merely flickering.
+             */
+            transition={{
+              duration: 1.1,
+              times: [0, 0.1, 1],
+              repeat: Infinity,
+              repeatDelay: 0.5,
+              ease: "easeOut",
+            }}
           />
         ) : null}
       </AnimatePresence>
@@ -793,7 +885,17 @@ function Trail({
         style={{ transformOrigin: "center top" }}
         initial={false}
         animate={{ scaleY: filled ? 1 : 0 }}
-        transition={animate ? { duration: 0.42, ease: EASE } : { duration: 0 }}
+        /*
+         * Delayed on the way down only. Filling waits a beat so the marker
+         * above has visibly resolved before the line leaves it; emptying — which
+         * only happens when a trace is reset — has nothing to wait for, and a
+         * lag there just reads as the component being slow.
+         */
+        transition={
+          animate
+            ? { duration: 0.45, ease: EASE, delay: filled ? TRAIL_DELAY : 0 }
+            : { duration: 0 }
+        }
       />
     </span>
   )
