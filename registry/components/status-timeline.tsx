@@ -94,7 +94,50 @@ const TRAIL_FILL = "bg-positive/70"
  */
 const MICRO_LABEL = "text-[0.6875rem] leading-none font-medium tracking-[-0.005em]"
 
+/*
+ * The vocabulary.
+ *
+ * Which of these a move gets is decided by one question: can anything
+ * countermand it half way through? A connector drawing down its lane cannot —
+ * it is a finished statement, it takes the time it takes — so it is a tween on
+ * a decisive curve. A ring blooming or a glyph landing can be overtaken by the
+ * next state a fraction of a second later, and a tween restarted from where it
+ * stood plays its whole duration again from a standstill. A spring carries the
+ * velocity it already had into the new target, which is the difference between
+ * a marker that stutters through a fast sequence and one that flows through it.
+ *
+ * `RING` is damped just short of critical, because a ring that overshoots reads
+ * as a wobble. `GLYPH` is deliberately looser: a tick arriving in a cleared
+ * step is allowed to land with a little weight behind it.
+ */
 const EASE = [0.22, 1, 0.36, 1] as const
+const RING = { type: "spring", stiffness: 420, damping: 34, mass: 0.8 } as const
+const GLYPH = { type: "spring", stiffness: 620, damping: 26, mass: 0.6 } as const
+
+/*
+ * The beats of an advance, in seconds.
+ *
+ * Everything used to move at once, which read as a single flash rather than as
+ * a sequence: the eye was given three simultaneous events and could follow
+ * none of them. Spacing them by a tenth of a second each is enough to make the
+ * order legible — the cleared step turns, the line runs down to the next one,
+ * and only then does that one announce itself — without the whole thing
+ * feeling slow. Two frames of overlap keep it a single gesture rather than
+ * three separate ones.
+ */
+const TRAIL_DELAY = 0.1
+const ARRIVAL_DELAY = 0.3
+
+/**
+ * The pulse that leaves a step as it takes over: two rings rather than one,
+ * the second a beat behind and travelling further. One ring is a blip; two
+ * that are visibly the same event at two removes read as something spreading
+ * out from the marker.
+ */
+const RIPPLES = [
+  { id: "near", scale: 1.55, opacity: 0.5, duration: 0.78, delay: 0 },
+  { id: "far", scale: 2.05, opacity: 0.26, duration: 0.94, delay: 0.13 },
+] as const
 
 const SIZES = {
   sm: {
@@ -432,27 +475,51 @@ function Marker({
           initial={{ opacity: 0, scale: 0.62 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 1.18 }}
-          transition={animate ? { duration: 0.34, ease: EASE } : { duration: 0 }}
+          /*
+           * Split, because the two properties are doing different jobs. The
+           * scale is the move and wants the spring's carry; the opacity is
+           * only the handover between the outgoing ring and the incoming one,
+           * and a spring settling asymptotically towards zero would hold a
+           * ring that has finished expanding on screen at 2% for as long again.
+           */
+          transition={
+            animate
+              ? { scale: RING, opacity: { duration: 0.24, ease: EASE } }
+              : { duration: 0 }
+          }
         />
       </AnimatePresence>
 
       {/*
         One pulse, once, on arrival — not a loop. It plays only when a step
         becomes current after the first render, which is exactly the moment the
-        eye needs pointing at.
+        eye needs pointing at, and it waits out `ARRIVAL_DELAY` so it lands
+        after the connector above has finished running down to it.
       */}
       <AnimatePresence initial={false}>
-        {state === "current" ? (
-          <motion.span
-            key="arrival"
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-full border-2 border-info"
-            initial={{ opacity: 0.5, scale: 1 }}
-            animate={{ opacity: 0, scale: 1.7 }}
-            exit={{ opacity: 0, scale: 1.7 }}
-            transition={animate ? { duration: 0.7, ease: "easeOut" } : { duration: 0 }}
-          />
-        ) : null}
+        {state === "current"
+          ? RIPPLES.map((ripple) => (
+              <motion.span
+                key={ripple.id}
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-full border-2 border-info"
+                initial={{ opacity: 0, scale: 1 }}
+                animate={{ opacity: [0, ripple.opacity, 0], scale: ripple.scale }}
+                exit={{ opacity: 0 }}
+                transition={
+                  animate
+                    ? {
+                        duration: ripple.duration,
+                        delay: ARRIVAL_DELAY + ripple.delay,
+                        ease: "easeOut",
+                        /* Up to full within the first eighth, out over the rest. */
+                        times: [0, 0.12, 1],
+                      }
+                    : { duration: 0 }
+                }
+              />
+            ))
+          : null}
       </AnimatePresence>
 
       {icon ? (
@@ -515,16 +582,32 @@ function Trail({
             ? { scaleX: filled ? 1 : 0 }
             : { scaleY: filled ? 1 : 0 }
         }
-        transition={animate ? { duration: 0.42, ease: EASE } : { duration: 0 }}
+        /*
+         * Delayed on the way out only. Filling waits a beat so the marker
+         * above has visibly turned before the line leaves it; emptying — which
+         * only happens when a timeline is wound backwards — has nothing to
+         * wait for, and a lag there just reads as the component being slow.
+         */
+        transition={
+          animate
+            ? { duration: 0.45, ease: EASE, delay: filled ? TRAIL_DELAY : 0 }
+            : { duration: 0 }
+        }
       />
     </span>
   )
 }
 
 /**
- * Cross-fades whatever it wraps whenever `token` changes, and stays perfectly
- * still otherwise — including on mount, which is what keeps a freshly rendered
+ * Swaps whatever it wraps whenever `token` changes, and stays perfectly still
+ * otherwise — including on mount, which is what keeps a freshly rendered
  * timeline from performing.
+ *
+ * The outgoing glyph leaves upward and the incoming one arrives from below,
+ * because a step only ever advances in one direction and the swap should say
+ * so. The scale rides a loose spring, so a tick landing in a cleared step has
+ * a fraction of overshoot on it — that overshoot is the whole difference
+ * between a mark being placed and two images being dissolved into each other.
  */
 function Swap({
   token,
@@ -542,10 +625,25 @@ function Swap({
       <motion.span
         key={token}
         className={className}
-        initial={{ opacity: 0, scale: 0.7 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.7 }}
-        transition={animate ? { duration: 0.16, ease: EASE } : { duration: 0 }}
+        initial={{ opacity: 0, scale: 0.5, y: 4 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        /*
+         * The way out is a tween and not the spring, because `mode="wait"`
+         * holds the incoming glyph until this one has finished: a spring
+         * settling on its own terms would put a quarter of a second of empty
+         * marker between the two.
+         */
+        exit={{
+          opacity: 0,
+          scale: 0.5,
+          y: -4,
+          transition: animate ? { duration: 0.12, ease: EASE } : { duration: 0 },
+        }}
+        transition={
+          animate
+            ? { scale: GLYPH, y: GLYPH, opacity: { duration: 0.14, ease: EASE } }
+            : { duration: 0 }
+        }
       >
         {children}
       </motion.span>

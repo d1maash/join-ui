@@ -9,6 +9,7 @@ import {
   useScroll,
   useSpring,
   useTransform,
+  useVelocity,
   type MotionValue,
 } from "motion/react"
 
@@ -96,9 +97,33 @@ const LANE_CURVE = 0.86
  */
 const FADE_CURVE = 0.55
 
-const SPRING = { stiffness: 120, damping: 20, mass: 0.9 } as const
+/**
+ * The turn.
+ *
+ * Damped to about 0.86 of critical, which is one soft overshoot: the coil
+ * arrives, leans a hair past its mark and settles. Exactly critical stops the
+ * stack dead the instant it gets there, and a thing with mass does not do that
+ * — the overshoot is the only cue that the pills were carried into place
+ * rather than assigned to it.
+ */
+const SPRING = { stiffness: 150, damping: 20, mass: 0.9 } as const
 /** Stiffer and better damped: this one only takes the grain out of a scrollbar. */
 const SCROLL_SPRING = { stiffness: 240, damping: 42, mass: 0.6 } as const
+/** A press and a hover: quick, and barely overshooting. */
+const PRESS = { type: "spring", stiffness: 460, damping: 32, mass: 0.6 } as const
+
+/**
+ * Inertia.
+ *
+ * Ranks per second at which the coil reaches its full stretch, and how far it
+ * stretches when it gets there. A stack that turns fast and holds its shape
+ * reads as a list being re-sorted; the same stack drawn a few percent long
+ * along its travel and narrow across it reads as something with weight being
+ * swung — which is what the component is claiming to be. Small numbers on
+ * purpose: past about 5% this stops being physics and starts being an effect.
+ */
+const LIQUID_AT = 9
+const LIQUID_STRETCH = 0.05
 
 export interface FocusStackProps
   extends Omit<React.ComponentPropsWithoutRef<"div">, "children"> {
@@ -234,6 +259,18 @@ export function FocusStack({
     return reduceMotion ? cursor : stepped
   }, [cursor, eased, mode, reduceMotion, scrolled, stepped])
 
+  /*
+   * How hard the coil is turning, in ranks per second, normalised to 0…1 and
+   * derived once here rather than per row: every pill reads the same number and
+   * every one of them is on the compositor, so a nine-item stack costs one
+   * velocity and nine transforms a frame. Zeroed under reduced motion, which
+   * takes the stretch out downstream without a single conditional there.
+   */
+  const velocity = useVelocity(position)
+  const urgency = useTransform(velocity, (value) =>
+    reduceMotion ? 0 : Math.min(1, Math.abs(value) / LIQUID_AT)
+  )
+
   /* Scroll mode owns no index of its own, so the list reports where it landed. */
   React.useEffect(() => {
     if (mode !== "scroll") return
@@ -321,6 +358,8 @@ export function FocusStack({
             index={itemIndex}
             count={count}
             position={position}
+            urgency={urgency}
+            still={Boolean(reduceMotion)}
             wrapped={wrapped}
             ranks={ranks}
             tilt={tilt}
@@ -352,6 +391,8 @@ function Row({
   index,
   count,
   position,
+  urgency,
+  still,
   wrapped,
   ranks,
   tilt,
@@ -366,6 +407,9 @@ function Row({
   index: number
   count: number
   position: MotionValue<number>
+  urgency: MotionValue<number>
+  /** Reduced motion, answered once by the stack and passed down. */
+  still: boolean
   wrapped: boolean
   ranks: number
   tilt: number
@@ -416,6 +460,15 @@ function Row({
   /** 1 at the centre, 0 a full rank away — the lift, and the second line. */
   const focus = useTransform(distance, (d) => Math.max(0, 1 - Math.abs(d)))
   const detail = useTransform(distance, (d) => Math.max(0, 1 - Math.abs(d) * 2))
+
+  /*
+   * The stretch, along the lane and across it, conserving area the way a drop
+   * of something does: what the pill gains in height it gives back in width.
+   * It exists only while the coil is actually turning — at rest `urgency` is
+   * zero, both terms are exactly 1, and the stack is a still drawing.
+   */
+  const stretchY = useTransform(urgency, (u) => 1 + u * LIQUID_STRETCH)
+  const stretchX = useTransform(urgency, (u) => 1 - u * LIQUID_STRETCH * 0.7)
 
   /* An accent with no glyph is a colour chip, which is a legitimate stack. */
   const badge = item.icon || item.accent ? (
@@ -492,26 +545,50 @@ function Row({
         ...(blur > 0 ? { filter } : {}),
       }}
     >
-      {interactive ? (
-        <button
-          ref={register}
-          type="button"
-          /* Roving tabindex: the stack is one stop, and the arrows move inside it. */
-          tabIndex={active ? 0 : -1}
-          aria-current={active ? "true" : undefined}
-          onClick={() => onSelect(index)}
-          className={cn(
-            pill,
-            "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-          )}
-        >
-          {body}
-        </button>
-      ) : (
-        <div aria-current={active ? "true" : undefined} className={pill}>
-          {body}
-        </div>
-      )}
+      {/*
+        The stretch rides its own box. The list item is already carrying five
+        properties driven off `distance`, and a scale written there would be
+        multiplied into the rank's own scale — the pill would grow as well as
+        stretch. On a box of its own the two compose the way they should.
+      */}
+      <motion.div
+        className="size-full"
+        style={{ scaleX: stretchX, scaleY: stretchY }}
+      >
+        {interactive ? (
+          <motion.button
+            ref={register}
+            type="button"
+            /* Roving tabindex: the stack is one stop, and the arrows move inside it. */
+            tabIndex={active ? 0 : -1}
+            aria-current={active ? "true" : undefined}
+            onClick={() => onSelect(index)}
+            /*
+             * Answers the hand. A pill that can be clicked and gives nothing
+             * back on the way down is the single loudest tell that a carousel
+             * is a picture of a control rather than a control — and the hover
+             * is what tells a reader which of nine overlapping shapes the
+             * cursor is actually on.
+             */
+            whileHover={still ? undefined : { scale: 1.025 }}
+            whileTap={still ? undefined : { scale: 0.975 }}
+            transition={PRESS}
+            className={cn(
+              pill,
+              "cursor-pointer",
+              "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+              "hover:border-border-hover",
+              "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+            )}
+          >
+            {body}
+          </motion.button>
+        ) : (
+          <div aria-current={active ? "true" : undefined} className={pill}>
+            {body}
+          </div>
+        )}
+      </motion.div>
     </motion.li>
   )
 }
