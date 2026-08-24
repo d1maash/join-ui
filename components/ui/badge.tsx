@@ -94,4 +94,32 @@ export function StatusBadge({
   )
 }
 
+/**
+ * Recency, which is a different question from `StatusBadge`'s maturity.
+ *
+ * A component can be new *and* freshly reworked, or stable for months and
+ * changed yesterday, so this sits beside the status pill rather than replacing
+ * it. It is drawn with normal ink and a filled pip instead of a hue, because a
+ * catalog row is mostly badges and giving this one a colour would make it the
+ * loudest thing on a card whose actual subject is the component.
+ *
+ * The pip is what earns it its second of attention: everything else in the row
+ * is a flat pill, so a small solid dot is enough to break the rhythm without
+ * shouting. Pass `date` and it prints it — worth it on a component page, where
+ * there is room for the answer to "when?", and not on a card, where there is
+ * not.
+ */
+export function UpdatedBadge({
+  date,
+  className,
+  ...props
+}: { date?: string } & Omit<BadgeProps, "variant" | "children">) {
+  return (
+    <Badge variant="outline" className={cn("gap-1.5", className)} {...props}>
+      <span aria-hidden="true" className="size-1.5 rounded-full bg-foreground" />
+      {date ? `Updated ${date}` : "Updated"}
+    </Badge>
+  )
+}
+
 export { badgeVariants }

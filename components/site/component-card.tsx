@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
-import { Badge, StatusBadge } from "@/components/ui/badge"
+import { Badge, StatusBadge, UpdatedBadge } from "@/components/ui/badge"
 import type { CatalogItem } from "@/lib/registry/catalog"
 import { cn } from "@/lib/utils"
 
@@ -83,6 +83,8 @@ export function ComponentCard({
 
       <div className="flex flex-wrap items-center gap-1.5">
         <StatusBadge status={item.status} />
+        {/* Undated here: a card has room for the fact, not for the date. */}
+        {item.updated ? <UpdatedBadge /> : null}
         {item.traits.includes("zero-deps") ? (
           <Badge variant="muted">No dependencies</Badge>
         ) : (

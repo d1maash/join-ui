@@ -26,6 +26,8 @@ export interface CatalogItem {
   dependencyCount: number
   featured: boolean
   since: string
+  /** Present only while the last change is still worth flagging on the card. */
+  updated?: string
 }
 
 export function toCatalogItem(component: ComponentMetadata): CatalogItem {
@@ -41,6 +43,12 @@ export function toCatalogItem(component: ComponentMetadata): CatalogItem {
     dependencyCount: component.dependencies.length,
     featured: component.featured,
     since: component.since,
+    /*
+     * Spread rather than assigned, so an unflagged component projects without
+     * the key at all — the catalog payload is sent to the client on every page
+     * load and there is no reason for it to carry a column of `undefined`.
+     */
+    ...(component.updated ? { updated: component.updated } : {}),
   }
 }
 

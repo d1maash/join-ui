@@ -37,6 +37,13 @@ function baseItem(component: ComponentMetadata) {
     meta: {
       status: component.status,
       since: component.since,
+      /*
+       * Carried into the published item so a consumer who installed this
+       * component a month ago can tell from `/r/<name>.json` alone that their
+       * copy of the file is behind — which is the whole point of dating the
+       * change rather than only badging it on the site.
+       */
+      ...(component.updated ? { updated: component.updated } : {}),
       featured: component.featured,
       installCommand: component.installCommand,
     },

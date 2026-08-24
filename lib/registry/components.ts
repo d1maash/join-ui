@@ -26,7 +26,7 @@ export const components: ComponentMetadata[] = [
     description:
       "A colour-coded step tracker for orders, deployments and onboarding, still at rest and animated only when a step advances.",
     overview:
-      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue, the rest stay grey behind a dashed ring — or pin a state per step to describe a run that is waiting on someone or has failed outright. At rest it is a still drawing: nothing loops and nothing breathes. The motion is spent on the one moment worth showing — move activeStep on and the connector above the cleared step draws downward, the marker it reaches cross-fades into its new ring, and a single pulse leaves the step now in flight. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
+      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue, the rest stay grey behind a dashed ring — or pin a state per step to describe a run that is waiting on someone or has failed outright. At rest it is a still drawing: nothing loops and nothing breathes. The motion is spent on the one moment worth showing, and spent as a sequence rather than as a flash — move activeStep on and the cleared step's marker turns first, a tenth of a second later the connector below it runs down to the next one, and only on arrival does that step announce itself with a pair of rings spreading out of it. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
     category: "Data Display",
     tags: [
       "timeline",
@@ -358,6 +358,7 @@ export function Example() {
     },
     related: ["tool-trace"],
     since: "2026-08-02",
+    updated: "2026-08-24",
   }),
 
   defineComponent({
@@ -367,7 +368,7 @@ export function Example() {
     description:
       "A coil of pills that keeps one item in focus and lets the rest twist away, turned either by a timer or by the page scroll.",
     overview:
-      "FocusStack draws a list as a receding stack: rank by rank the pills shrink, fade, blur and lean away from the middle, and the one in focus straightens out, comes back to full size and lifts off the page. Every one of those properties is a function of a single fractional number — the distance from a pill to the focused position — so nothing snaps between states and two pills can sit half-focused either side of the centre mid-turn. That number has two drivers, and they are the two variants. In auto mode a spring walks it along on a timer, the stack wraps end to end, and a pill can be clicked or arrowed into focus; the timer stops for a pointer, for a caret, for a stack scrolled out of view and for anyone who has asked for reduced motion. In scroll mode the number is mapped to the stack's own transit through the viewport instead, so the coil turns exactly as far as the reader scrolls it and nothing moves on its own.",
+      "FocusStack draws a list as a receding stack: rank by rank the pills shrink, fade, blur and lean away from the middle, and the one in focus straightens out, comes back to full size and lifts off the page. Every one of those properties is a function of a single fractional number — the distance from a pill to the focused position — so nothing snaps between states and two pills can sit half-focused either side of the centre mid-turn. That number has two drivers, and they are the two variants. In auto mode a spring walks it along on a timer, the stack wraps end to end, and a pill can be clicked or arrowed into focus — it lifts under the cursor and gives under the press, and while the coil is genuinely turning every pill stretches a little along its travel and narrows across it, so the stack reads as something with weight being swung rather than a list being re-sorted; the timer stops for a pointer, for a caret, for a stack scrolled out of view and for anyone who has asked for reduced motion. In scroll mode the number is mapped to the stack's own transit through the viewport instead, so the coil turns exactly as far as the reader scrolls it and nothing moves on its own.",
     category: "Data Display",
     tags: [
       "carousel",
@@ -625,6 +626,7 @@ export function Example() {
     ],
     related: ["status-timeline"],
     since: "2026-08-03",
+    updated: "2026-08-24",
   }),
 
   defineComponent({
@@ -1508,6 +1510,7 @@ export function Example() {
     },
     related: ["agent-hive", "status-timeline"],
     since: "2026-08-11",
+    updated: "2026-08-24",
   }),
 
   defineComponent({
@@ -1517,7 +1520,7 @@ export function Example() {
     description:
       "A hero section led by an arc of tinted glass discs, solved from a count and a spread, that assembles on mount and then answers only the pointer.",
     overview:
-      "GlassCrest is the section a product opens with: a crescent of glass marks over the sentence that explains them. The crest is drawn rather than photographed — each disc is tinted glass with a lit top edge, a shaded belly, an off-centre specular and a rim in its own accent, and the glyph stands on it as a relief, printed twice so the blurred copy underneath gives the extrusion its thickness. Nothing is an image, so a mark is any icon you pass and any colour you name, and the whole crest recolours with the page instead of being lit for one theme. The arc is geometry rather than layout: give it a count and a spread and it solves for the radius that fits the marks across their own box, the diameter that laps them by overlap, and the aspect ratio that leaves room for the bow — so three marks on a phone and eleven on a monitor are the same calculation, expressed entirely in percentages and needing no measurement at all. It moves twice and only twice. It assembles apex-first on mount, because a hero arriving is the one moment a page may perform, and after that it answers the pointer: the arc swings from a pivot below itself while the outer marks travel further than the inner ones. Pass onMarkSelect and every disc becomes a real button behind a single tab stop, with the arrow keys walking the arc.",
+      "GlassCrest is the section a product opens with: a crescent of glass marks over the sentence that explains them. The crest is drawn rather than photographed — each disc is tinted glass with a lit top edge, a shaded belly, an off-centre specular and a rim in its own accent, and the glyph stands on it as a relief, printed twice so the blurred copy underneath gives the extrusion its thickness. Nothing is an image, so a mark is any icon you pass and any colour you name, and the whole crest recolours with the page instead of being lit for one theme. The arc is geometry rather than layout: give it a count and a spread and it solves for the radius that fits the marks across their own box, the diameter that laps them by overlap, and the aspect ratio that leaves room for the bow — so three marks on a phone and eleven on a monitor are the same calculation, expressed entirely in percentages and needing no measurement at all. It moves only when something moves it. It assembles apex-first on mount — sprung, so each disc rises, goes a hair past its place on the arc and settles onto it, because a hero arriving is the one moment a page may perform — and after that it answers the pointer: the arc swings from a pivot below itself while the outer marks travel further than the inner ones, and the disc under the cursor lifts on a spring of its own. Pass onMarkSelect and every disc becomes a real button behind a single tab stop, pressing into the page under the hand, with the arrow keys walking the arc.",
     category: "Marketing",
     tags: [
       "hero",
@@ -1876,5 +1879,6 @@ export function Example() {
     ],
     related: ["focus-stack", "agent-hive"],
     since: "2026-08-16",
+    updated: "2026-08-24",
   }),
 ]

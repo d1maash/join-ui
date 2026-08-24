@@ -17,7 +17,7 @@ import { PrevNextNavigation } from "@/components/site/prev-next"
 import { PropsTable } from "@/components/site/props-table"
 import { DocsShell } from "@/components/site/shell"
 import { TableOfContents } from "@/components/site/table-of-contents"
-import { Badge, StatusBadge } from "@/components/ui/badge"
+import { Badge, StatusBadge, UpdatedBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Kbd } from "@/components/ui/kbd"
 import { dependencyCommands, shadcnCommands } from "@/lib/commands"
@@ -138,6 +138,15 @@ export default async function ComponentPage({ params }: PageProps) {
             <Badge variant="outline">{component.category}</Badge>
             <StatusBadge status={component.status} />
             <Badge variant="muted">Added {formatDate(component.since)}</Badge>
+            {/*
+              Dated here, and only here. This is the page a reader lands on
+              when they already have the component installed and want to know
+              whether their copy is behind, and "Updated" without a date does
+              not answer that question.
+            */}
+            {component.updated ? (
+              <UpdatedBadge date={formatDate(component.updated)} />
+            ) : null}
           </div>
 
           <div className="flex flex-col gap-3">
