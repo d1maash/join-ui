@@ -111,6 +111,18 @@ export interface ComponentMetadata {
   related: string[]
   /** ISO date the component entered the registry. */
   since: string
+  /**
+   * ISO date of the last change worth telling an installed consumer about —
+   * a reworked animation, a new prop, a behaviour that is no longer what their
+   * copy of the file does. Set it and every surface says `Updated`; clear it
+   * once the change has stopped being news.
+   *
+   * Deliberately not `status`. Maturity and recency are two different
+   * questions — a component can be brand new *and* freshly reworked, or stable
+   * for a year and touched yesterday — and folding them into one enum means
+   * answering one of them by throwing the other away.
+   */
+  updated?: string
   /** Optional design tokens the registry item should append to globals.css. */
   cssVars?: {
     theme?: Record<string, string>

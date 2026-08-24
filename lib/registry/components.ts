@@ -358,6 +358,7 @@ export function Example() {
     },
     related: ["tool-trace"],
     since: "2026-08-02",
+    updated: "2026-08-24",
   }),
 
   defineComponent({
@@ -625,6 +626,7 @@ export function Example() {
     ],
     related: ["status-timeline"],
     since: "2026-08-03",
+    updated: "2026-08-24",
   }),
 
   defineComponent({
@@ -1508,6 +1510,7 @@ export function Example() {
     },
     related: ["agent-hive", "status-timeline"],
     since: "2026-08-11",
+    updated: "2026-08-24",
   }),
 
   defineComponent({
@@ -1876,5 +1879,6 @@ export function Example() {
     ],
     related: ["focus-stack", "agent-hive"],
     since: "2026-08-16",
+    updated: "2026-08-24",
   }),
 ]

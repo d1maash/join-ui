@@ -94,7 +94,21 @@ const metadataSchema = z.object({
   customization: z.array(z.object({ title: z.string(), code: z.string().min(5) })),
   related: z.array(z.string()),
   since: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "must be an ISO date"),
+  updated: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "must be an ISO date")
+    .optional(),
 })
+  /*
+   * A component cannot have been updated before it existed. The dates are both
+   * hand-typed and both ISO, which means a transposed digit reads as perfectly
+   * valid and then quietly prints "Updated 2 Aug" on something added in
+   * November — this is the one relationship between them worth enforcing.
+   */
+  .refine(
+    (component) => !component.updated || component.updated >= component.since,
+    { message: "`updated` is earlier than `since`", path: ["updated"] }
+  )
 
 async function exists(relativePath: string): Promise<boolean> {
   try {
