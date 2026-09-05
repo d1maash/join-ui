@@ -26,6 +26,7 @@ import { buildComponentPrompt } from "@/lib/prompts/build-prompt"
 import { allComponents, getComponent, getRelated, getSiblings } from "@/lib/registry"
 import { toCatalogItem } from "@/lib/registry/catalog"
 import { getComponentSources } from "@/lib/registry/source"
+import { revealAt } from "@/lib/reveal"
 import { siteConfig } from "@/lib/site"
 import { formatDate } from "@/lib/utils"
 
@@ -130,11 +131,19 @@ export default async function ComponentPage({ params }: PageProps) {
             },
             { label: component.title },
           ]}
-          className="mb-8"
+          className="reveal mb-8"
         />
 
+        {/*
+          The head of the page arrives in reading order, a step at a time —
+          crumbs, the badges, the title printing in, its line, the actions,
+          the overview — and the preview frame comes in with the overview.
+          Below that the reference sections are simply there: a reader who
+          has jumped to Props from the contents rail wants the table, not an
+          entrance for it.
+        */}
         <header className="flex flex-col gap-5 border-b border-border pb-8">
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="reveal flex flex-wrap items-center gap-1.5" style={revealAt(1)}>
             <Badge variant="outline">{component.category}</Badge>
             <StatusBadge status={component.status} />
             <Badge variant="muted">Added {formatDate(component.since)}</Badge>
@@ -150,15 +159,21 @@ export default async function ComponentPage({ params }: PageProps) {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.032em]">
+            <h1
+              className="reveal reveal-dither text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.032em] [--reveal-y:0.2em]"
+              style={revealAt(2)}
+            >
               {component.title}
             </h1>
-            <p className="max-w-2xl text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">
+            <p
+              className="reveal max-w-2xl text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground"
+              style={revealAt(3)}
+            >
               {component.description}
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="reveal flex flex-wrap items-center gap-2" style={revealAt(4)}>
             <CopyPromptButton
               prompt={prompt}
               componentName={component.title}
@@ -197,12 +212,25 @@ export default async function ComponentPage({ params }: PageProps) {
             </Button>
           </div>
 
-          <p className="max-w-2xl leading-relaxed text-pretty text-muted-foreground">
+          <p
+            className="reveal max-w-2xl leading-relaxed text-pretty text-muted-foreground"
+            style={revealAt(5)}
+          >
             {component.overview}
           </p>
         </header>
 
-        <section aria-labelledby="preview" className="mt-8 scroll-mt-24">
+        {/*
+          The frame fades without rising. The demo inside it has an entrance
+          of its own — that is what most of these components are for — and a
+          stage that is still moving while its performer starts would blur the
+          one movement the page exists to show.
+        */}
+        <section
+          aria-labelledby="preview"
+          className="reveal mt-8 scroll-mt-24 [--reveal-y:0px]"
+          style={revealAt(5)}
+        >
           <h2 id="preview" className="sr-only">
             Preview
           </h2>

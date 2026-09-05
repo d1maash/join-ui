@@ -92,7 +92,7 @@ lib/
   docs/                         # navigation and sidebar trees
   mdx/                          # MDX loading, TOC extraction, rehype plugin
   highlight.ts, shiki-theme.ts  # Shiki, and the two low-chroma syntax themes
-  commands.ts, hooks.ts, site.ts, clipboard.ts, utils.ts
+  commands.ts, hooks.ts, site.ts, clipboard.ts, reveal.ts, utils.ts
 registry/
   components/                   # the components the CLI ships
 public/

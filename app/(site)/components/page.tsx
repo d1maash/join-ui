@@ -8,6 +8,7 @@ import {
 } from "@/components/site/component-catalog"
 import { getRegistryStats } from "@/lib/registry"
 import { getCatalogItems } from "@/lib/registry/catalog"
+import { revealAt } from "@/lib/reveal"
 import { siteConfig } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -29,16 +30,29 @@ export default function ComponentsPage() {
 
   return (
     <main id="main-content" className="mx-auto max-w-[100rem] px-4 py-10 sm:px-6">
+      {/*
+        The page arrives top to bottom — crumbs, title, standfirst — and the
+        catalog below carries on the count from where the header stops. It
+        renders after hydration, behind its Suspense boundary, so it starts
+        its own clock a little later anyway; the numbering only has to keep
+        the order right, not the timing.
+      */}
       <Breadcrumbs
         items={[{ label: "Home", href: "/" }, { label: "Components" }]}
-        className="mb-8"
+        className="reveal mb-8"
       />
 
       <header className="mb-8 grid gap-6 lg:grid-cols-12">
-        <h1 className="text-[clamp(2rem,5vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.036em] lg:col-span-7">
+        <h1
+          className="reveal reveal-dither text-[clamp(2rem,5vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.036em] lg:col-span-7 [--reveal-y:0.2em]"
+          style={revealAt(1)}
+        >
           Components
         </h1>
-        <p className="max-w-xl self-end leading-relaxed text-pretty text-muted-foreground lg:col-span-5">
+        <p
+          className="reveal max-w-xl self-end leading-relaxed text-pretty text-muted-foreground lg:col-span-5"
+          style={revealAt(2)}
+        >
           {stats.total === 0
             ? "The catalog is empty while the registry is rebuilt. Every page, filter and search entry below is generated from the registry metadata, so components appear here the moment they are added."
             : `${stats.total} components across ${stats.categories} categories. Every preview runs the same source the CLI installs, and every page ships a ready-made prompt for your coding agent.`}

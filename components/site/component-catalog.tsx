@@ -7,10 +7,22 @@ import { Search, X } from "lucide-react"
 import { ComponentCard } from "@/components/site/component-card"
 import { Button } from "@/components/ui/button"
 import type { CatalogItem } from "@/lib/registry/catalog"
+import { revealAt } from "@/lib/reveal"
 import { cn } from "@/lib/utils"
 import { COMPONENT_CATEGORIES, COMPONENT_TRAITS, type ComponentTrait } from "@/types/registry"
 
 const ALL = "All"
+
+/**
+ * The last place in the grid's entrance that still gets a delay of its own.
+ *
+ * Cards are numbered by their position in the filtered list, so a card that
+ * appears when a filter is loosened comes in where it lands rather than after
+ * a wait sized to the whole registry. Past this many the stagger has made its
+ * point, and a twelfth row arriving a second after the first would read as
+ * the page being slow rather than as a sequence.
+ */
+const LAST_STEP = 9
 
 /**
  * Filterable catalog.
@@ -78,7 +90,16 @@ export function ComponentCatalog({ items }: { items: CatalogItem[] }) {
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col gap-4 border-y border-border py-4">
+      {/*
+        Entrance, not transition. The filter bar, the count and each card play
+        the stylesheet's `.reveal` once when they are inserted — which, since
+        this component mounts after hydration, is a beat after the page header
+        above has started. Filtering does not replay it: cards that stay are
+        the same elements and do not move, and a card that arrives comes in
+        where it lands. Re-running a stagger on every keystroke would turn a
+        search box into a slideshow.
+      */}
+      <div className="reveal flex flex-col gap-4 border-y border-border py-4">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <FilterRow label="Category">
             {categories.map((name) => (
@@ -134,20 +155,28 @@ export function ComponentCatalog({ items }: { items: CatalogItem[] }) {
         </div>
       </div>
 
-      <p aria-live="polite" className="label-micro py-4 text-muted-foreground">
+      <p
+        aria-live="polite"
+        className="reveal label-micro py-4 text-muted-foreground"
+        style={revealAt(1)}
+      >
         {filtered.length} of {items.length} components
       </p>
 
       {filtered.length > 0 ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((item, index) => (
-            <li key={item.slug} className="flex">
+            <li
+              key={item.slug}
+              className="reveal flex"
+              style={revealAt(2 + Math.min(index, LAST_STEP))}
+            >
               <ComponentCard item={item} index={index + 1} className="w-full" />
             </li>
           ))}
         </ul>
       ) : (
-        <p className="rounded-xl border border-dashed border-border bg-subtle px-6 py-16 text-center text-sm text-muted-foreground">
+        <p className="reveal rounded-xl border border-dashed border-border bg-subtle px-6 py-16 text-center text-sm text-muted-foreground [--reveal-y:0px]">
           Nothing matches these filters.
         </p>
       )}

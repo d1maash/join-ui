@@ -68,12 +68,16 @@ export default async function FullPreviewPage({ params }: PageProps) {
 
       <main id="main-content" className="flex flex-1 flex-col p-4 sm:p-6">
         <h1 className="sr-only">{component.title} preview</h1>
+        {/*
+          A fade, not a rise: the demo inside the frame has an entrance of its
+          own, and this page exists to show it on a still stage.
+        */}
         <ComponentPreview
           slug={component.slug}
           title={component.title}
           fullPreviewLink={false}
           minHeight="calc(100dvh - 8rem)"
-          className="flex-1"
+          className="reveal flex-1 [--reveal-y:0px]"
         />
       </main>
     </div>
