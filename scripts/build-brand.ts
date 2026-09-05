@@ -64,7 +64,9 @@ async function main(): Promise<void> {
   await writeFile(path.join(projectRoot, "app", "apple-icon.png"), apple)
   await writeFile(path.join(projectRoot, "app", "favicon.ico"), favicon)
 
-  console.log("✓ Join UI brand built — SVG, 512px app icon, 180px Apple icon, 16/32/48px favicon")
+  console.log(
+    "✓ Join UI brand built — SVG, 512px app icon, 180px Apple icon, 16/32/48px favicon"
+  )
 }
 
 main().catch((error: unknown) => {
