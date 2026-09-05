@@ -1,3 +1,4 @@
+import * as React from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
@@ -52,17 +53,26 @@ export interface MastheadProps {
  *
  * How it arrives
  * --------------
- * One sequence, top to bottom, on the band's own clock: the picture develops
- * out of the black while the two lines of the headline rise into it a beat
- * apart, the sentence and the buttons follow, and the hairline under the
- * figures draws itself across the foot of the band with the four facts fading
- * up along it. Every element carries its place in that order as `--reveal-i`
- * and nothing else; the tempo — the pause before the first, the gap between
- * places, how long each takes — is declared once on `.masthead` in the
- * stylesheet, which is also where the movement itself is defined and where it
- * is switched off for anyone who has asked for less of it. Nothing here runs
- * on the client: the arrival is CSS, it is under way before React has
- * hydrated, and it plays again on a client-side navigation back to this page.
+ * One sequence, top to bottom, on the band's own clock. The picture develops
+ * out of the black first and alone, for a third of a second. Then the
+ * headline is set down a word at a time — three words, a beat, three words —
+ * each rising over half its own height and settling; the sentence and the
+ * buttons follow; and the hairline under the figures draws itself across the
+ * foot of the band with the four facts fading up along it. Every element
+ * carries its place in that order as `--reveal-i` and nothing else; the tempo
+ * — the pause before the first, the gap between places, how long each takes
+ * and on what curve — is declared once on `.masthead` in the stylesheet,
+ * which is also where the movement itself is defined and where it is switched
+ * off for anyone who has asked for less of it. Nothing here runs on the
+ * client: the arrival is CSS, it is under way before React has hydrated, and
+ * it plays again on a client-side navigation back to this page.
+ *
+ * Words rather than lines, and the difference is the whole effect. Two lines
+ * fading up read as a paragraph loading; six words landing in reading order
+ * read as a sentence being said. They rise unclipped — the obvious editorial
+ * move, each line sliding up out of a slot, needs an overflow box around it,
+ * and the box's edge would cut the wide shadow the type carries into a hard
+ * step across the dot field above the first line.
  */
 export function Masthead({ facts }: MastheadProps) {
   return (
@@ -119,6 +129,18 @@ export function Masthead({ facts }: MastheadProps) {
       </div>
 
       {/*
+        The band is the first screen, exactly. Its top is the top of the
+        document — the negative margin above puts the nav on the picture — and
+        `100svh` takes it to the bottom of the viewport, so on arrival there is
+        nothing on screen but the plate, the type and the four figures closing
+        the frame along the bottom edge; the document begins under them. The
+        small viewport unit, not the dynamic one: on a phone the band is sized
+        to the screen with the browser's bars showing, which is the state it is
+        first seen in, and it does not resize as they retract.
+
+        `min-height`, so a short landscape window grows the band to fit the
+        copy rather than stacking it into the dust.
+
         The copy hangs from the bottom of the band rather than sitting in the
         middle of it, and that is the plate's decision rather than a taste one.
         The dust runs across the top third and thins as it falls; anything
@@ -128,7 +150,7 @@ export function Masthead({ facts }: MastheadProps) {
         pattern is never behind more than the first line's ascenders, and the
         sentence and the buttons stay on plain black.
       */}
-      <div className="relative flex min-h-[54rem] flex-col lg:min-h-[min(100svh,52rem)]">
+      <div className="relative flex min-h-svh flex-col">
         <div className="mx-auto flex w-full max-w-[100rem] flex-1 flex-col items-center justify-end px-4 pt-40 pb-12 text-center sm:px-6 lg:pb-10">
           {/*
             Two sentences, and the break between them is written rather than
@@ -140,24 +162,28 @@ export function Masthead({ facts }: MastheadProps) {
             it lands on a size nobody checked.
           */}
           {/*
-            The lines are spans rather than a `<br />` so that each can arrive
-            on its own — the second a beat behind the first, which is what makes
-            it read as two sentences being set down rather than as one block
-            fading in. The rise is written in ems so it scales with the type:
-            a fifth of a line at every size the clamp can produce.
+            The lines are blocks rather than a `<br />` so that each holds its
+            own words, and the words are what arrive — see `Words`. The rise is
+            written in ems so it scales with the type: just over half a line at
+            every size the clamp can produce.
+
+            Places 0–2 and 4–6. The skipped place is the pause between the two
+            sentences, one step long — without it the six words run together
+            into one sentence of six, and the second line stops answering the
+            first.
           */}
-          <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white [--reveal-y:0.3em]">
-            <span className="reveal block" style={revealAt(0)}>
-              Copy the code.
+          <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white [--reveal-y:0.55em]">
+            <span className="block">
+              <Words text="Copy the code." from={0} />
             </span>
-            <span className="reveal block" style={revealAt(1)}>
-              Keep the code.
+            <span className="block">
+              <Words text="Keep the code." from={4} />
             </span>
           </h1>
 
           <p
             className="masthead-type reveal mt-7 max-w-[46ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60"
-            style={revealAt(2)}
+            style={revealAt(7)}
           >
             Animated React components that install into your repo and stay
             there.
@@ -165,7 +191,7 @@ export function Masthead({ facts }: MastheadProps) {
 
           <div
             className="reveal mt-10 flex flex-wrap items-center justify-center gap-3"
-            style={revealAt(3)}
+            style={revealAt(8)}
           >
             <Button asChild size="lg">
               <Link href="/components">
@@ -203,7 +229,7 @@ export function Masthead({ facts }: MastheadProps) {
                 "reveal py-5 text-center",
                 index > 0 && "sm:border-l sm:border-white/10"
               )}
-              style={revealAt(5 + index)}
+              style={revealAt(9 + index)}
             >
               <dt className="label-micro text-white/45">{fact.label}</dt>
               <dd className="numeral mt-1 text-2xl font-semibold text-white">
@@ -215,6 +241,26 @@ export function Masthead({ facts }: MastheadProps) {
       </div>
     </section>
   )
+}
+
+/**
+ * A line of the headline, one arriving element per word.
+ *
+ * Each word is an inline block — an inline element cannot be transformed —
+ * numbered on from `from`, and the spaces between them are left as text so the
+ * line wraps and selects exactly as the plain string would. The split is on
+ * spaces only: the full stop stays on its word, since a sentence does not land
+ * and then acquire its punctuation.
+ */
+function Words({ text, from }: { text: string; from: number }) {
+  return text.split(" ").map((word, index) => (
+    <React.Fragment key={index}>
+      {index > 0 ? " " : null}
+      <span className="reveal inline-block" style={revealAt(from + index)}>
+        {word}
+      </span>
+    </React.Fragment>
+  ))
 }
 
 /**

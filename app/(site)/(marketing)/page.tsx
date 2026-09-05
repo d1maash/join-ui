@@ -232,7 +232,7 @@ export default function HomePage() {
             */}
             <ul
               className={cn(
-                "grid gap-4 sm:grid-cols-2",
+                "grid gap-4 sm:grid-cols-2 [--reveal-y:1.5rem]",
                 featured.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"
               )}
             >
@@ -298,7 +298,7 @@ export default function HomePage() {
             description="The most recent additions, newest first."
             action={{ href: "/components", label: "See the full catalog" }}
           >
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 [--reveal-y:1.5rem]">
               {latest.map((component, index) => (
                 <li
                   key={component.slug}
