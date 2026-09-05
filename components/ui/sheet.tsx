@@ -40,7 +40,7 @@ export const SheetContent = React.forwardRef<
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed inset-y-0 z-50 flex w-[19rem] max-w-[85vw] flex-col bg-card shadow-lg",
+          "fixed inset-y-0 z-50 flex w-[19rem] max-w-[85vw] flex-col bg-card shadow-lg outline-none",
           "border-border overscroll-y-contain",
           side === "left" ? "left-0 border-r" : "right-0 border-l",
           side === "left"
