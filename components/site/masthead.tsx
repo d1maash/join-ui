@@ -52,16 +52,17 @@ export interface MastheadProps {
  *
  * How it arrives
  * --------------
- * The band opens the way its picture was made. The plate prints: a cover the
- * colour of the void is driven down the band at one speed with a bright line
- * along its leading edge, and the dust is drawn onto the black a row at a
- * time behind it. As the head passes the foot of the picture the headline
- * resolves into the space it has just uncovered — not faded in but dithered
- * in, a grid of dots growing until they close into letters, one line and then
- * the other. The sentence and the buttons rise after it, the hairline under
- * the figures draws itself across the foot of the band, and the four facts
- * come up along it. Two and a half seconds, and nothing in it that could
- * belong to another site.
+ * The band opens as the photograph, not the print: the nebula in colour,
+ * whole, for a quarter of a second. Then the wind takes it — the colour is
+ * blown off the band left to right behind a soft edge, and the one-bit plate
+ * is what it leaves. While the colour is going the headline is set into the
+ * print: not faded in but dithered in, a grid of dots growing until they
+ * close into letters, one line and then the other. The sentence and the
+ * buttons rise after it, the hairline under the figures draws itself across
+ * the foot of the band, and the four facts come up along it. Two and a half
+ * seconds, and every part of it is made of this band's own materials — the
+ * two prints, the wind, the dither — so nothing in it could be lifted onto
+ * another site.
  *
  * Every element carries its place in that order as `--reveal-i` and nothing
  * else; the tempo — the print's length, which is also the type's cue, the gap
@@ -118,6 +119,21 @@ export function Masthead({ facts }: MastheadProps) {
         <MastheadTrail />
 
         {/*
+          The opening: the photograph, held whole and then blown off the band
+          to leave the print. Its own copy of the colour plate, because the
+          gust's is only rendered once the client knows it may move, and this
+          has to be in the first HTML. Under the grade, so the floor keeps the
+          picture's colour out of the copy exactly as it keeps the dust out.
+        */}
+        <div className="masthead-opening">
+          <div className="masthead-opening-veil">
+            <div className="masthead-opening-shot">
+              <Plate colour opening />
+            </div>
+          </div>
+        </div>
+
+        {/*
           Last, so it grades the colour as well as the mono. The floor is meant
           to keep the picture out of the copy, and a gust that could bring the
           dust back through it in full colour would be a hole in exactly the
@@ -125,13 +141,6 @@ export function Masthead({ facts }: MastheadProps) {
         */}
         <div className="masthead-grade absolute inset-0" />
 
-        {/*
-          The cover the print comes out from under. Above the grade so the
-          whole picture, colour included, is drawn in by the head; below the
-          copy, which is set later in the document and stacks over this
-          wrapper.
-        */}
-        <div className="masthead-print" />
       </div>
 
       {/*
@@ -245,6 +254,10 @@ export function Masthead({ facts }: MastheadProps) {
   )
 }
 
+/** A 1×1 transparent GIF. What the opening's `<img>` shows when no source matches. */
+const CLEAR_PIXEL =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+
 /**
  * The plate, as markup, in either of its two prints.
  *
@@ -262,21 +275,39 @@ export function Masthead({ facts }: MastheadProps) {
  *
  * The mono print carries the first paint, so it gets `fetchPriority="high"` —
  * ahead of the font, since the type arrives over it either way. The colour
- * print is a hover reward that nothing is waiting on, so it goes out at low
- * priority and is only rendered at all once `MastheadLoupe` has established
- * that this device has a pointer.
+ * print in the gust is a reward that nothing is waiting on, so it goes out at
+ * low priority and is only rendered at all once the client has established
+ * that this device can show it moving.
+ *
+ * The opening's copy of the colour print is the exception on both counts: it
+ * is the first thing seen, so it is fetched high, and it is in the first HTML
+ * for everyone — including readers who have asked for less motion and will
+ * never see it. For them it must not cost a request either, and `display:
+ * none` does not stop one. So its sources carry the motion query in their
+ * `media`, and the fallback `<img>` is a transparent pixel: with the
+ * preference set no source matches, the pixel is what the element shows, and
+ * the photograph is never asked for.
  */
-function Plate({ colour = false }: { colour?: boolean }) {
+function Plate({
+  colour = false,
+  opening = false,
+}: {
+  colour?: boolean
+  /** The copy the band opens on: fetched first, and gated on motion being allowed. */
+  opening?: boolean
+}) {
   const stem = colour ? "hero-colour" : "hero-dither"
+  const motion = opening ? " and (prefers-reduced-motion: no-preference)" : ""
 
   return (
     <picture>
       <source
-        media="(max-width: 639px)"
+        media={`(max-width: 639px)${motion}`}
         srcSet={`/${stem}-mobile-860.webp 860w, /${stem}-mobile-1290.webp 1290w`}
         sizes="100vw"
       />
       <source
+        media={opening ? "(prefers-reduced-motion: no-preference)" : undefined}
         srcSet={
           colour
             ? "/hero-colour-1280.webp 1280w, /hero-colour-1920.webp 1920w"
@@ -285,9 +316,15 @@ function Plate({ colour = false }: { colour?: boolean }) {
         sizes="100vw"
       />
       <img
-        src={colour ? "/hero-colour-1280.webp" : "/hero-dither-1920.webp"}
+        src={
+          opening
+            ? CLEAR_PIXEL
+            : colour
+              ? "/hero-colour-1280.webp"
+              : "/hero-dither-1920.webp"
+        }
         alt=""
-        fetchPriority={colour ? "low" : "high"}
+        fetchPriority={colour && !opening ? "low" : "high"}
         decoding="async"
         /*
          * Anchored to the top, not centred. The plate is 16:9 and the band is

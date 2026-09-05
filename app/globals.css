@@ -824,68 +824,120 @@
      * button and figure in the band inherits the same clock and only has to
      * know its own place in it.
      */
-    --reveal-delay: var(--masthead-print-time);
-    --reveal-step: 120ms;
+    --reveal-delay: 700ms;
+    --reveal-step: 130ms;
     --reveal-duration: 900ms;
     --reveal-ease: var(--ease-out-expo);
 
     /*
-     * How long the plate takes to print, and what the type waits for. The
-     * head passes the headline's line at about seven tenths of the band, so
-     * the first line starts resolving just after it has gone by, into a
-     * space that has only just been uncovered.
+     * The opening's clock: how long the photograph is held whole before the
+     * wind reaches it, and how long the wind takes to cross. The type's delay
+     * above is set against these — the first line starts resolving as the
+     * colour is leaving the middle of the band, so the headline is seen to be
+     * set on the print, not on the picture.
      */
-    --masthead-print-time: 1000ms;
+    --masthead-hold: 250ms;
+    --masthead-blow: 1600ms;
   }
 
   /*
-   * The picture printing.
+   * The opening: the photograph, and the wind taking it.
+   * -------------------------------------------------------------------------
+   * The band does not start as the print. It starts as the picture — the
+   * nebula in full colour, whole, registered exactly over the dither — held
+   * for a quarter of a second, and then the wind gets to it. The colour is
+   * blown off the band from left to right behind a soft edge, and what it
+   * leaves behind is the one-bit plate: the photograph becomes the print in
+   * front of the reader, in the direction the weather here always blows, and
+   * every gust that crosses the band afterwards is bringing back for a moment
+   * what the reader watched leave. The headline is set in dots while the
+   * colour is going, so it is seen to belong to the print and not to the
+   * picture.
    *
-   * A one-bit plate does not fade in; it comes off a head, top to bottom, at
-   * one speed. So the band opens as solid void with a cover over the whole
-   * picture, and the cover is driven down and out of the frame at a constant
-   * rate with a thin bright line along its leading edge — the head — so that
-   * the dust is drawn onto the black a row at a time and the line is seen
-   * crossing the empty two thirds below it before it leaves. Linear, on
-   * purpose: an eased wipe is a curtain, and a printer does not slow down for
-   * the interesting part.
+   * It is built exactly the way the gust is, and for the same reason. A veil
+   * the size of the band, with a fixed mask that fades out along its trailing
+   * edge, translates left until it has cleared the band; the colour plate
+   * inside it translates right by the same amount and so never moves against
+   * the dither beneath. Two composited transforms, no repaint, no frame in
+   * which the dot grid is resampled — and nothing here is a fade. At the last
+   * keyframe the veil hides itself and stays hidden, and the two layers cost
+   * nothing after that.
    *
-   * The cover is a translate on one flat layer, and the picture under it is
-   * never touched, so the dot grid is not resampled for a single frame. It
-   * hides itself on its last keyframe and stays hidden; with reduced motion it
-   * is never displayed at all, and the plate is simply there.
+   * With reduced motion the opening is not displayed, and — because the
+   * markup gates the picture's sources on the same query — the colour file is
+   * never requested for it either. The plate is simply there.
    */
-  .masthead-print {
+  .masthead-opening {
+    /* How wide the soft edge is, as a share of the band; the veil's own width. */
+    --veil-fade: 22%;
     position: absolute;
     inset: 0;
     display: none;
-    background: rgb(var(--masthead-void));
     pointer-events: none;
   }
 
-  .masthead-print::after {
-    content: "";
+  .masthead-opening-veil {
     position: absolute;
-    inset: 0 0 auto 0;
-    height: 1px;
-    background: rgb(255 255 255 / 0.4);
-    box-shadow: 0 0 14px 1px rgb(255 255 255 / 0.22);
+    inset: 0;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      #000 calc(100% - var(--veil-fade)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      #000 calc(100% - var(--veil-fade)),
+      transparent 100%
+    );
   }
 
-  @keyframes masthead-print {
+  .masthead-opening-shot {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The opening prints the photograph at full strength; the gust holds back. */
+  .masthead-opening .masthead-colour {
+    opacity: 1;
+  }
+
+  /*
+   * Percentages, on purpose: the veil and the shot are both the band's width,
+   * so -100% on one and +100% on the other are the same distance in pixels
+   * whatever the band measures, and the plate stays pinned without a script.
+   */
+  @keyframes masthead-veil {
     from {
       transform: translate3d(0, 0, 0);
     }
     to {
-      transform: translate3d(0, 100%, 0);
+      transform: translate3d(-100%, 0, 0);
       visibility: hidden;
     }
   }
 
+  @keyframes masthead-veil-shot {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(100%, 0, 0);
+    }
+  }
+
   @media screen and (prefers-reduced-motion: no-preference) {
-    .masthead-print {
+    .masthead-opening {
       display: block;
-      animation: masthead-print var(--masthead-print-time) linear both;
+    }
+
+    .masthead-opening-veil {
+      animation: masthead-veil var(--masthead-blow) var(--ease-in-out-soft)
+        var(--masthead-hold) both;
+    }
+
+    .masthead-opening-shot {
+      animation: masthead-veil-shot var(--masthead-blow) var(--ease-in-out-soft)
+        var(--masthead-hold) both;
     }
   }
 
