@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og"
 
-import { MARK } from "@/components/site/logo"
+import { MARK } from "@/lib/brand"
 import { allComponents, getComponent } from "@/lib/registry"
 import { siteConfig } from "@/lib/site"
 
@@ -79,21 +79,9 @@ export default async function ComponentOpengraphImage({
           }}
         >
           <svg viewBox={MARK.viewBox} width={29} height={29}>
-            <path
-              d={MARK.stems}
-              fill="none"
-              stroke={PAGE}
-              strokeWidth={MARK.stemsWidth}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d={MARK.middle}
-              fill="none"
-              stroke={PAGE}
-              strokeWidth={MARK.middleWidth}
-              strokeLinecap="round"
-            />
+            {MARK.paths.map((d) => (
+              <path key={d} d={d} fill={PAGE} />
+            ))}
           </svg>
         </div>
         <div style={{ display: "flex", fontSize: 24, fontWeight: 600 }}>

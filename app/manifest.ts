@@ -3,9 +3,8 @@ import type { MetadataRoute } from "next"
 import { siteConfig } from "@/lib/site"
 
 /**
- * The icon is the Join Way monogram on its black tile — the same file the
- * studio site installs with, so an installed shortcut to the docs sits next to
- * one for join-way.com and reads as the same product.
+ * Join UI's connected modules on a dark tile. The generated icon keeps the
+ * entire mark inside the circular safe area for maskable launcher icons.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -20,8 +19,8 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: "en",
     categories: ["developer", "productivity"],
     icons: [
-      { src: "/icon.png", sizes: "1000x1000", type: "image/png", purpose: "any" },
-      { src: "/icon.png", sizes: "1000x1000", type: "image/png", purpose: "maskable" },
+      { src: "/icon.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icon.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   }
 }

@@ -114,16 +114,16 @@ types/
 
 ### Brand assets
 
-The wordmark and the monogram both live in `components/site/logo.tsx`. The mark
-is vector, drawn on `currentColor` rather than as an image, so it inherits from
-the text beside it and stays crisp at any size. Its two paths are exported as
-`MARK` and reused by the social cards, which Satori renders without CSS — there
-is one copy of the geometry, not three.
+Join UI has its own mark: two connected, rounded modules. The shared vector
+geometry lives in `lib/brand.ts`; `components/site/logo.tsx` pairs it with the
+wordmark and uses `currentColor` so it follows the surrounding text. The header,
+footer, mobile navigation, error page, standalone previews and social cards all
+use that geometry.
 
-`app/icon.png`, `app/apple-icon.png` and `app/favicon.ico` are the Join Way
-originals, copied verbatim from the studio site so a browser tab, an installed
-shortcut and join-way.com all show the same tile. Next picks all three up by file
-convention, and `app/manifest.ts` points at the same PNG.
+`pnpm brand:build` exports `public/brand/join-ui-mark.svg`, `app/icon.png` (512px),
+`app/apple-icon.png` (180px) and `app/favicon.ico` (16, 32 and 48px). It also runs
+before `pnpm build`. Next picks up the icons by file convention, and
+`app/manifest.ts` uses the 512px tile with enough padding for maskable launchers.
 
 ---
 

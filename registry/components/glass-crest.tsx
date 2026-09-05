@@ -47,7 +47,8 @@ const GLYPH = "42%"
  */
 const SHEEN = "var(--glass-crest-sheen, oklch(1 0 0 / 0.55))"
 const GLYPH_INK = "var(--glass-crest-glyph, oklch(0.985 0.002 90))"
-const FROST = "var(--glass-crest-frost, color-mix(in oklab, var(--foreground) 5%, transparent))"
+const FROST =
+  "var(--glass-crest-frost, color-mix(in oklab, var(--foreground) 5%, transparent))"
 
 /** The face the quiet half of a headline is set in. Inherited unless you say otherwise. */
 const QUIET_FONT = "var(--glass-crest-quiet-font, inherit)"
@@ -108,8 +109,10 @@ const SIZES = {
   },
 } as const
 
-export interface GlassCrestProps
-  extends Omit<React.ComponentPropsWithoutRef<"section">, "children" | "title"> {
+export interface GlassCrestProps extends Omit<
+  React.ComponentPropsWithoutRef<"section">,
+  "children" | "title"
+> {
   /** The marks laid along the arc, left to right. */
   marks: GlassCrestMark[]
   /** Display type. Wrap phrases in `CrestQuiet` to set them in the second voice. */
@@ -356,7 +359,9 @@ export function GlassCrest({
                   buttons.current[index] = node
                 }}
                 onEnter={() => setActive(mark.id)}
-                onLeave={() => setActive((current) => (current === mark.id ? null : current))}
+                onLeave={() =>
+                  setActive((current) => (current === mark.id ? null : current))
+                }
                 onSelect={() => {
                   setRoving(index)
                   onMarkSelect?.(mark)
@@ -402,7 +407,7 @@ export function GlassCrest({
         <Heading
           id={headingId}
           className={cn(
-            "text-balance font-semibold tracking-[-0.035em] text-foreground",
+            "font-semibold tracking-[-0.035em] text-balance text-foreground",
             scale.headline
           )}
         >
@@ -412,7 +417,7 @@ export function GlassCrest({
         {description ? (
           <p
             className={cn(
-              "max-w-[46ch] text-pretty leading-relaxed text-muted-foreground",
+              "max-w-[46ch] leading-relaxed text-pretty text-muted-foreground",
               scale.description
             )}
           >
@@ -421,7 +426,9 @@ export function GlassCrest({
         ) : null}
 
         {actions ? (
-          <div className="flex flex-wrap items-center justify-center gap-3">{actions}</div>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {actions}
+          </div>
         ) : null}
       </div>
     </section>
@@ -452,6 +459,9 @@ export function CrestQuiet({
   )
 }
 
+const ARROW_LAYER =
+  "absolute inset-0 grid place-items-center transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-soft)]"
+
 /**
  * The pill the section was drawn with: solid ink, and a badge on the end that
  * rolls its arrow away and brings a second one in behind it. Renders as an
@@ -469,12 +479,26 @@ export function CrestAction({
       <span
         aria-hidden="true"
         className={cn(
-          "relative flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full",
+          "relative size-7 shrink-0 overflow-hidden rounded-full",
           "bg-primary-foreground text-primary"
         )}
       >
-        <Arrow className="absolute transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-soft)] group-hover/action:translate-x-full" />
-        <Arrow className="absolute -translate-x-full transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-soft)] group-hover/action:translate-x-0" />
+        {/*
+         * Each arrow rides a layer the size of the disc, not its own 14px box,
+         * so a full-width slide clears the disc entirely. On the glyph itself
+         * `translate-x-full` was half a disc, and both arrows showed at once.
+         */}
+        <span className={cn(ARROW_LAYER, "group-hover/action:translate-x-full")}>
+          <Arrow />
+        </span>
+        <span
+          className={cn(
+            ARROW_LAYER,
+            "-translate-x-full group-hover/action:translate-x-0"
+          )}
+        >
+          <Arrow />
+        </span>
       </span>
     </>
   )
@@ -645,7 +669,10 @@ function Mark({
         />
 
         {mark.icon ? (
-          <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 flex items-center justify-center"
+          >
             {/* The thickness: the same glyph, offset and blurred, under the face. */}
             <span
               className="absolute flex items-center justify-center opacity-70 blur-[2.5px] [&_svg]:size-full [&_svg]:shrink-0"
