@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og"
 
-import { MARK } from "@/components/site/logo"
+import { MARK } from "@/lib/brand"
 import { siteConfig } from "@/lib/site"
 
 export const alt = `${siteConfig.name} — ${siteConfig.tagline}`
@@ -64,21 +64,9 @@ export default function OpengraphImage() {
           }}
         >
           <svg viewBox={MARK.viewBox} width={32} height={32}>
-            <path
-              d={MARK.stems}
-              fill="none"
-              stroke={PAGE}
-              strokeWidth={MARK.stemsWidth}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d={MARK.middle}
-              fill="none"
-              stroke={PAGE}
-              strokeWidth={MARK.middleWidth}
-              strokeLinecap="round"
-            />
+            {MARK.paths.map((d) => (
+              <path key={d} d={d} fill={PAGE} />
+            ))}
           </svg>
         </div>
         <div style={{ display: "flex", fontSize: 26, fontWeight: 600 }}>
