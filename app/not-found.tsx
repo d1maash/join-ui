@@ -16,7 +16,7 @@ export default function NotFound() {
       >
         <p className="reveal label-micro mb-6 text-muted-foreground">Error 404</p>
         <h1
-          className="reveal text-[clamp(2.5rem,7vw,5rem)] leading-[0.95] font-semibold tracking-[-0.042em] [--reveal-y:0.25em]"
+          className="reveal reveal-dither text-[clamp(2.5rem,7vw,5rem)] leading-[0.95] font-semibold tracking-[-0.042em] [--reveal-y:0.2em]"
           style={revealAt(1)}
         >
           Page not found
