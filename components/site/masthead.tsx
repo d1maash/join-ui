@@ -5,6 +5,7 @@ import { MASTHEAD_ID } from "@/components/site/header-shell"
 import { MastheadTrail } from "@/components/site/masthead-trail"
 import { MastheadWind } from "@/components/site/masthead-wind"
 import { Button } from "@/components/ui/button"
+import { revealAt } from "@/lib/reveal"
 import { cn } from "@/lib/utils"
 
 export interface MastheadFact {
@@ -48,6 +49,20 @@ export interface MastheadProps {
  * secondary button's glass, the hairline under the figures — are written as
  * explicit whites, because those are keyed to the plate's own white rather than
  * to the page, and they must not move if the chrome's ink ever does.
+ *
+ * How it arrives
+ * --------------
+ * One sequence, top to bottom, on the band's own clock: the picture develops
+ * out of the black while the two lines of the headline rise into it a beat
+ * apart, the sentence and the buttons follow, and the hairline under the
+ * figures draws itself across the foot of the band with the four facts fading
+ * up along it. Every element carries its place in that order as `--reveal-i`
+ * and nothing else; the tempo — the pause before the first, the gap between
+ * places, how long each takes — is declared once on `.masthead` in the
+ * stylesheet, which is also where the movement itself is defined and where it
+ * is switched off for anyone who has asked for less of it. Nothing here runs
+ * on the client: the arrival is CSS, it is under way before React has
+ * hydrated, and it plays again on a client-side navigation back to this page.
  */
 export function Masthead({ facts }: MastheadProps) {
   return (
@@ -73,7 +88,7 @@ export function Masthead({ facts }: MastheadProps) {
       id={MASTHEAD_ID}
       className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden bg-[rgb(var(--masthead-void))]"
     >
-      <div aria-hidden="true" className="absolute inset-0">
+      <div aria-hidden="true" className="masthead-scene absolute inset-0">
         {/* The band as it rests: the nebula as a one-bit dither. */}
         <Plate />
 
@@ -124,18 +139,34 @@ export function Masthead({ facts }: MastheadProps) {
             display type that rewraps on its own reads as an accident every time
             it lands on a size nobody checked.
           */}
-          <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white">
-            Copy the code.
-            <br />
-            Keep the code.
+          {/*
+            The lines are spans rather than a `<br />` so that each can arrive
+            on its own — the second a beat behind the first, which is what makes
+            it read as two sentences being set down rather than as one block
+            fading in. The rise is written in ems so it scales with the type:
+            a fifth of a line at every size the clamp can produce.
+          */}
+          <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white [--reveal-y:0.3em]">
+            <span className="reveal block" style={revealAt(0)}>
+              Copy the code.
+            </span>
+            <span className="reveal block" style={revealAt(1)}>
+              Keep the code.
+            </span>
           </h1>
 
-          <p className="masthead-type mt-7 max-w-[46ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60">
+          <p
+            className="masthead-type reveal mt-7 max-w-[46ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60"
+            style={revealAt(2)}
+          >
             Animated React components that install into your repo and stay
             there.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <div
+            className="reveal mt-10 flex flex-wrap items-center justify-center gap-3"
+            style={revealAt(3)}
+          >
             <Button asChild size="lg">
               <Link href="/components">
                 Browse components
@@ -157,15 +188,22 @@ export function Masthead({ facts }: MastheadProps) {
           The figures ride the bottom edge of the plate rather than occupying a
           band of their own below it. Four short facts are not worth a section,
           and down here they double as the rule that closes the frame.
+
+          That rule is `.masthead-facts`' own pseudo-element rather than a
+          border, because it is drawn in from the left when the band arrives
+          and a border cannot be scaled. The figures come up after it, in
+          order, and travel less than the type above them did — they are a
+          footing, not a headline.
         */}
-        <dl className="mx-auto grid w-full max-w-[100rem] grid-cols-2 gap-x-6 border-t border-white/10 px-4 sm:grid-cols-4 sm:px-6">
+        <dl className="masthead-facts mx-auto grid w-full max-w-[100rem] grid-cols-2 gap-x-6 px-4 sm:grid-cols-4 sm:px-6 [--reveal-y:0.5rem]">
           {facts.map((fact, index) => (
             <div
               key={fact.label}
               className={cn(
-                "py-5 text-center",
+                "reveal py-5 text-center",
                 index > 0 && "sm:border-l sm:border-white/10"
               )}
+              style={revealAt(5 + index)}
             >
               <dt className="label-micro text-white/45">{fact.label}</dt>
               <dd className="numeral mt-1 text-2xl font-semibold text-white">

@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react"
 import { ComponentCard } from "@/components/site/component-card"
 import { Masthead, type MastheadFact } from "@/components/site/masthead"
 import { PackageManagerTabs } from "@/components/site/package-manager-tabs"
+import { Reveal } from "@/components/site/reveal"
 import { Button } from "@/components/ui/button"
 import { shadcnCommands } from "@/lib/commands"
 import {
@@ -14,6 +15,7 @@ import {
   getRegistryStats,
 } from "@/lib/registry"
 import { toCatalogItem } from "@/lib/registry/catalog"
+import { revealAt } from "@/lib/reveal"
 import { siteConfig } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
@@ -106,6 +108,14 @@ const NEXT = [
 ]
 
 const pad = (value: number) => String(value).padStart(2, "0")
+
+/**
+ * How many places in a section's entrance its header takes before the content
+ * starts: the eyebrow, the heading, then the prose and the content together.
+ * A grid of cards numbers itself on from here, so the first card follows the
+ * caption rather than racing it.
+ */
+const HEADER_PLACES = 3
 
 export default function HomePage() {
   const stats = getRegistryStats()
@@ -227,7 +237,11 @@ export default function HomePage() {
               )}
             >
               {featured.map((component, index) => (
-                <li key={component.slug} className="flex">
+                <li
+                  key={component.slug}
+                  className="reveal-item flex"
+                  style={revealAt(HEADER_PLACES + index)}
+                >
                   <ComponentCard
                     item={toCatalogItem(component)}
                     index={index + 1}
@@ -245,13 +259,20 @@ export default function HomePage() {
               category and at twelve.
             */}
             {categories.length > 0 ? (
-              <div className="mt-10 flex flex-col gap-4 border-t border-border pt-8 sm:flex-row sm:items-center sm:gap-6">
+              <div
+                className="reveal-item mt-10 flex flex-col gap-4 border-t border-border pt-8 sm:flex-row sm:items-center sm:gap-6"
+                style={revealAt(HEADER_PLACES + featured.length)}
+              >
                 <p className="label-section shrink-0 text-muted-foreground">
                   Browse by category
                 </p>
-                <ul className="flex flex-wrap gap-2">
-                  {categories.map((category) => (
-                    <li key={category.slug} className="flex">
+                <ul className="flex flex-wrap gap-2 [--reveal-y:0.375rem]">
+                  {categories.map((category, index) => (
+                    <li
+                      key={category.slug}
+                      className="reveal-item flex"
+                      style={revealAt(HEADER_PLACES + featured.length + 1 + index)}
+                    >
                       <Link
                         href={`/components?category=${encodeURIComponent(category.name)}`}
                         className="inline-flex items-center gap-2.5 rounded-full border border-border bg-card py-2 pr-3 pl-4 text-sm font-medium shadow-xs transition-[border-color,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-out-soft)] hover:border-border-hover hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
@@ -279,7 +300,11 @@ export default function HomePage() {
           >
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {latest.map((component, index) => (
-                <li key={component.slug} className="flex">
+                <li
+                  key={component.slug}
+                  className="reveal-item flex"
+                  style={revealAt(HEADER_PLACES + index)}
+                >
                   <ComponentCard
                     item={toCatalogItem(component)}
                     index={index + 1}
@@ -332,13 +357,24 @@ export default function HomePage() {
             inner edge, and `overflow-hidden` on the frame clips the last
             column's and last row's rules away. No `:nth-child` arithmetic that
             has to be rewritten at every breakpoint.
+
+            It arrives as a sheet, too: the frame rises with the section and
+            the six cells fade up inside it one after another, reading order,
+            so the document is seen being filled in rather than dropped on the
+            page. The cells fade without rising — the frame clips at its edge,
+            and a cell sliding up through the bottom rule would be cut off by
+            the very thing that makes the sheet one object.
           */}
-          <div className="overflow-hidden rounded-xl border border-border">
-            <ol className="-mr-px -mb-px grid sm:grid-cols-2 xl:grid-cols-3">
+          <div
+            className="reveal-item overflow-hidden rounded-xl border border-border"
+            style={revealAt(HEADER_PLACES)}
+          >
+            <ol className="-mr-px -mb-px grid sm:grid-cols-2 xl:grid-cols-3 [--reveal-y:0px]">
               {PRINCIPLES.map((principle, index) => (
                 <li
                   key={principle.title}
-                  className="group relative flex flex-col border-r border-b border-border p-6 transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)] hover:bg-subtle"
+                  className="group reveal-item relative flex flex-col border-r border-b border-border p-6 transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)] hover:bg-subtle"
+                  style={revealAt(HEADER_PLACES + 1 + index)}
                 >
                   {/*
                     The counter and the rule it starts. The rule is drawn twice:
@@ -448,9 +484,18 @@ Requirements:
           which is the plainest way a documentation page can say where to go
           next. Anyone who has read this far has already decided.
         */}
-        <nav aria-labelledby="next-label" className="py-20 lg:py-24">
+        <Reveal
+          as="nav"
+          stagger
+          aria-labelledby="next-label"
+          className="py-20 lg:py-24"
+        >
           <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
-            <p id="next-label" className="label-section text-muted-foreground lg:col-span-3">
+            <p
+              id="next-label"
+              className="reveal-item label-section text-muted-foreground lg:col-span-3"
+              style={revealAt(0)}
+            >
               Next
             </p>
 
@@ -461,8 +506,12 @@ Requirements:
                 highlight starts hard against the first letter, which reads as
                 a selection rather than as a target.
               */}
-              {NEXT.map((item) => (
-                <li key={item.href} className="border-b border-border">
+              {NEXT.map((item, index) => (
+                <li
+                  key={item.href}
+                  className="reveal-item border-b border-border"
+                  style={revealAt(1 + index)}
+                >
                   <Link
                     href={item.href}
                     className="group -mx-3 flex items-start justify-between gap-6 rounded-lg px-3 py-5 transition-colors duration-[var(--duration-fast)] hover:bg-subtle focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
@@ -484,7 +533,7 @@ Requirements:
               ))}
             </ul>
           </div>
-        </nav>
+        </Reveal>
       </div>
     </main>
   )
@@ -495,6 +544,13 @@ Requirements:
  * beside it, and whatever the section is actually showing in the last four
  * columns. `wide` hands those four columns back to the content, for the grids
  * that need the full measure.
+ *
+ * Each section is one `Reveal` band: nothing in it moves until the reader has
+ * scrolled to it, and then the eyebrow, the heading, the prose and the content
+ * arrive in reading order, a step apart. In the narrow form the content column
+ * arrives as one piece beside the prose. In the wide form it is left to the
+ * caller, whose grid numbers its own items on from `HEADER_PLACES` — a wrapper
+ * fading over cells that are also fading would double every edge.
  */
 function Section({
   id,
@@ -512,7 +568,9 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <section
+    <Reveal
+      as="section"
+      stagger
       aria-labelledby={`${id}-heading`}
       className="border-b border-border py-20 lg:py-24"
     >
@@ -528,35 +586,59 @@ function Section({
       */}
       <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
         <div className="flex min-w-0 flex-col gap-3 lg:col-span-3">
-          <p className="label-section text-muted-foreground">{eyebrow}</p>
+          <p
+            className="reveal-item label-section text-muted-foreground"
+            style={revealAt(0)}
+          >
+            {eyebrow}
+          </p>
           <h2
             id={`${id}-heading`}
-            className="text-[1.5rem] leading-[1.2] font-semibold text-balance"
+            className="reveal-item text-[1.5rem] leading-[1.2] font-semibold text-balance"
+            style={revealAt(1)}
           >
             {title}
           </h2>
           {wide && aside ? (
-            <div className="flex max-w-[46ch] flex-col gap-4">{aside}</div>
+            <div
+              className="reveal-item flex max-w-[46ch] flex-col gap-4"
+              style={revealAt(2)}
+            >
+              {aside}
+            </div>
           ) : null}
         </div>
 
         {!wide && aside ? (
-          <div className="flex min-w-0 max-w-xl flex-col gap-4 lg:col-span-5">
+          <div
+            className="reveal-item flex min-w-0 max-w-xl flex-col gap-4 lg:col-span-5"
+            style={revealAt(2)}
+          >
             {aside}
           </div>
         ) : null}
 
-        <div className={cn("min-w-0", wide ? "lg:col-span-9" : "lg:col-span-4")}>
+        <div
+          className={cn(
+            "min-w-0",
+            wide ? "lg:col-span-9" : "reveal-item lg:col-span-4"
+          )}
+          style={wide ? undefined : revealAt(2)}
+        >
           {children}
         </div>
       </div>
-    </section>
+    </Reveal>
   )
 }
 
 /**
  * Collection section: a full-width header row over a grid, for the places where
  * the content is the point and the copy is a caption.
+ *
+ * The same band as `Section`. The header row takes the first `HEADER_PLACES`
+ * places — the eyebrow, the heading, then the caption and the link together —
+ * and the caller's cards count on from there.
  */
 function Collection({
   id,
@@ -574,25 +656,42 @@ function Collection({
   children: React.ReactNode
 }) {
   return (
-    <section
+    <Reveal
+      as="section"
+      stagger
       aria-labelledby={`${id}-heading`}
       className="border-b border-border py-20 lg:py-24"
     >
       <div className="mb-9 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex max-w-2xl flex-col gap-3">
-          <p className="label-section text-muted-foreground">{eyebrow}</p>
+          <p
+            className="reveal-item label-section text-muted-foreground"
+            style={revealAt(0)}
+          >
+            {eyebrow}
+          </p>
           <h2
             id={`${id}-heading`}
-            className="text-[1.5rem] leading-[1.2] font-semibold text-balance"
+            className="reveal-item text-[1.5rem] leading-[1.2] font-semibold text-balance"
+            style={revealAt(1)}
           >
             {title}
           </h2>
-          <p className="leading-relaxed text-pretty text-muted-foreground">
+          <p
+            className="reveal-item leading-relaxed text-pretty text-muted-foreground"
+            style={revealAt(2)}
+          >
             {description}
           </p>
         </div>
         {action ? (
-          <Button asChild variant="ghost" size="sm" className="shrink-0">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="reveal-item shrink-0"
+            style={revealAt(2)}
+          >
             <Link href={action.href}>
               {action.label}
               <ArrowRight />
@@ -601,6 +700,6 @@ function Collection({
         ) : null}
       </div>
       {children}
-    </section>
+    </Reveal>
   )
 }
