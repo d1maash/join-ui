@@ -136,10 +136,10 @@ export default async function ComponentPage({ params }: PageProps) {
 
         {/*
           The head of the page arrives in reading order, a step at a time —
-          crumbs, the badges, the title and its line, the actions, the
-          overview — and the preview frame comes in with the overview. Below
-          that the reference sections are simply there: a reader who has
-          jumped to Props from the contents rail wants the table, not an
+          crumbs, the badges, the title printing in, its line, the actions,
+          the overview — and the preview frame comes in with the overview.
+          Below that the reference sections are simply there: a reader who
+          has jumped to Props from the contents rail wants the table, not an
           entrance for it.
         */}
         <header className="flex flex-col gap-5 border-b border-border pb-8">
@@ -158,16 +158,22 @@ export default async function ComponentPage({ params }: PageProps) {
             ) : null}
           </div>
 
-          <div className="reveal flex flex-col gap-3" style={revealAt(2)}>
-            <h1 className="text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.032em]">
+          <div className="flex flex-col gap-3">
+            <h1
+              className="reveal reveal-dither text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.032em] [--reveal-y:0.2em]"
+              style={revealAt(2)}
+            >
               {component.title}
             </h1>
-            <p className="max-w-2xl text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground">
+            <p
+              className="reveal max-w-2xl text-[0.9375rem] leading-relaxed text-pretty text-muted-foreground"
+              style={revealAt(3)}
+            >
               {component.description}
             </p>
           </div>
 
-          <div className="reveal flex flex-wrap items-center gap-2" style={revealAt(3)}>
+          <div className="reveal flex flex-wrap items-center gap-2" style={revealAt(4)}>
             <CopyPromptButton
               prompt={prompt}
               componentName={component.title}
@@ -208,7 +214,7 @@ export default async function ComponentPage({ params }: PageProps) {
 
           <p
             className="reveal max-w-2xl leading-relaxed text-pretty text-muted-foreground"
-            style={revealAt(4)}
+            style={revealAt(5)}
           >
             {component.overview}
           </p>
@@ -223,7 +229,7 @@ export default async function ComponentPage({ params }: PageProps) {
         <section
           aria-labelledby="preview"
           className="reveal mt-8 scroll-mt-24 [--reveal-y:0px]"
-          style={revealAt(4)}
+          style={revealAt(5)}
         >
           <h2 id="preview" className="sr-only">
             Preview

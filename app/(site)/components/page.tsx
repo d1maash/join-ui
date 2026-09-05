@@ -44,7 +44,7 @@ export default function ComponentsPage() {
 
       <header className="mb-8 grid gap-6 lg:grid-cols-12">
         <h1
-          className="reveal text-[clamp(2rem,5vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.036em] lg:col-span-7 [--reveal-y:0.25em]"
+          className="reveal reveal-dither text-[clamp(2rem,5vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.036em] lg:col-span-7 [--reveal-y:0.2em]"
           style={revealAt(1)}
         >
           Components

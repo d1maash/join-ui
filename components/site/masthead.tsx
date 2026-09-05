@@ -1,4 +1,3 @@
-import * as React from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
@@ -53,26 +52,25 @@ export interface MastheadProps {
  *
  * How it arrives
  * --------------
- * One sequence, top to bottom, on the band's own clock. The picture develops
- * out of the black first and alone, for a third of a second. Then the
- * headline is set down a word at a time — three words, a beat, three words —
- * each rising over half its own height and settling; the sentence and the
- * buttons follow; and the hairline under the figures draws itself across the
- * foot of the band with the four facts fading up along it. Every element
- * carries its place in that order as `--reveal-i` and nothing else; the tempo
- * — the pause before the first, the gap between places, how long each takes
- * and on what curve — is declared once on `.masthead` in the stylesheet,
- * which is also where the movement itself is defined and where it is switched
- * off for anyone who has asked for less of it. Nothing here runs on the
- * client: the arrival is CSS, it is under way before React has hydrated, and
- * it plays again on a client-side navigation back to this page.
+ * The band opens the way its picture was made. The plate prints: a cover the
+ * colour of the void is driven down the band at one speed with a bright line
+ * along its leading edge, and the dust is drawn onto the black a row at a
+ * time behind it. As the head passes the foot of the picture the headline
+ * resolves into the space it has just uncovered — not faded in but dithered
+ * in, a grid of dots growing until they close into letters, one line and then
+ * the other. The sentence and the buttons rise after it, the hairline under
+ * the figures draws itself across the foot of the band, and the four facts
+ * come up along it. Two and a half seconds, and nothing in it that could
+ * belong to another site.
  *
- * Words rather than lines, and the difference is the whole effect. Two lines
- * fading up read as a paragraph loading; six words landing in reading order
- * read as a sentence being said. They rise unclipped — the obvious editorial
- * move, each line sliding up out of a slot, needs an overflow box around it,
- * and the box's edge would cut the wide shadow the type carries into a hard
- * step across the dot field above the first line.
+ * Every element carries its place in that order as `--reveal-i` and nothing
+ * else; the tempo — the print's length, which is also the type's cue, the gap
+ * between places, how long each takes and on what curve — is declared once
+ * on `.masthead` in the stylesheet, which is also where the movements
+ * themselves are defined and where every one of them is switched off for
+ * anyone who has asked for less. Nothing here runs on the client: the arrival
+ * is CSS, it is under way before React has hydrated, and it plays again on a
+ * client-side navigation back to this page.
  */
 export function Masthead({ facts }: MastheadProps) {
   return (
@@ -98,7 +96,7 @@ export function Masthead({ facts }: MastheadProps) {
       id={MASTHEAD_ID}
       className="masthead relative isolate -mt-[calc(3.5rem+1px)] overflow-hidden bg-[rgb(var(--masthead-void))]"
     >
-      <div aria-hidden="true" className="masthead-scene absolute inset-0">
+      <div aria-hidden="true" className="absolute inset-0">
         {/* The band as it rests: the nebula as a one-bit dither. */}
         <Plate />
 
@@ -126,6 +124,14 @@ export function Masthead({ facts }: MastheadProps) {
           place the floor exists to protect.
         */}
         <div className="masthead-grade absolute inset-0" />
+
+        {/*
+          The cover the print comes out from under. Above the grade so the
+          whole picture, colour included, is drawn in by the head; below the
+          copy, which is set later in the document and stacks over this
+          wrapper.
+        */}
+        <div className="masthead-print" />
       </div>
 
       {/*
@@ -162,28 +168,24 @@ export function Masthead({ facts }: MastheadProps) {
             it lands on a size nobody checked.
           */}
           {/*
-            The lines are blocks rather than a `<br />` so that each holds its
-            own words, and the words are what arrive — see `Words`. The rise is
-            written in ems so it scales with the type: just over half a line at
-            every size the clamp can produce.
-
-            Places 0–2 and 4–6. The skipped place is the pause between the two
-            sentences, one step long — without it the six words run together
-            into one sentence of six, and the second line stops answering the
-            first.
+            The lines are blocks rather than a `<br />` so that each is its own
+            element and can be printed on its own, the second a step behind the
+            first. They rise only a little while they resolve — the dots are
+            the event, and type that is also travelling reads as two things
+            happening to it at once.
           */}
-          <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white [--reveal-y:0.55em]">
-            <span className="block">
-              <Words text="Copy the code." from={0} />
+          <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white [--reveal-y:0.2em]">
+            <span className="reveal reveal-dither block" style={revealAt(0)}>
+              Copy the code.
             </span>
-            <span className="block">
-              <Words text="Keep the code." from={4} />
+            <span className="reveal reveal-dither block" style={revealAt(1)}>
+              Keep the code.
             </span>
           </h1>
 
           <p
             className="masthead-type reveal mt-7 max-w-[46ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60"
-            style={revealAt(7)}
+            style={revealAt(2)}
           >
             Animated React components that install into your repo and stay
             there.
@@ -191,7 +193,7 @@ export function Masthead({ facts }: MastheadProps) {
 
           <div
             className="reveal mt-10 flex flex-wrap items-center justify-center gap-3"
-            style={revealAt(8)}
+            style={revealAt(3)}
           >
             <Button asChild size="lg">
               <Link href="/components">
@@ -229,7 +231,7 @@ export function Masthead({ facts }: MastheadProps) {
                 "reveal py-5 text-center",
                 index > 0 && "sm:border-l sm:border-white/10"
               )}
-              style={revealAt(9 + index)}
+              style={revealAt(4 + index)}
             >
               <dt className="label-micro text-white/45">{fact.label}</dt>
               <dd className="numeral mt-1 text-2xl font-semibold text-white">
@@ -241,26 +243,6 @@ export function Masthead({ facts }: MastheadProps) {
       </div>
     </section>
   )
-}
-
-/**
- * A line of the headline, one arriving element per word.
- *
- * Each word is an inline block — an inline element cannot be transformed —
- * numbered on from `from`, and the spaces between them are left as text so the
- * line wraps and selects exactly as the plain string would. The split is on
- * spaces only: the full stop stays on its word, since a sentence does not land
- * and then acquire its punctuation.
- */
-function Words({ text, from }: { text: string; from: number }) {
-  return text.split(" ").map((word, index) => (
-    <React.Fragment key={index}>
-      {index > 0 ? " " : null}
-      <span className="reveal inline-block" style={revealAt(from + index)}>
-        {word}
-      </span>
-    </React.Fragment>
-  ))
 }
 
 /**

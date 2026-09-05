@@ -594,7 +594,7 @@ function Section({
           </p>
           <h2
             id={`${id}-heading`}
-            className="reveal-item text-[1.5rem] leading-[1.2] font-semibold text-balance"
+            className="reveal-item reveal-dither text-[1.5rem] leading-[1.2] font-semibold text-balance [--reveal-y:0.25em]"
             style={revealAt(1)}
           >
             {title}
@@ -672,7 +672,7 @@ function Collection({
           </p>
           <h2
             id={`${id}-heading`}
-            className="reveal-item text-[1.5rem] leading-[1.2] font-semibold text-balance"
+            className="reveal-item reveal-dither text-[1.5rem] leading-[1.2] font-semibold text-balance [--reveal-y:0.25em]"
             style={revealAt(1)}
           >
             {title}

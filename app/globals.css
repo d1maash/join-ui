@@ -32,6 +32,24 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * The two dot radii the halftone entrance grows. Registered so they animate
+ * as lengths rather than flipping at the halfway mark, which is the whole
+ * trick: a keyframe interpolates them, and the mask that reads them is
+ * re-resolved on every frame. See "Arrival" in the components layer.
+ */
+@property --dither-a {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --dither-b {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 :root,
 .light {
   /*
@@ -634,17 +652,112 @@
     }
   }
 
+  /* The same rise with no fade, for elements that are being printed instead. */
+  @keyframes reveal-rise {
+    from {
+      transform: translate3d(0, var(--reveal-y, 1rem), 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  /*
+   * Printed in, not faded in.
+   * -------------------------------------------------------------------------
+   * `.reveal-dither` is the entrance for display type, and it is taken from
+   * the plate the site opens on. The element is masked to a grid of dots —
+   * two grids, the second set half a cell diagonally into the first, the way
+   * a Bayer matrix fills — and the dots grow from nothing until they meet and
+   * the letters are solid. So a heading resolves the way the picture was
+   * made: sparse regular dots, then a hatch, then tone, then the thing itself.
+   * It is the one entrance on the site that could not be swapped for any
+   * other site's, which is what a house style for motion is for.
+   *
+   * The mask exists only inside the keyframes. Nothing is masked before the
+   * animation starts or after it ends — the last frame flips `mask-image` to
+   * none, and a backwards fill leaves the element as it would have been — so
+   * a heading costs nothing once it has arrived and reads through the plain
+   * text path. The second grid holds at zero for the first two fifths so the
+   * halftone is seen as a halftone before it closes up.
+   *
+   * A mask is not a transform. The rule about the two cheap properties is a
+   * rule about work that never stops; this runs once, on one line of type,
+   * for under a second, and the alternative — a fade — is the thing the
+   * whole entrance exists to not be.
+   */
+  @keyframes dither-in {
+    0% {
+      --dither-a: 0px;
+      --dither-b: 0px;
+      mask-image: var(--dither-mask);
+    }
+    40% {
+      --dither-b: 0px;
+    }
+    99.9% {
+      --dither-a: var(--dither-full);
+      --dither-b: var(--dither-full);
+      mask-image: var(--dither-mask);
+    }
+    100% {
+      mask-image: none;
+    }
+  }
+
+  .reveal-dither {
+    --dither-cell: 6px;
+    /* Past the half-diagonal of the cell, so the two grids close with no gaps. */
+    --dither-full: 4.8px;
+    --dither-mask:
+      radial-gradient(
+        circle,
+        #000 var(--dither-a),
+        transparent calc(var(--dither-a) + 0.75px)
+      ),
+      radial-gradient(
+        circle,
+        #000 var(--dither-b),
+        transparent calc(var(--dither-b) + 0.75px)
+      );
+    mask-size: var(--dither-cell) var(--dither-cell);
+    mask-repeat: repeat;
+    mask-position:
+      0 0,
+      calc(var(--dither-cell) / 2) calc(var(--dither-cell) / 2);
+    mask-composite: add;
+    -webkit-mask-composite: source-over;
+  }
+
   @media screen and (prefers-reduced-motion: no-preference) {
     .reveal,
     [data-reveal="in"]:not([data-reveal-stagger]),
     [data-reveal="in"][data-reveal-stagger] .reveal-item {
+      --reveal-at: calc(
+        var(--reveal-delay, 0ms) + var(--reveal-i, 0) * var(--reveal-step, 80ms)
+      );
       animation-name: reveal;
       animation-duration: var(--reveal-duration, var(--duration-enter));
       animation-timing-function: var(--reveal-ease, var(--ease-out-soft));
-      animation-delay: calc(
-        var(--reveal-delay, 0ms) + var(--reveal-i, 0) * var(--reveal-step, 80ms)
-      );
+      animation-delay: var(--reveal-at);
       animation-fill-mode: backwards;
+    }
+
+    .reveal.reveal-dither,
+    [data-reveal="in"][data-reveal-stagger] .reveal-item.reveal-dither {
+      animation-name: reveal-rise, dither-in;
+      animation-duration:
+        var(--reveal-duration, var(--duration-enter)),
+        var(--reveal-duration, var(--duration-enter));
+      /*
+       * The dots grow on the soft curve rather than linearly. What the eye
+       * reads is covered area, which goes as the square of the radius, so a
+       * radius growing steadily would read as nothing for a while and then
+       * everything at once.
+       */
+      animation-timing-function: var(--reveal-ease, var(--ease-out-soft)), var(--ease-out-soft);
+      animation-delay: var(--reveal-at), var(--reveal-at);
+      animation-fill-mode: backwards, backwards;
     }
 
     /*
@@ -711,36 +824,68 @@
      * button and figure in the band inherits the same clock and only has to
      * know its own place in it.
      */
-    --reveal-delay: 320ms;
-    --reveal-step: 90ms;
-    --reveal-duration: var(--duration-display);
+    --reveal-delay: var(--masthead-print-time);
+    --reveal-step: 120ms;
+    --reveal-duration: 900ms;
     --reveal-ease: var(--ease-out-expo);
+
+    /*
+     * How long the plate takes to print, and what the type waits for. The
+     * head passes the headline's line at about seven tenths of the band, so
+     * the first line starts resolving just after it has gone by, into a
+     * space that has only just been uncovered.
+     */
+    --masthead-print-time: 1000ms;
   }
 
   /*
-   * The picture developing.
+   * The picture printing.
    *
-   * The plate is composited onto its own black, so bringing the whole scene up
-   * from nothing is not a fade-in over the page: black stays black throughout
-   * and only the white dots arrive, thinly at first and then at their density,
-   * which is what a print does in the tray. Long — longer than anything else
-   * on the page — because it is the ground the type is arriving onto and has
-   * to be visibly still going when the headline lands, or the two read as
-   * unrelated events. Opacity on the wrapper touches neither the dot grid nor
-   * the wind's transforms inside it.
+   * A one-bit plate does not fade in; it comes off a head, top to bottom, at
+   * one speed. So the band opens as solid void with a cover over the whole
+   * picture, and the cover is driven down and out of the frame at a constant
+   * rate with a thin bright line along its leading edge — the head — so that
+   * the dust is drawn onto the black a row at a time and the line is seen
+   * crossing the empty two thirds below it before it leaves. Linear, on
+   * purpose: an eased wipe is a curtain, and a printer does not slow down for
+   * the interesting part.
+   *
+   * The cover is a translate on one flat layer, and the picture under it is
+   * never touched, so the dot grid is not resampled for a single frame. It
+   * hides itself on its last keyframe and stays hidden; with reduced motion it
+   * is never displayed at all, and the plate is simply there.
    */
-  @keyframes masthead-develop {
+  .masthead-print {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background: rgb(var(--masthead-void));
+    pointer-events: none;
+  }
+
+  .masthead-print::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: rgb(255 255 255 / 0.4);
+    box-shadow: 0 0 14px 1px rgb(255 255 255 / 0.22);
+  }
+
+  @keyframes masthead-print {
     from {
-      opacity: 0;
+      transform: translate3d(0, 0, 0);
     }
     to {
-      opacity: 1;
+      transform: translate3d(0, 100%, 0);
+      visibility: hidden;
     }
   }
 
   @media screen and (prefers-reduced-motion: no-preference) {
-    .masthead-scene {
-      animation: masthead-develop 1800ms var(--ease-out-soft) backwards;
+    .masthead-print {
+      display: block;
+      animation: masthead-print var(--masthead-print-time) linear both;
     }
   }
 
@@ -751,7 +896,7 @@
    * is a pseudo-element so it can be scaled in from the left — a transform on
    * a one-pixel layer, the same move the principle cells make under the
    * pointer further down, so the page's one drawn line is drawn the same way
-   * everywhere. It starts a half-step after the buttons — place eight and a
+   * everywhere. It starts a half-step after the buttons — place three and a
    * half in the band's sequence — and runs long, and the figures fade up
    * along it as it goes.
    */
@@ -780,7 +925,7 @@
   @media screen and (prefers-reduced-motion: no-preference) {
     .masthead-facts::before {
       animation: reveal-rule 1300ms var(--ease-out-expo)
-        calc(var(--reveal-delay) + 8.5 * var(--reveal-step)) backwards;
+        calc(var(--reveal-delay) + 3.5 * var(--reveal-step)) backwards;
     }
   }
 
