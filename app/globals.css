@@ -41,13 +41,13 @@
 @property --dither-a {
   syntax: "<length>";
   inherits: false;
-  initial-value: 0px;
+  initial-value: 5.2px;
 }
 
 @property --dither-b {
   syntax: "<length>";
   inherits: false;
-  initial-value: 0px;
+  initial-value: 5.2px;
 }
 
 :root,
@@ -674,12 +674,30 @@
    * It is the one entrance on the site that could not be swapped for any
    * other site's, which is what a house style for motion is for.
    *
-   * The mask exists only inside the keyframes. Nothing is masked before the
-   * animation starts or after it ends — the last frame flips `mask-image` to
-   * none, and a backwards fill leaves the element as it would have been — so
-   * a heading costs nothing once it has arrived and reads through the plain
-   * text path. The second grid holds at zero for the first two fifths so the
-   * halftone is seen as a halftone before it closes up.
+   * The mask is written once, on the element, and reads the two radii; the
+   * keyframes move only the radii. That division is not a style choice, it is
+   * the one arrangement that works. Put the mask itself into the keyframes
+   * and each browser does something different with it — Chrome interpolates
+   * the two gradients and ignores the radii's own curve, and gives up
+   * entirely if a stop goes negative; the others flip between them halfway.
+   * A registered length, on the other hand, animates as a length everywhere,
+   * and a mask that names it is re-resolved on every frame.
+   *
+   * The mask's rest state is closed. The registered initial value is the full
+   * radius, so a heading that is not animating — one the reader has already
+   * reached, or any heading at all under reduced motion — is masked to solid
+   * and looks exactly unmasked. When the entrance ends a third, one-tick
+   * animation sets the mask to none and holds it there, so a heading that
+   * has arrived costs nothing and reads through the plain text path.
+   *
+   * The second grid holds at zero for the first two fifths so the halftone
+   * is seen as a halftone before it closes up. The closed radius is past the
+   * cell's half-diagonal (6px over root two is 4.24) by more than the edge's
+   * softness, so the grids meet with no gaps. And the soft edge of each dot
+   * sits inside its radius rather than outside it, so that at zero there is
+   * nothing at all: a dot drawn solid to zero and clear a fraction past it is
+   * a faint speck, and a headline held on that frame through its delay reads
+   * as a ghost of itself before it is meant to exist.
    *
    * A mask is not a transform. The rule about the two cheap properties is a
    * rule about work that never stops; this runs once, on one line of type,
@@ -690,35 +708,34 @@
     0% {
       --dither-a: 0px;
       --dither-b: 0px;
-      mask-image: var(--dither-mask);
     }
     40% {
       --dither-b: 0px;
     }
-    99.9% {
-      --dither-a: var(--dither-full);
-      --dither-b: var(--dither-full);
-      mask-image: var(--dither-mask);
-    }
     100% {
+      --dither-a: 5.2px;
+      --dither-b: 5.2px;
+    }
+  }
+
+  @keyframes dither-clear {
+    to {
       mask-image: none;
     }
   }
 
   .reveal-dither {
     --dither-cell: 6px;
-    /* Past the half-diagonal of the cell, so the two grids close with no gaps. */
-    --dither-full: 4.8px;
-    --dither-mask:
+    mask-image:
       radial-gradient(
         circle,
-        #000 var(--dither-a),
-        transparent calc(var(--dither-a) + 0.75px)
+        #000 calc(var(--dither-a) - 0.75px),
+        transparent var(--dither-a)
       ),
       radial-gradient(
         circle,
-        #000 var(--dither-b),
-        transparent calc(var(--dither-b) + 0.75px)
+        #000 calc(var(--dither-b) - 0.75px),
+        transparent var(--dither-b)
       );
     mask-size: var(--dither-cell) var(--dither-cell);
     mask-repeat: repeat;
@@ -745,19 +762,23 @@
 
     .reveal.reveal-dither,
     [data-reveal="in"][data-reveal-stagger] .reveal-item.reveal-dither {
-      animation-name: reveal-rise, dither-in;
-      animation-duration:
-        var(--reveal-duration, var(--duration-enter)),
-        var(--reveal-duration, var(--duration-enter));
+      --reveal-for: var(--reveal-duration, var(--duration-enter));
+      animation-name: reveal-rise, dither-in, dither-clear;
+      animation-duration: var(--reveal-for), var(--reveal-for), 1ms;
       /*
-       * The dots grow on the soft curve rather than linearly. What the eye
-       * reads is covered area, which goes as the square of the radius, so a
-       * radius growing steadily would read as nothing for a while and then
-       * everything at once.
+       * The dots grow on a curve of their own: fast to about two thirds of
+       * the radius, then a long close. What the eye reads is covered area,
+       * which goes as the square of the radius, so a radius growing steadily
+       * would show nothing for a while and then everything at once — and the
+       * halftone is the part worth watching, so the last third, where the
+       * dots meet and the tone turns into letters, is given most of the time.
        */
-      animation-timing-function: var(--reveal-ease, var(--ease-out-soft)), var(--ease-out-soft);
-      animation-delay: var(--reveal-at), var(--reveal-at);
-      animation-fill-mode: backwards, backwards;
+      animation-timing-function:
+        var(--reveal-ease, var(--ease-out-soft)), cubic-bezier(0.2, 0.75, 0.35, 1),
+        linear;
+      animation-delay:
+        var(--reveal-at), var(--reveal-at), calc(var(--reveal-at) + var(--reveal-for));
+      animation-fill-mode: backwards, backwards, forwards;
     }
 
     /*
@@ -826,7 +847,7 @@
      */
     --reveal-delay: 700ms;
     --reveal-step: 130ms;
-    --reveal-duration: 900ms;
+    --reveal-duration: 1100ms;
     --reveal-ease: var(--ease-out-expo);
 
     /*
@@ -868,32 +889,44 @@
    * never requested for it either. The plate is simply there.
    */
   .masthead-opening {
-    /* How wide the soft edge is, as a share of the band; the veil's own width. */
-    --veil-fade: 22%;
     position: absolute;
     inset: 0;
     display: none;
     pointer-events: none;
   }
 
+  /*
+   * The soft edge is on the veil's left and the veil moves right: the wind
+   * arrives at the left of the band, so that is where the colour goes first,
+   * and the last of it leaves over the right edge, downwind.
+   *
+   * The edge hangs outside the band. A mask stops at its element's box, so a
+   * veil the size of the band would have to keep its fade inside itself, and
+   * the photograph would open already thinning into the print along its left
+   * side. Instead the veil is 122 parts wide to the band's 100, with the
+   * extra 22 — the whole of the fade — off the left edge, and the shot inside
+   * it is laid over exactly the band's 100 parts. The figures below are all
+   * that ratio: the hard stop at 100/122 of the veil, the shot at 22/122 in
+   * and 100/122 wide, and a counter-translate of 122% of the shot's own width
+   * for the veil's 100% of its own. The picture is whole until the wind
+   * reaches it, and pinned to the dither the whole way across.
+   */
   .masthead-opening-veil {
     position: absolute;
-    inset: 0;
-    -webkit-mask-image: linear-gradient(
-      to right,
-      #000 calc(100% - var(--veil-fade)),
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      to right,
-      #000 calc(100% - var(--veil-fade)),
-      transparent 100%
-    );
+    top: 0;
+    bottom: 0;
+    left: -22%;
+    width: 122%;
+    -webkit-mask-image: linear-gradient(to left, #000 81.967%, transparent 100%);
+    mask-image: linear-gradient(to left, #000 81.967%, transparent 100%);
   }
 
   .masthead-opening-shot {
     position: absolute;
-    inset: 0;
+    top: 0;
+    bottom: 0;
+    left: 18.033%;
+    width: 81.967%;
   }
 
   /* The opening prints the photograph at full strength; the gust holds back. */
@@ -902,16 +935,16 @@
   }
 
   /*
-   * Percentages, on purpose: the veil and the shot are both the band's width,
-   * so -100% on one and +100% on the other are the same distance in pixels
-   * whatever the band measures, and the plate stays pinned without a script.
+   * Percentages, on purpose: each is of its own element's width, and the two
+   * widths are in a known ratio, so the distances match in pixels whatever
+   * the band measures and the plate stays pinned without a script.
    */
   @keyframes masthead-veil {
     from {
       transform: translate3d(0, 0, 0);
     }
     to {
-      transform: translate3d(-100%, 0, 0);
+      transform: translate3d(100%, 0, 0);
       visibility: hidden;
     }
   }
@@ -921,7 +954,7 @@
       transform: translate3d(0, 0, 0);
     }
     to {
-      transform: translate3d(100%, 0, 0);
+      transform: translate3d(-122%, 0, 0);
     }
   }
 
