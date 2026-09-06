@@ -4,6 +4,7 @@ import * as React from "react"
 import {
   motion,
   useMotionValue,
+  useMotionValueEvent,
   useReducedMotion,
   useSpring,
   useTransform,
@@ -113,13 +114,24 @@ function leash(dx: number, dy: number, max: number) {
 function packShift(index: number, puller: number, px: number, py: number) {
   if (index === puller) return { x: px, y: py }
   const rank = Math.abs(index - puller)
-  const falloff = Math.exp(-rank * 0.95)
+  const falloff = Math.exp(-rank * 0.85)
   const along = Math.sign(index - puller)
   const reach = Math.hypot(px, py)
   return {
-    x: along * reach * falloff * 0.36 + px * falloff * 0.16,
-    y: py * falloff * 0.14,
+    x: along * reach * falloff * 0.5 + px * falloff * 0.2,
+    /*
+     * Neighbours sink a little as the one mark is lifted out — the pack has
+     * weight, and the gap they give is not only sideways.
+     */
+    y: py * falloff * 0.16 + reach * falloff * 0.1,
   }
+}
+
+function packTwist(index: number, puller: number, px: number, py: number) {
+  if (index === puller) return px * 0.1
+  const rank = Math.abs(index - puller)
+  const falloff = Math.exp(-rank * 0.85)
+  return Math.sign(index - puller) * Math.hypot(px, py) * falloff * 0.055
 }
 
 /*
@@ -297,10 +309,27 @@ export function GlassCrest({
   const pullY = useSpring(pullTargetY, DRAG)
   const pullerMv = useMotionValue(0)
   const [puller, setPuller] = React.useState(0)
-  const [pulling, setPulling] = React.useState(false)
+  const [held, setHeld] = React.useState(false)
+  const [aloft, setAloft] = React.useState(false)
+  const heldRef = React.useRef(false)
+
+  /*
+   * The hand lets go in one frame; the disc is still in the air. `held` is the
+   * pointer, `aloft` is the seat — we only put the mark down once the spring
+   * has actually arrived, so the lift, the stacking order and the caption do
+   * not drop off it halfway home.
+   */
+  function seatIfHome() {
+    if (heldRef.current) return
+    if (Math.hypot(pullX.get(), pullY.get()) > 1.2) return
+    setAloft(false)
+  }
+
+  useMotionValueEvent(pullX, "change", seatIfHome)
+  useMotionValueEvent(pullY, "change", seatIfHome)
 
   function handlePointerMove(event: React.PointerEvent<HTMLElement>) {
-    if (!live || pulling) return
+    if (!live || held) return
     const box = event.currentTarget.getBoundingClientRect()
     if (box.width === 0 || box.height === 0) return
     pointerX.set(((event.clientX - box.left) / box.width) * 2 - 1)
@@ -424,8 +453,9 @@ export function GlassCrest({
                 pullY={pullY}
                 pullerMv={pullerMv}
                 puller={puller}
-                pulling={pulling}
-                active={active === mark.id || (pulling && puller === index)}
+                held={held}
+                aloft={aloft}
+                active={active === mark.id || (aloft && puller === index)}
                 interactive={interactive}
                 tabbable={index === roving}
                 register={(node) => {
@@ -441,8 +471,10 @@ export function GlassCrest({
                 }}
                 onPullStart={() => {
                   pullerMv.set(index)
+                  heldRef.current = true
                   setPuller(index)
-                  setPulling(true)
+                  setHeld(true)
+                  setAloft(true)
                   setActive(mark.id)
                 }}
                 onPullMove={(dx, dy, max) => {
@@ -451,9 +483,10 @@ export function GlassCrest({
                   pullTargetY.set(next.y)
                 }}
                 onPullEnd={() => {
+                  heldRef.current = false
+                  setHeld(false)
                   pullTargetX.set(0)
                   pullTargetY.set(0)
-                  setPulling(false)
                 }}
               />
             )
@@ -661,7 +694,8 @@ function Mark({
   pullY,
   pullerMv,
   puller,
-  pulling,
+  held,
+  aloft,
   active,
   interactive,
   tabbable,
@@ -687,7 +721,8 @@ function Mark({
   pullY: MotionValue<number>
   pullerMv: MotionValue<number>
   puller: number
-  pulling: boolean
+  held: boolean
+  aloft: boolean
   active: boolean
   interactive: boolean
   tabbable: boolean
@@ -700,7 +735,22 @@ function Mark({
   onPullEnd: () => void
 }) {
   const accent = mark.accent ?? "currentColor"
-  const pullingThis = pulling && puller === index
+  const heldThis = held && puller === index
+  const aloftThis = aloft && puller === index
+  const over = React.useRef(false)
+  const wasAloft = React.useRef(false)
+  const onLeaveRef = React.useRef(onLeave)
+  onLeaveRef.current = onLeave
+
+  React.useEffect(() => {
+    if (aloftThis) {
+      wasAloft.current = true
+      return
+    }
+    if (!wasAloft.current) return
+    wasAloft.current = false
+    if (!over.current) onLeaveRef.current()
+  }, [aloftThis])
 
   /*
    * Parallax by rank: a mark out at the end of the arc travels the furthest
@@ -715,8 +765,49 @@ function Mark({
   const shiftY = useTransform([pullX, pullY, pullerMv], ([px, py, who]) =>
     packShift(index, Number(who), Number(px), Number(py)).y
   )
-  const twist = useTransform([pullX, pullerMv], ([px, who]) =>
-    Number(who) === index ? Number(px) * 0.08 : 0
+  const twist = useTransform([pullX, pullY, pullerMv], ([px, py, who]) =>
+    packTwist(index, Number(who), Number(px), Number(py))
+  )
+  const pitch = useTransform([pullY, pullerMv], ([py, who]) =>
+    Number(who) === index ? Number(py) * -0.12 : 0
+  )
+  const yaw = useTransform([pullX, pullerMv], ([px, who]) =>
+    Number(who) === index ? Number(px) * 0.12 : 0
+  )
+
+  /*
+   * The shadow lives on the table. The pulled disc takes the full offset; its
+   * shadow takes a fraction, so the mark reads as in the air rather than as a
+   * sticker sliding around with a stain attached. Neighbours are still on the
+   * page, so their shadows travel with them.
+   */
+  const shadowX = useTransform([pullX, pullY, pullerMv], ([px, py, who]) => {
+    const shift = packShift(index, Number(who), Number(px), Number(py))
+    return Number(who) === index ? shift.x * 0.2 : shift.x
+  })
+  const shadowY = useTransform([pullX, pullY, pullerMv], ([px, py, who]) => {
+    const shift = packShift(index, Number(who), Number(px), Number(py))
+    return Number(who) === index ? shift.y * 0.2 : shift.y
+  })
+  const shadowScale = useTransform([pullX, pullY, pullerMv], ([px, py, who]) => {
+    if (Number(who) !== index) return 1
+    return 1 + Math.min(0.42, Math.hypot(Number(px), Number(py)) / 90)
+  })
+  const shadowOpacity = useTransform([pullX, pullY, pullerMv], ([px, py, who]) => {
+    if (Number(who) !== index) return 0.6
+    return 0.62 - Math.min(0.28, Math.hypot(Number(px), Number(py)) / 140)
+  })
+  const sheenX = useTransform([pullX, pullerMv], ([px, who]) =>
+    Number(who) === index ? Number(px) * -0.14 : 0
+  )
+  const sheenY = useTransform([pullY, pullerMv], ([py, who]) =>
+    Number(who) === index ? Number(py) * -0.14 : 0
+  )
+  const glyphX = useTransform([pullX, pullerMv], ([px, who]) =>
+    Number(who) === index ? Number(px) * -0.05 : 0
+  )
+  const glyphY = useTransform([pullY, pullerMv], ([py, who]) =>
+    Number(who) === index ? Number(py) * -0.05 : 0
   )
 
   const gesture = React.useRef({
@@ -787,22 +878,11 @@ function Mark({
         className="relative block size-full rounded-full"
         initial={false}
         animate={{
-          scale: pullingThis ? 1.1 : active ? 1.07 : 1,
-          y: pullingThis ? "-8%" : active ? "-5%" : "0%",
+          scale: aloftThis ? 1.1 : active ? 1.07 : 1,
+          y: aloftThis ? "-8%" : active ? "-5%" : "0%",
         }}
         transition={animate ? LIFT : { duration: 0 }}
       >
-        {/* What the disc drops onto the page, kept off the glass itself. */}
-        <span
-          aria-hidden="true"
-          className="absolute inset-x-[14%] bottom-[-4%] h-[38%] rounded-[50%] blur-[10px]"
-          style={{
-            background: `color-mix(in oklab, ${accent} 38%, transparent)`,
-            opacity: active ? 0.85 : 0.6,
-            transition: "opacity var(--duration-base) var(--ease-out-soft)",
-          }}
-        />
-
         {/*
           The body. The tint is a radial run from a lit shoulder at the top left
           down to a denser edge, over a frost of the theme's own ink — which is
@@ -835,17 +915,22 @@ function Mark({
           }}
         />
 
-        {/* The specular. Off-centre, because a highlight in the middle reads as a hole. */}
-        <span
+        {/*
+         * The specular. Off-centre at rest, because a highlight in the middle
+         * reads as a hole — and it slides against the pull, because the light
+         * is in the room, not on the disc.
+         */}
+        <motion.span
           aria-hidden="true"
           className="absolute top-[9%] left-[15%] h-[28%] w-[44%] rounded-[50%] blur-[5px]"
-          style={{ background: SHEEN }}
+          style={{ background: SHEEN, x: sheenX, y: sheenY }}
         />
 
         {mark.icon ? (
-          <span
+          <motion.span
             aria-hidden="true"
             className="absolute inset-0 flex items-center justify-center"
+            style={{ x: glyphX, y: glyphY }}
           >
             {/* The thickness: the same glyph, offset and blurred, under the face. */}
             <span
