@@ -956,7 +956,7 @@ function Mark({
             >
               {mark.icon}
             </span>
-          </span>
+          </motion.span>
         ) : null}
       </motion.span>
     </span>
@@ -975,7 +975,7 @@ function Mark({
          * the way the arc is — shingling one way makes the crest read as a fan
          * dealt from one side rather than as a curve lifting into the middle.
          */
-        zIndex: pullingThis ? 240 : Math.round(100 - Math.abs(slot.depth) * 50),
+        zIndex: aloftThis ? 240 : Math.round(100 - Math.abs(slot.depth) * 50),
         translate: "-50% -50%",
       }}
     >
@@ -1016,13 +1016,34 @@ function Mark({
             : { duration: 0 }
         }
       >
-        <motion.div className="size-full" style={{ x: live ? x : 0, y: live ? y : 0 }}>
+        <motion.div
+          className="relative size-full"
+          style={{ x: live ? x : 0, y: live ? y : 0, perspective: 640 }}
+        >
+          {/*
+           * Cast onto the page, not carried by the glass. A shadow that travels
+           * with the disc is the tell that the mark is a sticker; one that
+           * stays near the seat is the tell that the disc came off the table.
+           */}
+          <motion.span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-[14%] bottom-[-4%] z-0 h-[38%] rounded-[50%] blur-[10px]"
+            style={{
+              background: `color-mix(in oklab, ${accent} 38%, transparent)`,
+              x: canDrag ? shadowX : 0,
+              y: canDrag ? shadowY : 0,
+              scale: canDrag ? shadowScale : 1,
+              opacity: canDrag ? shadowOpacity : active ? 0.85 : 0.6,
+            }}
+          />
           <motion.div
-            className="size-full"
+            className="relative z-10 size-full"
             style={{
               x: canDrag ? shiftX : 0,
               y: canDrag ? shiftY : 0,
               rotate: canDrag ? twist : 0,
+              rotateX: canDrag ? pitch : 0,
+              rotateY: canDrag ? yaw : 0,
             }}
           >
             {interactive ? (
@@ -1036,9 +1057,13 @@ function Mark({
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
-                onPointerEnter={onEnter}
+                onPointerEnter={() => {
+                  over.current = true
+                  onEnter()
+                }}
                 onPointerLeave={() => {
-                  if (!pullingThis) onLeave()
+                  over.current = false
+                  if (!aloftThis) onLeave()
                 }}
                 onFocus={onEnter}
                 onBlur={onLeave}
@@ -1050,13 +1075,13 @@ function Mark({
                  * into the page and let go. Held off while the disc is being
                  * pulled, so a drag does not also read as a press.
                  */
-                whileTap={animate && !pullingThis ? { scale: 0.94 } : undefined}
+                whileTap={animate && !heldThis ? { scale: 0.94 } : undefined}
                 transition={LIFT}
                 className={cn(
                   "block size-full rounded-full select-none",
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                   canDrag
-                    ? pullingThis
+                    ? heldThis
                       ? "cursor-grabbing touch-none"
                       : "cursor-grab touch-none"
                     : "cursor-pointer"
@@ -1070,14 +1095,18 @@ function Mark({
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
-                onPointerEnter={onEnter}
+                onPointerEnter={() => {
+                  over.current = true
+                  onEnter()
+                }}
                 onPointerLeave={() => {
-                  if (!pullingThis) onLeave()
+                  over.current = false
+                  if (!aloftThis) onLeave()
                 }}
                 className={cn(
                   "size-full select-none",
                   canDrag
-                    ? pullingThis
+                    ? heldThis
                       ? "cursor-grabbing touch-none"
                       : "cursor-grab touch-none"
                     : undefined
