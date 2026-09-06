@@ -1,3 +1,4 @@
+import type * as React from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
@@ -5,7 +6,6 @@ import { MASTHEAD_ID } from "@/components/site/header-shell"
 import { MastheadTrail } from "@/components/site/masthead-trail"
 import { MastheadWind } from "@/components/site/masthead-wind"
 import { Button } from "@/components/ui/button"
-import { revealAt } from "@/lib/reveal"
 import { cn } from "@/lib/utils"
 
 export interface MastheadFact {
@@ -15,6 +15,17 @@ export interface MastheadFact {
 
 export interface MastheadProps {
   facts: MastheadFact[]
+}
+
+/**
+ * Where an element stands in the band's arrival, in steps after the type's
+ * cue. The stylesheet turns the number into a delay — `--place` times the
+ * `--masthead-step` the band declares — so the order is written next to the
+ * element it belongs to and the tempo is written once. See "How it arrives"
+ * below.
+ */
+function place(step: number): React.CSSProperties {
+  return { "--place": String(step) } as React.CSSProperties
 }
 
 /**
@@ -52,26 +63,31 @@ export interface MastheadProps {
  *
  * How it arrives
  * --------------
- * The band opens as the photograph, not the print: the nebula in colour,
- * whole, for a quarter of a second. Then the wind takes it — the colour is
- * blown off the band left to right behind a soft edge, and the one-bit plate
- * is what it leaves. While the colour is going the headline is set into the
- * print: not faded in but dithered in, a grid of dots growing until they
- * close into letters, one line and then the other. The sentence and the
- * buttons rise after it, the hairline under the figures draws itself across
- * the foot of the band, and the four facts come up along it. Two and a half
- * seconds, and every part of it is made of this band's own materials — the
- * two prints, the wind, the dither — so nothing in it could be lifted onto
- * another site.
+ * The band opens black, and the photograph gathers out of it — a long
+ * exposure, which is what a picture of a nebula is: soft and dim at first,
+ * then sharp, then full. It is held whole for a moment. Then the print is
+ * pulled from it: the colour recedes and the one-bit plate rises in its
+ * place, so the photograph is screened into dots in front of the reader. The
+ * headline comes into focus while that is happening, and its letters are the
+ * last place the picture lives — they hold the nebula's colour while the band
+ * around them turns to print, and then they cool to ink. The sentence and the
+ * buttons pull into focus under it; the rule at the foot of the band closes
+ * the frame from the centre outward, and the four figures come up along it
+ * from the middle out, because the composition is centred and so is its
+ * arrival. About three and a half seconds, and every part of it is made of
+ * the band's own materials — the photograph, the print, and the lens between
+ * them — so nothing in it could be lifted onto another site.
  *
- * Every element carries its place in that order as `--reveal-i` and nothing
- * else; the tempo — the print's length, which is also the type's cue, the gap
- * between places, how long each takes and on what curve — is declared once
- * on `.masthead` in the stylesheet, which is also where the movements
- * themselves are defined and where every one of them is switched off for
- * anyone who has asked for less. Nothing here runs on the client: the arrival
- * is CSS, it is under way before React has hydrated, and it plays again on a
- * client-side navigation back to this page.
+ * Every element carries its place in that order as `--place` and nothing
+ * else; the tempo — the exposure, the hold, the drain, the type's cue, the
+ * gap between places — is declared once on `.masthead` in the stylesheet,
+ * which is also where the movements themselves are defined and where every
+ * one of them is switched off for anyone who has asked for less. Nothing here
+ * runs on the client: the arrival is CSS, it is under way before React has
+ * hydrated, and it plays again on a client-side navigation back to this page.
+ * The weather waits for it — `MastheadWind` holds its first gust off the band
+ * until the print has settled, so the opening is never contradicted by a
+ * gust of the colour it is in the middle of taking away.
  */
 export function Masthead({ facts }: MastheadProps) {
   return (
@@ -119,18 +135,14 @@ export function Masthead({ facts }: MastheadProps) {
         <MastheadTrail />
 
         {/*
-          The opening: the photograph, held whole and then blown off the band
-          to leave the print. Its own copy of the colour plate, because the
-          gust's is only rendered once the client knows it may move, and this
-          has to be in the first HTML. Under the grade, so the floor keeps the
-          picture's colour out of the copy exactly as it keeps the dust out.
+          The opening: the photograph, exposed out of the black and then
+          screened into the print. Its own copy of the colour plate, because
+          the gust's is only rendered once the client knows it may move, and
+          this has to be in the first HTML. Under the grade, so the floor keeps
+          the picture's colour out of the copy exactly as it keeps the dust out.
         */}
         <div className="masthead-opening">
-          <div className="masthead-opening-veil">
-            <div className="masthead-opening-shot">
-              <Plate colour opening />
-            </div>
-          </div>
+          <Plate colour opening />
         </div>
 
         {/*
@@ -140,7 +152,6 @@ export function Masthead({ facts }: MastheadProps) {
           place the floor exists to protect.
         */}
         <div className="masthead-grade absolute inset-0" />
-
       </div>
 
       {/*
@@ -178,31 +189,31 @@ export function Masthead({ facts }: MastheadProps) {
           */}
           {/*
             The lines are blocks rather than a `<br />` so that each is its own
-            element and can be printed on its own, the second a step behind the
-            first. They rise only a little while they resolve — the dots are
-            the event, and type that is also travelling reads as two things
-            happening to it at once.
+            element and can be brought into focus on its own, the second a step
+            behind the first — and so that each can carry the picture in its
+            letters while the band is turning to print, which is a fill clipped
+            to the glyphs and has to sit on the element that owns them.
           */}
-          <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white [--reveal-y:0.2em]">
-            <span className="reveal reveal-dither block" style={revealAt(0)}>
-              Copy the code.
+          <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white">
+            <span className="masthead-title block" style={place(0)}>
+              <span className="masthead-title-fill">Copy the code.</span>
             </span>
-            <span className="reveal reveal-dither block" style={revealAt(1)}>
-              Keep the code.
+            <span className="masthead-title block" style={place(1)}>
+              <span className="masthead-title-fill">Keep the code.</span>
             </span>
           </h1>
 
           <p
-            className="masthead-type reveal mt-7 max-w-[46ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60"
-            style={revealAt(2)}
+            className="masthead-type masthead-focus mt-7 max-w-[46ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60"
+            style={place(3.5)}
           >
             Animated React components that install into your repo and stay
             there.
           </p>
 
           <div
-            className="reveal mt-10 flex flex-wrap items-center justify-center gap-3"
-            style={revealAt(3)}
+            className="masthead-focus mt-10 flex flex-wrap items-center justify-center gap-3"
+            style={place(4.5)}
           >
             <Button asChild size="lg">
               <Link href="/components">
@@ -227,20 +238,26 @@ export function Masthead({ facts }: MastheadProps) {
           and down here they double as the rule that closes the frame.
 
           That rule is `.masthead-facts`' own pseudo-element rather than a
-          border, because it is drawn in from the left when the band arrives
-          and a border cannot be scaled. The figures come up after it, in
-          order, and travel less than the type above them did — they are a
-          footing, not a headline.
+          border, because it is drawn out from the centre when the band arrives
+          and a border cannot be scaled. The figures come up after it, the
+          inner pair and then the outer, and travel less than the type above
+          them did — they are a footing, not a headline.
         */}
-        <dl className="masthead-facts mx-auto grid w-full max-w-[100rem] grid-cols-2 gap-x-6 px-4 sm:grid-cols-4 sm:px-6 [--reveal-y:0.5rem]">
+        <dl className="masthead-facts mx-auto grid w-full max-w-[100rem] grid-cols-2 gap-x-6 px-4 sm:grid-cols-4 sm:px-6">
           {facts.map((fact, index) => (
             <div
               key={fact.label}
               className={cn(
-                "reveal py-5 text-center",
+                "masthead-focus py-5 text-center",
                 index > 0 && "sm:border-l sm:border-white/10"
               )}
-              style={revealAt(4 + index)}
+              /*
+               * From the middle out: a figure's place is its distance from the
+               * centre of the row, so the two inner cells share the first step
+               * and the two outer cells the second. The rule is drawn from the
+               * same centre, and the figures follow it.
+               */
+              style={place(6.5 + Math.floor(Math.abs(index - (facts.length - 1) / 2)))}
             >
               <dt className="label-micro text-white/45">{fact.label}</dt>
               <dd className="numeral mt-1 text-2xl font-semibold text-white">
@@ -273,7 +290,7 @@ const CLEAR_PIXEL =
  * directly over the other and a few pixels of drift between them would read as
  * a misregistered print rather than as the same photograph.
  *
- * The mono print carries the first paint, so it gets `fetchPriority="high"` —
+ * The mono print carries the resting band, so it gets `fetchPriority="high"` —
  * ahead of the font, since the type arrives over it either way. The colour
  * print in the gust is a reward that nothing is waiting on, so it goes out at
  * low priority and is only rendered at all once the client has established

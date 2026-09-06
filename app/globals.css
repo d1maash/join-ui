@@ -666,9 +666,9 @@
    * Every element carries its own place in the sequence as `--reveal-i`, and
    * an ancestor sets the tempo — `--reveal-step` between places,
    * `--reveal-delay` before the first, `--reveal-duration` and `--reveal-ease`
-   * for each, and `--reveal-y` for how far it rises. The masthead runs slower
-   * and further than a section does, and says so on itself rather than in a
-   * second set of classes.
+   * for each, and `--reveal-y` for how far it rises. The masthead does not
+   * use this vocabulary at all: it is the one band whose arrival is written
+   * for it alone, under "The opening" further down.
    *
    * The whole block is scoped to screens that have not asked for less motion.
    * That is the site's rule for reduced motion — skip the work rather than
@@ -880,54 +880,56 @@
     --masthead-void: 5 5 6;
 
     /*
-     * The band's tempo, for the arrival system above. Slower than a section,
-     * spaced wider, and on the display curve rather than the soft one,
-     * because type at five rem has further to travel than a card does and
-     * reads as hurried at a card's pace. The delay before the first word is
-     * the picture's head start: a third of a second in which there is only
-     * the dust coming up out of the black, so the headline is seen to land on
-     * something rather than to appear with it. Set here, once, so every word,
-     * button and figure in the band inherits the same clock and only has to
-     * know its own place in it.
+     * The band's clock, for the arrival described on the component. Three
+     * lengths and a cue: how long the photograph takes to gather out of the
+     * black, how long it is held whole, how long the print takes to rise
+     * through it — and the type's cue, which is the moment the print starts,
+     * plus a beat. Everything in the band is timed from that cue in steps,
+     * so a line, a button or a figure only has to know its own place.
      */
-    --reveal-delay: 700ms;
-    --reveal-step: 130ms;
-    --reveal-duration: 1100ms;
-    --reveal-ease: var(--ease-out-expo);
+    --masthead-expose: 1200ms;
+    --masthead-hold: 300ms;
+    --masthead-drain: 1200ms;
+    --masthead-print-at: calc(var(--masthead-expose) + var(--masthead-hold));
+    --masthead-cue: calc(var(--masthead-print-at) + 50ms);
+    --masthead-step: 130ms;
 
     /*
-     * The opening's clock: how long the photograph is held whole before the
-     * wind reaches it, and how long the wind takes to cross. The type's delay
-     * above is set against these — the first line starts resolving as the
-     * colour is leaving the middle of the band, so the headline is seen to be
-     * set on the print, not on the picture.
+     * Two curves, and neither is the site's. The exposure gathers: slow to
+     * start, then most of the light arrives in the middle third, then a
+     * settle. The lens is the reverse — most of the way to sharp quickly,
+     * and then a long last few pixels, which is what a focus pull looks like
+     * when a hand is on it rather than a motor.
      */
-    --masthead-hold: 250ms;
-    --masthead-blow: 1600ms;
+    --ease-expose: cubic-bezier(0.55, 0, 0.25, 1);
+    --ease-focus: cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
   /*
-   * The opening: the photograph, and the wind taking it.
+   * The opening: the photograph, exposed and then screened.
    * -------------------------------------------------------------------------
-   * The band does not start as the print. It starts as the picture — the
-   * nebula in full colour, whole, registered exactly over the dither — held
-   * for a quarter of a second, and then the wind gets to it. The colour is
-   * blown off the band from left to right behind a soft edge, and what it
-   * leaves behind is the one-bit plate: the photograph becomes the print in
-   * front of the reader, in the direction the weather here always blows, and
-   * every gust that crosses the band afterwards is bringing back for a moment
-   * what the reader watched leave. The headline is set in dots while the
-   * colour is going, so it is seen to belong to the print and not to the
-   * picture.
+   * The band does not start as the print, and it does not start as the
+   * picture either. It starts black. The photograph gathers out of that —
+   * dim and soft, then bright and sharp, then a touch hot before it settles —
+   * the way a long exposure of exactly this subject accumulates. While it
+   * comes up it eases in from a little larger than the band, about the
+   * cloud rather than about the middle of the frame, so the picture is seen
+   * to be brought into focus by a lens rather than to fade in.
    *
-   * It is built exactly the way the gust is, and for the same reason. A veil
-   * the size of the band, with a fixed mask that fades out along its trailing
-   * edge, translates left until it has cleared the band; the colour plate
-   * inside it translates right by the same amount and so never moves against
-   * the dither beneath. Two composited transforms, no repaint, no frame in
-   * which the dot grid is resampled — and nothing here is a fade. At the last
-   * keyframe the veil hides itself and stays hidden, and the two layers cost
-   * nothing after that.
+   * It is held whole for a moment. Then the print is pulled from it: the
+   * colour recedes and the one-bit plate under it rises in the same time on
+   * the same curve, so there is no frame in which the band is emptier than
+   * the frame before — the photograph is screened into dots in front of the
+   * reader, in place. The plate never moves and is never resampled; it only
+   * changes opacity, which is the one thing a dither can do without turning
+   * grey. Every fractional transform and every blur here is on the
+   * continuous-tone print, which has midtones to spare.
+   *
+   * Two animations on one element, and the second fills forward only. The
+   * drain must apply nothing during its delay — a backwards fill would hold
+   * the photograph at full strength from the first frame and the exposure
+   * would never be seen — and at its last keyframe it hides the layer and
+   * stays there, so the opening costs nothing after it has played.
    *
    * With reduced motion the opening is not displayed, and — because the
    * markup gates the picture's sources on the same query — the colour file is
@@ -938,40 +940,7 @@
     inset: 0;
     display: none;
     pointer-events: none;
-  }
-
-  /*
-   * The soft edge is on the veil's left and the veil moves right: the wind
-   * arrives at the left of the band, so that is where the colour goes first,
-   * and the last of it leaves over the right edge, downwind.
-   *
-   * The edge hangs outside the band. A mask stops at its element's box, so a
-   * veil the size of the band would have to keep its fade inside itself, and
-   * the photograph would open already thinning into the print along its left
-   * side. Instead the veil is 122 parts wide to the band's 100, with the
-   * extra 22 — the whole of the fade — off the left edge, and the shot inside
-   * it is laid over exactly the band's 100 parts. The figures below are all
-   * that ratio: the hard stop at 100/122 of the veil, the shot at 22/122 in
-   * and 100/122 wide, and a counter-translate of 122% of the shot's own width
-   * for the veil's 100% of its own. The picture is whole until the wind
-   * reaches it, and pinned to the dither the whole way across.
-   */
-  .masthead-opening-veil {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -22%;
-    width: 122%;
-    -webkit-mask-image: linear-gradient(to left, #000 81.967%, transparent 100%);
-    mask-image: linear-gradient(to left, #000 81.967%, transparent 100%);
-  }
-
-  .masthead-opening-shot {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 18.033%;
-    width: 81.967%;
+    transform-origin: 50% 30%;
   }
 
   /* The opening prints the photograph at full strength; the gust holds back. */
@@ -979,43 +948,229 @@
     opacity: 1;
   }
 
-  /*
-   * Percentages, on purpose: each is of its own element's width, and the two
-   * widths are in a known ratio, so the distances match in pixels whatever
-   * the band measures and the plate stays pinned without a script.
-   */
-  @keyframes masthead-veil {
+  @keyframes masthead-expose {
+    0% {
+      opacity: 0;
+      transform: scale3d(1.06, 1.06, 1);
+      filter: blur(28px) brightness(0.5) saturate(0.7);
+    }
+    45% {
+      opacity: 1;
+      filter: blur(10px) brightness(0.85) saturate(0.9);
+    }
+    75% {
+      filter: blur(2px) brightness(1.08) saturate(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: scale3d(1, 1, 1);
+      filter: blur(0) brightness(1) saturate(1);
+    }
+  }
+
+  @keyframes masthead-drain {
     from {
-      transform: translate3d(0, 0, 0);
+      opacity: 1;
     }
     to {
-      transform: translate3d(100%, 0, 0);
+      opacity: 0;
       visibility: hidden;
     }
   }
 
-  @keyframes masthead-veil-shot {
+  /* The print rising through the photograph, to the strength it rests at. */
+  @keyframes masthead-print {
     from {
-      transform: translate3d(0, 0, 0);
+      opacity: 0;
     }
     to {
-      transform: translate3d(-122%, 0, 0);
+      opacity: 0.5;
     }
   }
 
   @media screen and (prefers-reduced-motion: no-preference) {
     .masthead-opening {
       display: block;
+      animation:
+        masthead-expose var(--masthead-expose) var(--ease-expose) backwards,
+        masthead-drain var(--masthead-drain) var(--ease-in-out-soft)
+          var(--masthead-print-at) forwards;
     }
 
-    .masthead-opening-veil {
-      animation: masthead-veil var(--masthead-blow) var(--ease-in-out-soft)
-        var(--masthead-hold) both;
+    .masthead-plate {
+      animation: masthead-print var(--masthead-drain) var(--ease-in-out-soft)
+        var(--masthead-print-at) backwards;
+    }
+  }
+
+  /*
+   * The lens.
+   * -------------------------------------------------------------------------
+   * Everything in the copy arrives the way the photograph did: out of focus
+   * and dim, pulled sharp. `.masthead-focus` is the plain version — the
+   * sentence, the buttons, the figures — a soft blur clearing while the
+   * element rises a few pixels and comes up to full. Each carries its place
+   * as `--place`, the band supplies the cue and the step, and the smaller
+   * things travel less: the figures are a footing, not a headline.
+   *
+   * A blur is not a transform. The rule about the two cheap properties is a
+   * rule about work that never stops; this runs once, on a handful of
+   * elements, for about a second each, and the alternative — a fade — is the
+   * thing the whole entrance exists to not be.
+   */
+  @keyframes masthead-focus {
+    from {
+      opacity: 0;
+      transform: translate3d(0, var(--focus-y, 0.35rem), 0);
+      filter: blur(var(--focus-blur, 8px));
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+      filter: blur(0);
+    }
+  }
+
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .masthead-focus {
+      animation: masthead-focus 1100ms var(--ease-focus)
+        calc(var(--masthead-cue) + var(--place, 0) * var(--masthead-step)) backwards;
     }
 
-    .masthead-opening-shot {
-      animation: masthead-veil-shot var(--masthead-blow) var(--ease-in-out-soft)
-        var(--masthead-hold) both;
+    .masthead-facts .masthead-focus {
+      --focus-y: 0.4rem;
+      --focus-blur: 6px;
+      animation-duration: 900ms;
+    }
+
+    /*
+     * On a phone the four figures are two rows of two, and "from the middle
+     * out" — written on the markup for the one-row layout — picks out a
+     * diagonal. Two rows are read as two rows, so here they arrive that way:
+     * the top pair on the figures' first step, the bottom pair on the next.
+     */
+    @media (max-width: 639px) {
+      .masthead-facts .masthead-focus:nth-child(-n + 2) {
+        animation-delay: calc(var(--masthead-cue) + 6.5 * var(--masthead-step));
+      }
+
+      .masthead-facts .masthead-focus:nth-child(n + 3) {
+        animation-delay: calc(var(--masthead-cue) + 7.5 * var(--masthead-step));
+      }
+    }
+  }
+
+  /*
+   * The type, and the picture in it.
+   * -------------------------------------------------------------------------
+   * The headline is two elements deep, and the split is the whole design.
+   * The outer line is what moves: it comes into focus like everything else,
+   * further and slower, and its letters gather from a slightly loose set to
+   * the tight one they rest at, so the word is seen to close up as it
+   * sharpens. The inner line owns the glyphs, and the glyphs are cut out of
+   * the photograph — the colour print, clipped to the text, sized so the
+   * letters see only a broad wash of the cloud's light and none of its
+   * detail. That is why the fill is on its own element: a clip to text is
+   * dropped by some engines the moment the same element is given a filter or
+   * a layer of its own, so the thing that blurs and the thing that is clipped
+   * must not be the same thing.
+   *
+   * The fill is not a decoration, it is a timing. The letters resolve while
+   * the band is turning to print, holding the picture's colour as it leaves
+   * everywhere else, and they cool to white only after the last of it has
+   * gone from the band — so for a moment the headline is the only place the
+   * photograph still exists. The text colour does that on its own: it is
+   * painted over the clipped fill, so taking it from clear to white is the
+   * cross-fade, and a last one-tick animation drops the fill entirely once
+   * it is covered. The shadow the display type wears is brought in with the
+   * ink, because a shadow behind clear glyphs would show through them.
+   *
+   * The fill is not the plate itself but a sixty-four pixel copy of it,
+   * `public/hero-colour-wash.webp`, drawn up to the size of the band. At that
+   * scale the browser's own smoothing turns the photograph into a wash of
+   * its light — the three hot cores, the pink between them, the teal at the
+   * edges — with none of its stars or its grain, which at glyph size read as
+   * dirt in the letters. A film of white over it lifts the wash off the
+   * black, so the darkest part of the cloud still reads as light rather
+   * than as a hole in the type. Two kilobytes, and declared only where
+   * motion is allowed: a background loads whether or not it is seen, and a
+   * reader who has asked for less motion never fetches it at all.
+   */
+  .masthead-title-fill {
+    --fill-lift: 0.22;
+    display: inline-block;
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-repeat: no-repeat;
+    background-size: auto 1400%;
+    background-position: 50% var(--fill-y, 31%);
+  }
+
+  /* A step lower through the cloud, so the second line is a shade pinker. */
+  .masthead-title:nth-child(2) .masthead-title-fill {
+    --fill-y: 34%;
+  }
+
+  @keyframes masthead-title {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.12em, 0);
+      filter: blur(14px);
+      letter-spacing: -0.006em;
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+      filter: blur(0);
+      letter-spacing: -0.042em;
+    }
+  }
+
+  @keyframes masthead-ink {
+    from {
+      color: rgb(255 255 255 / 0);
+      text-shadow: 0 1px 48px rgb(var(--masthead-void) / 0);
+    }
+    to {
+      color: rgb(255 255 255 / 1);
+      text-shadow: 0 1px 48px rgb(var(--masthead-void) / 0.7);
+    }
+  }
+
+  @keyframes masthead-ink-set {
+    to {
+      background-image: none;
+    }
+  }
+
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .masthead-title {
+      --at: calc(var(--masthead-cue) + var(--place, 0) * var(--masthead-step));
+      animation: masthead-title 1300ms var(--ease-focus) var(--at) backwards;
+    }
+
+    .masthead-title-fill {
+      /*
+       * The ink comes a beat before the band has finished turning to print,
+       * so the two ends overlap rather than queue, and a step later on the
+       * second line than on the first, the same step the lines arrived on.
+       */
+      --ink-at: calc(
+        var(--masthead-print-at) + var(--masthead-drain) - 150ms +
+          var(--place, 0) * var(--masthead-step)
+      );
+      --ink-for: 800ms;
+      background-image:
+        linear-gradient(
+          rgb(255 255 255 / var(--fill-lift)),
+          rgb(255 255 255 / var(--fill-lift))
+        ),
+        url("/hero-colour-wash.webp");
+      animation-name: masthead-ink, masthead-ink-set;
+      animation-duration: var(--ink-for), 1ms;
+      animation-timing-function: var(--ease-in-out-soft), linear;
+      animation-delay: var(--ink-at), calc(var(--ink-at) + var(--ink-for));
+      animation-fill-mode: backwards, forwards;
     }
   }
 
@@ -1023,19 +1178,21 @@
    * The rule that closes the frame, drawn rather than shown.
    *
    * The figures at the foot of the band sit on a hairline, and the hairline
-   * is a pseudo-element so it can be scaled in from the left — a transform on
-   * a one-pixel layer, the same move the principle cells make under the
+   * is a pseudo-element so it can be scaled out from its centre — a transform
+   * on a one-pixel layer, the same move the principle cells make under the
    * pointer further down, so the page's one drawn line is drawn the same way
-   * everywhere. It starts a half-step after the buttons — place three and a
-   * half in the band's sequence — and runs long, and the figures fade up
-   * along it as it goes.
+   * everywhere. From the centre, not from the left: the band is the one
+   * centred composition on the page, and a line drawn in from one side would
+   * be the only thing in it with a direction. It starts a half-step after the
+   * buttons and runs long, and the figures come up along it from the middle
+   * out.
    */
-  @keyframes reveal-rule {
+  @keyframes masthead-rule {
     from {
-      transform: scaleX(0);
+      transform: scale3d(0, 1, 1);
     }
     to {
-      transform: scaleX(1);
+      transform: scale3d(1, 1, 1);
     }
   }
 
@@ -1049,13 +1206,13 @@
     inset: 0 0 auto 0;
     height: 1px;
     background: rgb(255 255 255 / 0.1);
-    transform-origin: left center;
+    transform-origin: center;
   }
 
   @media screen and (prefers-reduced-motion: no-preference) {
     .masthead-facts::before {
-      animation: reveal-rule 1300ms var(--ease-out-expo)
-        calc(var(--reveal-delay) + 3.5 * var(--reveal-step)) backwards;
+      animation: masthead-rule 1200ms var(--ease-out-expo)
+        calc(var(--masthead-cue) + 5 * var(--masthead-step)) backwards;
     }
   }
 
