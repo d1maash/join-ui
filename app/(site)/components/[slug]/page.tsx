@@ -28,7 +28,6 @@ import { toCatalogItem } from "@/lib/registry/catalog"
 import { getComponentSources } from "@/lib/registry/source"
 import { revealAt } from "@/lib/reveal"
 import { siteConfig } from "@/lib/site"
-import { formatDate } from "@/lib/utils"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -146,16 +145,7 @@ export default async function ComponentPage({ params }: PageProps) {
           <div className="reveal flex flex-wrap items-center gap-1.5" style={revealAt(1)}>
             <Badge variant="outline">{component.category}</Badge>
             <StatusBadge status={component.status} />
-            <Badge variant="muted">Added {formatDate(component.since)}</Badge>
-            {/*
-              Dated here, and only here. This is the page a reader lands on
-              when they already have the component installed and want to know
-              whether their copy is behind, and "Updated" without a date does
-              not answer that question.
-            */}
-            {component.updated ? (
-              <UpdatedBadge date={formatDate(component.updated)} />
-            ) : null}
+            {component.updated ? <UpdatedBadge /> : null}
           </div>
 
           <div className="flex flex-col gap-3">

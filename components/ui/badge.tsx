@@ -105,19 +105,17 @@ export function StatusBadge({
  *
  * The pip is what earns it its second of attention: everything else in the row
  * is a flat pill, so a small solid dot is enough to break the rhythm without
- * shouting. Pass `date` and it prints it — worth it on a component page, where
- * there is room for the answer to "when?", and not on a card, where there is
- * not.
+ * shouting. The word is the fact; a date next to it is a second fact the
+ * reader did not ask for.
  */
 export function UpdatedBadge({
-  date,
   className,
   ...props
-}: { date?: string } & Omit<BadgeProps, "variant" | "children">) {
+}: Omit<BadgeProps, "variant" | "children">) {
   return (
     <Badge variant="outline" className={cn("gap-1.5", className)} {...props}>
       <span aria-hidden="true" className="size-1.5 rounded-full bg-foreground" />
-      {date ? `Updated ${date}` : "Updated"}
+      Updated
     </Badge>
   )
 }
