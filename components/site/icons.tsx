@@ -7,3 +7,26 @@ export function GitHubIcon(props: React.ComponentPropsWithoutRef<"svg">) {
     </svg>
   )
 }
+
+/**
+ * A written brief: the leading chevron of a prompt, and the two lines that
+ * follow it. Drawn in Lucide's stroke so it sits with `Check` and `Copy`
+ * without a wand or a sparkle — those read as "AI" before they read as a brief.
+ */
+export function PromptIcon(props: React.ComponentPropsWithoutRef<"svg">) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="m6 8 4 4-4 4" />
+      <path d="M13 10h7" />
+      <path d="M13 14h5" />
+    </svg>
+  )
+}

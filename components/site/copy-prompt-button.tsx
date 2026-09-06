@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Check, WandSparkles } from "lucide-react"
+import { Check } from "lucide-react"
 import { toast } from "sonner"
 
+import { PromptIcon } from "@/components/site/icons"
 import { Button, type ButtonProps } from "@/components/ui/button"
 import { copyToClipboard } from "@/lib/clipboard"
 
@@ -45,7 +46,7 @@ export function CopyPromptButton({
 
   return (
     <Button type="button" variant={variant} size={size} onClick={onCopy}>
-      {copied ? <Check aria-hidden="true" /> : <WandSparkles aria-hidden="true" />}
+      {copied ? <Check aria-hidden="true" /> : <PromptIcon aria-hidden="true" />}
       {copied ? "Prompt copied" : "Copy prompt"}
     </Button>
   )
