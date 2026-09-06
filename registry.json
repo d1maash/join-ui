@@ -323,6 +323,44 @@
           "target": "components/joinui/glass-crest.tsx"
         }
       ]
+    },
+    {
+      "name": "carbon-copy",
+      "type": "registry:ui",
+      "title": "Carbon Copy",
+      "description": "A headline that is set, then copied: the first line inks up, and each line after it peels off the last with the changed words turning over.",
+      "author": "Join Way",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "text-effects",
+        "headline",
+        "hero",
+        "typography",
+        "variable-font",
+        "counter",
+        "roll",
+        "reveal",
+        "animated"
+      ],
+      "docs": "https://ui.join-way.com/components/carbon-copy",
+      "meta": {
+        "status": "new",
+        "since": "2026-09-07",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinui/carbon-copy"
+      },
+      "files": [
+        {
+          "path": "registry/components/carbon-copy.tsx",
+          "type": "registry:ui",
+          "target": "components/joinui/carbon-copy.tsx"
+        }
+      ]
     }
   ]
 }
