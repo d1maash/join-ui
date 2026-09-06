@@ -5,6 +5,13 @@ import { motion, useReducedMotion } from "motion/react"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+/** Shared beats so the mark and the words leave and arrive as one step. */
+const OUT = 0.16
+const DRAW = 0.24
+const DRAW_DELAY = 0.1
+const LABEL_IN_DELAY = 0.12
+const TRAVEL = 7
+
 /**
  * A check written the way a hand writes it: the short stroke first, then the
  * long one. Lucide's own path starts at the far end of the long arm, which
@@ -42,18 +49,18 @@ function MarkSvg({ children }: { children: ReactNode }) {
 export function PromptCopyMark({ copied }: { copied: boolean }) {
   const still = useStill()
   const out = {
-    duration: still ? 0 : 0.16,
+    duration: still ? 0 : OUT,
     ease: EASE,
   }
   const draw = {
     pathLength: {
-      duration: still ? 0 : 0.24,
+      duration: still ? 0 : DRAW,
       ease: EASE,
-      delay: still || !copied ? 0 : 0.1,
+      delay: still || !copied ? 0 : DRAW_DELAY,
     },
     opacity: {
       duration: still ? 0 : 0.08,
-      delay: still || !copied ? 0 : 0.1,
+      delay: still || !copied ? 0 : DRAW_DELAY,
     },
   }
 
@@ -93,7 +100,7 @@ export function ClipboardCopyMark({ copied }: { copied: boolean }) {
   }
   const draw = {
     pathLength: {
-      duration: still ? 0 : 0.24,
+      duration: still ? 0 : DRAW,
       ease: EASE,
       delay: still || !copied ? 0 : 0.08,
     },
@@ -105,15 +112,56 @@ export function ClipboardCopyMark({ copied }: { copied: boolean }) {
 
   return (
     <MarkSvg>
-      <motion.g
-        initial={false}
-        animate={{ opacity: copied ? 0 : 1 }}
-        transition={out}
-      >
+      <motion.g initial={false} animate={{ opacity: copied ? 0 : 1 }} transition={out}>
         <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
         <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
       </motion.g>
       <motion.path d={CHECK} initial={false} animate={{ pathLength: copied ? 1 : 0, opacity: copied ? 1 : 0 }} transition={draw} />
     </MarkSvg>
+  )
+}
+
+/**
+ * Two labels in one slot. The idle line leaves upward with the mark; the
+ * confirmation rises into the same window as the check is drawn, so the pair
+ * reads as one step rather than an icon change and a caption change.
+ */
+export function CopyFace({
+  copied,
+  idle,
+  done,
+}: {
+  copied: boolean
+  idle: string
+  done: string
+}) {
+  const still = useStill()
+  const travel = still ? 0 : TRAVEL
+
+  return (
+    <span className="grid justify-items-start overflow-hidden">
+      <motion.span
+        aria-hidden={copied}
+        className="col-start-1 row-start-1"
+        initial={false}
+        animate={{ opacity: copied ? 0 : 1, y: copied ? -travel : 0 }}
+        transition={{ duration: still ? 0 : OUT, ease: EASE }}
+      >
+        {idle}
+      </motion.span>
+      <motion.span
+        aria-hidden={!copied}
+        className="col-start-1 row-start-1"
+        initial={false}
+        animate={{ opacity: copied ? 1 : 0, y: copied ? 0 : travel }}
+        transition={{
+          duration: still ? 0 : 0.2,
+          ease: EASE,
+          delay: still || !copied ? 0 : LABEL_IN_DELAY,
+        }}
+      >
+        {done}
+      </motion.span>
+    </span>
   )
 }

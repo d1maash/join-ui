@@ -3,7 +3,7 @@
 import * as React from "react"
 import { toast } from "sonner"
 
-import { ClipboardCopyMark } from "@/components/site/copy-mark"
+import { ClipboardCopyMark, CopyFace } from "@/components/site/copy-mark"
 import { Button, type ButtonProps } from "@/components/ui/button"
 import { copyToClipboard } from "@/lib/clipboard"
 import { cn } from "@/lib/utils"
@@ -66,7 +66,7 @@ export function CopyButton({
       {...props}
     >
       <ClipboardCopyMark copied={copied} />
-      {showLabel ? (copied ? copiedLabel : label) : null}
+      {showLabel ? <CopyFace copied={copied} idle={label} done={copiedLabel} /> : null}
       <span aria-live="polite" className="sr-only">
         {copied ? copiedLabel : ""}
       </span>
