@@ -768,12 +768,24 @@ function Mark({
   const twist = useTransform([pullX, pullY, pullerMv], ([px, py, who]) =>
     packTwist(index, Number(who), Number(px), Number(py))
   )
-  const pitch = useTransform([pullY, pullerMv], ([py, who]) =>
-    Number(who) === index ? Number(py) * -0.12 : 0
+  const glyphRotate = useTransform(twist, (value) =>
+    tilt ? slot.angle + value : value
   )
-  const yaw = useTransform([pullX, pullerMv], ([px, who]) =>
-    Number(who) === index ? Number(px) * 0.12 : 0
-  )
+  /*
+   * The light is in the room, above and to the left. A circle does not change
+   * silhouette when it leans, so the only thing a local rotate can do to the
+   * glass is drag the painted highlight around with the glyph — which is why
+   * a mark on the right of the arc looked lit from the side. The shoulder
+   * stays in screen space and only slides against a pull.
+   */
+  const litX = useTransform([pullX, pullerMv], ([px, who]) => {
+    const pull = Number(who) === index ? Number(px) : 0
+    return `${30 - pull * 0.06}%`
+  })
+  const litY = useTransform([pullY, pullerMv], ([py, who]) => {
+    const pull = Number(who) === index ? Number(py) : 0
+    return `${20 - pull * 0.06}%`
+  })
 
   /*
    * The shadow lives on the table. The pulled disc takes the full offset; its
@@ -862,18 +874,7 @@ function Mark({
   }
 
   const disc = (
-    <span
-      className="relative block size-full"
-      /*
-       * The lean, and nothing else. Kept on a box of its own and written as the
-       * individual `rotate` property rather than folded into the lift below it,
-       * because this angle is a fact about where the disc sits on the arc: it is
-       * the same on the server as on the client and it never changes, so it has
-       * no business being re-serialised into a transform matrix every time a
-       * cursor goes past.
-       */
-      style={{ rotate: tilt ? `${slot.angle}deg` : undefined }}
-    >
+    <span className="relative block size-full">
       <motion.span
         className="relative block size-full rounded-full"
         initial={false}
@@ -888,37 +889,44 @@ function Mark({
           down to a denser edge, over a frost of the theme's own ink — which is
           the one formulation that survives both themes, because 5% of near-black
           on paper and 5% of near-white on charcoal are the same material.
+
+          The shoulder is authored in screen space (`--lit-x`, `--lit-y`) so a
+          lean of the glyph cannot take the light with it.
         */}
-        <span
+        <motion.span
           aria-hidden="true"
           className="absolute inset-0 rounded-full backdrop-blur-[6px] backdrop-saturate-[1.4]"
-          style={{
-            backgroundColor: FROST,
-            backgroundImage: [
-              /*
-                The shade under the belly, drawn as a gradient rather than as an
-                inset shadow: a shadow's spread can only be a length, and a length
-                authored for a 200px disc is a black band on a 90px one. Listed
-                first, so it paints over the tint.
-              */
-              `radial-gradient(86% 66% at 50% 112%, color-mix(in oklab, ${accent} 72%, transparent) 0%, transparent 58%)`,
-              `radial-gradient(118% 118% at 30% 20%, color-mix(in oklab, ${accent} 42%, transparent) 0%, color-mix(in oklab, ${accent} 17%, transparent) 52%, color-mix(in oklab, ${accent} 44%, transparent) 100%)`,
-            ].join(", "),
-            boxShadow: [
-              /* The rim, in the mark's own colour rather than in grey. */
-              `inset 0 0 0 1px color-mix(in oklab, ${accent} 48%, transparent)`,
-              /* The lit top edge — the light is above, and this is the one hairline. */
-              `inset 0 2px 3px -1px ${SHEEN}`,
-              /* A close contact shadow, so the disc sits on the page rather than over it. */
-              `0 6px 14px -8px color-mix(in oklab, ${accent} 60%, transparent)`,
-            ].join(", "),
-          }}
+          style={
+            {
+              backgroundColor: FROST,
+              backgroundImage: [
+                /*
+                 * The shade under the belly, drawn as a gradient rather than as an
+                 * inset shadow: a shadow's spread can only be a length, and a length
+                 * authored for a 200px disc is a black band on a 90px one. Listed
+                 * first, so it paints over the tint.
+                 */
+                `radial-gradient(86% 66% at 50% 112%, color-mix(in oklab, ${accent} 72%, transparent) 0%, transparent 58%)`,
+                `radial-gradient(118% 118% at var(--lit-x) var(--lit-y), color-mix(in oklab, ${accent} 42%, transparent) 0%, color-mix(in oklab, ${accent} 17%, transparent) 52%, color-mix(in oklab, ${accent} 44%, transparent) 100%)`,
+              ].join(", "),
+              boxShadow: [
+                /* The rim, in the mark's own colour rather than in grey. */
+                `inset 0 0 0 1px color-mix(in oklab, ${accent} 48%, transparent)`,
+                /* The lit top edge — the light is above, and this is the one hairline. */
+                `inset 0 2px 3px -1px ${SHEEN}`,
+                /* A close contact shadow, so the disc sits on the page rather than over it. */
+                `0 6px 14px -8px color-mix(in oklab, ${accent} 60%, transparent)`,
+              ].join(", "),
+              "--lit-x": litX,
+              "--lit-y": litY,
+            } as React.CSSProperties
+          }
         />
 
         {/*
          * The specular. Off-centre at rest, because a highlight in the middle
-         * reads as a hole — and it slides against the pull, because the light
-         * is in the room, not on the disc.
+         * reads as a hole — and it lives in the same space as the shoulder,
+         * sliding against a pull so the room's light does not ride the glyph.
          */}
         <motion.span
           aria-hidden="true"
@@ -930,7 +938,7 @@ function Mark({
           <motion.span
             aria-hidden="true"
             className="absolute inset-0 flex items-center justify-center"
-            style={{ x: glyphX, y: glyphY }}
+            style={{ x: glyphX, y: glyphY, rotate: glyphRotate }}
           >
             {/* The thickness: the same glyph, offset and blurred, under the face. */}
             <span
@@ -1018,7 +1026,7 @@ function Mark({
       >
         <motion.div
           className="relative size-full"
-          style={{ x: live ? x : 0, y: live ? y : 0, perspective: 640 }}
+          style={{ x: live ? x : 0, y: live ? y : 0 }}
         >
           {/*
            * Cast onto the page, not carried by the glass. A shadow that travels
@@ -1041,9 +1049,6 @@ function Mark({
             style={{
               x: canDrag ? shiftX : 0,
               y: canDrag ? shiftY : 0,
-              rotate: canDrag ? twist : 0,
-              rotateX: canDrag ? pitch : 0,
-              rotateY: canDrag ? yaw : 0,
             }}
           >
             {interactive ? (
