@@ -63,31 +63,36 @@ function place(step: number): React.CSSProperties {
  *
  * How it arrives
  * --------------
- * The band opens black, and the photograph gathers out of it — a long
- * exposure, which is what a picture of a nebula is: soft and dim at first,
- * then sharp, then full. It is held whole for a moment. Then the print is
- * pulled from it: the colour recedes and the one-bit plate rises in its
- * place, so the photograph is screened into dots in front of the reader. The
- * headline comes into focus while that is happening, and its letters are the
- * last place the picture lives — they hold the nebula's colour while the band
- * around them turns to print, and then they cool to ink. The sentence and the
- * buttons pull into focus under it; the rule at the foot of the band closes
- * the frame from the centre outward, and the four figures come up along it
- * from the middle out, because the composition is centred and so is its
- * arrival. About three and a half seconds, and every part of it is made of
- * the band's own materials — the photograph, the print, and the lens between
- * them — so nothing in it could be lifted onto another site.
+ * The headline says "Copy the code. Keep the code.", and the band does
+ * exactly that, in front of the reader, with the type itself. The first line
+ * is set as a hairline and inked — the weight of the letters rises from the
+ * thinnest cut of the face to the one the page uses, so the words are seen to
+ * fill rather than to appear. Then a copy is taken: the second line peels off
+ * the first, identical to it, and travels down one line to its place, lifting
+ * a little as it goes and seating with a spring at the end. While it travels
+ * its first word turns over — "Copy" rolls up and out of a window and "Keep"
+ * rolls up into it, the way a counter advances — so the copy lands already
+ * reading as the second line. Nothing else moves until it has seated. Then
+ * the sentence and the buttons are set down under it, the rule at the foot
+ * of the band draws out from its centre, and the four figures come up along
+ * it from the middle out, because the composition is centred and so is its
+ * arrival. Three seconds, and none of it touches the picture: the plate
+ * simply comes up under the type while the first line inks, and the weather
+ * gets on with its own business.
+ *
+ * It is the one entrance that could only be this page's, because it is made
+ * of this page's sentence. It is also, deliberately, a piece of mechanism
+ * rather than a piece of atmosphere — a copy taken and a word turned over —
+ * which is the register the registry's own components move in.
  *
  * Every element carries its place in that order as `--place` and nothing
- * else; the tempo — the exposure, the hold, the drain, the type's cue, the
- * gap between places — is declared once on `.masthead` in the stylesheet,
- * which is also where the movements themselves are defined and where every
- * one of them is switched off for anyone who has asked for less. Nothing here
- * runs on the client: the arrival is CSS, it is under way before React has
- * hydrated, and it plays again on a client-side navigation back to this page.
- * The weather waits for it — `MastheadWind` holds its first gust off the band
- * until the print has settled, so the opening is never contradicted by a
- * gust of the colour it is in the middle of taking away.
+ * else; the tempo — when the ink starts and how long it takes, when the copy
+ * is taken, when the word turns, when the rest may follow and how far apart —
+ * is declared once on `.masthead` in the stylesheet, which is also where the
+ * movements themselves are defined and where every one of them is switched
+ * off for anyone who has asked for less. Nothing here runs on the client: the
+ * arrival is CSS, it is under way before React has hydrated, and it plays
+ * again on a client-side navigation back to this page.
  */
 export function Masthead({ facts }: MastheadProps) {
   return (
@@ -135,17 +140,6 @@ export function Masthead({ facts }: MastheadProps) {
         <MastheadTrail />
 
         {/*
-          The opening: the photograph, exposed out of the black and then
-          screened into the print. Its own copy of the colour plate, because
-          the gust's is only rendered once the client knows it may move, and
-          this has to be in the first HTML. Under the grade, so the floor keeps
-          the picture's colour out of the copy exactly as it keeps the dust out.
-        */}
-        <div className="masthead-opening">
-          <Plate colour opening />
-        </div>
-
-        {/*
           Last, so it grades the colour as well as the mono. The floor is meant
           to keep the picture out of the copy, and a gust that could bring the
           dust back through it in full colour would be a hole in exactly the
@@ -189,31 +183,39 @@ export function Masthead({ facts }: MastheadProps) {
           */}
           {/*
             The lines are blocks rather than a `<br />` so that each is its own
-            element and can be brought into focus on its own, the second a step
-            behind the first — and so that each can carry the picture in its
-            letters while the band is turning to print, which is a fill clipped
-            to the glyphs and has to sit on the element that owns them.
+            element: the first inks on its own, and the second is the copy —
+            it starts exactly on top of the first, one line-height up, and is
+            let down into place. Its first word is a window with both words
+            stacked in it, "Copy" in flow above "Keep"; the outgoing word is
+            decorative and hidden from assistive technology, so what is read is
+            what is finally seen. The window is as wide as the wider word, so
+            the copy lies on the original to the pixel while it still reads
+            "Copy", and it pulls in by the difference as "Keep" arrives.
           */}
           <h1 className="masthead-type text-[clamp(2.75rem,6.4vw,5rem)] leading-[1] font-semibold tracking-[-0.042em] text-white">
-            <span className="masthead-title block" style={place(0)}>
-              <span className="masthead-title-fill">Copy the code.</span>
-            </span>
-            <span className="masthead-title block" style={place(1)}>
-              <span className="masthead-title-fill">Keep the code.</span>
+            <span className="masthead-set block">Copy the code.</span>
+            <span className="masthead-copy block">
+              <span className="masthead-roll">
+                <span aria-hidden="true" className="masthead-roll-out">
+                  Copy
+                </span>
+                <span className="masthead-roll-in">Keep</span>
+              </span>{" "}
+              the code.
             </span>
           </h1>
 
           <p
-            className="masthead-type masthead-focus mt-7 max-w-[46ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60"
-            style={place(3.5)}
+            className="masthead-type masthead-seat mt-7 max-w-[46ch] text-[1.0625rem] leading-relaxed text-pretty text-white/60"
+            style={place(0)}
           >
             Animated React components that install into your repo and stay
             there.
           </p>
 
           <div
-            className="masthead-focus mt-10 flex flex-wrap items-center justify-center gap-3"
-            style={place(4.5)}
+            className="masthead-seat mt-10 flex flex-wrap items-center justify-center gap-3"
+            style={place(1)}
           >
             <Button asChild size="lg">
               <Link href="/components">
@@ -248,7 +250,7 @@ export function Masthead({ facts }: MastheadProps) {
             <div
               key={fact.label}
               className={cn(
-                "masthead-focus py-5 text-center",
+                "masthead-seat py-5 text-center",
                 index > 0 && "sm:border-l sm:border-white/10"
               )}
               /*
@@ -257,7 +259,7 @@ export function Masthead({ facts }: MastheadProps) {
                * and the two outer cells the second. The rule is drawn from the
                * same centre, and the figures follow it.
                */
-              style={place(6.5 + Math.floor(Math.abs(index - (facts.length - 1) / 2)))}
+              style={place(2.5 + Math.floor(Math.abs(index - (facts.length - 1) / 2)))}
             >
               <dt className="label-micro text-white/45">{fact.label}</dt>
               <dd className="numeral mt-1 text-2xl font-semibold text-white">
@@ -270,10 +272,6 @@ export function Masthead({ facts }: MastheadProps) {
     </section>
   )
 }
-
-/** A 1×1 transparent GIF. What the opening's `<img>` shows when no source matches. */
-const CLEAR_PIXEL =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
 
 /**
  * The plate, as markup, in either of its two prints.
@@ -290,41 +288,23 @@ const CLEAR_PIXEL =
  * directly over the other and a few pixels of drift between them would read as
  * a misregistered print rather than as the same photograph.
  *
- * The mono print carries the resting band, so it gets `fetchPriority="high"` —
+ * The mono print carries the first paint, so it gets `fetchPriority="high"` —
  * ahead of the font, since the type arrives over it either way. The colour
  * print in the gust is a reward that nothing is waiting on, so it goes out at
  * low priority and is only rendered at all once the client has established
  * that this device can show it moving.
- *
- * The opening's copy of the colour print is the exception on both counts: it
- * is the first thing seen, so it is fetched high, and it is in the first HTML
- * for everyone — including readers who have asked for less motion and will
- * never see it. For them it must not cost a request either, and `display:
- * none` does not stop one. So its sources carry the motion query in their
- * `media`, and the fallback `<img>` is a transparent pixel: with the
- * preference set no source matches, the pixel is what the element shows, and
- * the photograph is never asked for.
  */
-function Plate({
-  colour = false,
-  opening = false,
-}: {
-  colour?: boolean
-  /** The copy the band opens on: fetched first, and gated on motion being allowed. */
-  opening?: boolean
-}) {
+function Plate({ colour = false }: { colour?: boolean }) {
   const stem = colour ? "hero-colour" : "hero-dither"
-  const motion = opening ? " and (prefers-reduced-motion: no-preference)" : ""
 
   return (
     <picture>
       <source
-        media={`(max-width: 639px)${motion}`}
+        media="(max-width: 639px)"
         srcSet={`/${stem}-mobile-860.webp 860w, /${stem}-mobile-1290.webp 1290w`}
         sizes="100vw"
       />
       <source
-        media={opening ? "(prefers-reduced-motion: no-preference)" : undefined}
         srcSet={
           colour
             ? "/hero-colour-1280.webp 1280w, /hero-colour-1920.webp 1920w"
@@ -333,15 +313,9 @@ function Plate({
         sizes="100vw"
       />
       <img
-        src={
-          opening
-            ? CLEAR_PIXEL
-            : colour
-              ? "/hero-colour-1280.webp"
-              : "/hero-dither-1920.webp"
-        }
+        src={colour ? "/hero-colour-1280.webp" : "/hero-dither-1920.webp"}
         alt=""
-        fetchPriority={colour && !opening ? "low" : "high"}
+        fetchPriority={colour ? "low" : "high"}
         decoding="async"
         /*
          * Anchored to the top, not centred. The plate is 16:9 and the band is
