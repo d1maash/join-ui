@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Check, Copy } from "lucide-react"
 import { toast } from "sonner"
 
+import { ClipboardCopyMark, CopyFace } from "@/components/site/copy-mark"
 import { Button, type ButtonProps } from "@/components/ui/button"
 import { copyToClipboard } from "@/lib/clipboard"
 import { cn } from "@/lib/utils"
@@ -55,8 +55,6 @@ export function CopyButton({
     }
   }
 
-  const Icon = copied ? Check : Copy
-
   return (
     <Button
       type="button"
@@ -67,8 +65,8 @@ export function CopyButton({
       className={cn(className)}
       {...props}
     >
-      <Icon aria-hidden="true" />
-      {showLabel ? (copied ? copiedLabel : label) : null}
+      <ClipboardCopyMark copied={copied} />
+      {showLabel ? <CopyFace copied={copied} idle={label} done={copiedLabel} /> : null}
       <span aria-live="polite" className="sr-only">
         {copied ? copiedLabel : ""}
       </span>

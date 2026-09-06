@@ -4,6 +4,7 @@ import * as React from "react"
 import {
   motion,
   useMotionValue,
+  useMotionValueEvent,
   useReducedMotion,
   useSpring,
   useTransform,
@@ -78,6 +79,61 @@ const ARRIVAL = { type: "spring", stiffness: 210, damping: 24, mass: 1 } as cons
  */
 const LIFT = { type: "spring", stiffness: 420, damping: 30, mass: 0.6 } as const
 
+/**
+ * A disc being pulled out of the pack.
+ *
+ * Heavier than the lift: a hover has to be instant, a drag has to feel like
+ * glass with mass. The same spring brings it home, so release carries the
+ * velocity it already had rather than starting a new tween from a standstill.
+ */
+const DRAG = { type: "spring", stiffness: 300, damping: 26, mass: 0.85 } as const
+
+/** Pixels the pointer must travel before a press becomes a pull. */
+const DRAG_THRESHOLD = 6
+
+/**
+ * A soft leash. Inside `max` the disc follows the hand; past it the extra
+ * travel is taxed, so the mark never leaves the crest and never hits a wall.
+ */
+function leash(dx: number, dy: number, max: number) {
+  const distance = Math.hypot(dx, dy)
+  if (distance === 0) return { x: 0, y: 0 }
+  if (distance <= max) return { x: dx, y: dy }
+  const scale = (max + (distance - max) * 0.22) / distance
+  return { x: dx * scale, y: dy * scale }
+}
+
+/**
+ * How the rest of the pack answers one mark being pulled.
+ *
+ * Neighbours part along the arc — left marks give way left, right marks right —
+ * and they take a little of the pull itself, the way overlapping discs would if
+ * one of them were lifted out. Influence falls off by rank, so the far end of
+ * the crest barely knows.
+ */
+function packShift(index: number, puller: number, px: number, py: number) {
+  if (index === puller) return { x: px, y: py }
+  const rank = Math.abs(index - puller)
+  const falloff = Math.exp(-rank * 0.85)
+  const along = Math.sign(index - puller)
+  const reach = Math.hypot(px, py)
+  return {
+    x: along * reach * falloff * 0.5 + px * falloff * 0.2,
+    /*
+     * Neighbours sink a little as the one mark is lifted out — the pack has
+     * weight, and the gap they give is not only sideways.
+     */
+    y: py * falloff * 0.16 + reach * falloff * 0.1,
+  }
+}
+
+function packTwist(index: number, puller: number, px: number, py: number) {
+  if (index === puller) return px * 0.1
+  const rank = Math.abs(index - puller)
+  const falloff = Math.exp(-rank * 0.85)
+  return Math.sign(index - puller) * Math.hypot(px, py) * falloff * 0.055
+}
+
 /*
  * Three scales, and the only thing they really set is width.
  *
@@ -134,6 +190,11 @@ export interface GlassCrestProps extends Omit<
   tilt?: boolean
   /** The crest answers the pointer. Off, it never moves after it has assembled. */
   parallax?: boolean
+  /**
+   * A disc can be pulled out of the pack and springs home on release.
+   * Off, the marks only lift under the cursor.
+   */
+  drag?: boolean
   /** The wash of accent behind the arc. */
   glow?: boolean
   /** Prints the name of the mark under the cursor or the caret, beneath the arc. */
@@ -172,10 +233,12 @@ export interface GlassCrestProps extends Omit<
  * mark. After that it answers the pointer: the arc swings from a pivot below
  * itself and the outer marks travel further than the inner ones, which is
  * parallax rather than decoration, and the disc under the cursor lifts on a
- * spring of its own. Given `onMarkSelect` it answers the hand as well, pressing
- * into the page and coming back. All of it is a gesture, so the section is
- * perfectly still when nobody is touching it. Under `prefers-reduced-motion`
- * none of it happens.
+ * spring of its own. Pull a mark and it comes out of the pack on a leash — the
+ * neighbours part along the arc, and on release the same spring carries it
+ * home. Given `onMarkSelect` it answers the hand as well, pressing into the
+ * page and coming back; a pull that never crossed the threshold is still a
+ * press. All of it is a gesture, so the section is perfectly still when nobody
+ * is touching it. Under `prefers-reduced-motion` none of it happens.
  */
 export function GlassCrest({
   marks,
@@ -189,6 +252,7 @@ export function GlassCrest({
   size = "md",
   tilt = true,
   parallax = true,
+  drag = true,
   glow = true,
   labels = "hover",
   onMarkSelect,
@@ -228,13 +292,44 @@ export function GlassCrest({
    * over an element that has not been painted.
    */
   const live = useHydrated() && parallax && animate
+  const canDrag = useHydrated() && drag && animate
 
   const swing = useTransform(springX, (value) => value * 2.4)
   const driftX = useTransform(springX, (value) => value * 10)
   const driftY = useTransform(springY, (value) => value * 7)
 
+  /*
+   * The pull is one pair of springs for the whole crest. The mark under the
+   * hand reads them as its own offset; every other mark reads a falloff of the
+   * same values, so the pack parts in lockstep without a spring per disc.
+   */
+  const pullTargetX = useMotionValue(0)
+  const pullTargetY = useMotionValue(0)
+  const pullX = useSpring(pullTargetX, DRAG)
+  const pullY = useSpring(pullTargetY, DRAG)
+  const pullerMv = useMotionValue(0)
+  const [puller, setPuller] = React.useState(0)
+  const [held, setHeld] = React.useState(false)
+  const [aloft, setAloft] = React.useState(false)
+  const heldRef = React.useRef(false)
+
+  /*
+   * The hand lets go in one frame; the disc is still in the air. `held` is the
+   * pointer, `aloft` is the seat — we only put the mark down once the spring
+   * has actually arrived, so the lift, the stacking order and the caption do
+   * not drop off it halfway home.
+   */
+  function seatIfHome() {
+    if (heldRef.current) return
+    if (Math.hypot(pullX.get(), pullY.get()) > 1.2) return
+    setAloft(false)
+  }
+
+  useMotionValueEvent(pullX, "change", seatIfHome)
+  useMotionValueEvent(pullY, "change", seatIfHome)
+
   function handlePointerMove(event: React.PointerEvent<HTMLElement>) {
-    if (!live) return
+    if (!live || held) return
     const box = event.currentTarget.getBoundingClientRect()
     if (box.width === 0 || box.height === 0) return
     pointerX.set(((event.clientX - box.left) / box.width) * 2 - 1)
@@ -346,13 +441,21 @@ export function GlassCrest({
                 key={mark.id}
                 mark={mark}
                 slot={slot}
+                index={index}
                 diameter={arc.diameter}
                 tilt={tilt}
                 animate={animate}
                 live={live}
+                canDrag={canDrag}
                 pointerX={springX}
                 pointerY={springY}
-                active={active === mark.id}
+                pullX={pullX}
+                pullY={pullY}
+                pullerMv={pullerMv}
+                puller={puller}
+                held={held}
+                aloft={aloft}
+                active={active === mark.id || (aloft && puller === index)}
                 interactive={interactive}
                 tabbable={index === roving}
                 register={(node) => {
@@ -365,6 +468,25 @@ export function GlassCrest({
                 onSelect={() => {
                   setRoving(index)
                   onMarkSelect?.(mark)
+                }}
+                onPullStart={() => {
+                  pullerMv.set(index)
+                  heldRef.current = true
+                  setPuller(index)
+                  setHeld(true)
+                  setAloft(true)
+                  setActive(mark.id)
+                }}
+                onPullMove={(dx, dy, max) => {
+                  const next = leash(dx, dy, max)
+                  pullTargetX.set(next.x)
+                  pullTargetY.set(next.y)
+                }}
+                onPullEnd={() => {
+                  heldRef.current = false
+                  setHeld(false)
+                  pullTargetX.set(0)
+                  pullTargetY.set(0)
                 }}
               />
             )
@@ -548,10 +670,11 @@ function Arrow({ className }: { className?: string }) {
 /**
  * One disc.
  *
- * Three nested boxes, and each owns exactly one transform, because they are
- * driven by three different things and would otherwise overwrite each other:
- * the outer one is the mount, the middle one is the pointer, and the inner one
- * is the lean along the arc plus the lift under the cursor. The inner lean uses
+ * Four nested boxes, and each owns exactly one transform, because they are
+ * driven by different things and would otherwise overwrite each other: the
+ * outer one is the mount, the next is the pointer parallax, the next is the
+ * pull (this disc's leash, or a neighbour's share of it), and the inner one is
+ * the lean along the arc plus the lift under the cursor. The inner lean uses
  * the individual `rotate` / `scale` / `translate` properties rather than a
  * `transform` string, so a hover can raise a disc without having to restate the
  * angle it is sitting at.
@@ -559,12 +682,20 @@ function Arrow({ className }: { className?: string }) {
 function Mark({
   mark,
   slot,
+  index,
   diameter,
   tilt,
   animate,
   live,
+  canDrag,
   pointerX,
   pointerY,
+  pullX,
+  pullY,
+  pullerMv,
+  puller,
+  held,
+  aloft,
   active,
   interactive,
   tabbable,
@@ -572,15 +703,26 @@ function Mark({
   onEnter,
   onLeave,
   onSelect,
+  onPullStart,
+  onPullMove,
+  onPullEnd,
 }: {
   mark: GlassCrestMark
   slot: Slot
+  index: number
   diameter: number
   tilt: boolean
   animate: boolean
   live: boolean
+  canDrag: boolean
   pointerX: MotionValue<number>
   pointerY: MotionValue<number>
+  pullX: MotionValue<number>
+  pullY: MotionValue<number>
+  pullerMv: MotionValue<number>
+  puller: number
+  held: boolean
+  aloft: boolean
   active: boolean
   interactive: boolean
   tabbable: boolean
@@ -588,8 +730,27 @@ function Mark({
   onEnter: () => void
   onLeave: () => void
   onSelect: () => void
+  onPullStart: () => void
+  onPullMove: (dx: number, dy: number, max: number) => void
+  onPullEnd: () => void
 }) {
   const accent = mark.accent ?? "currentColor"
+  const heldThis = held && puller === index
+  const aloftThis = aloft && puller === index
+  const over = React.useRef(false)
+  const wasAloft = React.useRef(false)
+  const onLeaveRef = React.useRef(onLeave)
+  onLeaveRef.current = onLeave
+
+  React.useEffect(() => {
+    if (aloftThis) {
+      wasAloft.current = true
+      return
+    }
+    if (!wasAloft.current) return
+    wasAloft.current = false
+    if (!over.current) onLeaveRef.current()
+  }, [aloftThis])
 
   /*
    * Parallax by rank: a mark out at the end of the arc travels the furthest
@@ -598,6 +759,107 @@ function Mark({
    */
   const x = useTransform(pointerX, (value) => value * slot.depth * 14)
   const y = useTransform(pointerY, (value) => value * (5 + Math.abs(slot.depth) * 7))
+  const shiftX = useTransform([pullX, pullY, pullerMv], ([px, py, who]) =>
+    packShift(index, Number(who), Number(px), Number(py)).x
+  )
+  const shiftY = useTransform([pullX, pullY, pullerMv], ([px, py, who]) =>
+    packShift(index, Number(who), Number(px), Number(py)).y
+  )
+  const twist = useTransform([pullX, pullY, pullerMv], ([px, py, who]) =>
+    packTwist(index, Number(who), Number(px), Number(py))
+  )
+  const pitch = useTransform([pullY, pullerMv], ([py, who]) =>
+    Number(who) === index ? Number(py) * -0.12 : 0
+  )
+  const yaw = useTransform([pullX, pullerMv], ([px, who]) =>
+    Number(who) === index ? Number(px) * 0.12 : 0
+  )
+
+  /*
+   * The shadow lives on the table. The pulled disc takes the full offset; its
+   * shadow takes a fraction, so the mark reads as in the air rather than as a
+   * sticker sliding around with a stain attached. Neighbours are still on the
+   * page, so their shadows travel with them.
+   */
+  const shadowX = useTransform([pullX, pullY, pullerMv], ([px, py, who]) => {
+    const shift = packShift(index, Number(who), Number(px), Number(py))
+    return Number(who) === index ? shift.x * 0.2 : shift.x
+  })
+  const shadowY = useTransform([pullX, pullY, pullerMv], ([px, py, who]) => {
+    const shift = packShift(index, Number(who), Number(px), Number(py))
+    return Number(who) === index ? shift.y * 0.2 : shift.y
+  })
+  const shadowScale = useTransform([pullX, pullY, pullerMv], ([px, py, who]) => {
+    if (Number(who) !== index) return 1
+    return 1 + Math.min(0.42, Math.hypot(Number(px), Number(py)) / 90)
+  })
+  const shadowOpacity = useTransform([pullX, pullY, pullerMv], ([px, py, who]) => {
+    if (Number(who) !== index) return 0.6
+    return 0.62 - Math.min(0.28, Math.hypot(Number(px), Number(py)) / 140)
+  })
+  const sheenX = useTransform([pullX, pullerMv], ([px, who]) =>
+    Number(who) === index ? Number(px) * -0.14 : 0
+  )
+  const sheenY = useTransform([pullY, pullerMv], ([py, who]) =>
+    Number(who) === index ? Number(py) * -0.14 : 0
+  )
+  const glyphX = useTransform([pullX, pullerMv], ([px, who]) =>
+    Number(who) === index ? Number(px) * -0.05 : 0
+  )
+  const glyphY = useTransform([pullY, pullerMv], ([py, who]) =>
+    Number(who) === index ? Number(py) * -0.05 : 0
+  )
+
+  const gesture = React.useRef({
+    pointerId: -1,
+    originX: 0,
+    originY: 0,
+    max: 48,
+    dragged: false,
+  })
+
+  function handlePointerDown(event: React.PointerEvent<HTMLElement>) {
+    if (!canDrag || event.button !== 0) return
+    gesture.current = {
+      pointerId: event.pointerId,
+      originX: event.clientX,
+      originY: event.clientY,
+      max: event.currentTarget.getBoundingClientRect().width * 0.48,
+      dragged: false,
+    }
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function handlePointerMove(event: React.PointerEvent<HTMLElement>) {
+    if (!canDrag || event.pointerId !== gesture.current.pointerId) return
+    const dx = event.clientX - gesture.current.originX
+    const dy = event.clientY - gesture.current.originY
+    if (!gesture.current.dragged) {
+      if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return
+      gesture.current.dragged = true
+      onPullStart()
+    }
+    onPullMove(dx, dy, gesture.current.max)
+  }
+
+  function handlePointerUp(event: React.PointerEvent<HTMLElement>) {
+    if (event.pointerId !== gesture.current.pointerId) return
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+    const dragged = gesture.current.dragged
+    gesture.current.pointerId = -1
+    if (dragged) onPullEnd()
+  }
+
+  function handleClick(event: React.MouseEvent<HTMLElement>) {
+    if (gesture.current.dragged) {
+      event.preventDefault()
+      gesture.current.dragged = false
+      return
+    }
+    onSelect()
+  }
 
   const disc = (
     <span
@@ -615,20 +877,12 @@ function Mark({
       <motion.span
         className="relative block size-full rounded-full"
         initial={false}
-        animate={{ scale: active ? 1.07 : 1, y: active ? "-5%" : "0%" }}
+        animate={{
+          scale: aloftThis ? 1.1 : active ? 1.07 : 1,
+          y: aloftThis ? "-8%" : active ? "-5%" : "0%",
+        }}
         transition={animate ? LIFT : { duration: 0 }}
       >
-        {/* What the disc drops onto the page, kept off the glass itself. */}
-        <span
-          aria-hidden="true"
-          className="absolute inset-x-[14%] bottom-[-4%] h-[38%] rounded-[50%] blur-[10px]"
-          style={{
-            background: `color-mix(in oklab, ${accent} 38%, transparent)`,
-            opacity: active ? 0.85 : 0.6,
-            transition: "opacity var(--duration-base) var(--ease-out-soft)",
-          }}
-        />
-
         {/*
           The body. The tint is a radial run from a lit shoulder at the top left
           down to a denser edge, over a frost of the theme's own ink — which is
@@ -661,17 +915,22 @@ function Mark({
           }}
         />
 
-        {/* The specular. Off-centre, because a highlight in the middle reads as a hole. */}
-        <span
+        {/*
+         * The specular. Off-centre at rest, because a highlight in the middle
+         * reads as a hole — and it slides against the pull, because the light
+         * is in the room, not on the disc.
+         */}
+        <motion.span
           aria-hidden="true"
           className="absolute top-[9%] left-[15%] h-[28%] w-[44%] rounded-[50%] blur-[5px]"
-          style={{ background: SHEEN }}
+          style={{ background: SHEEN, x: sheenX, y: sheenY }}
         />
 
         {mark.icon ? (
-          <span
+          <motion.span
             aria-hidden="true"
             className="absolute inset-0 flex items-center justify-center"
+            style={{ x: glyphX, y: glyphY }}
           >
             {/* The thickness: the same glyph, offset and blurred, under the face. */}
             <span
@@ -697,7 +956,7 @@ function Mark({
             >
               {mark.icon}
             </span>
-          </span>
+          </motion.span>
         ) : null}
       </motion.span>
     </span>
@@ -716,7 +975,7 @@ function Mark({
          * the way the arc is — shingling one way makes the crest read as a fan
          * dealt from one side rather than as a curve lifting into the middle.
          */
-        zIndex: Math.round(100 - Math.abs(slot.depth) * 50),
+        zIndex: aloftThis ? 240 : Math.round(100 - Math.abs(slot.depth) * 50),
         translate: "-50% -50%",
       }}
     >
@@ -757,44 +1016,107 @@ function Mark({
             : { duration: 0 }
         }
       >
-        <motion.div className="size-full" style={{ x: live ? x : 0, y: live ? y : 0 }}>
-          {interactive ? (
-            <motion.button
-              type="button"
-              ref={register}
-              tabIndex={tabbable ? 0 : -1}
-              aria-label={mark.label}
-              onClick={onSelect}
-              onPointerEnter={onEnter}
-              onPointerLeave={onLeave}
-              onFocus={onEnter}
-              onBlur={onLeave}
-              /*
-               * The press. A mark that can be clicked and gives nothing back on
-               * the way down is the single loudest tell that a hero is a picture
-               * of a control rather than a control — and on glass this size, a
-               * few percent is all it takes to read as the thing being pushed
-               * into the page and let go.
-               */
-              whileTap={animate ? { scale: 0.94 } : undefined}
-              transition={LIFT}
-              className={cn(
-                "block size-full cursor-pointer rounded-full",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              )}
-            >
-              {disc}
-            </motion.button>
-          ) : (
-            <div
-              onPointerEnter={onEnter}
-              onPointerLeave={onLeave}
-              className="size-full"
-            >
-              {disc}
-              <span className="sr-only">{mark.label}</span>
-            </div>
-          )}
+        <motion.div
+          className="relative size-full"
+          style={{ x: live ? x : 0, y: live ? y : 0, perspective: 640 }}
+        >
+          {/*
+           * Cast onto the page, not carried by the glass. A shadow that travels
+           * with the disc is the tell that the mark is a sticker; one that
+           * stays near the seat is the tell that the disc came off the table.
+           */}
+          <motion.span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-[14%] bottom-[-4%] z-0 h-[38%] rounded-[50%] blur-[10px]"
+            style={{
+              background: `color-mix(in oklab, ${accent} 38%, transparent)`,
+              x: canDrag ? shadowX : 0,
+              y: canDrag ? shadowY : 0,
+              scale: canDrag ? shadowScale : 1,
+              opacity: canDrag ? shadowOpacity : active ? 0.85 : 0.6,
+            }}
+          />
+          <motion.div
+            className="relative z-10 size-full"
+            style={{
+              x: canDrag ? shiftX : 0,
+              y: canDrag ? shiftY : 0,
+              rotate: canDrag ? twist : 0,
+              rotateX: canDrag ? pitch : 0,
+              rotateY: canDrag ? yaw : 0,
+            }}
+          >
+            {interactive ? (
+              <motion.button
+                type="button"
+                ref={register}
+                tabIndex={tabbable ? 0 : -1}
+                aria-label={mark.label}
+                onClick={handleClick}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+                onPointerEnter={() => {
+                  over.current = true
+                  onEnter()
+                }}
+                onPointerLeave={() => {
+                  over.current = false
+                  if (!aloftThis) onLeave()
+                }}
+                onFocus={onEnter}
+                onBlur={onLeave}
+                /*
+                 * The press. A mark that can be clicked and gives nothing back on
+                 * the way down is the single loudest tell that a hero is a picture
+                 * of a control rather than a control — and on glass this size, a
+                 * few percent is all it takes to read as the thing being pushed
+                 * into the page and let go. Held off while the disc is being
+                 * pulled, so a drag does not also read as a press.
+                 */
+                whileTap={animate && !heldThis ? { scale: 0.94 } : undefined}
+                transition={LIFT}
+                className={cn(
+                  "block size-full rounded-full select-none",
+                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                  canDrag
+                    ? heldThis
+                      ? "cursor-grabbing touch-none"
+                      : "cursor-grab touch-none"
+                    : "cursor-pointer"
+                )}
+              >
+                {disc}
+              </motion.button>
+            ) : (
+              <div
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+                onPointerEnter={() => {
+                  over.current = true
+                  onEnter()
+                }}
+                onPointerLeave={() => {
+                  over.current = false
+                  if (!aloftThis) onLeave()
+                }}
+                className={cn(
+                  "size-full select-none",
+                  canDrag
+                    ? heldThis
+                      ? "cursor-grabbing touch-none"
+                      : "cursor-grab touch-none"
+                    : undefined
+                )}
+              >
+                {disc}
+                <span className="sr-only">{mark.label}</span>
+              </div>
+            )}
+          </motion.div>
         </motion.div>
       </motion.div>
     </li>

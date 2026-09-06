@@ -25,7 +25,7 @@ export function MobileNav({ sections }: { sections: SidebarSection[] }) {
         <div className="border-b border-border px-5 py-4">
           <Logo />
         </div>
-        <div className="flex-1 overflow-y-auto px-5">
+        <div className="flex-1 overflow-y-auto overscroll-y-contain px-5">
           <Sidebar sections={sections} onNavigate={() => setOpen(false)} />
         </div>
       </SheetContent>

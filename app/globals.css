@@ -411,7 +411,12 @@
 
   --animate-fade-up: fade-up var(--duration-slow) var(--ease-out-soft) both;
   --animate-fade-in: fade-in var(--duration-base) var(--ease-out-soft) both;
+  --animate-fade-out: fade-out var(--duration-base) var(--ease-out-soft) both;
   --animate-pop-in: pop-in var(--duration-base) var(--ease-out-soft) both;
+  --animate-sheet-in-left: sheet-in-left var(--duration-slow) var(--ease-out-expo) both;
+  --animate-sheet-out-left: sheet-out-left var(--duration-base) var(--ease-in-out-soft) both;
+  --animate-sheet-in-right: sheet-in-right var(--duration-slow) var(--ease-out-expo) both;
+  --animate-sheet-out-right: sheet-out-right var(--duration-base) var(--ease-in-out-soft) both;
 
   @keyframes fade-up {
     from {
@@ -431,6 +436,14 @@
       opacity: 1;
     }
   }
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
   @keyframes pop-in {
     from {
       opacity: 0;
@@ -439,6 +452,38 @@
     to {
       opacity: 1;
       transform: none;
+    }
+  }
+  @keyframes sheet-in-left {
+    from {
+      transform: translate3d(-100%, 0, 0);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes sheet-out-left {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-100%, 0, 0);
+    }
+  }
+  @keyframes sheet-in-right {
+    from {
+      transform: translate3d(100%, 0, 0);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes sheet-out-right {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(100%, 0, 0);
     }
   }
 }

@@ -1,17 +1,18 @@
 "use client"
 
 import * as React from "react"
-import { Check, WandSparkles } from "lucide-react"
 import { toast } from "sonner"
 
+import { CopyFace, PromptCopyMark } from "@/components/site/copy-mark"
 import { Button, type ButtonProps } from "@/components/ui/button"
 import { copyToClipboard } from "@/lib/clipboard"
 
 /**
  * Copies the generated agent brief for a component.
  *
- * Distinct from `CopyButton` only in wording and icon — the prompt is the one
- * copy action worth naming explicitly on the page.
+ * One beat: the prompt mark retracts as "Copy prompt" leaves the slot, then
+ * the check is drawn as "Copied" rises into the same place. The two faces
+ * share a cell so the pill never resizes around the words.
  */
 export function CopyPromptButton({
   prompt,
@@ -45,8 +46,11 @@ export function CopyPromptButton({
 
   return (
     <Button type="button" variant={variant} size={size} onClick={onCopy}>
-      {copied ? <Check aria-hidden="true" /> : <WandSparkles aria-hidden="true" />}
-      {copied ? "Prompt copied" : "Copy prompt"}
+      <PromptCopyMark copied={copied} />
+      <CopyFace copied={copied} idle="Copy prompt" done="Copied" />
+      <span aria-live="polite" className="sr-only">
+        {copied ? "Copied" : ""}
+      </span>
     </Button>
   )
 }
