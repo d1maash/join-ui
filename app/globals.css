@@ -666,9 +666,9 @@
    * Every element carries its own place in the sequence as `--reveal-i`, and
    * an ancestor sets the tempo — `--reveal-step` between places,
    * `--reveal-delay` before the first, `--reveal-duration` and `--reveal-ease`
-   * for each, and `--reveal-y` for how far it rises. The masthead runs slower
-   * and further than a section does, and says so on itself rather than in a
-   * second set of classes.
+   * for each, and `--reveal-y` for how far it rises. The masthead does not
+   * use this vocabulary at all: it is the one band whose arrival is written
+   * for it alone, under "The ink" and "The copy" further down.
    *
    * The whole block is scoped to screens that have not asked for less motion.
    * That is the site's rule for reduced motion — skip the work rather than
@@ -880,142 +880,247 @@
     --masthead-void: 5 5 6;
 
     /*
-     * The band's tempo, for the arrival system above. Slower than a section,
-     * spaced wider, and on the display curve rather than the soft one,
-     * because type at five rem has further to travel than a card does and
-     * reads as hurried at a card's pace. The delay before the first word is
-     * the picture's head start: a third of a second in which there is only
-     * the dust coming up out of the black, so the headline is seen to land on
-     * something rather than to appear with it. Set here, once, so every word,
-     * button and figure in the band inherits the same clock and only has to
-     * know its own place in it.
+     * The band's clock, for the arrival described on the component. When the
+     * first line starts to ink and how long the ink takes; when the copy is
+     * taken and how long it takes to seat; when the word turns over and how
+     * long the turn takes; and the cue — the seat — from which everything
+     * else is timed, in steps. Set here, once, so a line, a button or a
+     * figure only has to know its own place.
      */
-    --reveal-delay: 700ms;
-    --reveal-step: 130ms;
-    --reveal-duration: 1100ms;
-    --reveal-ease: var(--ease-out-expo);
+    --masthead-ink-at: 150ms;
+    --masthead-ink: 1100ms;
+    --masthead-copy-at: 1400ms;
+    --masthead-copy: 800ms;
+    --masthead-roll-at: 1600ms;
+    --masthead-roll: 550ms;
+    --masthead-cue: calc(var(--masthead-copy-at) + var(--masthead-copy));
+    --masthead-step: 110ms;
 
     /*
-     * The opening's clock: how long the photograph is held whole before the
-     * wind reaches it, and how long the wind takes to cross. The type's delay
-     * above is set against these — the first line starts resolving as the
-     * colour is leaving the middle of the band, so the headline is seen to be
-     * set on the print, not on the picture.
+     * The seat. A curve that arrives past its mark and comes back — what a
+     * thing does when it is set down rather than slid into place. Used for
+     * the copy's travel and, at a scale where the overshoot is a fraction of
+     * a pixel, for everything set down after it, so the whole band lands
+     * with the same hand.
      */
-    --masthead-hold: 250ms;
-    --masthead-blow: 1600ms;
+    --ease-seat: cubic-bezier(0.34, 1.3, 0.64, 1);
   }
 
   /*
-   * The opening: the photograph, and the wind taking it.
+   * The ground.
    * -------------------------------------------------------------------------
-   * The band does not start as the print. It starts as the picture — the
-   * nebula in full colour, whole, registered exactly over the dither — held
-   * for a quarter of a second, and then the wind gets to it. The colour is
-   * blown off the band from left to right behind a soft edge, and what it
-   * leaves behind is the one-bit plate: the photograph becomes the print in
-   * front of the reader, in the direction the weather here always blows, and
-   * every gust that crosses the band afterwards is bringing back for a moment
-   * what the reader watched leave. The headline is set in dots while the
-   * colour is going, so it is seen to belong to the print and not to the
-   * picture.
-   *
-   * It is built exactly the way the gust is, and for the same reason. A veil
-   * the size of the band, with a fixed mask that fades out along its trailing
-   * edge, translates left until it has cleared the band; the colour plate
-   * inside it translates right by the same amount and so never moves against
-   * the dither beneath. Two composited transforms, no repaint, no frame in
-   * which the dot grid is resampled — and nothing here is a fade. At the last
-   * keyframe the veil hides itself and stays hidden, and the two layers cost
-   * nothing after that.
-   *
-   * With reduced motion the opening is not displayed, and — because the
-   * markup gates the picture's sources on the same query — the colour file is
-   * never requested for it either. The plate is simply there.
+   * The plate comes up under the type while the first line inks. It is the
+   * one thing the picture does during the arrival, and it is not part of the
+   * arrival: the band starts black because a band that starts on the print
+   * puts the print on screen before the type, and the type is what is being
+   * looked at. Opacity only. A dither can change how strong it is and
+   * nothing else without turning grey.
    */
-  .masthead-opening {
-    position: absolute;
-    inset: 0;
-    display: none;
-    pointer-events: none;
-  }
-
-  /*
-   * The soft edge is on the veil's left and the veil moves right: the wind
-   * arrives at the left of the band, so that is where the colour goes first,
-   * and the last of it leaves over the right edge, downwind.
-   *
-   * The edge hangs outside the band. A mask stops at its element's box, so a
-   * veil the size of the band would have to keep its fade inside itself, and
-   * the photograph would open already thinning into the print along its left
-   * side. Instead the veil is 122 parts wide to the band's 100, with the
-   * extra 22 — the whole of the fade — off the left edge, and the shot inside
-   * it is laid over exactly the band's 100 parts. The figures below are all
-   * that ratio: the hard stop at 100/122 of the veil, the shot at 22/122 in
-   * and 100/122 wide, and a counter-translate of 122% of the shot's own width
-   * for the veil's 100% of its own. The picture is whole until the wind
-   * reaches it, and pinned to the dither the whole way across.
-   */
-  .masthead-opening-veil {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -22%;
-    width: 122%;
-    -webkit-mask-image: linear-gradient(to left, #000 81.967%, transparent 100%);
-    mask-image: linear-gradient(to left, #000 81.967%, transparent 100%);
-  }
-
-  .masthead-opening-shot {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 18.033%;
-    width: 81.967%;
-  }
-
-  /* The opening prints the photograph at full strength; the gust holds back. */
-  .masthead-opening .masthead-colour {
-    opacity: 1;
-  }
-
-  /*
-   * Percentages, on purpose: each is of its own element's width, and the two
-   * widths are in a known ratio, so the distances match in pixels whatever
-   * the band measures and the plate stays pinned without a script.
-   */
-  @keyframes masthead-veil {
+  @keyframes masthead-print {
     from {
-      transform: translate3d(0, 0, 0);
+      opacity: 0;
     }
     to {
-      transform: translate3d(100%, 0, 0);
+      opacity: 0.5;
+    }
+  }
+
+  /*
+   * The ink.
+   * -------------------------------------------------------------------------
+   * The first line is set at the thinnest weight the face has and inked up to
+   * the one the page uses. Inter is loaded as a variable font, so the weight
+   * is a number that interpolates and every frame is a real cut, not a step
+   * between two. The line appears as a hairline in the first fifth and fills
+   * over the rest, on the in-out curve — ink flows, then settles — so what
+   * the reader sees is letters that are there and then are heavy, which is a
+   * different thing from letters that fade in.
+   *
+   * The line gets a little wider as it inks, because heavier letters are
+   * wider letters. It is centred, so it grows evenly from the middle, and
+   * that is left alone: it is the ink swelling, and correcting it would be
+   * correcting the point.
+   */
+  @keyframes masthead-set {
+    0% {
+      opacity: 0;
+      font-weight: 100;
+      animation-timing-function: var(--ease-out-soft);
+    }
+    20% {
+      opacity: 1;
+      font-weight: 100;
+      animation-timing-function: var(--ease-in-out-soft);
+    }
+    100% {
+      opacity: 1;
+      font-weight: 600;
+    }
+  }
+
+  /*
+   * The copy.
+   * -------------------------------------------------------------------------
+   * The second line starts one line-height up — exactly over the first, on
+   * the same pixels, since the leading is one em and the two lines read the
+   * same at that moment — and is let down to its place. It is held out of
+   * the document until then: it is set at full weight from the first frame
+   * and would otherwise show through the hairline the first line is inking
+   * up from.
+   *
+   * Two movements on it, on two curves, which is why they are two animations
+   * on the individual `translate` and `scale` properties rather than one on
+   * `transform`: the travel seats, past its mark and back, and the lift is a
+   * swell in the middle of the travel that is gone by the time it lands — a
+   * thing picked up, carried, and put down.
+   */
+  @keyframes masthead-unseen {
+    from,
+    to {
       visibility: hidden;
     }
   }
 
-  @keyframes masthead-veil-shot {
+  @keyframes masthead-copy {
     from {
-      transform: translate3d(0, 0, 0);
+      translate: 0 -1em;
     }
     to {
-      transform: translate3d(-122%, 0, 0);
+      translate: 0 0;
     }
   }
 
-  @media screen and (prefers-reduced-motion: no-preference) {
-    .masthead-opening {
-      display: block;
+  @keyframes masthead-lift {
+    0%,
+    100% {
+      scale: 1;
     }
-
-    .masthead-opening-veil {
-      animation: masthead-veil var(--masthead-blow) var(--ease-in-out-soft)
-        var(--masthead-hold) both;
+    40% {
+      scale: 1.028;
     }
+  }
 
-    .masthead-opening-shot {
-      animation: masthead-veil-shot var(--masthead-blow) var(--ease-in-out-soft)
-        var(--masthead-hold) both;
+  /*
+   * The word.
+   * -------------------------------------------------------------------------
+   * The copy's first word is a window with both words stacked in it, in one
+   * grid cell. While the copy travels, "Copy" rolls down and out of the
+   * window and "Keep" drops in from above, the way a counter turns over —
+   * and since the copy is already on its way down, the word turns over in a
+   * line that is moving, in the direction the line is moving, which is what
+   * makes it read as the same object changing rather than as a swap.
+   *
+   * Downward, and not up, because of what is above: the first line. A word
+   * leaving upward would cross it, and a word arriving from below would be
+   * seen waiting under the copy. So the window's top edge is nearly hard —
+   * just under the first line's descenders, just over this line's capitals —
+   * and the new word is cut in along it as it drops; the bottom edge is a
+   * soft fade into the empty space where nothing has been set yet, and the
+   * old word leaves through that.
+   *
+   * The window is as wide as the wider word, which is "Copy": in Inter at
+   * this weight it is 2.5397em to "Keep"'s 2.4709em, both measured from the
+   * face's own advances, so the copy lies on the original to the pixel while
+   * it still reads "Copy". As "Keep" arrives the window pulls in by exactly
+   * that difference, so the finished line is set the way "Keep the code."
+   * would have been set on its own. Only the difference is written down: it
+   * is a property of the face, not of the size, the tracking or the engine.
+   *
+   * The window's edges exist only until the word has turned. A mask with a
+   * short fade at the top and bottom is put on from the first frame by an
+   * animation whose first and last frames are the same, and taken off the
+   * moment the roll ends, so the resting word is never masked and costs
+   * nothing — and the waiting word, parked above the window from the start,
+   * is never seen before its turn. The window is padded below to take the
+   * face's descenders, which a one-em line does not contain, and pulled back
+   * in by the same margin so the line box is unchanged; the edges sit outside
+   * the glyphs, and the words travel far enough that neither is inside the
+   * window when it is the other's turn.
+   *
+   * The outgoing word is decorative: hidden from assistive technology, and
+   * not displayed at all where motion is turned down, so the copy is read
+   * and seen as "Keep the code." in both cases.
+   */
+  .masthead-roll {
+    display: inline-grid;
+    text-align: left;
+    padding: 0 0 0.3em;
+    margin: 0 0 -0.3em;
+  }
+
+  .masthead-roll > * {
+    grid-area: 1 / 1;
+  }
+
+  .masthead-roll-out {
+    display: none;
+  }
+
+  @keyframes masthead-roll-window {
+    from,
+    to {
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0.06em,
+        #000 0.12em,
+        #000 calc(100% - 0.16em),
+        transparent
+      );
+      mask-image: linear-gradient(
+        to bottom,
+        transparent 0.06em,
+        #000 0.12em,
+        #000 calc(100% - 0.16em),
+        transparent
+      );
+    }
+  }
+
+  @keyframes masthead-roll-fit {
+    to {
+      margin-right: -0.0688em;
+    }
+  }
+
+  @keyframes masthead-roll-out {
+    from {
+      translate: 0 0;
+    }
+    to {
+      translate: 0 1.35em;
+      visibility: hidden;
+    }
+  }
+
+  @keyframes masthead-roll-in {
+    from {
+      translate: 0 -1.35em;
+    }
+    to {
+      translate: 0 0;
+    }
+  }
+
+  /*
+   * The rest, set down.
+   * -------------------------------------------------------------------------
+   * The sentence, the buttons and the figures are placed after the copy has
+   * seated: each comes up to full in its first third and settles down onto
+   * its mark from a few pixels above, on the seat curve, so they land the
+   * way the copy landed rather than rising up to meet the reader. Each
+   * carries its place as `--place`; the band supplies the cue and the step.
+   */
+  @keyframes masthead-seat {
+    from {
+      opacity: 0;
+      translate: 0 calc(var(--seat-y, 0.5rem) * -1);
+    }
+    35% {
+      opacity: 1;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
     }
   }
 
@@ -1023,19 +1128,19 @@
    * The rule that closes the frame, drawn rather than shown.
    *
    * The figures at the foot of the band sit on a hairline, and the hairline
-   * is a pseudo-element so it can be scaled in from the left — a transform on
-   * a one-pixel layer, the same move the principle cells make under the
+   * is a pseudo-element so it can be scaled out from its centre — a transform
+   * on a one-pixel layer, the same move the principle cells make under the
    * pointer further down, so the page's one drawn line is drawn the same way
-   * everywhere. It starts a half-step after the buttons — place three and a
-   * half in the band's sequence — and runs long, and the figures fade up
-   * along it as it goes.
+   * everywhere. From the centre, not from the left: the band is the one
+   * centred composition on the page, and a line drawn in from one side would
+   * be the only thing in it with a direction.
    */
-  @keyframes reveal-rule {
+  @keyframes masthead-rule {
     from {
-      transform: scaleX(0);
+      transform: scale3d(0, 1, 1);
     }
     to {
-      transform: scaleX(1);
+      transform: scale3d(1, 1, 1);
     }
   }
 
@@ -1049,13 +1154,75 @@
     inset: 0 0 auto 0;
     height: 1px;
     background: rgb(255 255 255 / 0.1);
-    transform-origin: left center;
+    transform-origin: center;
   }
 
   @media screen and (prefers-reduced-motion: no-preference) {
+    .masthead-plate {
+      animation: masthead-print 1400ms var(--ease-in-out-soft) backwards;
+    }
+
+    .masthead-set {
+      animation: masthead-set var(--masthead-ink) linear var(--masthead-ink-at)
+        backwards;
+    }
+
+    .masthead-copy {
+      animation:
+        masthead-unseen var(--masthead-copy-at) linear,
+        masthead-copy var(--masthead-copy) var(--ease-seat) var(--masthead-copy-at)
+          backwards,
+        masthead-lift var(--masthead-copy) var(--ease-in-out-soft)
+          var(--masthead-copy-at) backwards;
+    }
+
+    .masthead-roll {
+      animation:
+        masthead-roll-window calc(var(--masthead-roll-at) + var(--masthead-roll))
+          linear,
+        masthead-roll-fit var(--masthead-roll) var(--ease-out-expo)
+          var(--masthead-roll-at) forwards;
+    }
+
+    .masthead-roll-out {
+      display: block;
+      animation: masthead-roll-out var(--masthead-roll) var(--ease-out-expo)
+        var(--masthead-roll-at) both;
+    }
+
+    .masthead-roll-in {
+      animation: masthead-roll-in var(--masthead-roll) var(--ease-out-expo)
+        var(--masthead-roll-at) backwards;
+    }
+
+    .masthead-seat {
+      animation: masthead-seat 700ms var(--ease-seat)
+        calc(var(--masthead-cue) + var(--place, 0) * var(--masthead-step)) backwards;
+    }
+
+    .masthead-facts .masthead-seat {
+      --seat-y: 0.35rem;
+    }
+
+    /*
+     * On a phone the four figures are two rows of two, and "from the middle
+     * out" — written on the markup for the one-row layout — picks out a
+     * diagonal. Two rows are read as two rows, so here they arrive that way:
+     * the top pair on the figures' first step, the bottom pair on the next.
+     */
+    @media (max-width: 639px) {
+      .masthead-facts .masthead-seat:nth-child(-n + 2) {
+        animation-delay: calc(var(--masthead-cue) + 2.5 * var(--masthead-step));
+      }
+
+      .masthead-facts .masthead-seat:nth-child(n + 3) {
+        animation-delay: calc(var(--masthead-cue) + 3.5 * var(--masthead-step));
+      }
+    }
+
     .masthead-facts::before {
-      animation: reveal-rule 1300ms var(--ease-out-expo)
-        calc(var(--reveal-delay) + 3.5 * var(--reveal-step)) backwards;
+      animation: masthead-rule 1100ms var(--ease-out-expo)
+        calc(var(--masthead-cue) + 1.5 * var(--masthead-step)) backwards;
     }
   }
 

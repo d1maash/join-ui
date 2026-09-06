@@ -150,15 +150,47 @@ export function MastheadWind({ children }: { children: React.ReactNode }) {
       frame = visible ? requestAnimationFrame(tick) : 0
     }
 
+    /*
+     * Held off the band until the opening has played. The band arrives by
+     * exposing the photograph and then screening it into the print, and a
+     * gust of colour entering from the left while the colour is being taken
+     * from the whole band would be the opening contradicting itself. So the
+     * first gust waits for the drain to finish — found as the animation
+     * itself rather than as a number copied from the stylesheet, so the two
+     * cannot drift apart — and starts from off the left edge the moment the
+     * print has settled. If hydration lands after the opening has already
+     * played, there is nothing to wait for and the wind starts at once.
+     */
+    let held = false
+    let disposed = false
+
     const start = () => {
-      if (!frame && visible) {
+      if (!frame && visible && !held) {
         last = 0
         frame = requestAnimationFrame(tick)
       }
     }
+
+    const drain = band
+      .querySelector(".masthead-opening")
+      ?.getAnimations()
+      .find(
+        (animation) =>
+          animation instanceof CSSAnimation &&
+          animation.animationName === "masthead-drain"
+      )
+    if (drain && drain.playState !== "finished") {
+      held = true
+      const release = () => {
+        held = false
+        if (!disposed) start()
+      }
+      drain.finished.then(release, release)
+    }
     start()
 
     return () => {
+      disposed = true
       observer.disconnect()
       watcher.disconnect()
       if (frame) cancelAnimationFrame(frame)

@@ -1889,4 +1889,223 @@ export function Example() {
     since: "2026-08-16",
     updated: "2026-08-24",
   }),
+  defineComponent({
+    name: "CarbonCopy",
+    slug: "carbon-copy",
+    title: "Carbon Copy",
+    description:
+      "A headline that is set, then copied: the first line inks up, and each line after it peels off the last with the changed words turning over.",
+    overview:
+      "CarbonCopy is the sentence a product opens with, made with the type itself. The first line is set as a hairline and inked — the weight of the letters rises from the thinnest cut of the face to the one the line rests at, so the words are seen to fill rather than to appear. Then a copy is taken: the next line starts exactly on top of the first, identical to it, and travels down one line to its place, lifting a little on the way and seating with a spring. While it travels, the words that differ turn over in windows — the old word rolls down and out, the new one drops in from above, the way a counter turns — so the copy lands already reading as the next line, and a third line is a copy of the second. It is built for the headline whose second line is a revision of its first: copy, keep; build fast, build right. The movement is the meaning, which is what keeps it from being an effect. Every window is measured from the rendered glyphs, so the copy lies on the original to the pixel in any face at any size, and the finished line is set the way it would have been set on its own. It plays once, when it is scrolled into view or when it mounts, and hands you a callback on its last seat so the rest of the section can be cued from it rather than from a timer.",
+    category: "Text Effects",
+    tags: [
+      "headline",
+      "hero",
+      "typography",
+      "variable-font",
+      "counter",
+      "roll",
+      "reveal",
+      "animated",
+    ],
+    status: "new",
+    featured: true,
+    dependencies: ["motion"],
+    registryDependencies: ["utils"],
+    files: [uiFile("carbon-copy")],
+    accessibility: [
+      "The lines are rendered as plain text inside the element you ask for — `as` — so the headline is a real heading at the level the page needs, and a second instance on the same page can be an `h2`.",
+      "What is read is what is finally seen. The outgoing word in each window is `aria-hidden`, so assistive technology gets the finished line and never the one it was copied from.",
+      "Nothing is hidden from the accessibility tree while it moves: a copy waiting for its turn is transparent, not `display: none`, so a reader who arrives mid-animation still finds every line.",
+      "The window's edges are a mask, not an overflow clip, and they come off once the word has turned, so a finished line is unmasked text that reflows, selects and zooms like any other.",
+      "It plays once and stops. Nothing loops, nothing responds to the pointer, and there is no timer left running after the last copy has seated.",
+      "`prefers-reduced-motion` is honoured structurally: no line moves, nothing is measured, the outgoing words are not rendered at all, and `onComplete` fires at once so whatever is cued from it still appears.",
+      "The ink is a weight, not a colour, so the contrast of the finished line is the contrast of your text and is never reduced by the entrance.",
+      "Both themes are covered by the page's own text colour rather than by anything the component sets, so it keeps its contrast inside a forced-theme subtree.",
+    ],
+    keyboard: [],
+    props: [
+      {
+        name: "CarbonCopy",
+        props: [
+          {
+            name: "lines",
+            type: "readonly string[]",
+            required: true,
+            description:
+              "The lines, in the order they are made. The first is set; each one after it is a copy of the one before, with the words that differ turned over. Lines with the same number of words turn over word by word; lines with different counts turn over as a whole.",
+          },
+          {
+            name: "as",
+            type: '"h1" | "h2" | "h3" | "h4" | "p" | "div"',
+            defaultValue: '"h1"',
+            description: "The element the lines are set in.",
+          },
+          {
+            name: "align",
+            type: '"start" | "center" | "end"',
+            defaultValue: '"center"',
+            description:
+              "Which edge the lines hang from. A copy lies on its original whichever it is.",
+          },
+          {
+            name: "ink",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Whether the first line inks up from a hairline. Off, the first line is simply there and the copy is the whole event — the right choice on a static face, which can only step between the weights it has.",
+          },
+          {
+            name: "inkFrom",
+            type: "number",
+            defaultValue: "100",
+            description: "The weight the ink starts from.",
+          },
+          {
+            name: "weight",
+            type: "number",
+            defaultValue: "600",
+            description:
+              "The weight the lines rest at, and the ink ends at. Set as the element's font-weight, so a className need not repeat it.",
+          },
+          {
+            name: "trigger",
+            type: '"view" | "mount"',
+            defaultValue: '"view"',
+            description:
+              "Play when three fifths of the element has been scrolled into view, or as soon as it mounts. Either way it plays once.",
+          },
+          {
+            name: "timing",
+            type: "Partial<CarbonCopyTiming>",
+            description:
+              "Overrides for the tempo, in milliseconds. Anything you leave out keeps its default.",
+          },
+          {
+            name: "onComplete",
+            type: "() => void",
+            description:
+              "Fires once the last copy has seated — or at once, under reduced motion — so what follows the headline can be cued from it.",
+          },
+          {
+            name: "className",
+            type: "string",
+            description:
+              "Merged onto the element through `cn`. Size, leading and tracking are yours to set; the component sets only the weight.",
+          },
+        ],
+      },
+      {
+        name: "CarbonCopyTiming",
+        description: "Shape of the `timing` prop. All values are milliseconds.",
+        props: [
+          {
+            name: "delay",
+            type: "number",
+            defaultValue: "0",
+            description: "Before anything starts.",
+          },
+          {
+            name: "ink",
+            type: "number",
+            defaultValue: "1100",
+            description: "How long the first line takes to ink up from a hairline.",
+          },
+          {
+            name: "copy",
+            type: "number",
+            defaultValue: "800",
+            description: "How long a copy takes to travel down one line and seat.",
+          },
+          {
+            name: "roll",
+            type: "number",
+            defaultValue: "550",
+            description: "How long a word takes to turn over in its window.",
+          },
+          {
+            name: "pause",
+            type: "number",
+            defaultValue: "150",
+            description: "The beat between one movement ending and the next beginning.",
+          },
+        ],
+      },
+    ],
+    usage: `import { CarbonCopy } from "@/components/joinui/carbon-copy"
+
+export function Example() {
+  return (
+    <CarbonCopy
+      lines={["Copy the code.", "Keep the code."]}
+      className="text-[clamp(2.5rem,6vw,5rem)] leading-none tracking-[-0.042em]"
+    />
+  )
+}`,
+    customization: [
+      {
+        title: "Take more than one copy",
+        description:
+          "Every line after the first is a copy of the one before it, taken a beat after that one has seated. Only the words that differ turn over, so keep the lines the same shape and let one word carry the change — three revisions of a sentence read as one thought sharpening, where three different sentences read as a slideshow.",
+        code: `<CarbonCopy
+  as="h2"
+  lines={["Build it fast.", "Build it right.", "Build it once."]}
+  className="text-5xl leading-none tracking-tight"
+/>`,
+      },
+      {
+        title: "Skip the ink",
+        description:
+          "The ink is drawn from the weights between the ones a face ships, which only a variable font has. On a static face the browser steps between the cuts it does have, and a headline that snaps from thin to bold is not what the ink means. Turn it off and the first line is simply there; the copy is the whole event, which at body size is often the better proportion anyway.",
+        code: `<CarbonCopy
+  as="p"
+  align="start"
+  ink={false}
+  weight={500}
+  lines={["Deploys in seconds.", "Rolls back in one click."]}
+  className="text-xl leading-tight text-muted-foreground"
+/>`,
+      },
+      {
+        title: "Set the tempo",
+        description:
+          "Five numbers own the clock, and the movement is written against them rather than in fixed durations, so a slower copy is still the same copy. A hero can afford a longer ink and a heavier seat; a line inside a card wants the defaults or quicker.",
+        code: `<CarbonCopy
+  lines={["Ship on Friday.", "Sleep on Friday."]}
+  timing={{ delay: 400, ink: 1400, copy: 950, roll: 650, pause: 240 }}
+/>`,
+      },
+      {
+        title: "Cue the rest of the section from it",
+        description:
+          "A headline that performs should be the one thing performing. onComplete fires on the last seat — at once under reduced motion — so the sentence and the call to action under it can be set down after the copy has landed instead of racing it on a timer that has to be kept in step by hand.",
+        code: `const [settled, setSettled] = React.useState(false)
+
+<CarbonCopy
+  trigger="mount"
+  lines={["Copy the code.", "Keep the code."]}
+  onComplete={() => setSettled(true)}
+/>
+<p
+  className={cn(
+    "transition-[opacity,translate] duration-700",
+    settled ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+  )}
+>
+  Animated React components that install into your repo and stay there.
+</p>`,
+      },
+      {
+        title: "Play it again",
+        description:
+          "It has no notion of playing twice, and it should not — a headline is set once. When a demo or a route change needs it to run again, remount it: a new key is a fresh instance, measured and timed from nothing.",
+        code: `const [take, setTake] = React.useState(0)
+
+<CarbonCopy key={take} lines={lines} />
+<button onClick={() => setTake((n) => n + 1)}>Replay</button>`,
+      },
+    ],
+    related: ["glass-crest", "focus-stack"],
+    since: "2026-09-07",
+  }),
 ]
