@@ -1520,7 +1520,7 @@ export function Example() {
     description:
       "A hero section led by an arc of tinted glass discs, solved from a count and a spread, that assembles on mount and then answers only the pointer.",
     overview:
-      "GlassCrest is the section a product opens with: a crescent of glass marks over the sentence that explains them. The crest is drawn rather than photographed — each disc is tinted glass with a lit top edge, a shaded belly, an off-centre specular and a rim in its own accent, and the glyph stands on it as a relief, printed twice so the blurred copy underneath gives the extrusion its thickness. Nothing is an image, so a mark is any icon you pass and any colour you name, and the whole crest recolours with the page instead of being lit for one theme. The arc is geometry rather than layout: give it a count and a spread and it solves for the radius that fits the marks across their own box, the diameter that laps them by overlap, and the aspect ratio that leaves room for the bow — so three marks on a phone and eleven on a monitor are the same calculation, expressed entirely in percentages and needing no measurement at all. It moves only when something moves it. It assembles apex-first on mount — sprung, so each disc rises, goes a hair past its place on the arc and settles onto it, because a hero arriving is the one moment a page may perform — and after that it answers the pointer: the arc swings from a pivot below itself while the outer marks travel further than the inner ones, and the disc under the cursor lifts on a spring of its own. Pass onMarkSelect and every disc becomes a real button behind a single tab stop, pressing into the page under the hand, with the arrow keys walking the arc.",
+      "GlassCrest is the section a product opens with: a crescent of glass marks over the sentence that explains them. The crest is drawn rather than photographed — each disc is tinted glass with a lit top edge, a shaded belly, an off-centre specular and a rim in its own accent, and the glyph stands on it as a relief, printed twice so the blurred copy underneath gives the extrusion its thickness. Nothing is an image, so a mark is any icon you pass and any colour you name, and the whole crest recolours with the page instead of being lit for one theme. The arc is geometry rather than layout: give it a count and a spread and it solves for the radius that fits the marks across their own box, the diameter that laps them by overlap, and the aspect ratio that leaves room for the bow — so three marks on a phone and eleven on a monitor are the same calculation, expressed entirely in percentages and needing no measurement at all. It moves only when something moves it. It assembles apex-first on mount — sprung, so each disc rises, goes a hair past its place on the arc and settles onto it, because a hero arriving is the one moment a page may perform — and after that it answers the pointer: the arc swings from a pivot below itself while the outer marks travel further than the inner ones, the disc under the cursor lifts on a spring of its own, and a mark that is pulled comes out of the pack on a leash while its neighbours part along the arc, then springs home on release. Pass onMarkSelect and every disc becomes a real button behind a single tab stop, pressing into the page under the hand, with the arrow keys walking the arc; a pull that never crossed the threshold is still a press.",
     category: "Marketing",
     tags: [
       "hero",
@@ -1547,7 +1547,7 @@ export function Example() {
       "The hover caption under the arc is `aria-hidden`, because it repeats a name the marks already carry; it reserves its line at all times, so the headline never jumps when the cursor crosses the crest.",
       "The focus ring is drawn on the button rather than on the glass, so it traces the disc it belongs to and survives a forced-colours mode where the tint does not.",
       "Nothing loops. The crest performs once on mount and is otherwise still — every other movement is a response to the pointer or the caret, which is what keeps a hero from competing with the page it is heading.",
-      "`prefers-reduced-motion` is honoured structurally rather than by shortening durations: the mount is not started at all and the parallax is never wired up, leaving a still section that still works.",
+      "`prefers-reduced-motion` is honoured structurally rather than by shortening durations: the mount is not started at all, the parallax is never wired up and a disc cannot be pulled, leaving a still section that still works.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
     ],
     keyboard: [
@@ -1643,6 +1643,13 @@ export function Example() {
             defaultValue: "true",
             description:
               "The crest answers the pointer: the arc swings from a pivot below itself and the outer marks travel furthest. Off, it never moves once it has assembled.",
+          },
+          {
+            name: "drag",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "A disc can be pulled out of the pack — neighbours part along the arc, and the same spring brings it home on release. Off, the marks only lift under the cursor.",
           },
           {
             name: "glow",
@@ -1837,11 +1844,12 @@ export function Example() {
       {
         title: "Let it sit still",
         description:
-          "The crest performs once on mount and then answers only the pointer, which is already quiet — but a hero above a page that moves on its own should not move at all. Turning parallax off leaves the arc fixed after it assembles; dropping the glow and the lean leaves the discs upright on bare paper.",
+          "The crest performs once on mount and then answers only the pointer, which is already quiet — but a hero above a page that moves on its own should not move at all. Turning parallax and drag off leaves the arc fixed after it assembles; dropping the glow and the lean leaves the discs upright on bare paper.",
         code: `<GlassCrest
   marks={marks}
   headline={headline}
   parallax={false}
+  drag={false}
   tilt={false}
   glow={false}
   labels="none"

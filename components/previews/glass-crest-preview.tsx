@@ -113,7 +113,7 @@ export default function GlassCrestPreview() {
     <div className="flex w-full max-w-5xl flex-col gap-12">
       <Panel
         caption="The section"
-        description="The crest assembles apex-first on mount, then holds still. Move the pointer across it and the arc swings from a pivot below itself, the outer marks travelling further than the inner ones — and the name of whichever disc is under the cursor prints beneath it."
+        description="The crest assembles apex-first on mount, then holds still. Move the pointer across it and the arc swings from a pivot below itself, the outer marks travelling further than the inner ones. Pull a disc and it comes out of the pack — neighbours part along the arc — and springs home when you let go. The name of whichever disc is under the cursor prints beneath it."
       >
         <div className="w-full rounded-xl border border-border bg-background px-6 py-12 sm:px-10 sm:py-16">
           <GlassCrest
