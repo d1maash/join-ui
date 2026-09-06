@@ -70,9 +70,9 @@ function place(step: number): React.CSSProperties {
  * fill rather than to appear. Then a copy is taken: the second line peels off
  * the first, identical to it, and travels down one line to its place, lifting
  * a little as it goes and seating with a spring at the end. While it travels
- * its first word turns over — "Copy" rolls up and out of a window and "Keep"
- * rolls up into it, the way a counter advances — so the copy lands already
- * reading as the second line. Nothing else moves until it has seated. Then
+ * its first word turns over — "Copy" rolls down and out of a window and
+ * "Keep" drops into it from above, the way a counter turns — so the copy
+ * lands already reading as the second line. Nothing else moves until it has seated. Then
  * the sentence and the buttons are set down under it, the rule at the foot
  * of the band draws out from its centre, and the four figures come up along
  * it from the middle out, because the composition is centred and so is its
@@ -186,7 +186,7 @@ export function Masthead({ facts }: MastheadProps) {
             element: the first inks on its own, and the second is the copy —
             it starts exactly on top of the first, one line-height up, and is
             let down into place. Its first word is a window with both words
-            stacked in it, "Copy" in flow above "Keep"; the outgoing word is
+            stacked in it, "Copy" showing and "Keep" waiting; the outgoing word is
             decorative and hidden from assistive technology, so what is read is
             what is finally seen. The window is as wide as the wider word, so
             the copy lies on the original to the pixel while it still reads
