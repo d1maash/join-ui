@@ -768,9 +768,6 @@ function Mark({
   const twist = useTransform([pullX, pullY, pullerMv], ([px, py, who]) =>
     packTwist(index, Number(who), Number(px), Number(py))
   )
-  const glyphRotate = useTransform(twist, (value) =>
-    tilt ? slot.angle + value : value
-  )
   /*
    * The light is in the room, above and to the left. A circle does not change
    * silhouette when it leans, so the only thing a local rotate can do to the
@@ -907,7 +904,7 @@ function Mark({
                  * first, so it paints over the tint.
                  */
                 `radial-gradient(86% 66% at 50% 112%, color-mix(in oklab, ${accent} 72%, transparent) 0%, transparent 58%)`,
-                `radial-gradient(118% 118% at var(--lit-x) var(--lit-y), color-mix(in oklab, ${accent} 42%, transparent) 0%, color-mix(in oklab, ${accent} 17%, transparent) 52%, color-mix(in oklab, ${accent} 44%, transparent) 100%)`,
+                `radial-gradient(118% 118% at var(--lit-x, 30%) var(--lit-y, 20%), color-mix(in oklab, ${accent} 42%, transparent) 0%, color-mix(in oklab, ${accent} 17%, transparent) 52%, color-mix(in oklab, ${accent} 44%, transparent) 100%)`,
               ].join(", "),
               boxShadow: [
                 /* The rim, in the mark's own colour rather than in grey. */
@@ -919,7 +916,10 @@ function Mark({
               ].join(", "),
               "--lit-x": litX,
               "--lit-y": litY,
-            } as React.CSSProperties
+            } as React.CSSProperties & {
+              "--lit-x": typeof litX
+              "--lit-y": typeof litY
+            }
           }
         />
 
@@ -935,10 +935,20 @@ function Mark({
         />
 
         {mark.icon ? (
-          <motion.span
+          <span
             aria-hidden="true"
             className="absolute inset-0 flex items-center justify-center"
-            style={{ x: glyphX, y: glyphY, rotate: glyphRotate }}
+            /*
+             * The lean belongs to the glyph, not the glass. A circle has no
+             * silhouette to rotate, so leaning the disc only turned its
+             * highlight — the light appeared to come from a different place
+             * on every mark along the arc.
+             */
+            style={{ rotate: tilt ? `${slot.angle}deg` : undefined }}
+          >
+          <motion.span
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ x: glyphX, y: glyphY, rotate: twist }}
           >
             {/* The thickness: the same glyph, offset and blurred, under the face. */}
             <span
@@ -965,6 +975,7 @@ function Mark({
               {mark.icon}
             </span>
           </motion.span>
+          </span>
         ) : null}
       </motion.span>
     </span>
