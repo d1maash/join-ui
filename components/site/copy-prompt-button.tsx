@@ -2,23 +2,20 @@
 
 import * as React from "react"
 import { motion, useReducedMotion } from "motion/react"
-import { Check } from "lucide-react"
 import { toast } from "sonner"
 
-import { PromptIcon } from "@/components/site/icons"
+import { PromptCopyMark } from "@/components/site/copy-mark"
 import { Button, type ButtonProps } from "@/components/ui/button"
 import { copyToClipboard } from "@/lib/clipboard"
 
 const EASE = [0.22, 1, 0.36, 1] as const
-const TRAVEL = 5
 
 /**
  * Copies the generated agent brief for a component.
  *
- * Distinct from `CopyButton` only in wording and icon — the prompt is the one
- * copy action worth naming explicitly on the page. The two faces share one
- * grid cell so the pill never resizes; confirmation rises into place and the
- * idle label leaves upward, the same direction a line of type advances.
+ * The icon does the change of state — the prompt mark retracts, a check is
+ * drawn — and the words follow it, fading in the same cell so the pill does
+ * not resize around them.
  */
 export function CopyPromptButton({
   prompt,
@@ -51,44 +48,32 @@ export function CopyPromptButton({
     }
   }
 
-  const swap = {
-    duration: still ? 0 : 0.2,
+  const fade = {
+    duration: still ? 0 : 0.18,
     ease: EASE,
+    delay: still || !copied ? 0 : 0.08,
   }
 
   return (
-    <Button
-      type="button"
-      variant={variant}
-      size={size}
-      onClick={onCopy}
-      className="overflow-hidden"
-    >
+    <Button type="button" variant={variant} size={size} onClick={onCopy}>
+      <PromptCopyMark copied={copied} />
       <span className="grid justify-items-start">
         <motion.span
           aria-hidden={copied}
-          className="col-start-1 row-start-1 inline-flex items-center gap-2"
+          className="col-start-1 row-start-1"
           initial={false}
-          animate={{
-            opacity: copied ? 0 : 1,
-            y: still ? 0 : copied ? -TRAVEL : 0,
-          }}
-          transition={swap}
+          animate={{ opacity: copied ? 0 : 1 }}
+          transition={{ duration: still ? 0 : 0.16, ease: EASE }}
         >
-          <PromptIcon aria-hidden="true" />
           Copy prompt
         </motion.span>
         <motion.span
           aria-hidden={!copied}
-          className="col-start-1 row-start-1 inline-flex items-center gap-2"
+          className="col-start-1 row-start-1"
           initial={false}
-          animate={{
-            opacity: copied ? 1 : 0,
-            y: still ? 0 : copied ? 0 : TRAVEL,
-          }}
-          transition={swap}
+          animate={{ opacity: copied ? 1 : 0 }}
+          transition={fade}
         >
-          <Check aria-hidden="true" />
           Prompt copied
         </motion.span>
       </span>
