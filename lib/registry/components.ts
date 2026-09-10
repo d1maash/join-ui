@@ -1093,7 +1093,7 @@ export function Example() {
         "critical-foreground": "oklch(0.16 0.04 23)",
       },
     },
-    related: ["status-timeline", "focus-stack", "tool-trace"],
+    related: ["status-timeline", "focus-stack", "tool-trace", "approval-gate"],
     since: "2026-08-04",
   }),
 
@@ -1508,7 +1508,7 @@ export function Example() {
         "critical-foreground": "oklch(0.16 0.04 23)",
       },
     },
-    related: ["agent-hive", "status-timeline"],
+    related: ["agent-hive", "approval-gate", "status-timeline"],
     since: "2026-08-11",
     updated: "2026-08-24",
   }),
@@ -2107,5 +2107,409 @@ export function Example() {
     ],
     related: ["glass-crest", "focus-stack"],
     since: "2026-09-07",
+  }),
+  defineComponent({
+    name: "ApprovalGate",
+    slug: "approval-gate",
+    title: "Approval Gate",
+    description:
+      "An inline request from an agent to run a command: the tool, the command, a clock that holds while you read, and two keys to answer with.",
+    overview:
+      "ApprovalGate is the moment an agent stops and asks. Where ToolTrace is what a run looks like from the inside, this is the one step in it that cannot happen without a person: the tool it wants, the command it would give, why, and two ways to answer. At rest it is a still card. The one thing that moves while it waits is the clock — a hairline ring around the marker, draining clockwise from twelve with the seconds left set inside it — and it holds whenever the reader is plainly reading: pointer over the card, focus inside it, or the card scrolled out of view, because a timeout is a safety net for a gate nobody is looking at rather than a race against the person in front of it. Risk picks the hue and the word: blue and “Awaiting” for a request that cannot break anything, caution and “Caution” for one that might, critical and “Destructive” for one that will, with the button that says yes filled in that same hue. A decision is one move each way. Allowing parts the rule above the buttons and folds them away; denying draws a strike through the command, left to right, and takes the ink out of it as it goes; letting the clock run out does neither — the ring goes dashed, the command dims, and the chip says so. The keys are declared on the buttons through aria-keyshortcuts, every outcome carries a glyph and a spoken word as well as a hue, and the whole thing resolves instantly under prefers-reduced-motion.",
+    category: "Feedback",
+    tags: [
+      "ai",
+      "agent",
+      "permission",
+      "confirm",
+      "consent",
+      "countdown",
+      "timer",
+      "command",
+      "shortcut",
+      "prompt",
+    ],
+    status: "new",
+    featured: true,
+    dependencies: ["motion", "lucide-react"],
+    registryDependencies: ["utils"],
+    files: [uiFile("approval-gate")],
+    accessibility: [
+      "The gate is a `group` named by its title, with the `label` — “Approval” by default — spoken first, so a screen reader hears “Approval: Reinstall the dependencies” before anything else.",
+      "Its arrival is announced. A live region reports changes rather than content that was there on load, so the request is written into it a frame after the gate renders — which is what gets a gate that appears mid-conversation announced at all — and the outcome replaces it once there is one.",
+      "Both answers are real `button` elements, and each declares its keys through `aria-keyshortcuts`, which is the attribute assistive technology reads shortcuts from. The visible `kbd` beside each label is decoration, and hidden.",
+      "The keys never fight the buttons: a key that would activate the focused button anyway — Enter, Space — is left to it, so an answer is never given twice, and a shortcut typed into a field is left alone entirely.",
+      "The countdown is a `timer` whose visible number is followed by a hidden “of 30 seconds left”, and it is not live: a clock announcing every second is noise, and the time allowed is already in the announcement.",
+      "A time limit on a decision is only acceptable if the person can defeat it, which is WCAG 2.2.1. The clock holds while focus is inside the gate, so a keyboard user who has reached the buttons is never timed out of them, and it holds under the pointer for the same reason. Leave `timeout` unset and there is no limit at all.",
+      "Colour is never the only signal, which satisfies WCAG 1.4.1: the risk has a glyph and a word beside its hue, and so does every outcome — a tick, a cross, an hourglass, and “Allowed”, “Denied”, “Expired” spelled out on the chip.",
+      "A denied command is struck through, not merely dimmed, so the refusal survives a monochrome print. The struck copy is a second rendering laid over the first and hidden from assistive technology; the plain text underneath is what gets read, and it is the text you can select.",
+      "Focus is kept. When a decision removes the buttons, focus that was on one of them is handed to the gate itself rather than dropped to the document — the gate is focusable for that reason, and so that the keys work after a click on it.",
+      "The clock runs on the frame loop, so it stops in a background tab and picks up where it left off, and each step is capped so that one long frame on return cannot expire a gate the reader never saw.",
+      "Nothing animates on mount: a gate rendered with its outcome already known is a still drawing, and a struck command does not strike itself again on load.",
+      "Under `prefers-reduced-motion` every transition resolves at zero duration — the ring steps once a second instead of sweeping, the strike appears whole, and the buttons leave without folding.",
+      "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
+    ],
+    keyboard: [
+      {
+        keys: ["Y"],
+        description: "Allows. The default; set your own through `shortcuts`.",
+      },
+      {
+        keys: ["N", "Esc"],
+        description: "Denies.",
+      },
+      {
+        keys: ["Tab"],
+        description:
+          "Moves between Deny and Allow. The gate itself is never a tab stop — it takes focus only from a click, from `autoFocus`, or when a decision removes the button that had it — so it adds nothing to the page's tab order.",
+      },
+      {
+        keys: ["Enter", "Space"],
+        description:
+          "Activates the focused button, as a button does. Never read as a shortcut while a button has focus, so nothing is answered twice.",
+      },
+    ],
+    props: [
+      {
+        name: "ApprovalGate",
+        props: [
+          {
+            name: "title",
+            type: "string",
+            required: true,
+            description: "What the agent wants to do, in a few words. Names the group.",
+          },
+          {
+            name: "reason",
+            type: "React.ReactNode",
+            description: "Why it wants to. Set under the title in the muted face.",
+          },
+          {
+            name: "tool",
+            type: "string",
+            description:
+              "The tool the agent would call — bash, git, fetch. Set in mono at the head of the command block.",
+          },
+          {
+            name: "command",
+            type: "string | string[]",
+            description:
+              "The command itself. An array is one entry per line; a long entry wraps. Leave it out for a request that is not a command.",
+          },
+          {
+            name: "meta",
+            type: "string",
+            description:
+              "Trailing meta on the block's head — a working directory, a branch, a host. Set in mono, muted.",
+          },
+          {
+            name: "prefix",
+            type: "string",
+            description:
+              "A prompt glyph set before each line — `$`, `›`. Kept out of the selection, so a copied command does not arrive with it, and out of the strike.",
+          },
+          {
+            name: "risk",
+            type: '"low" | "medium" | "high"',
+            defaultValue: '"low"',
+            description:
+              "Picks the hue and the word: blue and “Awaiting”, caution and “Caution”, critical and “Destructive”. High also fills the Allow button in the critical hue.",
+          },
+          {
+            name: "riskLabel",
+            type: "string",
+            description: "Overrides the word the chip shows while the gate waits.",
+          },
+          {
+            name: "icon",
+            type: "React.ReactNode",
+            description:
+              "Replaces the marker's glyph while the gate waits without a clock. Sized by the component, so pass a bare icon element.",
+          },
+          {
+            name: "timeout",
+            type: "number",
+            description:
+              "Milliseconds the reader has before the gate expires on its own. Unset, it waits for as long as it takes.",
+          },
+          {
+            name: "pauseWhileReading",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Holds the clock while the pointer is over the gate or focus is inside it. The clock always holds while the gate is off screen.",
+          },
+          {
+            name: "decision",
+            type: '"allow" | "deny" | "expire" | null',
+            description:
+              "Controlled outcome. `null` is a gate still waiting; setting it back to `null` asks again, with the clock re-armed.",
+          },
+          {
+            name: "defaultDecision",
+            type: '"allow" | "deny" | "expire" | null',
+            defaultValue: "null",
+            description: "Where an uncontrolled gate starts.",
+          },
+          {
+            name: "onDecision",
+            type: '(decision: "allow" | "deny" | "expire") => void',
+            description:
+              "Fires with what was decided — by hand, by key, or by the clock, which reports `expire`.",
+          },
+          {
+            name: "allowLabel",
+            type: "string",
+            defaultValue: '"Allow"',
+            description: "The label of the button that says yes.",
+          },
+          {
+            name: "denyLabel",
+            type: "string",
+            defaultValue: '"Deny"',
+            description: "The label of the button that says no.",
+          },
+          {
+            name: "shortcuts",
+            type: "{ allow?: string[]; deny?: string[] }",
+            defaultValue: '{ allow: ["y"], deny: ["n", "Escape"] }',
+            description:
+              "The keys. A single character matches in either case; anything else is compared to `event.key` exactly. The first of each list is what the button's kbd shows.",
+          },
+          {
+            name: "hotkeys",
+            type: '"focus" | "global" | "off"',
+            defaultValue: '"focus"',
+            description:
+              "Where the keys are listened for: inside the gate, anywhere on the page, or nowhere. Global leaves fields alone and stops listening once the gate has resolved.",
+          },
+          {
+            name: "autoFocus",
+            type: "boolean",
+            defaultValue: "false",
+            description:
+              "Focuses the gate on mount so the keys work at once. Off by default, because a gate that arrives mid-conversation should not pull focus from what the reader was doing.",
+          },
+          {
+            name: "label",
+            type: "string",
+            defaultValue: '"Approval"',
+            description: "The first word of the accessible name, and of the announcement.",
+          },
+          {
+            name: "announce",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Announces the request and its outcome through a polite live region. Turn it off for a gate rendered at rest, or when several share a page.",
+          },
+          {
+            name: "footer",
+            type: "React.ReactNode",
+            description:
+              "Content placed below a rule — a note, a link to the run, a way to ask again.",
+          },
+          {
+            name: "variant",
+            type: '"card" | "plain"',
+            defaultValue: '"card"',
+            description:
+              "Plain drops the surrounding rule, background and padding so the gate can sit inside your own container.",
+          },
+          {
+            name: "size",
+            type: '"sm" | "md"',
+            defaultValue: '"md"',
+            description: "Marker, type, button and spacing scale.",
+          },
+          {
+            name: "className",
+            type: "string",
+            description: "Merged onto the root element through `cn`.",
+          },
+        ],
+      },
+    ],
+    usage: `import { ApprovalGate } from "@/components/joinui/approval-gate"
+
+export function Example() {
+  return (
+    <ApprovalGate
+      title="Reinstall the dependencies"
+      reason="The lockfile no longer matches node_modules."
+      tool="bash"
+      meta="~/join-ui"
+      prefix="$"
+      command="rm -rf node_modules .next && pnpm install"
+      risk="high"
+      timeout={30_000}
+      onDecision={(decision) => {
+        if (decision === "allow") run()
+      }}
+    />
+  )
+}`,
+    customization: [
+      {
+        title: "Wire it into a run",
+        description:
+          "The gate knows nothing about the run — it reports what was decided and draws what you tell it — so wiring it into an agent loop is a matter of resolving the pending tool call from onDecision. Expire is the third answer and it is a no: treat it as a deny unless your policy says otherwise. Keep decision controlled, so a gate that survives a re-render still shows what was chosen, and so asking again is a matter of clearing it.",
+        code: `const [decision, setDecision] = React.useState<ApprovalGateDecision | null>(null)
+
+<ApprovalGate
+  title={request.title}
+  reason={request.reason}
+  tool={request.tool}
+  command={request.command}
+  risk={request.risk}
+  timeout={60_000}
+  decision={decision}
+  onDecision={(next) => {
+    setDecision(next)
+    resume(request.id, next === "allow")
+  }}
+/>`,
+      },
+      {
+        title: "Answer from anywhere",
+        description:
+          "In a console-shaped app the reader expects Enter to say yes without first finding the card. Global keys listen on the document while the gate waits and leave anything typed into a field alone; pair them with the keys your shell would use, and let the gate take focus on arrival so the outline shows where the keys are going.",
+        code: `<ApprovalGate
+  title="Run the test suite"
+  tool="bash"
+  command="pnpm test"
+  hotkeys="global"
+  autoFocus
+  shortcuts={{ allow: ["Enter", "y"], deny: ["Escape", "n"] }}
+/>`,
+      },
+      {
+        title: "No clock, no hurry",
+        description:
+          "A request that cannot break anything has no business expiring. Leave timeout unset and the gate waits in blue for as long as it takes, with an icon of your own in the marker instead of the count. Small and plain, it sits inside a message bubble or a sidebar without bringing a card of its own.",
+        code: `import { Globe } from "lucide-react"
+
+<ApprovalGate
+  size="sm"
+  variant="plain"
+  title="Read the open pull requests"
+  tool="fetch"
+  meta="GET · read-only"
+  command="https://api.github.com/repos/d1maash/join-ui/pulls?state=open"
+  icon={<Globe />}
+  risk="low"
+/>`,
+      },
+      {
+        title: "Say what the answer does",
+        description:
+          "“Allow” and “Deny” are the honest defaults, but for a request with consequences the buttons read better when they name them, and the chip's word can be the consequence too. The hue and the glyph stay with the risk; only the words change.",
+        code: `<ApprovalGate
+  title="Rewrite the remote history"
+  tool="git"
+  meta="main"
+  prefix="$"
+  command="git push --force origin main"
+  risk="high"
+  riskLabel="Irreversible"
+  allowLabel="Push anyway"
+  denyLabel="Keep history"
+/>`,
+      },
+      {
+        title: "Render the receipt",
+        description:
+          "A gate loaded from history is a document, not a question. Pass the decision it ended with and it renders at rest — struck through if it was denied, dashed if it lapsed — with no buttons, no clock and, with announce off, nothing said. Nothing replays on mount.",
+        code: `<ApprovalGate
+  size="sm"
+  variant="plain"
+  title="Publish the package"
+  tool="bash"
+  command={["pnpm build", "pnpm publish --access public"]}
+  risk="medium"
+  timeout={20_000}
+  decision="expire"
+  announce={false}
+/>`,
+      },
+      {
+        title: "Retint the risks, and the surface",
+        description:
+          "The hues read the component palette rather than literal colours, so a brand's warning colour is a token override — no props to thread and no variants to add. The command's surface is a wash of the theme's own ink over the card, which is what lets one declaration cover both themes; redeclare it only if you want a console that is a surface in its own right.",
+        language: "css",
+        code: `/* app/globals.css */
+:root,
+.light {
+  /* An amber caution instead of the default ochre. */
+  --caution: oklch(0.6 0.15 60);
+  --caution-soft: oklch(0.965 0.04 70);
+  --caution-foreground: oklch(0.99 0.008 60);
+
+  /* Any CSS colour. The default is 4% of the foreground over whatever is behind it. */
+  --approval-gate-command: oklch(0.21 0.011 48 / 0.04);
+}
+
+.dark {
+  --caution: oklch(0.84 0.14 70);
+  --caution-soft: oklch(0.27 0.05 60);
+  --caution-foreground: oklch(0.18 0.035 60);
+  --approval-gate-command: oklch(0 0 0 / 0.25);
+}`,
+      },
+    ],
+    /**
+     * Shipped with the registry item so `shadcn add` writes the palette into the
+     * consumer's `globals.css`. Both themes are declared, which is what lets the
+     * component avoid `dark:` variants entirely.
+     */
+    cssVars: {
+      theme: {
+        "color-info": "var(--info)",
+        "color-info-soft": "var(--info-soft)",
+        "color-info-foreground": "var(--info-foreground)",
+        "color-positive": "var(--positive)",
+        "color-positive-soft": "var(--positive-soft)",
+        "color-positive-foreground": "var(--positive-foreground)",
+        "color-caution": "var(--caution)",
+        "color-caution-soft": "var(--caution-soft)",
+        "color-caution-foreground": "var(--caution-foreground)",
+        "color-critical": "var(--critical)",
+        "color-critical-soft": "var(--critical-soft)",
+        "color-critical-foreground": "var(--critical-foreground)",
+        "radius-soft-sm": "0.375rem",
+        "radius-soft": "0.625rem",
+        "radius-soft-lg": "1rem",
+      },
+      light: {
+        info: "oklch(0.5 0.17 253)",
+        "info-soft": "oklch(0.965 0.022 253)",
+        "info-foreground": "oklch(0.99 0.005 253)",
+        positive: "oklch(0.5 0.13 158)",
+        "positive-soft": "oklch(0.965 0.03 158)",
+        "positive-foreground": "oklch(0.99 0.008 158)",
+        caution: "oklch(0.53 0.13 68)",
+        "caution-soft": "oklch(0.965 0.04 78)",
+        "caution-foreground": "oklch(0.99 0.008 68)",
+        critical: "oklch(0.52 0.19 23)",
+        "critical-soft": "oklch(0.965 0.025 23)",
+        "critical-foreground": "oklch(0.99 0.006 23)",
+      },
+      dark: {
+        info: "oklch(0.76 0.14 253)",
+        "info-soft": "oklch(0.255 0.058 253)",
+        "info-foreground": "oklch(0.16 0.04 253)",
+        positive: "oklch(0.78 0.14 158)",
+        "positive-soft": "oklch(0.25 0.05 158)",
+        "positive-foreground": "oklch(0.16 0.035 158)",
+        caution: "oklch(0.82 0.14 80)",
+        "caution-soft": "oklch(0.26 0.05 68)",
+        "caution-foreground": "oklch(0.17 0.035 68)",
+        critical: "oklch(0.72 0.17 23)",
+        "critical-soft": "oklch(0.26 0.07 23)",
+        "critical-foreground": "oklch(0.16 0.04 23)",
+      },
+    },
+    related: ["tool-trace", "agent-hive"],
+    since: "2026-09-10",
   }),
 ]
