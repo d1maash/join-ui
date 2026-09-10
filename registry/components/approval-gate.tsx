@@ -968,7 +968,14 @@ function Action({
         className
       )}
       animate={{ scale: animate && pressed ? 0.96 : 1 }}
-      whileTap={animate ? { scale: 0.96 } : undefined}
+      /*
+       * Always declared, because Motion marks anything with a tap gesture as
+       * focusable in the markup it renders on the server; a prop that came and
+       * went with the reduced-motion preference would render two different
+       * buttons and fail to hydrate. Under the preference the dip is simply
+       * nothing.
+       */
+      whileTap={{ scale: animate ? 0.96 : 1 }}
       transition={animate ? PRESS : { duration: 0 }}
     >
       {children}

@@ -55,7 +55,7 @@ export default function ApprovalGatePreview() {
             <div className="flex min-h-7 items-center justify-between gap-3">
               <span
                 className={cn(
-                  "min-w-0 truncate text-xs",
+                  "min-w-0 text-xs leading-snug",
                   decision ? "font-mono text-foreground" : "text-muted-foreground"
                 )}
               >
