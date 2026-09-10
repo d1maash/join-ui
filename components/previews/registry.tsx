@@ -24,6 +24,7 @@ const AgentHivePreview = dynamic(() => import("./agent-hive-preview"))
 const ToolTracePreview = dynamic(() => import("./tool-trace-preview"))
 const GlassCrestPreview = dynamic(() => import("./glass-crest-preview"))
 const CarbonCopyPreview = dynamic(() => import("./carbon-copy-preview"))
+const ApprovalGatePreview = dynamic(() => import("./approval-gate-preview"))
 
 export const previews: Record<string, () => ReactNode> = {
   "status-timeline": () => <StatusTimelinePreview />,
@@ -32,6 +33,7 @@ export const previews: Record<string, () => ReactNode> = {
   "tool-trace": () => <ToolTracePreview />,
   "glass-crest": () => <GlassCrestPreview />,
   "carbon-copy": () => <CarbonCopyPreview />,
+  "approval-gate": () => <ApprovalGatePreview />,
 }
 
 export function renderPreview(slug: string): ReactNode | null {
