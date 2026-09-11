@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, Hand, Hourglass, OctagonAlert, TriangleAlert, X } from "lucide-react"
+import { Check, Hourglass, X } from "lucide-react"
 import {
   AnimatePresence,
   motion,
@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 /** What the reader decided — or, for `expire`, the decision nobody made. */
 export type ApprovalGateDecision = "allow" | "deny" | "expire"
 
-/** How much the request can break. Picks the hue, and the word set beside it. */
+/** How much the request can break. Picks the hue, and the word set beside the title. */
 export type ApprovalGateRisk = "low" | "medium" | "high"
 
 /** Where the shortcut keys are listened for. */
@@ -34,20 +34,20 @@ export interface ApprovalGateProps extends Omit<
 > {
   /** What the agent wants to do, in a few words. */
   title: string
-  /** Why it wants to. Set under the title. */
+  /** Why it wants to. One line under the title. */
   reason?: React.ReactNode
-  /** The tool the agent would call. Set in mono at the head of the command block. */
+  /** The tool the agent would call. Set in mono under the command. */
   tool?: string
   /** The command itself. An array is one entry per line. */
   command?: string | string[]
-  /** Trailing meta on the block's head, set in mono — a working directory, a host. */
+  /** Set beside the tool — a working directory, a branch, a host. */
   meta?: string
   /** A prompt glyph set before each line, and kept out of the selection. */
   prefix?: string
   risk?: ApprovalGateRisk
-  /** Overrides the word the chip shows while the gate is waiting. */
+  /** Overrides the word set beside the title while the gate is waiting. */
   riskLabel?: string
-  /** Replaces the marker's glyph while the gate waits without a clock. */
+  /** Replaces the marker's pip while the gate waits without a clock. */
   icon?: React.ReactNode
   /** Milliseconds the reader has before the gate expires on its own. */
   timeout?: number
@@ -79,9 +79,9 @@ export interface ApprovalGateProps extends Omit<
 type Phase = "pending" | ApprovalGateDecision
 
 /**
- * Spelled out on the chip and in the live region. Hue alone never carries the
- * outcome — this is the word a screen reader announces, and the one that keeps
- * the gate legible for anyone who cannot separate green from red.
+ * Set beside the title and said in the live region. Hue alone never carries
+ * the outcome — this is the word a screen reader announces, and the one that
+ * keeps the gate legible for anyone who cannot separate green from red.
  */
 const DECISION_LABEL: Record<ApprovalGateDecision, string> = {
   allow: "Allowed",
@@ -90,9 +90,9 @@ const DECISION_LABEL: Record<ApprovalGateDecision, string> = {
 }
 
 /**
- * What the chip says while the gate waits. For a request that can break
- * something, the most useful word on the card is how badly; for one that
- * cannot, it is simply that someone is waiting.
+ * The word while the gate waits. For a request that can break something, the
+ * most useful word on the card is how badly; for one that cannot, it is
+ * simply that someone is waiting.
  */
 const WAITING_LABEL: Record<ApprovalGateRisk, string> = {
   low: "Awaiting",
@@ -100,78 +100,45 @@ const WAITING_LABEL: Record<ApprovalGateRisk, string> = {
   high: "Destructive",
 }
 
-const RISK_GLYPH: Record<ApprovalGateRisk, React.ComponentType<{ className?: string }>> = {
-  low: Hand,
-  medium: TriangleAlert,
-  high: OctagonAlert,
-}
-
-interface Tone {
-  ink: string
-  chip: string
-  chipIcon: string
-}
-
 /**
- * One hue per risk while the gate waits, taken from the component palette
- * rather than a literal colour, so a consumer can retint the whole family in
- * `globals.css`. Blue is the in-flight hue elsewhere in the family; the two
- * warmer ones are reserved for a request that can do damage.
- *
- * `allow` is the fill of the button that says yes. It is the one filled shape
- * on the card, and for a destructive request it takes the critical hue, so the
- * shape the reader is about to press says what pressing it does.
+ * Hue is spent only where there is risk. A request that cannot break anything
+ * waits in the page's own ink — a monochrome clock, a muted word — and the
+ * two warmer families are reserved for one that might, or will. Everything
+ * reads the component palette rather than a literal colour, so a consumer can
+ * retint the whole family in `globals.css`.
  */
-const RISK_TONES: Record<ApprovalGateRisk, Tone & { stroke: string; allow: string }> = {
+const RISK_TONES: Record<
+  ApprovalGateRisk,
+  { ink: string; stroke: string; word: string; pip: string }
+> = {
   low: {
-    ink: "text-info",
-    stroke: "stroke-info",
-    chip: "bg-info-soft text-info",
-    chipIcon: "bg-info text-info-foreground",
-    allow: "bg-primary text-primary-foreground hover:bg-primary/90",
+    ink: "text-foreground",
+    stroke: "stroke-foreground",
+    word: "text-muted-foreground",
+    pip: "bg-muted-foreground",
   },
   medium: {
     ink: "text-caution",
     stroke: "stroke-caution",
-    chip: "bg-caution-soft text-caution",
-    chipIcon: "bg-caution text-caution-foreground",
-    allow: "bg-primary text-primary-foreground hover:bg-primary/90",
+    word: "text-caution",
+    pip: "bg-caution",
   },
   high: {
     ink: "text-critical",
     stroke: "stroke-critical",
-    chip: "bg-critical-soft text-critical",
-    chipIcon: "bg-critical text-critical-foreground",
-    allow: "bg-critical text-critical-foreground hover:bg-critical/90",
+    word: "text-critical",
+    pip: "bg-critical",
   },
 }
 
 /** And one per outcome. `ring` is the marker's outline and tint together. */
-const DECISION_TONES: Record<ApprovalGateDecision, Tone & { ring: string; block: string }> = {
-  allow: {
-    ring: "border-positive/35 bg-positive-soft",
-    ink: "text-positive",
-    chip: "bg-positive-soft text-positive",
-    chipIcon: "bg-positive text-positive-foreground",
-    block: "border-positive/30",
-  },
-  deny: {
-    ring: "border-critical/40 bg-critical-soft",
-    ink: "text-critical",
-    chip: "bg-critical-soft text-critical",
-    chipIcon: "bg-critical text-critical-foreground",
-    block: "border-critical/35",
-  },
-  expire: {
-    ring: "border-dashed border-border bg-muted/40",
-    ink: "text-muted-foreground",
-    chip: "bg-muted text-muted-foreground",
-    chipIcon: "bg-muted-foreground/25 text-muted-foreground",
-    block: "border-dashed border-border",
-  },
+const DECISION_TONES: Record<ApprovalGateDecision, { ink: string; ring: string }> = {
+  allow: { ring: "border-positive/35 bg-positive-soft", ink: "text-positive" },
+  deny: { ring: "border-critical/40 bg-critical-soft", ink: "text-critical" },
+  expire: { ring: "border-dashed border-border bg-muted/40", ink: "text-muted-foreground" },
 }
 
-/** The track the clock runs on: a hairline, so the arc over it is the only colour. */
+/** The track the clock runs on: a hairline, so the arc over it is the only mark. */
 const WAITING_RING = "border-border"
 
 /**
@@ -181,15 +148,15 @@ const WAITING_RING = "border-border"
 const SURFACE =
   "var(--approval-gate-command, color-mix(in oklab, var(--foreground) 4%, transparent))"
 
-/* The chip's word, set in the host's interface face — a status is read, not decoded. */
-const MICRO_LABEL = "text-[0.6875rem] leading-none font-medium tracking-[-0.005em]"
+/* The status word, set in the host's interface face — a status is read, not decoded. */
+const MICRO_LABEL = "leading-none font-medium tracking-[-0.005em]"
 
 const DEFAULT_ALLOW = ["y"]
 const DEFAULT_DENY = ["n", "Escape"]
 
 /*
  * The vocabulary, shared with the rest of the family. A move that nothing can
- * countermand half way through — a rule parting, a strike drawing — is a tween
+ * countermand half way through — a strike drawing, a row folding — is a tween
  * on a decisive curve. A ring blooming or a glyph landing can be overtaken by
  * the next state a fraction of a second later, so those ride springs, which
  * carry the velocity they already had into the new target.
@@ -211,34 +178,38 @@ const SIZES = {
   sm: {
     marker: "size-6",
     glyph: "size-3",
+    pip: "size-1.5",
     count: "text-[0.5625rem]",
     row: "min-h-6",
     title: "text-[0.8125rem]",
+    word: "text-[0.625rem]",
     reason: "text-xs",
-    head: "text-[0.625rem]",
-    body: "text-[0.6875rem]",
-    button: "h-7 gap-1.5 px-2.5 text-[0.6875rem]",
-    kbd: "h-3.5 min-w-3.5 text-[0.5625rem]",
-    chip: "py-0.5 pr-2 pl-0.5",
+    command: "px-2.5 py-1.5 text-[0.6875rem]",
+    caption: "text-[0.625rem]",
+    button: "h-6 gap-1.5 px-2 text-[0.6875rem]",
+    hint: "text-[0.625rem]",
     gap: "gap-2.5",
-    stack: "gap-2.5",
-    padding: "p-4",
+    stack: "gap-2",
+    padding: "p-3.5",
+    footer: "mt-3 pt-3",
   },
   md: {
     marker: "size-7",
     glyph: "size-3.5",
+    pip: "size-1.5",
     count: "text-[0.625rem]",
     row: "min-h-7",
     title: "text-sm",
+    word: "text-[0.6875rem]",
     reason: "text-[0.8125rem]",
-    head: "text-[0.6875rem]",
-    body: "text-xs",
-    button: "h-8 gap-2 px-3 text-xs",
-    kbd: "h-4 min-w-4 text-[0.625rem]",
-    chip: "py-1 pr-2.5 pl-1",
+    command: "px-3 py-2 text-xs",
+    caption: "text-[0.6875rem]",
+    button: "h-7 gap-2 px-2.5 text-xs",
+    hint: "text-[0.6875rem]",
     gap: "gap-3",
-    stack: "gap-3",
-    padding: "p-5",
+    stack: "gap-2.5",
+    padding: "p-4",
+    footer: "mt-3.5 pt-3.5",
   },
 } as const
 
@@ -250,18 +221,21 @@ type Scale = (typeof SIZES)[keyof typeof SIZES]
  * a person: the tool it wants, the command it would give, and two ways to
  * answer.
  *
- * At rest it is a still card. The one thing that moves while it waits is the
- * clock — a hairline ring around the marker, draining clockwise from twelve
- * with the seconds left set inside it — and it holds whenever the reader is
- * plainly reading: pointer over the card, focus inside it, or the card
- * scrolled out of view. A decision is one move each way. Allowing parts the
- * rule above the buttons and folds them away; denying draws a strike through
- * the command, left to right, and takes the ink out of it as it goes. Letting
- * the clock run out does neither: the ring goes dashed, the command dims, and
- * the chip says so.
+ * At rest it is a still card, and a quiet one — a title, a word beside it, the
+ * command on a wash of the page's own ink, and the two answers. The one thing
+ * that moves while it waits is the clock: a hairline ring around the marker,
+ * draining clockwise from twelve with the seconds left set inside it. It
+ * holds whenever the reader is plainly reading — pointer over the card, focus
+ * inside it, the card scrolled out of view — because a timeout is a safety
+ * net for a gate nobody is looking at, not a race against the person in front
+ * of it. A decision is one move each way: allowing lets the buttons go and
+ * sets a tick in the ring; denying draws a strike through the command, left
+ * to right, and takes the ink out of it as it goes; letting the clock run out
+ * does neither — the ring goes dashed, the command dims, and the word says so.
  *
- * Every outcome carries a glyph and a spoken word as well as a hue, the keys
- * are declared on the buttons through `aria-keyshortcuts`, and the whole thing
+ * The keys are declared on the buttons through `aria-keyshortcuts` and shown
+ * beside the labels only while they would actually work, every outcome
+ * carries a glyph and a spoken word as well as a hue, and the whole thing
  * resolves instantly under `prefers-reduced-motion`.
  */
 export function ApprovalGate({
@@ -328,6 +302,13 @@ export function ApprovalGate({
   const inView = useInView(root, { amount: 0.4, initial: true })
   const held = !inView || (pauseWhileReading && (hovered || focused))
 
+  /*
+   * The key hints are shown only while the keys would work: always for global
+   * keys, and otherwise once focus is inside the gate — a click on the card
+   * puts it there. A hint for a key that does nothing yet is a small lie.
+   */
+  const hints = hotkeys === "global" || (hotkeys === "focus" && focused)
+
   /** The button a shortcut key pressed, so it can be seen to go down. */
   const [pressed, setPressed] = React.useState<ApprovalGateDecision | null>(null)
 
@@ -381,7 +362,7 @@ export function ApprovalGate({
   }, [hotkeys, pending])
 
   const waitingWord = riskLabel ?? WAITING_LABEL[risk]
-  const chipWord = pending ? waitingWord : DECISION_LABEL[phase]
+  const word = pending ? waitingWord : DECISION_LABEL[phase]
 
   /*
    * The one thing said out loud. A live region announces changes and not
@@ -405,40 +386,14 @@ export function ApprovalGate({
 
   const lines = command === undefined ? [] : Array.isArray(command) ? command : [command]
   const riskTone = RISK_TONES[risk]
-  const tone: Tone = pending ? riskTone : DECISION_TONES[phase]
-  const RiskGlyph = RISK_GLYPH[risk]
+  const caption = Boolean(tool || meta)
 
   /*
-   * The actions row folds away on any outcome. On an allow the rule above it
-   * parts first — each half retracts to its own edge, the gate opening — and
-   * the fold waits for it; on a deny or an expiry the rule stays until the
-   * row has gone. `custom` carries the outcome into the exit, because by the
-   * time the row is leaving, `phase` has already moved on.
+   * The last row holds the caption on the left and the answers on the right,
+   * and stays once the answers have gone, so the card does not change height
+   * under a decision. Only a gate with nothing to caption folds the row away.
    */
-  const fold = {
-    open: { height: "auto", opacity: 1 },
-    exit: (from: Phase) => ({
-      height: 0,
-      opacity: 0,
-      transition: animate
-        ? {
-            height: { duration: 0.28, ease: EASE, delay: from === "allow" ? 0.18 : 0.1 },
-            opacity: {
-              duration: 0.14,
-              ease: "linear" as const,
-              delay: from === "allow" ? 0.14 : 0.06,
-            },
-          }
-        : { duration: 0 },
-    }),
-  }
-  const part = {
-    open: { scaleX: 1 },
-    exit: (from: Phase) => ({
-      scaleX: from === "allow" ? 0 : 1,
-      transition: animate ? { duration: 0.22, ease: EASE } : { duration: 0 },
-    }),
-  }
+  const showRow = caption || pending
 
   return (
     <div
@@ -488,10 +443,10 @@ export function ApprovalGate({
           count={count}
           wholeSeconds={wholeSeconds}
           icon={icon}
-          Glyph={RiskGlyph}
-          ink={tone.ink}
+          ink={pending ? riskTone.ink : DECISION_TONES[phase].ink}
           ring={pending ? WAITING_RING : DECISION_TONES[phase].ring}
           stroke={riskTone.stroke}
+          pip={riskTone.pip}
           animate={animate}
           scale={scale}
         />
@@ -509,15 +464,24 @@ export function ApprovalGate({
               {title}
             </p>
 
-            <Chip
-              phase={phase}
-              risk={risk}
-              word={chipWord}
-              tone={tone}
-              Glyph={RiskGlyph}
-              animate={animate}
-              scale={scale}
-            />
+            {/*
+              Stacked in a single grid cell so the outgoing and incoming words
+              overlap instead of shunting the row mid-cross-fade.
+            */}
+            <span className="grid shrink-0">
+              <Swap
+                token={word}
+                animate={animate}
+                className={cn(
+                  MICRO_LABEL,
+                  "col-start-1 row-start-1 whitespace-nowrap",
+                  scale.word,
+                  pending ? riskTone.word : DECISION_TONES[phase].ink
+                )}
+              >
+                {word}
+              </Swap>
+            </span>
           </div>
 
           {reason ? (
@@ -530,74 +494,100 @@ export function ApprovalGate({
             <Command
               lines={lines}
               prefix={prefix}
-              tool={tool}
-              meta={meta}
               phase={phase}
               animate={animate}
               scale={scale}
             />
           ) : null}
 
-          <AnimatePresence
-            initial={false}
-            custom={phase}
-            onExitComplete={() => setPressed(null)}
-          >
-            {pending ? (
+          <AnimatePresence initial={false}>
+            {showRow ? (
               <motion.div
-                key="actions"
-                className="overflow-hidden"
+                key="row"
+                className={cn(!caption && "overflow-hidden")}
                 initial={false}
-                animate="open"
-                exit="exit"
-                custom={phase}
-                variants={fold}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{
+                  height: 0,
+                  opacity: 0,
+                  transition: animate
+                    ? {
+                        height: { duration: 0.24, ease: EASE, delay: 0.12 },
+                        opacity: { duration: 0.12, ease: "linear", delay: 0.08 },
+                      }
+                    : { duration: 0 },
+                }}
               >
-                <div className="relative pt-3.5">
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 top-0 h-px"
-                  >
-                    <motion.span
-                      className="absolute inset-y-0 left-0 w-1/2 bg-border"
-                      style={{ transformOrigin: "left center" }}
-                      custom={phase}
-                      variants={part}
-                    />
-                    <motion.span
-                      className="absolute inset-y-0 right-0 w-1/2 bg-border"
-                      style={{ transformOrigin: "right center" }}
-                      custom={phase}
-                      variants={part}
-                    />
-                  </span>
-
-                  <div className="flex items-center justify-between gap-3">
-                    <Action
-                      onClick={() => decide("deny")}
-                      keys={denyKeys}
-                      pressed={pressed === "deny"}
-                      animate={animate}
+                <div className={cn("flex items-center justify-between gap-3", scale.row)}>
+                  {caption ? (
+                    <span
                       className={cn(
-                        "border border-border text-foreground hover:bg-muted",
-                        scale.button
+                        "min-w-0 truncate font-mono text-muted-foreground",
+                        scale.caption
                       )}
-                      kbdClassName={scale.kbd}
                     >
-                      {denyLabel}
-                    </Action>
+                      {tool}
+                      {tool && meta ? (
+                        <span aria-hidden="true" className="mx-1.5 opacity-50">
+                          ·
+                        </span>
+                      ) : null}
+                      {meta}
+                    </span>
+                  ) : (
+                    <span />
+                  )}
 
-                    <Action
-                      onClick={() => decide("allow")}
-                      keys={allowKeys}
-                      pressed={pressed === "allow"}
-                      animate={animate}
-                      className={cn("border border-transparent", riskTone.allow, scale.button)}
-                      kbdClassName={scale.kbd}
-                    >
-                      {allowLabel}
-                    </Action>
-                  </div>
+                  <AnimatePresence initial={false} onExitComplete={() => setPressed(null)}>
+                    {pending ? (
+                      <motion.div
+                        key="actions"
+                        className="flex shrink-0 items-center gap-1"
+                        initial={false}
+                        /*
+                         * The answers leave the way the gate opens: a step to
+                         * the right and gone. Nothing else on the card moves.
+                         */
+                        exit={{
+                          opacity: 0,
+                          x: 6,
+                          transition: animate
+                            ? { duration: 0.16, ease: EASE }
+                            : { duration: 0 },
+                        }}
+                      >
+                        <Action
+                          onClick={() => decide("deny")}
+                          keys={denyKeys}
+                          hint={hints}
+                          pressed={pressed === "deny"}
+                          animate={animate}
+                          className={cn(
+                            "text-muted-foreground hover:bg-muted hover:text-foreground",
+                            scale.button
+                          )}
+                          hintClassName={scale.hint}
+                        >
+                          {denyLabel}
+                        </Action>
+
+                        <Action
+                          onClick={() => decide("allow")}
+                          keys={allowKeys}
+                          hint={hints}
+                          pressed={pressed === "allow"}
+                          animate={animate}
+                          className={cn(
+                            "bg-primary text-primary-foreground hover:bg-primary/90",
+                            scale.button
+                          )}
+                          hintClassName={scale.hint}
+                        >
+                          {allowLabel}
+                        </Action>
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
                 </div>
               </motion.div>
             ) : null}
@@ -606,9 +596,7 @@ export function ApprovalGate({
       </div>
 
       {footer ? (
-        <div className={cn(chrome ? "mt-4 border-t border-border pt-3.5" : "pt-3.5")}>
-          {footer}
-        </div>
+        <div className={cn(chrome && "border-t border-border", scale.footer)}>{footer}</div>
       ) : null}
 
       {announce ? (
@@ -625,7 +613,7 @@ export function ApprovalGate({
  * cross-fades one whole marker into the next — the hairline track expands
  * away as the tinted ring blooms up from the centre — rather than snapping a
  * border colour. While the gate waits with a clock, the arc runs on top of
- * the track and the seconds sit inside; without one, the risk's glyph does.
+ * the track and the seconds sit inside; without one, a pip does.
  */
 function Marker({
   phase,
@@ -635,10 +623,10 @@ function Marker({
   count,
   wholeSeconds,
   icon,
-  Glyph,
   ink,
   ring,
   stroke,
+  pip,
   animate,
   scale,
 }: {
@@ -649,14 +637,14 @@ function Marker({
   count: ReturnType<typeof useMotionValue<string>>
   wholeSeconds: number
   icon?: React.ReactNode
-  Glyph: React.ComponentType<{ className?: string }>
   ink: string
   ring: string
   stroke: string
+  pip: string
   animate: boolean
   scale: Scale
 }) {
-  const token = counting ? "clock" : phase === "pending" ? "glyph" : phase
+  const token = counting ? "clock" : phase === "pending" ? "pip" : phase
 
   return (
     <span
@@ -704,7 +692,7 @@ function Marker({
           className={cn(
             "pointer-events-none absolute inset-0 size-full",
             "transition-opacity duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
-            held && "opacity-40"
+            held && "opacity-50"
           )}
           style={{ transform: "rotate(90deg) scaleX(-1)" }}
         >
@@ -736,83 +724,23 @@ function Marker({
             <span className="sr-only"> of {wholeSeconds} seconds left</span>
           </span>
         ) : phase === "pending" ? (
-          <span
-            aria-hidden="true"
-            className={cn(
-              "flex items-center justify-center [&_svg]:size-full [&_svg]:shrink-0",
-              scale.glyph
-            )}
-          >
-            {icon ?? <Glyph />}
-          </span>
+          icon ? (
+            <span
+              aria-hidden="true"
+              className={cn(
+                "flex items-center justify-center [&_svg]:size-full [&_svg]:shrink-0",
+                scale.glyph
+              )}
+            >
+              {icon}
+            </span>
+          ) : (
+            <span aria-hidden="true" className={cn("rounded-full", scale.pip, pip)} />
+          )
         ) : (
           <OutcomeGlyph decision={phase} className={scale.glyph} />
         )}
       </Swap>
-    </span>
-  )
-}
-
-/** The chip: the risk while the gate waits, the outcome once it does not. */
-function Chip({
-  phase,
-  risk,
-  word,
-  tone,
-  Glyph,
-  animate,
-  scale,
-}: {
-  phase: Phase
-  risk: ApprovalGateRisk
-  word: string
-  tone: Tone
-  Glyph: React.ComponentType<{ className?: string }>
-  animate: boolean
-  scale: Scale
-}) {
-  return (
-    <span
-      className={cn(
-        "flex shrink-0 items-center gap-1.5 rounded-full",
-        "transition-colors duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
-        scale.chip,
-        tone.chip
-      )}
-    >
-      <span
-        className={cn(
-          "flex size-5 items-center justify-center rounded-full",
-          "transition-colors duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
-          tone.chipIcon
-        )}
-      >
-        <Swap
-          token={phase === "pending" ? risk : phase}
-          animate={animate}
-          className="flex items-center justify-center"
-        >
-          {phase === "pending" ? (
-            <Glyph aria-hidden="true" className="size-3 shrink-0" />
-          ) : (
-            <OutcomeGlyph decision={phase} className="size-3" />
-          )}
-        </Swap>
-      </span>
-
-      {/*
-        Stacked in a single grid cell so the outgoing and incoming words
-        overlap instead of shunting the chip sideways mid-cross-fade.
-      */}
-      <span className="grid">
-        <Swap
-          token={word}
-          animate={animate}
-          className={cn(MICRO_LABEL, "col-start-1 row-start-1 whitespace-nowrap")}
-        >
-          {word}
-        </Swap>
-      </span>
     </span>
   )
 }
@@ -830,87 +758,55 @@ function Chip({
 function Command({
   lines,
   prefix,
-  tool,
-  meta,
   phase,
   animate,
   scale,
 }: {
   lines: string[]
   prefix?: string
-  tool?: string
-  meta?: string
   phase: Phase
   animate: boolean
   scale: Scale
 }) {
-  const body = cn(
-    "px-3 py-2.5 font-mono leading-relaxed break-words whitespace-pre-wrap",
-    scale.body
-  )
+  const body = cn("font-mono leading-relaxed break-words whitespace-pre-wrap", scale.command)
 
   return (
-    <div
-      className={cn(
-        "overflow-hidden rounded-soft-sm border",
-        "transition-colors duration-[var(--duration-slow,320ms)] ease-[var(--ease-out-soft,ease-out)]",
-        phase === "pending" ? "border-border/70" : DECISION_TONES[phase].block
-      )}
-      style={{ background: SURFACE }}
-    >
-      {tool || meta ? (
-        <div
-          className={cn(
-            "flex items-center gap-3 border-b border-border/60 px-3 py-1.5 font-mono",
-            scale.head
-          )}
-        >
-          {tool ? <span className="font-medium text-foreground">{tool}</span> : null}
-          {meta ? (
-            <span className="min-w-0 flex-1 truncate text-right text-muted-foreground">
-              {meta}
-            </span>
-          ) : null}
-        </div>
-      ) : null}
-
-      <div className="relative">
-        <div
-          className={cn(
-            body,
-            "transition-colors duration-[var(--duration-slow,320ms)] ease-[var(--ease-out-soft,ease-out)]",
-            phase === "expire" ? "text-muted-foreground" : "text-foreground"
-          )}
-        >
-          <Lines lines={lines} prefix={prefix} />
-        </div>
-
-        <AnimatePresence initial={false}>
-          {phase === "deny" ? (
-            <motion.div
-              key="strike"
-              aria-hidden="true"
-              className={cn(
-                body,
-                "pointer-events-none absolute inset-0 text-muted-foreground line-through decoration-critical/70"
-              )}
-              initial={{ clipPath: "inset(0% 100% 0% 0%)" }}
-              animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
-              exit={{ opacity: 0 }}
-              transition={
-                animate
-                  ? {
-                      clipPath: { duration: 0.46, ease: EASE, delay: 0.12 },
-                      opacity: { duration: 0.12, ease: EASE },
-                    }
-                  : { duration: 0 }
-              }
-            >
-              <Lines lines={lines} prefix={prefix} />
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+    <div className="relative overflow-hidden rounded-soft-sm" style={{ background: SURFACE }}>
+      <div
+        className={cn(
+          body,
+          "transition-colors duration-[var(--duration-slow,320ms)] ease-[var(--ease-out-soft,ease-out)]",
+          phase === "expire" ? "text-muted-foreground" : "text-foreground"
+        )}
+      >
+        <Lines lines={lines} prefix={prefix} />
       </div>
+
+      <AnimatePresence initial={false}>
+        {phase === "deny" ? (
+          <motion.div
+            key="strike"
+            aria-hidden="true"
+            className={cn(
+              body,
+              "pointer-events-none absolute inset-0 text-muted-foreground line-through decoration-critical/70"
+            )}
+            initial={{ clipPath: "inset(0% 100% 0% 0%)" }}
+            animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+            exit={{ opacity: 0 }}
+            transition={
+              animate
+                ? {
+                    clipPath: { duration: 0.46, ease: EASE, delay: 0.1 },
+                    opacity: { duration: 0.12, ease: EASE },
+                  }
+                : { duration: 0 }
+            }
+          >
+            <Lines lines={lines} prefix={prefix} />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 }
@@ -924,7 +820,7 @@ function Lines({ lines, prefix }: { lines: string[]; prefix?: string }) {
   return lines.map((line, index) => (
     <span key={index} className="block">
       {prefix ? (
-        <span aria-hidden="true" className="mr-2 inline-block opacity-60 select-none">
+        <span aria-hidden="true" className="mr-2 inline-block opacity-50 select-none">
           {prefix}
         </span>
       ) : null}
@@ -936,25 +832,29 @@ function Lines({ lines, prefix }: { lines: string[]; prefix?: string }) {
 /**
  * One of the two answers. `whileTap` answers the pointer; `pressed` is the
  * same dip when the key did it, so the button is seen to go down either way.
+ * The key is set after the label in mono, and takes its width whether or not
+ * it is shown, so the button never changes size when the hints come on.
  */
 function Action({
   onClick,
   keys,
+  hint,
   pressed,
   animate,
   className,
-  kbdClassName,
+  hintClassName,
   children,
 }: {
   onClick: () => void
   keys: string[]
+  hint: boolean
   pressed: boolean
   animate: boolean
   className: string
-  kbdClassName: string
+  hintClassName: string
   children: React.ReactNode
 }) {
-  const hint = keys[0]
+  const key = keys[0]
 
   return (
     <motion.button
@@ -964,7 +864,7 @@ function Action({
       className={cn(
         "inline-flex cursor-pointer items-center rounded-soft font-medium whitespace-nowrap",
         "transition-colors duration-[var(--duration-fast,140ms)] ease-[var(--ease-out-soft,ease-out)]",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
         className
       )}
       animate={{ scale: animate && pressed ? 0.96 : 1 }}
@@ -979,16 +879,18 @@ function Action({
       transition={animate ? PRESS : { duration: 0 }}
     >
       {children}
-      {hint ? (
-        <kbd
+      {key ? (
+        <span
           aria-hidden="true"
           className={cn(
-            "inline-flex items-center justify-center rounded-soft-sm border border-current/25 px-1 font-mono leading-none font-medium opacity-70",
-            kbdClassName
+            "font-mono leading-none font-normal",
+            "transition-opacity duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
+            hint ? "opacity-55" : "opacity-0",
+            hintClassName
           )}
         >
-          {keyLabel(hint)}
-        </kbd>
+          {keyLabel(key)}
+        </span>
       ) : null}
     </motion.button>
   )
@@ -1124,7 +1026,7 @@ function formatCount(seconds: number): string {
   return whole >= 100 ? `${Math.ceil(whole / 60)}m` : String(whole)
 }
 
-/** What the kbd on a button shows for a key name. */
+/** What the hint beside a button shows for a key name. */
 function keyLabel(key: string): string {
   if (key === "Escape") return "Esc"
   if (key === "Enter") return "↵"
