@@ -404,9 +404,6 @@
       ],
       "cssVars": {
         "theme": {
-          "color-info": "var(--info)",
-          "color-info-soft": "var(--info-soft)",
-          "color-info-foreground": "var(--info-foreground)",
           "color-positive": "var(--positive)",
           "color-positive-soft": "var(--positive-soft)",
           "color-positive-foreground": "var(--positive-foreground)",
@@ -421,9 +418,6 @@
           "radius-soft-lg": "1rem"
         },
         "light": {
-          "info": "oklch(0.5 0.17 253)",
-          "info-soft": "oklch(0.965 0.022 253)",
-          "info-foreground": "oklch(0.99 0.005 253)",
           "positive": "oklch(0.5 0.13 158)",
           "positive-soft": "oklch(0.965 0.03 158)",
           "positive-foreground": "oklch(0.99 0.008 158)",
@@ -435,9 +429,6 @@
           "critical-foreground": "oklch(0.99 0.006 23)"
         },
         "dark": {
-          "info": "oklch(0.76 0.14 253)",
-          "info-soft": "oklch(0.255 0.058 253)",
-          "info-foreground": "oklch(0.16 0.04 253)",
           "positive": "oklch(0.78 0.14 158)",
           "positive-soft": "oklch(0.25 0.05 158)",
           "positive-foreground": "oklch(0.16 0.035 158)",
