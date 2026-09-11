@@ -2115,7 +2115,7 @@ export function Example() {
     description:
       "An inline request from an agent to run a command: the tool, the command, a clock that holds while you read, and two keys to answer with.",
     overview:
-      "ApprovalGate is the moment an agent stops and asks. Where ToolTrace is what a run looks like from the inside, this is the one step in it that cannot happen without a person: the tool it wants, the command it would give, why, and two ways to answer. At rest it is a still card. The one thing that moves while it waits is the clock — a hairline ring around the marker, draining clockwise from twelve with the seconds left set inside it — and it holds whenever the reader is plainly reading: pointer over the card, focus inside it, or the card scrolled out of view, because a timeout is a safety net for a gate nobody is looking at rather than a race against the person in front of it. Risk picks the hue and the word: blue and “Awaiting” for a request that cannot break anything, caution and “Caution” for one that might, critical and “Destructive” for one that will, with the button that says yes filled in that same hue. A decision is one move each way. Allowing parts the rule above the buttons and folds them away; denying draws a strike through the command, left to right, and takes the ink out of it as it goes; letting the clock run out does neither — the ring goes dashed, the command dims, and the chip says so. The keys are declared on the buttons through aria-keyshortcuts, every outcome carries a glyph and a spoken word as well as a hue, and the whole thing resolves instantly under prefers-reduced-motion.",
+      "ApprovalGate is the moment an agent stops and asks. Where ToolTrace is what a run looks like from the inside, this is the one step in it that cannot happen without a person: the tool it wants, the command it would give, and two ways to answer. At rest it is a still card, and a quiet one — a title, a word beside it, the command on a wash of the page's own ink, and the two answers. The one thing that moves while it waits is the clock, a hairline ring around the marker draining clockwise from twelve with the seconds left set inside it, and it holds whenever the reader is plainly reading: pointer over the card, focus inside it, or the card scrolled out of view, because a timeout is a safety net for a gate nobody is looking at rather than a race against the person in front of it. Hue is spent only where there is risk. A request that cannot break anything waits in the page's own ink with the word “Awaiting” beside it; one that might waits in caution and says so; one that will waits in critical and says “Destructive”. A decision is one move each way: allowing lets the buttons go and sets a tick in the ring; denying draws a strike through the command, left to right, and takes the ink out of it as it goes; letting the clock run out does neither — the ring goes dashed, the command dims, and the word says so. The keys are declared on the buttons through aria-keyshortcuts and shown beside the labels only while they would actually work, every outcome carries a glyph and a spoken word as well as a hue, and the whole thing resolves instantly under prefers-reduced-motion.",
     category: "Feedback",
     tags: [
       "ai",
@@ -2137,16 +2137,17 @@ export function Example() {
     accessibility: [
       "The gate is a `group` named by its title, with the `label` — “Approval” by default — spoken first, so a screen reader hears “Approval: Reinstall the dependencies” before anything else.",
       "Its arrival is announced. A live region reports changes rather than content that was there on load, so the request is written into it a frame after the gate renders — which is what gets a gate that appears mid-conversation announced at all — and the outcome replaces it once there is one.",
-      "Both answers are real `button` elements, and each declares its keys through `aria-keyshortcuts`, which is the attribute assistive technology reads shortcuts from. The visible `kbd` beside each label is decoration, and hidden.",
+      "Both answers are real `button` elements, and each declares its keys through `aria-keyshortcuts`, which is the attribute assistive technology reads shortcuts from. The hint set after each label is decoration and hidden; it is shown only while the keys would work — always for global keys, otherwise once focus is inside the gate — so it never promises a key that does nothing.",
       "The keys never fight the buttons: a key that would activate the focused button anyway — Enter, Space — is left to it, so an answer is never given twice, and a shortcut typed into a field is left alone entirely.",
       "The countdown is a `timer` whose visible number is followed by a hidden “of 30 seconds left”, and it is not live: a clock announcing every second is noise, and the time allowed is already in the announcement.",
       "A time limit on a decision is only acceptable if the person can defeat it, which is WCAG 2.2.1. The clock holds while focus is inside the gate, so a keyboard user who has reached the buttons is never timed out of them, and it holds under the pointer for the same reason. Leave `timeout` unset and there is no limit at all.",
-      "Colour is never the only signal, which satisfies WCAG 1.4.1: the risk has a glyph and a word beside its hue, and so does every outcome — a tick, a cross, an hourglass, and “Allowed”, “Denied”, “Expired” spelled out on the chip.",
+      "Colour is never the only signal, which satisfies WCAG 1.4.1: the risk is a word beside the title as well as a hue, and every outcome is a glyph in the ring and a word beside the title — a tick, a cross, an hourglass; “Allowed”, “Denied”, “Expired”.",
       "A denied command is struck through, not merely dimmed, so the refusal survives a monochrome print. The struck copy is a second rendering laid over the first and hidden from assistive technology; the plain text underneath is what gets read, and it is the text you can select.",
       "Focus is kept. When a decision removes the buttons, focus that was on one of them is handed to the gate itself rather than dropped to the document — the gate is focusable for that reason, and so that the keys work after a click on it.",
+      "The card does not change height under a decision: the row the answers sat in stays, with the tool and its meta still in it, so nothing below the gate jumps as it resolves.",
       "The clock runs on the frame loop, so it stops in a background tab and picks up where it left off, and each step is capped so that one long frame on return cannot expire a gate the reader never saw.",
       "Nothing animates on mount: a gate rendered with its outcome already known is a still drawing, and a struck command does not strike itself again on load.",
-      "Under `prefers-reduced-motion` every transition resolves at zero duration — the ring steps once a second instead of sweeping, the strike appears whole, and the buttons leave without folding.",
+      "Under `prefers-reduced-motion` every transition resolves at zero duration — the ring steps once a second instead of sweeping, the strike appears whole, and the answers simply go.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
     ],
     keyboard: [
@@ -2182,13 +2183,13 @@ export function Example() {
           {
             name: "reason",
             type: "React.ReactNode",
-            description: "Why it wants to. Set under the title in the muted face.",
+            description: "Why it wants to. One line under the title, in the muted face.",
           },
           {
             name: "tool",
             type: "string",
             description:
-              "The tool the agent would call — bash, git, fetch. Set in mono at the head of the command block.",
+              "The tool the agent would call — bash, git, fetch. Set in mono under the command.",
           },
           {
             name: "command",
@@ -2200,7 +2201,7 @@ export function Example() {
             name: "meta",
             type: "string",
             description:
-              "Trailing meta on the block's head — a working directory, a branch, a host. Set in mono, muted.",
+              "Set beside the tool under the command — a working directory, a branch, a host.",
           },
           {
             name: "prefix",
@@ -2213,18 +2214,18 @@ export function Example() {
             type: '"low" | "medium" | "high"',
             defaultValue: '"low"',
             description:
-              "Picks the hue and the word: blue and “Awaiting”, caution and “Caution”, critical and “Destructive”. High also fills the Allow button in the critical hue.",
+              "Picks the hue and the word beside the title: the page's own ink and “Awaiting”, caution and “Caution”, critical and “Destructive”.",
           },
           {
             name: "riskLabel",
             type: "string",
-            description: "Overrides the word the chip shows while the gate waits.",
+            description: "Overrides the word set beside the title while the gate waits.",
           },
           {
             name: "icon",
             type: "React.ReactNode",
             description:
-              "Replaces the marker's glyph while the gate waits without a clock. Sized by the component, so pass a bare icon element.",
+              "Replaces the marker's pip while the gate waits without a clock. Sized by the component, so pass a bare icon element.",
           },
           {
             name: "timeout",
@@ -2274,7 +2275,7 @@ export function Example() {
             type: "{ allow?: string[]; deny?: string[] }",
             defaultValue: '{ allow: ["y"], deny: ["n", "Escape"] }',
             description:
-              "The keys. A single character matches in either case; anything else is compared to `event.key` exactly. The first of each list is what the button's kbd shows.",
+              "The keys. A single character matches in either case; anything else is compared to `event.key` exactly. The first of each list is the hint shown after the button's label.",
           },
           {
             name: "hotkeys",
@@ -2306,8 +2307,7 @@ export function Example() {
           {
             name: "footer",
             type: "React.ReactNode",
-            description:
-              "Content placed below a rule — a note, a link to the run, a way to ask again.",
+            description: "Content placed below a rule — a note, a link to the run.",
           },
           {
             name: "variant",
@@ -2373,7 +2373,7 @@ export function Example() {
       {
         title: "Answer from anywhere",
         description:
-          "In a console-shaped app the reader expects Enter to say yes without first finding the card. Global keys listen on the document while the gate waits and leave anything typed into a field alone; pair them with the keys your shell would use, and let the gate take focus on arrival so the outline shows where the keys are going.",
+          "In a console-shaped app the reader expects Enter to say yes without first finding the card. Global keys listen on the document while the gate waits and leave anything typed into a field alone, and the hints stay on because the keys are always live. Pair them with the keys your shell would use, and let the gate take focus on arrival so the outline shows where an answer is going.",
         code: `<ApprovalGate
   title="Run the test suite"
   tool="bash"
@@ -2386,7 +2386,7 @@ export function Example() {
       {
         title: "No clock, no hurry",
         description:
-          "A request that cannot break anything has no business expiring. Leave timeout unset and the gate waits in blue for as long as it takes, with an icon of your own in the marker instead of the count. Small and plain, it sits inside a message bubble or a sidebar without bringing a card of its own.",
+          "A request that cannot break anything has no business expiring. Leave timeout unset and the gate waits in the page's own ink for as long as it takes, with an icon of your own in the marker instead of the pip. Small and plain, it sits inside a message bubble or a sidebar without bringing a card of its own.",
         code: `import { Globe } from "lucide-react"
 
 <ApprovalGate
@@ -2394,8 +2394,8 @@ export function Example() {
   variant="plain"
   title="Read the open pull requests"
   tool="fetch"
-  meta="GET · read-only"
-  command="https://api.github.com/repos/d1maash/join-ui/pulls?state=open"
+  meta="read-only"
+  command="GET https://api.github.com/repos/d1maash/join-ui/pulls?state=open"
   icon={<Globe />}
   risk="low"
 />`,
@@ -2403,7 +2403,7 @@ export function Example() {
       {
         title: "Say what the answer does",
         description:
-          "“Allow” and “Deny” are the honest defaults, but for a request with consequences the buttons read better when they name them, and the chip's word can be the consequence too. The hue and the glyph stay with the risk; only the words change.",
+          "“Allow” and “Deny” are the honest defaults, but for a request with consequences the buttons read better when they name them, and the word beside the title can be the consequence too. The hue and the ring stay with the risk; only the words change.",
         code: `<ApprovalGate
   title="Rewrite the remote history"
   tool="git"
@@ -2464,9 +2464,6 @@ export function Example() {
      */
     cssVars: {
       theme: {
-        "color-info": "var(--info)",
-        "color-info-soft": "var(--info-soft)",
-        "color-info-foreground": "var(--info-foreground)",
         "color-positive": "var(--positive)",
         "color-positive-soft": "var(--positive-soft)",
         "color-positive-foreground": "var(--positive-foreground)",
@@ -2481,9 +2478,6 @@ export function Example() {
         "radius-soft-lg": "1rem",
       },
       light: {
-        info: "oklch(0.5 0.17 253)",
-        "info-soft": "oklch(0.965 0.022 253)",
-        "info-foreground": "oklch(0.99 0.005 253)",
         positive: "oklch(0.5 0.13 158)",
         "positive-soft": "oklch(0.965 0.03 158)",
         "positive-foreground": "oklch(0.99 0.008 158)",
@@ -2495,9 +2489,6 @@ export function Example() {
         "critical-foreground": "oklch(0.99 0.006 23)",
       },
       dark: {
-        info: "oklch(0.76 0.14 253)",
-        "info-soft": "oklch(0.255 0.058 253)",
-        "info-foreground": "oklch(0.16 0.04 253)",
         positive: "oklch(0.78 0.14 158)",
         "positive-soft": "oklch(0.25 0.05 158)",
         "positive-foreground": "oklch(0.16 0.035 158)",
