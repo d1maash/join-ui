@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Globe, RefreshCw } from "lucide-react"
+import { Globe, RotateCcw } from "lucide-react"
 
 import {
   ApprovalGate,
@@ -17,13 +17,6 @@ import { cn } from "@/lib/utils"
 const PAIR = "grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-3"
 const ALIGNED = "lg:row-span-2 lg:grid lg:grid-rows-subgrid"
 
-/** What the live gate reports back, in the shape a caller would see it. */
-const CALL: Record<ApprovalGateDecision, string> = {
-  allow: 'onDecision("allow")',
-  deny: 'onDecision("deny")',
-  expire: 'onDecision("expire")',
-}
-
 export default function ApprovalGatePreview() {
   /*
    * The live gate is controlled, the way a real caller would hold it: the
@@ -37,39 +30,26 @@ export default function ApprovalGatePreview() {
     <div className="flex w-full max-w-5xl flex-col gap-10">
       <Panel
         caption="A request, as it arrives"
-        description="The agent has stopped and asked. The ring is the time it will wait, and it holds while the pointer is over the card or focus is inside it — the clock is for a gate nobody is looking at. Click into the card, or tab to it, and Y allows while N denies. Allowing parts the rule and folds the buttons away; denying strikes the command through."
+        description="The agent has stopped and asked. The ring is the time it will wait, and it holds while the pointer is over the card or focus is inside it. Click into the card and the keys come on: Y allows, N denies. Denying strikes the command through."
+        onReplay={decision === null ? undefined : () => setDecision(null)}
       >
-        <ApprovalGate
-          className="max-w-2xl"
-          title="Reinstall the dependencies"
-          reason="The lockfile no longer matches node_modules, and the failing import is one pnpm resolves differently from npm. Clearing both and installing again is the shortest route to a clean run."
-          tool="bash"
-          meta="~/join-ui"
-          prefix="$"
-          command="rm -rf node_modules .next && pnpm install"
-          risk="high"
-          timeout={30_000}
-          decision={decision}
-          onDecision={setDecision}
-          footer={
-            <div className="flex min-h-7 items-center justify-between gap-3">
-              <span
-                className={cn(
-                  "min-w-0 text-xs leading-snug",
-                  decision ? "font-mono text-foreground" : "text-muted-foreground"
-                )}
-              >
-                {decision
-                  ? CALL[decision]
-                  : "Answer with the buttons or the keys, or let the clock run out."}
-              </span>
-              <Pill onClick={() => setDecision(null)} disabled={decision === null}>
-                <RefreshCw aria-hidden="true" className="size-3.5" />
-                Ask again
-              </Pill>
-            </div>
-          }
-        />
+        <div className="flex max-w-xl flex-col gap-3">
+          <ApprovalGate
+            title="Reinstall the dependencies"
+            reason="The lockfile no longer matches node_modules."
+            tool="bash"
+            meta="~/join-ui"
+            prefix="$"
+            command="rm -rf node_modules .next && pnpm install"
+            risk="high"
+            timeout={30_000}
+            decision={decision}
+            onDecision={setDecision}
+          />
+          <p className="px-1 font-mono text-[0.6875rem] text-muted-foreground">
+            {decision === null ? "onDecision — waiting" : `onDecision("${decision}")`}
+          </p>
+        </div>
       </Panel>
 
       <div className={PAIR}>
@@ -80,7 +60,7 @@ export default function ApprovalGatePreview() {
               <Code>{'risk="low"'}</Code>, <Code>icon</Code>, no clock
             </>
           }
-          description="A request that cannot break anything waits in blue, without a clock, for as long as it takes. An icon of your own replaces the marker's glyph while it waits; the ring and the chip keep carrying the outcome. Small, and plain, so it sits inside a surface you already own."
+          description="A request that cannot break anything waits in the page's own ink, without a clock, for as long as it takes. An icon of your own sits in the marker instead of the pip. Small, and plain, so it lives inside a surface you already own."
           onReplay={() => setTake((n) => n + 1)}
         >
           <ApprovalGate
@@ -89,10 +69,9 @@ export default function ApprovalGatePreview() {
             variant="plain"
             className="max-w-md"
             title="Read the open pull requests"
-            reason="To find the one that last touched the registry."
             tool="fetch"
-            meta="GET · read-only"
-            command="https://api.github.com/repos/d1maash/join-ui/pulls?state=open"
+            meta="read-only"
+            command="GET https://api.github.com/repos/d1maash/join-ui/pulls?state=open"
             icon={<Globe />}
             risk="low"
           />
@@ -103,7 +82,7 @@ export default function ApprovalGatePreview() {
           caption="At rest"
           description="A gate rendered with its outcome already known is a still drawing: nothing replays. The struck command is what a refusal leaves behind, and the dashed ring is a clock that ran out with nobody there."
         >
-          <div className="flex max-w-md flex-col gap-6">
+          <div className="flex max-w-md flex-col gap-5">
             <ApprovalGate
               size="sm"
               variant="plain"
@@ -154,13 +133,22 @@ function Panel({
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       <div className="flex flex-col gap-1">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex min-h-6 items-center justify-between gap-3">
           <span className="label-section text-foreground">{caption}</span>
           {onReplay ? (
-            <Pill tone="quiet" onClick={onReplay}>
-              <RefreshCw aria-hidden="true" className="size-3.5" />
+            <button
+              type="button"
+              onClick={onReplay}
+              className={cn(
+                "inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-muted-foreground",
+                "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+                "hover:bg-muted hover:text-foreground",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              )}
+            >
+              <RotateCcw aria-hidden="true" className="size-3" />
               Ask again
-            </Pill>
+            </button>
           ) : null}
         </div>
         <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
@@ -176,34 +164,5 @@ function Code({ children }: { children: React.ReactNode }) {
     <code className="font-mono text-[0.75rem] font-medium text-foreground">
       {children}
     </code>
-  )
-}
-
-/** Pill-shaped, tinted control — a demo affordance, not the site's own button. */
-function Pill({
-  tone = "neutral",
-  className,
-  children,
-  ...props
-}: React.ComponentPropsWithoutRef<"button"> & {
-  tone?: "neutral" | "quiet"
-}) {
-  return (
-    <button
-      type="button"
-      className={cn(
-        "inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium",
-        "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-        "disabled:pointer-events-none disabled:opacity-40",
-        tone === "neutral" &&
-          "bg-info-soft text-info hover:bg-info hover:text-info-foreground",
-        tone === "quiet" && "text-muted-foreground hover:bg-muted hover:text-foreground",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </button>
   )
 }
