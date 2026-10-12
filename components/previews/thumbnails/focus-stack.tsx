@@ -20,7 +20,12 @@ const EVERY = 1600
  */
 export default function FocusStackThumbnail() {
   const { playing, session } = useThumbnail()
-  const [turn, setTurn] = React.useState({ index: 0, session })
+  /*
+   * Stamped with the session that last turned it, and with none to begin
+   * with: the stage remounts the stack as it wakes, already inside the first
+   * session, and that session's first turn still has to come quickly.
+   */
+  const [turn, setTurn] = React.useState({ index: 0, session: -1 })
 
   React.useEffect(() => {
     if (!playing) return
