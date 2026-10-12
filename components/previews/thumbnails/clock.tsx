@@ -5,17 +5,18 @@ import * as React from "react"
 /**
  * What a thumbnail is allowed to do right now.
  *
- * `live` is the card being on screen with motion allowed — the family's rule
- * for anything that runs on its own is that it holds while nobody can see it.
- * `still` is a reduced-motion setting: the thumbnail parks on one frame that
- * says what the component is, and never moves off it.
+ * At rest a thumbnail is a still drawing of its component. `playing` is the
+ * card being pointed at or focused — or, on a screen with no pointer to hover
+ * with, being on screen — and is never true under reduced motion. `session`
+ * counts the times it has started playing, so a thumbnail can begin each one
+ * from the top.
  */
 export interface ThumbnailState {
-  live: boolean
-  still: boolean
+  playing: boolean
+  session: number
 }
 
-const ThumbnailContext = React.createContext<ThumbnailState>({ live: false, still: false })
+const ThumbnailContext = React.createContext<ThumbnailState>({ playing: false, session: 0 })
 
 export const ThumbnailProvider = ThumbnailContext.Provider
 
@@ -27,31 +28,32 @@ export function useThumbnail(): ThumbnailState {
  * A script for a thumbnail, as a list of beats.
  *
  * Each beat lasts as long as its entry in `durations`; after the last the
- * script starts again and `take` goes up by one, which a thumbnail can key a
- * remount on when the component it shows has no way to play twice. The clock
- * only runs while the card is live, so a thumbnail scrolled away resumes on the
- * beat it left rather than having played to itself in the meantime.
+ * script starts again and `take` goes up by one. Returns `null` at rest, so
+ * the thumbnail draws its resting frame, and starts every session from the
+ * first beat — the clock is stamped with the session it belongs to, and one
+ * left over from the last hover simply reads as not started.
  *
  * `durations` must be a module constant: a fresh array every render would
  * restart the beat it is in.
  */
-export function useBeats(durations: readonly number[], poster = 0) {
-  const { live, still } = useThumbnail()
-  const [clock, setClock] = React.useState({ beat: 0, take: 0 })
+export function useBeats(durations: readonly number[]) {
+  const { playing, session } = useThumbnail()
+  const [clock, setClock] = React.useState({ session, beat: 0, take: 0 })
+  const { beat, take } = clock.session === session ? clock : { beat: 0, take: 0 }
 
   React.useEffect(() => {
-    if (!live) return
+    if (!playing) return
     const timer = window.setTimeout(
       () =>
-        setClock(({ beat, take }) =>
+        setClock(
           beat + 1 < durations.length
-            ? { beat: beat + 1, take }
-            : { beat: 0, take: take + 1 }
+            ? { session, beat: beat + 1, take }
+            : { session, beat: 0, take: take + 1 }
         ),
-      durations[clock.beat] ?? 0
+      durations[beat] ?? 0
     )
     return () => window.clearTimeout(timer)
-  }, [live, clock, durations])
+  }, [playing, session, beat, take, durations])
 
-  return still ? { beat: poster, take: 0 } : clock
+  return playing ? { beat, take } : null
 }
