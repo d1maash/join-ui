@@ -7,7 +7,13 @@ import {
   type AgentHiveModel,
   type AgentHiveRun,
 } from "@/registry/components/agent-hive"
-import { DEEP, MODELS, PROMPTS, SWIFT, WIDE } from "@/components/previews/fixtures/agent-hive"
+import {
+  DEEP,
+  MODELS,
+  PROMPTS,
+  SWIFT,
+  WIDE,
+} from "@/components/previews/fixtures/agent-hive"
 import { cn } from "@/lib/utils"
 
 const SEED: AgentHiveRun[] = [

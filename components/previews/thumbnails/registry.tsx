@@ -8,9 +8,10 @@ import type { ReactNode } from "react"
  *
  * Where a preview is the docs page's demo — several panels, captions, controls
  * — a thumbnail is one configuration of the component, small enough for a
- * card, playing a short script on a loop with nobody touching it. They are
- * kept apart from the previews because they answer a different question: not
- * "what can it do" but "what is it", at a glance, before the click.
+ * card: a still frame at rest, and a short script played on a loop while the
+ * card is pointed at. They are kept apart from the previews because they
+ * answer a different question: not "what can it do" but "what is it", at a
+ * glance, before the click.
  *
  * Each entry is loaded through `next/dynamic`, so a page with three cards
  * downloads three components rather than the registry. A card whose slug has

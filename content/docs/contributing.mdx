@@ -87,9 +87,32 @@ pnpm dev
     pass props or wrap the demo in a stage. A slug with no entry renders an
     explicit empty state rather than failing.
 
+    The catalog card needs a thumbnail as well: one small configuration of the
+    component, in `components/previews/thumbnails/<slug>.tsx`, registered the
+    same way in `components/previews/thumbnails/registry.tsx`. It is drawn
+    still and plays only while the card is pointed at, so its script reads the
+    card's clock instead of running a timer of its own:
+
+    ```tsx title="components/previews/thumbnails/glow-card.tsx"
+    "use client"
+
+    import { GlowCard } from "@/registry/components/glow-card"
+
+    import { useBeats } from "./clock"
+
+    /* Two beats, looped while the card is hovered: lit, then dim. */
+    const BEATS = [1200, 1200] as const
+
+    export default function GlowCardThumbnail() {
+      const clock = useBeats(BEATS) // null at rest
+      return <GlowCard glowing={clock?.beat === 0}>Preview content</GlowCard>
+    }
+    ```
+
     <Callout variant="note">
-      Previews must not use `dark:` variants either. They demonstrate registry
-      components, and the rule those live under has to hold in the demo too.
+      Previews and thumbnails must not use `dark:` variants either. They
+      demonstrate registry components, and the rule those live under has to
+      hold in the demo too.
     </Callout>
 
   </Step>

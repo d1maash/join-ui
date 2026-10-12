@@ -16,7 +16,10 @@ export interface ThumbnailState {
   session: number
 }
 
-const ThumbnailContext = React.createContext<ThumbnailState>({ playing: false, session: 0 })
+const ThumbnailContext = React.createContext<ThumbnailState>({
+  playing: false,
+  session: 0,
+})
 
 export const ThumbnailProvider = ThumbnailContext.Provider
 

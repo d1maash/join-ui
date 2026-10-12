@@ -1,7 +1,15 @@
 "use client"
 
 import * as React from "react"
-import { Compass, Layers, MousePointer2, Pause, Play, Shapes, Sparkles } from "lucide-react"
+import {
+  Compass,
+  Layers,
+  MousePointer2,
+  Pause,
+  Play,
+  Shapes,
+  Sparkles,
+} from "lucide-react"
 
 import { FocusStack, type FocusStackItem } from "@/registry/components/focus-stack"
 import { SYSTEM } from "@/components/previews/fixtures/focus-stack"

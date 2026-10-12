@@ -25,11 +25,11 @@ export interface ComponentCardProps {
  * by wrapping everything in an anchor — that leaves exactly one tab stop per
  * card and keeps the badges out of the link's content model.
  *
- * In the grid the card is mostly stage: the component itself, playing, where
- * the description used to be. A sentence about a motion component asks the
- * reader to imagine the one thing the card could simply show them, so the
- * words are left to the page behind the click and the card keeps only what
- * names it.
+ * In the grid the card is mostly stage: the component itself where the
+ * description used to be, still at rest and playing while the card is pointed
+ * at. A sentence about a motion component asks the reader to imagine the one
+ * thing the card could simply show them, so the words are left to the page
+ * behind the click and the card keeps only what names it.
  */
 export function ComponentCard({
   item,

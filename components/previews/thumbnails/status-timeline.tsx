@@ -16,20 +16,20 @@ const DELIVERY: StatusTimelineStep[] = [
 ]
 
 /*
- * One beat per advance, and a longer one on the finished order before the
- * tracker goes back to the start — the reset is a snap, not a move, so it
- * should not come the moment the last step lands.
+ * One beat per step, starting from the resting frame, and a longer one on the
+ * finished order before the tracker goes back to the start — the reset is a
+ * snap, not a move, so it should not come the moment the last step lands.
  */
-const BEATS = [1600, 1600, 2600] as const
+const BEATS = [450, 1500, 1500, 2600] as const
 
 export default function StatusTimelineThumbnail() {
-  const { beat } = useBeats(BEATS, 1)
+  const clock = useBeats(BEATS)
 
   return (
     <StatusTimeline
       label="Delivery"
       steps={DELIVERY}
-      activeStep={beat + 1}
+      activeStep={clock?.beat ?? 0}
       size="sm"
       className="w-full max-w-72"
     />

@@ -34,8 +34,13 @@ const RUN: ToolTraceStep[] = [
  */
 const BEATS = [1300, 1300, 1500, 2400] as const
 
+/**
+ * At rest, the run as it finished. A hover runs it again from the first tool,
+ * and letting go lands it back on the finished trace.
+ */
 export default function ToolTraceThumbnail() {
-  const { beat } = useBeats(BEATS, RUN.length)
+  const clock = useBeats(BEATS)
+  const beat = clock?.beat ?? RUN.length
 
   const steps = RUN.map((step, index) => {
     const done = index < beat

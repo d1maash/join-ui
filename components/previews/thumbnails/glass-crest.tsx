@@ -3,17 +3,19 @@
 import { CrestQuiet, GlassCrest } from "@/registry/components/glass-crest"
 import { MARKS } from "@/components/previews/fixtures/glass-crest"
 
-import { useBeats } from "./clock"
+import { useThumbnail } from "./clock"
 
-/* The crest assembles on mount and then holds; the loop is that arrival, again. */
-const BEATS = [5200] as const
-
+/**
+ * The crest assembles on mount and then holds still, so the hover is that
+ * arrival: each one is a fresh crest, keyed on the session, dealt apex first.
+ * Letting go leaves it standing — it has nowhere to go back to.
+ */
 export default function GlassCrestThumbnail() {
-  const { take } = useBeats(BEATS)
+  const { session } = useThumbnail()
 
   return (
     <GlassCrest
-      key={take}
+      key={session}
       size="sm"
       className="w-full"
       marks={MARKS}

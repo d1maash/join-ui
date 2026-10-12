@@ -7,33 +7,25 @@ import { useBeats } from "./clock"
 
 /*
  * A take is one request: the tile settles on a model, crosses to the next one,
- * the run is sent and types itself out, and then it lands.
+ * and the action goes busy while the run is out.
  */
-const BEATS = [1300, 1600, 2600, 1500] as const
+const BEATS = [600, 1400, 2400] as const
 
+/* What the hive was last asked, so the queue below the comb is not empty. */
+const HISTORY: AgentHiveRun[] = [
+  { id: "history", prompt: PROMPTS[0]!, modelId: MODELS[0]!.id, state: "done" },
+]
+
+/**
+ * At rest the tile sits on one model. A hover walks it on round the comb, one
+ * model per take, and letting go sends it back home along the same glass.
+ */
 export default function AgentHiveThumbnail() {
-  const { beat, take } = useBeats(BEATS, 3)
+  const clock = useBeats(BEATS)
 
-  const from = MODELS[take % MODELS.length]!
-  const to = MODELS[(take + 1) % MODELS.length]!
-
-  /*
-   * Derived from the clock rather than accumulated, so the queue is always the
-   * run in hand and the one before it. A run is new to the hive the first beat
-   * it appears in, which is what makes it type itself out.
-   */
-  const previous: AgentHiveRun = {
-    id: `run-${take - 1}`,
-    prompt: PROMPTS[(take + PROMPTS.length - 1) % PROMPTS.length]!,
-    modelId: from.id,
-    state: "done",
-  }
-  const current: AgentHiveRun = {
-    id: `run-${take}`,
-    prompt: PROMPTS[take % PROMPTS.length]!,
-    modelId: to.id,
-    state: beat === 3 ? "done" : "working",
-  }
+  const take = clock?.take ?? 0
+  const from = MODELS[(take + 1) % MODELS.length]!
+  const to = MODELS[(take + 2) % MODELS.length]!
 
   return (
     <AgentHive
@@ -42,8 +34,9 @@ export default function AgentHiveThumbnail() {
       variant="plain"
       comb={[2, 3, 2]}
       models={MODELS}
-      value={beat === 0 ? from.id : to.id}
-      runs={beat >= 2 ? [current, previous] : [previous]}
+      value={clock && clock.beat > 0 ? to.id : from.id}
+      busy={clock?.beat === 2}
+      runs={HISTORY}
       maxRuns={1}
       className="w-full self-start"
     />
