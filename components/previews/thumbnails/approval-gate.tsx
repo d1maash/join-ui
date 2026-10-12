@@ -19,8 +19,8 @@ export default function ApprovalGateThumbnail() {
   return (
     <ApprovalGate
       size="sm"
-      className="w-full max-w-72"
-      title="Reinstall the dependencies"
+      className="w-full max-w-80"
+      title="Reinstall dependencies"
       tool="bash"
       meta="~/join-ui"
       prefix="$"

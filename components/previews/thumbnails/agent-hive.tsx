@@ -45,7 +45,7 @@ export default function AgentHiveThumbnail() {
       value={beat === 0 ? from.id : to.id}
       runs={beat >= 2 ? [current, previous] : [previous]}
       maxRuns={1}
-      className="w-full"
+      className="w-full self-start"
     />
   )
 }

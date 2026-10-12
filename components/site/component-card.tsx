@@ -85,7 +85,7 @@ export function ComponentCard({
         <ComponentThumbnail
           slug={item.slug}
           className={cn(
-            "pointer-events-none flex h-60 items-center justify-center overflow-hidden px-5 py-6",
+            "pointer-events-none flex h-72 items-center justify-center overflow-hidden p-5",
             "[mask-image:linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]"
           )}
           fallback={
