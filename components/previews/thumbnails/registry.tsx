@@ -14,17 +14,23 @@ import type { ReactNode } from "react"
  * glance, before the click.
  *
  * Each entry is loaded through `next/dynamic`, so a page with three cards
- * downloads three components rather than the registry. A card whose slug has
+ * downloads three components rather than the registry, and only in the
+ * browser. A thumbnail is inert scenery, so there is nothing for the server
+ * render to give a reader or a crawler — and rendering it there means
+ * hydrating seven components at once, any one of which may draw itself
+ * differently once it knows the reader's motion setting. A card whose slug has
  * no entry falls back to its description, and `pnpm registry:validate` fails
  * for any component without one.
  */
-const StatusTimelineThumbnail = dynamic(() => import("./status-timeline"))
-const FocusStackThumbnail = dynamic(() => import("./focus-stack"))
-const AgentHiveThumbnail = dynamic(() => import("./agent-hive"))
-const ToolTraceThumbnail = dynamic(() => import("./tool-trace"))
-const GlassCrestThumbnail = dynamic(() => import("./glass-crest"))
-const CarbonCopyThumbnail = dynamic(() => import("./carbon-copy"))
-const ApprovalGateThumbnail = dynamic(() => import("./approval-gate"))
+const StatusTimelineThumbnail = dynamic(() => import("./status-timeline"), {
+  ssr: false,
+})
+const FocusStackThumbnail = dynamic(() => import("./focus-stack"), { ssr: false })
+const AgentHiveThumbnail = dynamic(() => import("./agent-hive"), { ssr: false })
+const ToolTraceThumbnail = dynamic(() => import("./tool-trace"), { ssr: false })
+const GlassCrestThumbnail = dynamic(() => import("./glass-crest"), { ssr: false })
+const CarbonCopyThumbnail = dynamic(() => import("./carbon-copy"), { ssr: false })
+const ApprovalGateThumbnail = dynamic(() => import("./approval-gate"), { ssr: false })
 
 export const thumbnails: Record<string, () => ReactNode> = {
   "status-timeline": () => <StatusTimelineThumbnail />,
