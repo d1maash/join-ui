@@ -12,8 +12,9 @@ import type { ComponentMetadata } from "@/types/registry"
  * To add one:
  *   1. Write the component at `registry/components/<slug>.tsx`.
  *   2. Register a demo for `<slug>` in `components/previews/registry.tsx`.
- *   3. Append a `defineComponent({ … })` record here.
- *   4. Run `pnpm registry:build` to emit `registry.json` and `public/r/*.json`.
+ *   3. Register a catalog thumbnail in `components/previews/thumbnails/registry.tsx`.
+ *   4. Append a `defineComponent({ … })` record here.
+ *   5. Run `pnpm registry:build` to emit `registry.json` and `public/r/*.json`.
  *
  * `defineComponent` and `uiFile` from `@/lib/registry/define` derive the
  * install command and the file descriptor, so neither is written by hand.

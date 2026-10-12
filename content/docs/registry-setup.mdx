@@ -98,7 +98,7 @@ Validation covers the things a schema alone cannot:
 
 - metadata parses against a Zod schema (kebab-case slugs, PascalCase names, ISO dates, description length);
 - every file a component declares actually exists on disk;
-- every component has a preview registered in `components/previews/registry.tsx`;
+- every component has a preview registered in `components/previews/registry.tsx` and a catalog thumbnail in `components/previews/thumbnails/registry.tsx`;
 - `related` points only at slugs that exist, and never at itself;
 - the generated item still parses as a valid registry item, with non-empty file contents.
 
