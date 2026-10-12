@@ -1,15 +1,19 @@
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
-import { Badge, StatusBadge, UpdatedBadge } from "@/components/ui/badge"
+import { ComponentThumbnail } from "@/components/site/component-thumbnail"
+import { StatusBadge, UpdatedBadge } from "@/components/ui/badge"
 import type { CatalogItem } from "@/lib/registry/catalog"
 import { cn } from "@/lib/utils"
 
 export interface ComponentCardProps {
   item: CatalogItem
-  /** `list` drops the description to a single line for dense sections. */
+  /**
+   * `grid` leads with a running thumbnail of the component; `list` is a title
+   * and two lines of description for dense sections.
+   */
   layout?: "grid" | "list"
-  /** Index shown as an editorial numeral in the corner. */
+  /** Index shown as an editorial numeral beside the title. */
   index?: number
   className?: string
 }
@@ -20,6 +24,12 @@ export interface ComponentCardProps {
  * The whole cell is clickable through an overlay on the title link rather than
  * by wrapping everything in an anchor — that leaves exactly one tab stop per
  * card and keeps the badges out of the link's content model.
+ *
+ * In the grid the card is mostly stage: the component itself, playing, where
+ * the description used to be. A sentence about a motion component asks the
+ * reader to imagine the one thing the card could simply show them, so the
+ * words are left to the page behind the click and the card keeps only what
+ * names it.
  */
 export function ComponentCard({
   item,
@@ -28,7 +38,7 @@ export function ComponentCard({
   className,
 }: ComponentCardProps) {
   const shared = cn(
-    "group relative isolate flex flex-col rounded-xl border border-border bg-card p-5 shadow-xs",
+    "group relative isolate flex flex-col rounded-xl border border-border bg-card shadow-xs",
     "transition-[border-color,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
     "hover:border-border-hover hover:shadow-sm",
     "focus-within:border-border-hover focus-within:shadow-sm",
@@ -48,7 +58,7 @@ export function ComponentCard({
 
   if (layout === "list") {
     return (
-      <article className={cn(shared, "gap-1.5")}>
+      <article className={cn(shared, "gap-1.5 p-5")}>
         <div className="flex items-start justify-between gap-3">
           {title}
           <ArrowUpRight
@@ -64,33 +74,39 @@ export function ComponentCard({
   }
 
   return (
-    <article className={cn(shared, "gap-3")}>
-      <div className="flex items-start justify-between gap-3">
-        <span className="label-micro text-muted-foreground">{item.category}</span>
+    <article className={cn(shared, "overflow-hidden")}>
+      <div className="border-b border-border bg-background">
+        {/*
+          Fixed height rather than an aspect ratio: the thumbnails are real
+          components at their real size, so they are drawn for one box and
+          centred in it, and a stage that grew with the column would only add
+          empty margin around them. What runs past the box fades at its edges.
+        */}
+        <ComponentThumbnail
+          slug={item.slug}
+          className={cn(
+            "pointer-events-none flex h-60 items-center justify-center overflow-hidden px-5 py-6",
+            "[mask-image:linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]"
+          )}
+          fallback={
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {item.description}
+            </p>
+          }
+        />
+      </div>
+
+      <div className="flex items-center gap-3 px-5 py-4">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1.5">
+          {title}
+          <StatusBadge status={item.status} />
+          {item.updated ? <UpdatedBadge /> : null}
+        </div>
         {typeof index === "number" ? (
-          <span className="numeral text-[0.6875rem] text-muted-foreground">
+          <span className="numeral shrink-0 text-[0.6875rem] text-muted-foreground">
             {String(index).padStart(2, "0")}
           </span>
         ) : null}
-      </div>
-
-      <div className="flex flex-1 flex-col gap-2">
-        {title}
-        <p className="flex-1 text-sm leading-relaxed text-muted-foreground">
-          {item.description}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-1.5">
-        <StatusBadge status={item.status} />
-        {item.updated ? <UpdatedBadge /> : null}
-        {item.traits.includes("zero-deps") ? (
-          <Badge variant="muted">No dependencies</Badge>
-        ) : (
-          <Badge variant="muted">
-            {item.dependencyCount} dep{item.dependencyCount === 1 ? "" : "s"}
-          </Badge>
-        )}
       </div>
     </article>
   )
