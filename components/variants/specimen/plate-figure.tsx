@@ -342,7 +342,13 @@ export function PlateFigure({
       className={cn("sp-figure", className)}
       data-inked={inked || reduce ? "" : undefined}
     >
-      <div className={cn("grid grid-cols-1 gap-x-6 gap-y-8 lg:items-center", grid)}>
+      <div
+        className={cn(
+          "grid grid-cols-1 gap-x-6 gap-y-8",
+          labelsHeader ? "lg:items-start" : "lg:items-center",
+          grid
+        )}
+      >
         {layout === "split" ? (
           <div className={cn("order-2 lg:order-none", columns?.left ?? "lg:col-span-3")}>
             {labelList(left, "left")}

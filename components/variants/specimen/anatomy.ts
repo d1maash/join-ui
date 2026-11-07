@@ -63,7 +63,7 @@ export const ANATOMY: Record<string, Anatomy> = {
         title: "Travelling tint",
         note: "One tinted tile slides to whatever is picked, in that model's accent.",
         spec: "accent: oklch(…)",
-        at: { sel: '[role="radio"][aria-checked="true"]', x: 0.5, y: 0.5, box: true, pad: 3 },
+        at: { sel: '[role="radio"][aria-checked="true"]', x: 0.06, y: 0.5, box: true, pad: 3 },
       },
       {
         key: "D",
@@ -94,7 +94,7 @@ export const ANATOMY: Record<string, Anatomy> = {
         title: "Countdown ring",
         note: "Thirty seconds, held while the pointer or focus is on the card.",
         spec: "timeout={30_000}",
-        at: { sel: "[data-live] [role=group] > div > span:first-child", x: 0.5, y: 0.5 },
+        at: { sel: "[data-live] [role=group] > div > span:first-child", x: 0.5, y: 0 },
       },
       {
         key: "B",
@@ -102,14 +102,14 @@ export const ANATOMY: Record<string, Anatomy> = {
         title: "Risk capsule",
         note: "Destructive, Caution or Awaiting — and the outcome, once answered.",
         spec: 'risk="high"',
-        at: { sel: "[data-live] [role=group] p + span", x: 0.5, y: 0.5, box: true, pad: 4 },
+        at: { sel: "[data-live] [role=group] p + span", x: 0.5, y: 0, box: true, pad: 4 },
       },
       {
         key: "C",
         title: "Command",
         note: "A line per entry, the prompt glyph kept out of the selection. Struck through on deny.",
         spec: "command · prefix",
-        at: { sel: "[data-live] .rounded-soft", x: 0.6, y: 0.5, box: true, pad: 4 },
+        at: { sel: "[data-live] .rounded-soft", x: 0.3, y: 1, box: true, pad: 4 },
       },
       {
         key: "D",
@@ -117,7 +117,7 @@ export const ANATOMY: Record<string, Anatomy> = {
         note: "Y allows, N or Esc denies — only while focus is inside, so the page keeps its keys.",
         spec: 'hotkeys="focus"',
         at: [
-          { sel: "[data-live] .ml-auto", x: 0.5, y: 0.5, box: true, pad: 4 },
+          { sel: "[data-live] .ml-auto", x: 0.5, y: 1, box: true, pad: 4 },
           { sel: "[data-live] [role=group]", x: 0.85, y: 0.82 },
         ],
       },
@@ -168,7 +168,7 @@ export const ANATOMY: Record<string, Anatomy> = {
         title: "Badge",
         note: "Each item's glyph, in its own accent.",
         spec: "icon · accent",
-        at: { sel: "button[aria-current] > span:nth-child(2)", x: 0.1, y: 0.5 },
+        at: { sel: "button[aria-current] > span:nth-child(2)", x: 0, y: 0.5 },
       },
       {
         key: "C",
@@ -176,10 +176,8 @@ export const ANATOMY: Record<string, Anatomy> = {
         title: "The coil",
         note: "Neighbours twist away by depth and soften, so the list still reads as a list.",
         spec: "depth={2} · tilt · blur",
-        at: [
-          { sel: "ol > li:has(+ li button[aria-current]) button", x: 0.08, y: 0.45 },
-          { sel: "ol > li:first-child button", x: 0.08, y: 0.45 },
-        ],
+        // The coil turns, so the neighbour above the focus is found by place, not by name.
+        at: { sel: "ol", x: 0.08, y: 0.3 },
       },
       {
         key: "D",
@@ -187,7 +185,7 @@ export const ANATOMY: Record<string, Anatomy> = {
         title: "Description",
         note: "Set on the pill in focus. The neighbours let it fade, and keep only their label.",
         spec: "items[].description",
-        at: { sel: "button[aria-current] > span:last-child > span:last-child", x: 0.92, y: 0.6 },
+        at: { sel: "button[aria-current] > span:last-child > span:last-child", x: 1, y: 0.6 },
       },
     ],
   },
@@ -255,8 +253,8 @@ export const ANATOMY: Record<string, Anatomy> = {
         note: "Carries aria-current. On arrival two rings spread out of its marker, once.",
         spec: 'aria-current="step"',
         at: [
-          { sel: 'ol > li[aria-current="step"] > div:first-child > span:first-child', x: 0.5, y: 0.5, box: true, pad: 5 },
-          { sel: "ol > li:last-child > div:first-child > span:first-child", x: 0.5, y: 0.5, box: true, pad: 5 },
+          { sel: 'ol > li[aria-current="step"] > div:first-child > span:first-child', x: 0, y: 0.5, box: true, pad: 5 },
+          { sel: "ol > li:last-child > div:first-child > span:first-child", x: 0, y: 0.5, box: true, pad: 5 },
         ],
       },
       {
@@ -273,7 +271,7 @@ export const ANATOMY: Record<string, Anatomy> = {
         title: "Upcoming",
         note: "A quiet grey disc and a hidden “Not started”. Colour never carries it alone.",
         spec: 'state: "upcoming"',
-        at: { sel: "ol > li:last-child > div:first-child > span:first-child", x: 0.5, y: 0.5 },
+        at: { sel: "ol > li:last-child > div:first-child > span:first-child", x: 0, y: 0.5 },
       },
     ],
   },
