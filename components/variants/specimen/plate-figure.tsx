@@ -350,9 +350,22 @@ export function PlateFigure({
         )}
       >
         {layout === "split" ? (
-          <div className={cn("order-2 lg:order-none", columns?.left ?? "lg:col-span-3")}>
-            {labelList(left, "left")}
-          </div>
+          <>
+            {/*
+              On a phone the two columns become one legend, in letter order.
+              It comes first in the markup so the desktop keys, rendered after
+              it, are the ones the leader lines are measured from.
+            */}
+            <div className="order-3 lg:hidden">
+              {labelList(
+                callouts.map((callout, index) => ({ callout, index })),
+                "right"
+              )}
+            </div>
+            <div className={cn("hidden lg:block", columns?.left ?? "lg:col-span-3")}>
+              {labelList(left, "left")}
+            </div>
+          </>
         ) : null}
 
         <div
@@ -383,7 +396,11 @@ export function PlateFigure({
         {slotted ? null : (
           <div
             className={cn(
-              labelsHeader ? "contents lg:block" : "order-3 lg:order-none",
+              labelsHeader
+                ? "contents lg:block"
+                : layout === "split"
+                  ? "hidden lg:block"
+                  : "order-3 lg:order-none",
               columns?.labels ??
                 (layout === "split"
                   ? "lg:col-span-3"
