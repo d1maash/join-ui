@@ -67,7 +67,7 @@ export function CoverTitle({ note }: { note: React.ReactNode }) {
         lines={["Read the manual.", "Own the source."]}
         timing={{ delay: 250 }}
         onComplete={() => setDone(true)}
-        className="sp-display text-[clamp(60px,11.2vw,172px)] leading-[0.9] tracking-[-0.035em]"
+        className="sp-display text-[clamp(56px,13.4vw,208px)] leading-[0.9] tracking-[-0.035em]"
       />
 
       <div className="sp-grid mt-10 lg:mt-14">

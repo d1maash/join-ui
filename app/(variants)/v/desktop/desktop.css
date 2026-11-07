@@ -557,14 +557,23 @@
 }
 
 .v-desktop .d-hello-tip {
-  margin-top: 18px;
+  position: absolute;
+  left: clamp(28px, 3.4vw, 64px);
+  bottom: calc(var(--d-dock-space) + 6px);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
-  color: rgb(255 255 255 / 0.72);
+  font-size: 12px;
+  color: rgb(255 255 255 / 0.62);
   text-shadow: 0 1px 8px rgb(0 0 0 / 0.5);
+  user-select: none;
+}
+
+@media (max-width: 1099px), (max-height: 699px) {
+  .v-desktop .d-hello-tip {
+    display: none;
+  }
 }
 
 .v-desktop .d-key {
@@ -589,7 +598,7 @@
 /* Desktop files */
 .v-desktop .d-file {
   display: flex;
-  width: 92px;
+  width: 128px;
   flex-direction: column;
   align-items: center;
   gap: 4px;

@@ -35,10 +35,11 @@ import { Window } from "./window"
  * the run and the widget move on together.
  */
 
+/* The Terminal opens last, so it is the key window — the story starts there. */
 const BOOT: Array<{ id: AppId; at: number }> = [
-  { id: "terminal", at: 250 },
-  { id: "tool-trace", at: 600 },
-  { id: "status-timeline", at: 950 },
+  { id: "status-timeline", at: 200 },
+  { id: "tool-trace", at: 420 },
+  { id: "terminal", at: 700 },
 ]
 
 export function Desktop() {
@@ -153,6 +154,7 @@ export function Desktop() {
   return (
     <div ref={desk} className="d-desk" style={{ ["--d-dock-space" as string]: "150px" }}>
       <Hello />
+      <Tip />
 
       <AnimatePresence>
         {installed ? (
@@ -181,7 +183,7 @@ export function Desktop() {
             desk={desk}
             frame={{
               left: "clamp(24px, 3.4vw, 64px)",
-              bottom: "calc(var(--d-dock-space) + 2.4vh)",
+              bottom: "calc(var(--d-dock-space) + 40px)",
               width: "clamp(460px, 38vw, 580px)",
             }}
             bodyClassName="h-[clamp(190px,27vh,280px)] !bg-transparent"
@@ -382,13 +384,18 @@ function Hello() {
     <div className="d-hello">
       <p className="d-hello-date">Seven components · MIT · source you own</p>
       <h1 className="d-hello-title">Join UI</h1>
-      <p className="d-hello-tip">
-        <span>Open any component from the Dock. Drag windows by the title bar.</span>
-        <span className="d-key">⌘</span>
-        <span className="d-key">K</span>
-        <span>searches.</span>
-      </p>
     </div>
+  )
+}
+
+function Tip() {
+  return (
+    <p className="d-hello-tip">
+      Open a component from the Dock · drag a window by its title bar ·
+      <span className="d-key">⌘</span>
+      <span className="d-key">K</span>
+      to search
+    </p>
   )
 }
 

@@ -132,9 +132,19 @@ export function PlateFigure({
       const f = figure.getBoundingClientRect()
       const s = stage.getBoundingClientRect()
       callouts.forEach((callout, index) => {
-        const at = callout.at
-        let target: Element | null = stage
-        if (at.sel) target = stage.querySelector(at.sel)
+        // The first anchor whose selector finds a visible element wins.
+        const anchors = Array.isArray(callout.at) ? callout.at : [callout.at]
+        let at = anchors[anchors.length - 1]!
+        let target: Element | null = null
+        for (const candidate of anchors) {
+          const found = candidate.sel ? stage.querySelector(candidate.sel) : stage
+          if (!found) continue
+          const box = found.getBoundingClientRect()
+          if (box.width === 0 && box.height === 0) continue
+          at = candidate
+          target = found
+          break
+        }
         const r = target ? target.getBoundingClientRect() : s
         const hasBox = target && (r.width > 0 || r.height > 0)
         const box = hasBox ? r : s
