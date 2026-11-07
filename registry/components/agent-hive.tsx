@@ -884,7 +884,14 @@ function useWake(
   const y = useSpring(pushY, WAKE)
   const scale = useSpring(squash, WAKE)
 
-  return still ? {} : { x, y, scale }
+  /*
+   * Returned whatever the motion preference. Under reduced motion the travel
+   * already reports a speed of zero, so all three sit at rest — and dropping
+   * them instead would render a different `style` on the client than the
+   * server sent, since the preference is only known in the browser.
+   */
+  void still
+  return { x, y, scale }
 }
 
 /** The push along one axis: direction, times reach, times how fast it is going. */
@@ -957,14 +964,18 @@ function Cell({
   const wake = useWake(slot, travel, width * WAKE_REACH, still)
   const box = { left: slot.x, top: slot.y, width, height }
 
-  /* The comb assembles from the middle outwards, then never does it again. */
-  const arrival = still
-    ? undefined
-    : {
-        initial: { opacity: 0, scale: 0.86 },
-        animate: { opacity: 1, scale: 1 },
-        transition: { ...SPRING, delay },
-      }
+  /*
+   * The comb assembles from the middle outwards, then never does it again.
+   * Declared whatever the motion preference and landed in a single frame under
+   * it, so the server's markup and the client's first render agree.
+   */
+  const arrival = {
+    initial: { opacity: 0, scale: 0.86 },
+    animate: { opacity: 1, scale: 1 },
+    transition: still ? { duration: 0 } : { ...SPRING, delay },
+  }
+  /* A gesture answers at once: it must not inherit the arrival's place in the wave. */
+  const answer = still ? { duration: 0 } : SPRING
 
   const body = (
     <motion.span className="absolute inset-0 block" style={wake}>
@@ -1028,8 +1039,16 @@ function Cell({
        * than removed: a tap gesture changes the button's server markup, and the
        * preference is only known on the client.
        */
-      whileHover={disabled || model.disabled ? undefined : { scale: still ? 1 : 1.06 }}
-      whileTap={disabled || model.disabled ? undefined : { scale: still ? 1 : 0.94 }}
+      whileHover={
+        disabled || model.disabled
+          ? undefined
+          : { scale: still ? 1 : 1.06, transition: answer }
+      }
+      whileTap={
+        disabled || model.disabled
+          ? undefined
+          : { scale: still ? 1 : 0.94, transition: answer }
+      }
     >
       {body}
     </motion.button>
@@ -1075,9 +1094,11 @@ function CellGlyph({
     <motion.span
       className="absolute grid place-items-center"
       style={{ left: slot.x, top: slot.y, width, height, ...wake }}
-      initial={still ? false : { opacity: 0 }}
+      initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, ease: EASE, delay: delay + 0.1 }}
+      transition={
+        still ? { duration: 0 } : { duration: 0.3, ease: EASE, delay: delay + 0.1 }
+      }
     >
       {ringed ? <Hex stroke="var(--ring)" strokeWidth={2} /> : null}
       <motion.span

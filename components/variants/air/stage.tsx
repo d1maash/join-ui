@@ -17,7 +17,7 @@ export function AirStage({ slug, className }: { slug: string; className?: string
   return (
     <div
       className={cn(
-        "flex min-h-[26rem] items-center justify-center overflow-x-auto overflow-y-hidden rounded-[28px] bg-[#f5f5f7] px-3 py-10 sm:rounded-[32px] text-[#1d1d1f] sm:px-10 sm:py-16 lg:px-14",
+        "flex min-h-[26rem] items-center justify-start overflow-x-auto overflow-y-hidden rounded-[28px] bg-[#f5f5f7] px-3 py-10 text-[#1d1d1f] sm:rounded-[32px] [&>*]:mx-auto sm:px-10 sm:py-16 lg:px-14",
         className
       )}
     >
