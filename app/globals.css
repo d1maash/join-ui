@@ -55,22 +55,22 @@
   /*
    * Neutral ramp — white at 0, ink at 1000.
    *
-   * Chroma is tiny and warm throughout, so `--grey-100` resolves to a greige
-   * page rather than to grey, and `--grey-1000` to a soft brown-black rather
-   * than to `#000`. Neither end of the ramp is a pure value.
+   * Apple's own greys: the page is the #f5f5f7 every apple.com band sits on, a
+   * card is pure white one step above it, and the ink is #1d1d1f rather than
+   * black. Secondary text is #6e6e73, the hairline is #d2d2d7.
    */
-  --grey-0: oklch(1 0 0);
-  --grey-50: oklch(0.978 0.005 78);
-  --grey-100: oklch(0.955 0.009 76);
-  --grey-200: oklch(0.928 0.011 74);
-  --grey-300: oklch(0.898 0.011 72);
-  --grey-400: oklch(0.845 0.012 70);
-  --grey-500: oklch(0.73 0.012 66);
-  --grey-600: oklch(0.6 0.013 62);
-  --grey-700: oklch(0.472 0.014 58);
-  --grey-800: oklch(0.36 0.014 54);
-  --grey-900: oklch(0.27 0.013 50);
-  --grey-1000: oklch(0.21 0.011 48);
+  --grey-0: #ffffff;
+  --grey-50: #fbfbfd;
+  --grey-100: #f5f5f7;
+  --grey-200: #ececf0;
+  --grey-300: #dcdce1;
+  --grey-400: #c7c7cc;
+  --grey-500: #aeaeb2;
+  --grey-600: #86868b;
+  --grey-700: #6e6e73;
+  --grey-800: #424245;
+  --grey-900: #2c2c2e;
+  --grey-1000: #1d1d1f;
 
   /*
    * Surfaces. The page is warm paper; a card is white and sits one step above
@@ -137,37 +137,34 @@
    * than as a warning light. Components pair them with a glyph and a label, so
    * the meaning survives for anyone who cannot separate the hues.
    */
-  --info: oklch(0.5 0.11 245);
-  --info-soft: oklch(0.958 0.019 245);
-  --info-foreground: oklch(0.99 0.006 245);
+  --info: #0068d1;
+  --info-soft: #e8f1fc;
+  --info-foreground: #ffffff;
 
-  --positive: oklch(0.495 0.095 155);
-  --positive-soft: oklch(0.958 0.022 155);
-  --positive-foreground: oklch(0.99 0.008 155);
+  --positive: #1a7f37;
+  --positive-soft: #e6f4ea;
+  --positive-foreground: #ffffff;
 
-  --caution: oklch(0.525 0.1 66);
-  --caution-soft: oklch(0.958 0.03 78);
-  --caution-foreground: oklch(0.99 0.008 66);
+  --caution: #b05a00;
+  --caution-soft: #fdf1e1;
+  --caution-foreground: #ffffff;
 
-  --critical: oklch(0.525 0.145 22);
-  --critical-soft: oklch(0.958 0.022 22);
-  --critical-foreground: oklch(0.99 0.006 22);
+  --critical: #d70015;
+  --critical-soft: #fdeaea;
+  --critical-foreground: #ffffff;
 
   /* Shape. A rounded corner is the cheapest softness there is. */
-  --radius: 0.625rem;
+  --radius: 0.75rem;
 
   /*
    * Elevation. Shadows are wide, low-opacity and tinted with the theme's own
    * ink rather than with black, so a raised surface reads as lit paper instead
    * of as a cut-out. Nothing on this site goes above `-md` except a portal.
    */
-  --elevation-xs: 0 1px 2px -1px oklch(0.24 0.014 52 / 0.07);
-  --elevation-sm:
-    0 1px 2px -1px oklch(0.24 0.014 52 / 0.06), 0 2px 6px -2px oklch(0.24 0.014 52 / 0.05);
-  --elevation-md:
-    0 2px 4px -2px oklch(0.24 0.014 52 / 0.06), 0 8px 20px -6px oklch(0.24 0.014 52 / 0.09);
-  --elevation-lg:
-    0 4px 8px -4px oklch(0.24 0.014 52 / 0.08), 0 18px 40px -12px oklch(0.24 0.014 52 / 0.13);
+  --elevation-xs: 0 1px 2px rgb(0 0 0 / 0.04);
+  --elevation-sm: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 14px rgb(0 0 0 / 0.05);
+  --elevation-md: 0 2px 6px rgb(0 0 0 / 0.04), 0 12px 32px rgb(0 0 0 / 0.08);
+  --elevation-lg: 0 4px 12px rgb(0 0 0 / 0.05), 0 24px 64px rgb(0 0 0 / 0.14);
 
   /* Motion */
   --duration-instant: 80ms;
@@ -181,7 +178,7 @@
    */
   --duration-enter: 640ms;
   --duration-display: 1100ms;
-  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-soft: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
   /*
    * The display curve. Nearly all of the travel happens in the first fifth
@@ -215,18 +212,18 @@
    * a step that was legible against `#13110f` disappears against `#050506`. The
    * ramp below is not the old one desaturated; it is respaced.
    */
-  --grey-0: oklch(0.116 0.003 265); /* #050506 — the page, and the plate's black */
-  --grey-50: oklch(0.181 0.003 265); /* #111213 — cards */
-  --grey-100: oklch(0.222 0.003 265); /* #1a1b1c — popovers */
-  --grey-200: oklch(0.262 0.003 265);
-  --grey-300: oklch(0.318 0.003 265); /* the hairline */
-  --grey-400: oklch(0.408 0.003 265);
-  --grey-500: oklch(0.525 0.003 265);
-  --grey-600: oklch(0.642 0.003 265);
-  --grey-700: oklch(0.755 0.003 265); /* #aeafb1 — secondary text */
-  --grey-800: oklch(0.852 0.002 265);
-  --grey-900: oklch(0.922 0.002 265);
-  --grey-1000: oklch(0.975 0.001 265); /* #f6f7f7 — the ink */
+  --grey-0: #000000; /* the page — Apple's pro black */
+  --grey-50: #1c1c1e; /* cards — secondarySystemBackground */
+  --grey-100: #2c2c2e; /* popovers — tertiary */
+  --grey-200: #333336;
+  --grey-300: #3a3a3c; /* the hairline */
+  --grey-400: #48484a;
+  --grey-500: #636366;
+  --grey-600: #8e8e93;
+  --grey-700: #a1a1a6; /* secondary text */
+  --grey-800: #c7c7cc;
+  --grey-900: #e5e5ea;
+  --grey-1000: #f5f5f7; /* the ink */
 
   --background: var(--grey-0);
   --foreground: var(--grey-1000);
@@ -280,30 +277,30 @@
    * against the tint and the other against a solid fill, and neither of those
    * moved.
    */
-  --info: oklch(0.775 0.095 245);
-  --info-soft: oklch(0.255 0.045 245);
-  --info-foreground: oklch(0.18 0.035 245);
+  --info: #409cff;
+  --info-soft: #0c2541;
+  --info-foreground: #00152e;
 
-  --positive: oklch(0.785 0.1 155);
-  --positive-soft: oklch(0.25 0.04 155);
-  --positive-foreground: oklch(0.18 0.03 155);
+  --positive: #30d158;
+  --positive-soft: #0d2b16;
+  --positive-foreground: #002910;
 
-  --caution: oklch(0.825 0.1 78);
-  --caution-soft: oklch(0.265 0.042 66);
-  --caution-foreground: oklch(0.19 0.03 66);
+  --caution: #ffb340;
+  --caution-soft: #2f2208;
+  --caution-foreground: #2b1700;
 
-  --critical: oklch(0.75 0.115 22);
-  --critical-soft: oklch(0.265 0.055 22);
-  --critical-foreground: oklch(0.18 0.035 22);
+  --critical: #ff6961;
+  --critical-soft: #35100f;
+  --critical-foreground: #330000;
 
   /*
    * Shadows on charcoal cannot rely on darkening alone, so they are deeper and
    * paired with a hairline on the raised surface itself.
    */
-  --elevation-xs: 0 1px 2px -1px oklch(0 0 0 / 0.4);
-  --elevation-sm: 0 1px 2px -1px oklch(0 0 0 / 0.45), 0 2px 6px -2px oklch(0 0 0 / 0.35);
-  --elevation-md: 0 2px 4px -2px oklch(0 0 0 / 0.4), 0 8px 20px -6px oklch(0 0 0 / 0.5);
-  --elevation-lg: 0 4px 8px -4px oklch(0 0 0 / 0.45), 0 18px 40px -12px oklch(0 0 0 / 0.6);
+  --elevation-xs: 0 1px 2px rgb(0 0 0 / 0.5);
+  --elevation-sm: 0 1px 2px rgb(0 0 0 / 0.5), 0 4px 14px rgb(0 0 0 / 0.4);
+  --elevation-md: 0 2px 6px rgb(0 0 0 / 0.5), 0 12px 32px rgb(0 0 0 / 0.55);
+  --elevation-lg: 0 4px 12px rgb(0 0 0 / 0.5), 0 24px 64px rgb(0 0 0 / 0.7);
 }
 
 @theme inline {
@@ -371,13 +368,14 @@
    * both resolve to something, so a surface can be softened without reaching
    * for an arbitrary value.
    */
-  --radius-xs: 0.25rem;
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.625rem;
-  --radius-xl: 0.875rem;
-  --radius-2xl: 1.125rem;
-  --radius-3xl: 1.5rem;
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1.125rem;
+  --radius-2xl: 1.375rem;
+  --radius-3xl: 1.75rem;
+  --radius-4xl: 2.25rem;
 
   /*
    * The component scale is kept as an alias so anything already installed from
@@ -401,9 +399,10 @@
    * this site, and it made a documentation page look like a terminal emulator.
    */
   --font-sans:
-    var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", var(--font-inter),
+    "Helvetica Neue", ui-sans-serif, sans-serif;
   --font-mono:
-    var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    ui-monospace, "SF Mono", SFMono-Regular, var(--font-jetbrains-mono), Menlo, monospace;
 
   --ease-out-soft: var(--ease-out-soft);
   --ease-in-out-soft: var(--ease-in-out-soft);
