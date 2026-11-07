@@ -266,9 +266,9 @@ export default async function PlatePage({ params }: PageProps) {
               aside={`Fig. ${no}.2`}
             >
               <p className="max-w-[60ch] text-[17px] leading-[1.6] text-[var(--sp-ink-2)]">
-                Every variant the plate ships with, set out on one sheet — the live
-                request, the quiet one, and the stills it leaves behind. These are the
-                same demos the full-screen preview runs.
+                Every variant the plate ships with, set out on one sheet and working —
+                the same demos the full-screen preview runs, with the props that make
+                each one named above it.
               </p>
               <div className="sp-sheet relative mt-8 flex justify-center px-4 py-12 sm:px-10 lg:px-14 lg:py-16">
                 <CropMarks />
