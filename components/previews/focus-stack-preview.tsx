@@ -203,7 +203,6 @@ function Panel({
         </p>
         {readout ? (
           <p
-            aria-live="polite"
             className="mt-1 text-[0.8125rem] tracking-[-0.006em] text-muted-foreground"
           >
             In focus <span className="font-semibold text-foreground">{readout}</span>
