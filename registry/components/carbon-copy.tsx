@@ -455,13 +455,20 @@ function Window({
   React.useEffect(() => {
     if (done) return
 
+    /*
+     * The used width, not the bounding box. A bounding box includes every
+     * transform above it, so a headline inside anything scaled — a zoomed
+     * preview, a thumbnail, or this line's own lift mid-copy — measures its
+     * words at the wrong size, and the window clips the word it was drawn for.
+     * The computed width is the layout width, to the sub-pixel.
+     */
     const measure = () => {
       const a = fromRef.current
       const b = toRef.current
       if (!a || !b) return
       setWidths({
-        from: a.getBoundingClientRect().width,
-        to: b.getBoundingClientRect().width,
+        from: parseFloat(getComputedStyle(a).width),
+        to: parseFloat(getComputedStyle(b).width),
       })
     }
 
