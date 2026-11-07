@@ -80,12 +80,16 @@ export default async function ProDocsPage({ params }: PageProps) {
       <div className="mx-auto max-w-[1280px] px-6 lg:grid lg:grid-cols-[232px_minmax(0,1fr)] lg:gap-14 xl:grid-cols-[232px_minmax(0,1fr)_200px]">
         <aside className="hidden lg:block">
           <div className="pro-no-scrollbar sticky top-12 max-h-[calc(100dvh-48px)] overflow-y-auto pt-12">
-            <DocsSidebar sections={sections} />
+            <DocsSidebar sections={sections} currentHref={proHref(page.href)} />
           </div>
         </aside>
 
         <main id="main-content" className="min-w-0 pt-8 pb-32 lg:pt-14">
-          <DocsMobileMenu sections={sections} current={page.title} />
+          <DocsMobileMenu
+            sections={sections}
+            current={page.title}
+            currentHref={proHref(page.href)}
+          />
 
           <article className="mx-auto mt-10 max-w-[720px] lg:mt-0">
             <header className="border-b border-white/[0.12] pb-10">

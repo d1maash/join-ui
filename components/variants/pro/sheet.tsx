@@ -92,7 +92,7 @@ export function PropsSheet({ groups }: { groups: PropGroup[] }) {
             </h3>
             {group.description ? (
               <p className="max-w-[44rem] text-[17px] leading-[1.47] text-[#86868b]">
-                {group.description}
+                <RichText>{group.description}</RichText>
               </p>
             ) : null}
           </div>
@@ -112,7 +112,7 @@ export function PropsSheet({ groups }: { groups: PropGroup[] }) {
                 </dt>
                 <dd className="flex flex-col gap-2 sm:col-span-8">
                   <p className="text-[16px] leading-[1.5] tracking-[-0.016em] text-[#d2d2d7]">
-                    {prop.description}
+                    <RichText>{prop.description}</RichText>
                   </p>
                   <p className="flex flex-wrap gap-x-5 gap-y-1 font-mono text-[12.5px] text-[#86868b]">
                     <span className="break-all">
@@ -165,7 +165,7 @@ export function KeyboardSheet({
             ))}
           </dt>
           <dd className="text-[16px] leading-[1.5] text-[#a1a1a6] sm:col-span-8">
-            {entry.description}
+            <RichText>{entry.description}</RichText>
           </dd>
         </div>
       ))}
@@ -202,5 +202,17 @@ export function PagerLink({
         {title}
       </span>
     </Link>
+  )
+}
+
+/** Metadata prose with `backticks` set as inline code. */
+export function RichText({ children }: { children: string }) {
+  const parts = children.split(/`([^`]+)`/)
+  return (
+    <>
+      {parts.map((part, index) =>
+        index % 2 === 1 ? <InlineCode key={index}>{part}</InlineCode> : part
+      )}
+    </>
   )
 }

@@ -19,6 +19,7 @@ import {
   PagerLink,
   ProSection,
   PropsSheet,
+  RichText,
   SpecRow,
 } from "@/components/variants/pro/sheet"
 import { textLinkClass, type } from "@/components/variants/pro/styles"
@@ -422,7 +423,7 @@ export default async function ProComponentPage({ params }: PageProps) {
                     <Check className="size-3.5" strokeWidth={2.5} />
                   </span>
                   <p className="text-[17px] leading-[1.5] tracking-[-0.022em] text-[#a1a1a6]">
-                    {note}
+                    <RichText>{note}</RichText>
                   </p>
                 </li>
               ))}
@@ -451,7 +452,7 @@ export default async function ProComponentPage({ params }: PageProps) {
                         {example.title}
                       </h3>
                       <p className="mt-3 text-[16px] leading-[1.55] tracking-[-0.016em] text-[#86868b]">
-                        {example.description}
+                        <RichText>{example.description}</RichText>
                       </p>
                     </div>
                     <div className="min-w-0 lg:col-span-8">

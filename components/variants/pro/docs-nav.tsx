@@ -16,8 +16,16 @@ export interface DocsNavSection {
  * The docs sidebar, developer.apple.com style: quiet section titles, the
  * current page in white on a soft fill, everything else grey until hovered.
  */
-export function DocsSidebar({ sections }: { sections: DocsNavSection[] }) {
+export function DocsSidebar({
+  sections,
+  currentHref,
+}: {
+  sections: DocsNavSection[]
+  /** The page being read — `/docs` itself stands for the introduction. */
+  currentHref?: string
+}) {
   const pathname = usePathname()
+  const here = currentHref ?? pathname
 
   return (
     <nav aria-label="Documentation" className="flex flex-col gap-8 pb-10">
@@ -28,7 +36,7 @@ export function DocsSidebar({ sections }: { sections: DocsNavSection[] }) {
           </h2>
           <ul className="mt-2 flex flex-col gap-px">
             {section.items.map((item) => {
-              const active = pathname === item.href
+              const active = here === item.href
               return (
                 <li key={item.href}>
                   <Link
@@ -61,9 +69,11 @@ export function DocsSidebar({ sections }: { sections: DocsNavSection[] }) {
 export function DocsMobileMenu({
   sections,
   current,
+  currentHref,
 }: {
   sections: DocsNavSection[]
   current: string
+  currentHref: string
 }) {
   const [open, setOpen] = React.useState(false)
   const pathname = usePathname()
@@ -100,7 +110,7 @@ export function DocsMobileMenu({
         hidden={!open}
         className="mt-2 rounded-[18px] bg-[#161617] px-2 pt-5 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.07)]"
       >
-        <DocsSidebar sections={sections} />
+        <DocsSidebar sections={sections} currentHref={currentHref} />
       </div>
     </div>
   )
