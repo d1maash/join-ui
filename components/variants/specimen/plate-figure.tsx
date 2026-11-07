@@ -5,29 +5,35 @@ import { createPortal } from "react-dom"
 
 import { cn } from "@/lib/utils"
 
-import type { Callout } from "./anatomy"
+import type { Callout, CalloutAnchor } from "./anatomy"
 import { CropMarks } from "./marks"
 
 /*
  * A plate: a live component on a drafting board, with lettered callouts and
  * leader lines drawn from each label to the part it names.
  *
- * The lines are measured, not drawn by hand. Each callout names its part with
- * a selector inside the stage (or a point on the stage itself), and while the
- * plate is on screen a frame loop reads where that part actually is and moves
- * the line's end to it — so a line that points at a step in a running trace
- * follows the step as the trace grows. The loop writes SVG attributes through
- * refs and never re-renders React.
+ * Drawn the way a technical illustration is drawn. Every label sits level with
+ * its part — the labels beside the board are stacked in the order of the
+ * parts they name and pushed apart only as far as they must be — so each
+ * leader is a horizontal run with at most one 45° jog, and because the order
+ * of the labels is the order of the parts, no two leaders can cross. Labels
+ * set under or over a part (a legend) reach it with square elbows instead.
  *
- * When the plate first comes into view the lines are inked in one after the
- * other (a dash offset running to zero), then the labels set, then the active
- * annotation starts to walk the parts in orange. Hovering a label takes the
- * walk over. Under reduced motion everything is drawn at once and nothing
- * walks. Below `lg` the lines give way to lettered markers on the parts, and
- * the labels become a legend under the board.
+ * The parts are measured, not drawn by hand. Each callout names its part with
+ * a selector inside the stage, and while the plate is on screen a frame loop
+ * reads where that part is, so a leader pointing at a step in a running trace
+ * stays on it as the trace grows; the loop writes SVG attributes and label
+ * offsets through refs and never re-renders React.
+ *
+ * When the plate first comes into view the leaders are inked in one after the
+ * other, the labels set, and the orange starts to walk the parts. Hovering a
+ * label takes the walk over. Under reduced motion everything is drawn at once
+ * and nothing walks. Below `xl` there is no room beside the board, so the
+ * leaders give way to lettered markers on the parts and a legend under it.
  */
 
 type Layout = "side" | "split" | "below"
+type Side = "left" | "right" | "below" | "above"
 
 export interface PlateFigureProps {
   callouts: Callout[]
@@ -47,26 +53,32 @@ export interface PlateFigureProps {
   /** Set above the right-hand labels — a plate title, for instance. */
   labelsHeader?: React.ReactNode
   /**
-   * A selector inside the stage to set the legend into on wide screens, when
-   * the scene leaves room for it beside the part it annotates.
+   * Selectors inside the stage to set the legend into on wide screens, when
+   * the scene leaves room for it next to the part it annotates.
    */
   legendSlots?: Record<string, string>
 }
 
 const reduceQuery = "(prefers-reduced-motion: reduce)"
+const wideQuery = "(min-width: 1280px)"
 
-function subscribeReduce(onChange: () => void) {
-  const media = window.matchMedia(reduceQuery)
-  media.addEventListener("change", onChange)
-  return () => media.removeEventListener("change", onChange)
+function subscribeMedia(query: string) {
+  return (onChange: () => void) => {
+    const media = window.matchMedia(query)
+    media.addEventListener("change", onChange)
+    return () => media.removeEventListener("change", onChange)
+  }
 }
 
-const wideQuery = "(min-width: 1024px)"
+const subscribeReduce = subscribeMedia(reduceQuery)
+const subscribeWide = subscribeMedia(wideQuery)
 
-function subscribeWide(onChange: () => void) {
-  const media = window.matchMedia(wideQuery)
-  media.addEventListener("change", onChange)
-  return () => media.removeEventListener("change", onChange)
+export function useReducedMotionPref() {
+  return React.useSyncExternalStore(
+    subscribeReduce,
+    () => window.matchMedia(reduceQuery).matches,
+    () => false
+  )
 }
 
 function useWide() {
@@ -77,12 +89,17 @@ function useWide() {
   )
 }
 
-export function useReducedMotionPref() {
-  return React.useSyncExternalStore(
-    subscribeReduce,
-    () => window.matchMedia(reduceQuery).matches,
-    () => false
-  )
+/** The gap kept between two stacked labels. */
+const GAP = 18
+/** How far a label's key centre sits below the label's top edge. */
+const KEY_CENTRE = 12
+/** Labels only move once their part has moved this far, so they never jitter. */
+const SETTLE = 14
+
+function textBox(element: Element): DOMRect {
+  const range = document.createRange()
+  range.selectNodeContents(element)
+  return range.getBoundingClientRect()
 }
 
 export function PlateFigure({
@@ -103,6 +120,9 @@ export function PlateFigure({
   const figRef = React.useRef<HTMLElement>(null)
   const stageRef = React.useRef<HTMLDivElement>(null)
   const keyRefs = React.useRef<Array<HTMLSpanElement | null>>([])
+  const itemRefs = React.useRef<Array<HTMLLIElement | null>>([])
+  const listRefs = React.useRef<Record<string, HTMLOListElement | null>>({})
+  const placed = React.useRef<Array<number | null>>([])
   const pathRefs = React.useRef<Array<SVGPathElement | null>>([])
   const dotRefs = React.useRef<Array<SVGCircleElement | null>>([])
   const ringRefs = React.useRef<Array<SVGCircleElement | null>>([])
@@ -110,31 +130,29 @@ export function PlateFigure({
   const markerRefs = React.useRef<Array<SVGGElement | null>>([])
 
   const reduce = useReducedMotionPref()
+  const wide = useWide()
   const [inView, setInView] = React.useState(false)
   const [inked, setInked] = React.useState(false)
   const [walk, setWalk] = React.useState<number | null>(null)
   const [hover, setHover] = React.useState<number | null>(null)
-  const active = hover ?? walk
-  const wide = useWide()
   const [slots, setSlots] = React.useState<Record<string, HTMLElement> | null>(null)
+  const active = hover ?? walk
   const slotted = wide && slots !== null
 
   const sideOf = React.useCallback(
-    (index: number) => {
-      if (slotted && callouts[index]?.slot === "top") return "above" as const
-      if (layout === "below" || slotted) return "below" as const
-      if (layout === "split") return callouts[index]?.side ?? (index % 2 ? "right" : "left")
-      return "right" as const
+    (index: number): Side => {
+      const callout = callouts[index]
+      if (slotted && callout?.slot === "top") return "above"
+      if (layout === "below" || slotted) return "below"
+      if (layout === "split") return callout?.side ?? "right"
+      return "right"
     },
     [callouts, layout, slotted]
   )
 
-  const left = callouts
-    .map((callout, index) => ({ callout, index }))
-    .filter(({ index }) => sideOf(index) === "left")
-  const right = callouts
-    .map((callout, index) => ({ callout, index }))
-    .filter(({ index }) => sideOf(index) !== "left")
+  const indexed = callouts.map((callout, index) => ({ callout, index }))
+  const left = indexed.filter(({ index }) => sideOf(index) === "left")
+  const right = indexed.filter(({ index }) => sideOf(index) !== "left")
 
   /* Watch for the plate entering the screen: start the loop, ink once. */
   React.useEffect(() => {
@@ -144,19 +162,30 @@ export function PlateFigure({
       ([entry]) => {
         if (!entry) return
         setInView(entry.isIntersecting)
-        if (entry.isIntersecting && entry.intersectionRatio > 0.2) setInked(true)
+        if (entry.isIntersecting && entry.intersectionRatio > 0.15) setInked(true)
       },
-      { threshold: [0, 0.2, 0.4], rootMargin: "80px 0px" }
+      { threshold: [0, 0.15, 0.4], rootMargin: "80px 0px" }
     )
     observer.observe(node)
     return () => observer.disconnect()
   }, [])
 
-  /* The frame loop that keeps every line on its part. */
+  /* The frame loop that keeps every label level with its part, and every leader on it. */
   React.useEffect(() => {
     const figure = figRef.current
     const stage = stageRef.current
     if (!figure || !stage) return
+
+    const locate = (anchors: CalloutAnchor[]) => {
+      for (const candidate of anchors) {
+        const found = candidate.sel ? stage.querySelector(candidate.sel) : stage
+        if (!found) continue
+        const box = candidate.text ? textBox(found) : found.getBoundingClientRect()
+        if (box.width === 0 && box.height === 0) continue
+        return { at: candidate, box }
+      }
+      return null
+    }
 
     const measure = () => {
       if (legendSlots && !slots) {
@@ -167,77 +196,130 @@ export function PlateFigure({
         }
         if (Object.keys(found).length === Object.keys(legendSlots).length) setSlots(found)
       }
+
       const f = figure.getBoundingClientRect()
       const s = stage.getBoundingClientRect()
-      callouts.forEach((callout, index) => {
-        // The first anchor whose selector finds a visible element wins.
-        const anchors = Array.isArray(callout.at) ? callout.at : [callout.at]
-        let at = anchors[anchors.length - 1]!
-        let target: Element | null = null
-        for (const candidate of anchors) {
-          const found = candidate.sel ? stage.querySelector(candidate.sel) : stage
-          if (!found) continue
-          const box = found.getBoundingClientRect()
-          if (box.width === 0 && box.height === 0) continue
-          at = candidate
-          target = found
-          break
-        }
-        const r = target ? target.getBoundingClientRect() : s
-        const hasBox = target && (r.width > 0 || r.height > 0)
-        const box = hasBox ? r : s
-        const tx = box.left - f.left + box.width * (at.x ?? 0.5)
-        const ty = box.top - f.top + box.height * (at.y ?? 0.5)
 
+      // 1. Where every part is.
+      const targets = callouts.map((callout) => {
+        const anchors = Array.isArray(callout.at) ? callout.at : [callout.at]
+        const hit = locate(anchors)
+        const at = hit?.at ?? anchors[anchors.length - 1]!
+        const box = hit?.box ?? s
+        return {
+          at,
+          box: hit ? box : null,
+          x: box.left - f.left + box.width * (at.x ?? 0.5),
+          y: box.top - f.top + box.height * (at.y ?? 0.5),
+        }
+      })
+
+      // 2. Labels beside the board: level with their parts, in their order.
+      if (wide) {
+        for (const side of ["left", "right"] as const) {
+          const list = listRefs.current[side]
+          if (!list || list.offsetParent === null) continue
+          const l = list.getBoundingClientRect()
+          const items = callouts
+            .map((_, index) => index)
+            .filter((index) => {
+              const s2 = sideOf(index)
+              return side === "left" ? s2 === "left" : s2 === "right"
+            })
+            .map((index) => ({
+              index,
+              h: itemRefs.current[index]?.offsetHeight ?? 0,
+              want: targets[index]!.y + f.top - l.top - KEY_CENTRE,
+            }))
+            .sort((a, b) => a.want - b.want || a.index - b.index)
+          if (items.length === 0) continue
+
+          const ys: number[] = []
+          items.forEach((item, i) => {
+            const floor = i === 0 ? 0 : ys[i - 1]! + items[i - 1]!.h + GAP
+            ys.push(Math.max(item.want, floor))
+          })
+          const room = Math.max(l.height, 0)
+          const last = items.length - 1
+          if (ys[last]! + items[last]!.h > room) {
+            ys[last] = Math.max(0, room - items[last]!.h)
+            for (let i = last - 1; i >= 0; i -= 1) {
+              ys[i] = Math.min(ys[i]!, ys[i + 1]! - GAP - items[i]!.h)
+            }
+            for (let i = 0; i <= last; i += 1) {
+              const floor = i === 0 ? 0 : ys[i - 1]! + items[i - 1]!.h + GAP
+              ys[i] = Math.max(ys[i]!, floor)
+            }
+          }
+          const needed = ys[last]! + items[last]!.h
+          list.style.minHeight = needed > room + 1 ? `${Math.ceil(needed)}px` : ""
+
+          items.forEach((item, i) => {
+            const node = itemRefs.current[item.index]
+            const y = Math.round(ys[i]!)
+            const previous = placed.current[item.index]
+            if (!node) return
+            if (previous == null || Math.abs(previous - y) > SETTLE) {
+              placed.current[item.index] = y
+              node.style.setProperty("--y", `${y}px`)
+            }
+          })
+        }
+      }
+
+      // 3. The leaders, the dots, the markers and the outlines.
+      callouts.forEach((_, index) => {
+        const target = targets[index]!
+        const tx = target.x
+        const ty = target.y
         const key = keyRefs.current[index]
         const path = pathRefs.current[index]
-        if (key && path) {
+        if (key && path && key.offsetParent !== null) {
           const k = key.getBoundingClientRect()
           const side = sideOf(index)
-          let d: string
-          if (side === "above") {
-            const sx = k.left - f.left + k.width / 2
-            const sy = k.bottom - f.top + 6
-            d = `M${sx.toFixed(1)} ${sy.toFixed(1)} V${(sy + 10).toFixed(1)} L${tx.toFixed(1)} ${ty.toFixed(1)}`
-          } else if (side === "below") {
-            const sx = k.left - f.left + k.width / 2
-            const sy = k.top - f.top - 6
-            d = `M${sx.toFixed(1)} ${sy.toFixed(1)} V${(sy - 14).toFixed(1)} L${tx.toFixed(1)} ${ty.toFixed(1)}`
-          } else if (side === "left") {
-            const sx = k.right - f.left + 6
+          const p = (n: number) => n.toFixed(1)
+          let d = ""
+          if (side === "right" || side === "left") {
+            const dir = side === "right" ? -1 : 1
+            const sx = side === "right" ? k.left - f.left - 5 : k.right - f.left + 5
             const sy = k.top - f.top + k.height / 2
-            d = `M${sx.toFixed(1)} ${sy.toFixed(1)} H${(sx + 22).toFixed(1)} L${tx.toFixed(1)} ${ty.toFixed(1)}`
+            const run = sx + dir * 16
+            const dy = ty - sy
+            const jogEnd = run + dir * Math.abs(dy)
+            const beyond = side === "right" ? jogEnd < tx : jogEnd > tx
+            if (Math.abs(dy) < 0.75) {
+              d = `M${p(sx)} ${p(sy)} H${p(tx)}`
+            } else if (beyond) {
+              d = `M${p(sx)} ${p(sy)} H${p(run)} L${p(tx)} ${p(ty)}`
+            } else {
+              d = `M${p(sx)} ${p(sy)} H${p(run)} L${p(jogEnd)} ${p(ty)} H${p(tx)}`
+            }
           } else {
-            const sx = k.left - f.left - 6
-            const sy = k.top - f.top + k.height / 2
-            d = `M${sx.toFixed(1)} ${sy.toFixed(1)} H${(sx - 22).toFixed(1)} L${tx.toFixed(1)} ${ty.toFixed(1)}`
+            const sx = k.left - f.left + k.width / 2
+            const sy = side === "below" ? k.top - f.top - 5 : k.bottom - f.top + 5
+            const elbow = side === "below" ? sy - 14 : sy + 14
+            d = `M${p(sx)} ${p(sy)} V${p(elbow)} H${p(tx)} V${p(ty)}`
           }
           if (path.getAttribute("d") !== d) path.setAttribute("d", d)
         }
 
         const cx = tx.toFixed(1)
         const cy = ty.toFixed(1)
-        const dot = dotRefs.current[index]
-        if (dot) {
-          dot.setAttribute("cx", cx)
-          dot.setAttribute("cy", cy)
-        }
-        const ring = ringRefs.current[index]
-        if (ring) {
-          ring.setAttribute("cx", cx)
-          ring.setAttribute("cy", cy)
-        }
-        const marker = markerRefs.current[index]
-        if (marker) marker.setAttribute("transform", `translate(${cx} ${cy})`)
+        dotRefs.current[index]?.setAttribute("cx", cx)
+        dotRefs.current[index]?.setAttribute("cy", cy)
+        ringRefs.current[index]?.setAttribute("cx", cx)
+        ringRefs.current[index]?.setAttribute("cy", cy)
+        markerRefs.current[index]?.setAttribute("transform", `translate(${cx} ${cy})`)
 
         const rect = boxRefs.current[index]
         if (rect) {
-          const pad = at.pad ?? 6
-          if (at.box && hasBox) {
-            rect.setAttribute("x", (r.left - f.left - pad).toFixed(1))
-            rect.setAttribute("y", (r.top - f.top - pad).toFixed(1))
-            rect.setAttribute("width", (r.width + pad * 2).toFixed(1))
-            rect.setAttribute("height", (r.height + pad * 2).toFixed(1))
+          const pad = target.at.pad ?? 6
+          const box = target.box
+          if (target.at.box && box) {
+            rect.setAttribute("x", (box.left - f.left - pad).toFixed(1))
+            rect.setAttribute("y", (box.top - f.top - pad).toFixed(1))
+            rect.setAttribute("width", (box.width + pad * 2).toFixed(1))
+            rect.setAttribute("height", (box.height + pad * 2).toFixed(1))
           } else {
             rect.setAttribute("width", "0")
             rect.setAttribute("height", "0")
@@ -263,7 +345,7 @@ export function PlateFigure({
       cancelAnimationFrame(frame)
       resize.disconnect()
     }
-  }, [callouts, inView, sideOf, legendSlots, slots])
+  }, [callouts, inView, sideOf, legendSlots, slots, wide])
 
   /* The walk: once inked, the orange steps through the parts in turn. */
   React.useEffect(() => {
@@ -276,65 +358,93 @@ export function PlateFigure({
     return () => window.clearTimeout(timer)
   }, [inked, reduce, autoplay, inView, hover, walk, callouts.length])
 
-  const labelList = (items: typeof left, side: "left" | "right" | "below" | "above") => (
-    <ol
-      className={cn(
-        "flex flex-col gap-5",
-        side === "below" && !slotted && "lg:grid lg:auto-cols-fr lg:grid-flow-col lg:gap-6",
-        (side === "below" || side === "above") &&
-          slotted &&
-          "lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-7",
-        side === "left" && "lg:items-end lg:text-right"
-      )}
-    >
-      {items.map(({ callout, index }) => (
-        <li
-          key={callout.key}
-          className={cn(
-            "sp-callout flex items-start gap-3",
-            side === "left" && "lg:flex-row-reverse"
-          )}
-          style={{ "--i": index } as React.CSSProperties}
-          data-active={active === index ? "" : undefined}
-          onPointerEnter={() => setHover(index)}
-          onPointerLeave={() => setHover(null)}
-        >
-          <span
-            ref={(node) => {
-              keyRefs.current[index] = node
-            }}
-            className="sp-key mt-px"
-            aria-hidden="true"
+  const labelList = (
+    items: typeof indexed,
+    side: Side,
+    options: { register?: boolean; placed?: boolean } = {}
+  ) => {
+    const { register = true, placed: isPlaced = false } = options
+    return (
+      <ol
+        ref={
+          register && isPlaced
+            ? (node) => {
+                listRefs.current[side] = node
+              }
+            : undefined
+        }
+        className={cn(
+          "flex flex-col gap-5",
+          isPlaced && "xl:relative xl:block xl:h-full",
+          side === "below" && !slotted && "xl:grid xl:auto-cols-fr xl:grid-flow-col xl:gap-6",
+          (side === "below" || side === "above") &&
+            slotted &&
+            "xl:grid xl:grid-cols-2 xl:gap-x-8 xl:gap-y-7",
+          side === "left" && "xl:items-end xl:text-right"
+        )}
+      >
+        {items.map(({ callout, index }) => (
+          <li
+            key={callout.key}
+            ref={
+              register
+                ? (node) => {
+                    itemRefs.current[index] = node
+                  }
+                : undefined
+            }
+            className={cn(
+              "sp-callout flex items-start gap-3",
+              isPlaced &&
+                "xl:absolute xl:inset-x-0 xl:top-[var(--y,0px)] xl:transition-[top] xl:duration-500 xl:ease-[var(--sp-ease)]",
+              side === "left" && "xl:flex-row-reverse"
+            )}
+            style={{ "--i": index } as React.CSSProperties}
+            data-active={active === index ? "" : undefined}
+            onPointerEnter={() => setHover(index)}
+            onPointerLeave={() => setHover(null)}
           >
-            {callout.key}
-          </span>
-          <div className={cn("min-w-0", side !== "below" && side !== "above" && "max-w-[30ch]")}>
-            <p className="sp-callout-title text-[15px] leading-[1.3] font-semibold tracking-[-0.01em]">
-              <span className="sr-only">{callout.key}. </span>
-              {callout.title}
-            </p>
-            {callout.note ? (
-              <p className="mt-1 text-[14px] leading-[1.45] text-[var(--sp-ink-2)]">
-                {callout.note}
+            <span
+              ref={
+                register
+                  ? (node) => {
+                      keyRefs.current[index] = node
+                    }
+                  : undefined
+              }
+              className="sp-key mt-px"
+              aria-hidden="true"
+            >
+              {callout.key}
+            </span>
+            <div
+              className={cn(
+                "min-w-0",
+                (side === "left" || side === "right") && "max-w-[30ch]"
+              )}
+            >
+              <p className="sp-callout-title text-[15px] leading-[1.3] font-semibold tracking-[-0.01em]">
+                <span className="sr-only">{callout.key}. </span>
+                {callout.title}
               </p>
-            ) : null}
-            {callout.spec ? (
-              <p className="sp-mono mt-1.5 text-[12px] leading-[1.4] text-[var(--sp-ink)]">
-                {callout.spec}
-              </p>
-            ) : null}
-          </div>
-        </li>
-      ))}
-    </ol>
-  )
+              {callout.note ? (
+                <p className="mt-1 text-[14px] leading-[1.45] text-[var(--sp-ink-2)]">
+                  {callout.note}
+                </p>
+              ) : null}
+              {callout.spec ? (
+                <p className="sp-mono mt-1.5 text-[12px] leading-[1.4] text-[var(--sp-ink)]">
+                  {callout.spec}
+                </p>
+              ) : null}
+            </div>
+          </li>
+        ))}
+      </ol>
+    )
+  }
 
-  const grid =
-    layout === "split"
-      ? "lg:grid-cols-12"
-      : layout === "side"
-        ? "lg:grid-cols-12"
-        : "lg:grid-cols-1"
+  const beside = layout === "side" || layout === "split"
 
   return (
     <figure
@@ -345,34 +455,31 @@ export function PlateFigure({
       <div
         className={cn(
           "grid grid-cols-1 gap-x-6 gap-y-8",
-          labelsHeader ? "lg:items-start" : "lg:items-center",
-          grid
+          beside ? "xl:grid-cols-12 xl:items-stretch" : "xl:grid-cols-1"
         )}
       >
+        {/*
+          Below `xl` the labels are one legend, in letter order, under the
+          board. It comes first in the markup and registers nothing, so the
+          refs the leaders are measured from are the wide-screen labels.
+        */}
+        {beside ? (
+          <div className="order-3 xl:hidden">
+            {labelList(indexed, "right", { register: false })}
+          </div>
+        ) : null}
+
         {layout === "split" ? (
-          <>
-            {/*
-              On a phone the two columns become one legend, in letter order.
-              It comes first in the markup so the desktop keys, rendered after
-              it, are the ones the leader lines are measured from.
-            */}
-            <div className="order-3 lg:hidden">
-              {labelList(
-                callouts.map((callout, index) => ({ callout, index })),
-                "right"
-              )}
-            </div>
-            <div className={cn("hidden lg:block", columns?.left ?? "lg:col-span-3")}>
-              {labelList(left, "left")}
-            </div>
-          </>
+          <div className={cn("hidden xl:block", columns?.left ?? "xl:col-span-3")}>
+            {labelList(left, "left", { placed: true })}
+          </div>
         ) : null}
 
         <div
           className={cn(
-            "sp-board relative order-1 lg:order-none",
+            "sp-board relative order-1 xl:order-none",
             columns?.board ??
-              (layout === "split" ? "lg:col-span-6" : layout === "side" ? "lg:col-span-8" : ""),
+              (layout === "split" ? "xl:col-span-6" : layout === "side" ? "xl:col-span-8" : ""),
             boardClassName
           )}
         >
@@ -385,7 +492,7 @@ export function PlateFigure({
           <div
             ref={stageRef}
             className={cn(
-              "relative flex min-h-[320px] items-center justify-center px-4 pt-12 pb-10 sm:px-8 lg:px-12",
+              "relative flex min-h-[320px] items-center justify-center px-4 pt-14 pb-12 sm:px-8 xl:px-12",
               stageClassName
             )}
           >
@@ -393,34 +500,21 @@ export function PlateFigure({
           </div>
         </div>
 
-        {slotted ? null : (
+        {beside ? (
           <div
             className={cn(
-              labelsHeader
-                ? "contents lg:block"
-                : layout === "split"
-                  ? "hidden lg:block"
-                  : "order-3 lg:order-none",
+              labelsHeader ? "contents xl:flex xl:flex-col" : "hidden xl:block",
               columns?.labels ??
-                (layout === "split"
-                  ? "lg:col-span-3"
-                  : layout === "side"
-                    ? "lg:col-span-3 lg:col-start-10"
-                    : "")
+                (layout === "split" ? "xl:col-span-3" : "xl:col-span-3 xl:col-start-10")
             )}
           >
-            {labelsHeader ? (
-              <>
-                {/* Before the board on a phone, above the letters beside it on a desk. */}
-                <div className="order-0 lg:order-none">{labelsHeader}</div>
-                <div className="order-3 lg:order-none">
-                  {labelList(right, layout === "below" ? "below" : "right")}
-                </div>
-              </>
-            ) : (
-              labelList(right, layout === "below" ? "below" : "right")
-            )}
+            {labelsHeader ? <div className="order-0 xl:order-none">{labelsHeader}</div> : null}
+            <div className={cn(labelsHeader ? "hidden xl:block xl:flex-1" : "h-full")}>
+              {labelList(right, "right", { placed: true })}
+            </div>
           </div>
+        ) : slotted ? null : (
+          <div className="order-3 xl:order-none">{labelList(right, "below")}</div>
         )}
       </div>
 
@@ -476,7 +570,7 @@ export function PlateFigure({
                 ringRefs.current[index] = node
               }}
               className="sp-leader-ring"
-              r="9"
+              r="8"
               cx="-100"
               cy="-100"
             />
@@ -485,7 +579,7 @@ export function PlateFigure({
                 dotRefs.current[index] = node
               }}
               className="sp-leader-dot"
-              r="3.5"
+              r="3"
               cx="-100"
               cy="-100"
             />

@@ -529,11 +529,11 @@
   --d-hello-top: clamp(26px, 6.5vh, 72px);
   --d-title: clamp(76px, 8.4vw, 138px);
   --d-trace-right: clamp(24px, 3.4vw, 64px);
-  --d-trace-w: clamp(420px, 32vw, 500px);
+  --d-trace-w: clamp(420px, 32vw, 560px);
   --d-trace-top: clamp(232px, 28vh, 300px);
   --d-term-body: clamp(170px, 22vh, 220px);
   --d-term-h: calc(44px + var(--d-term-body));
-  --d-term-w: clamp(460px, 38vw, 580px);
+  --d-term-w: clamp(460px, 38vw, 660px);
   /* The Terminal's right edge laps the run's left edge by 24px. */
   --d-term-right: calc(var(--d-trace-right) + var(--d-trace-w) - 24px);
   --d-term-left: calc(100% - var(--d-term-right) - var(--d-term-w));
@@ -555,12 +555,15 @@
     --d-trace-right: clamp(20px, 3vw, 40px);
     --d-trace-w: clamp(350px, 40vw, 440px);
     --d-trace-top: clamp(170px, 26vh, 240px);
-    --d-term-w: clamp(330px, 44vw, 500px);
+    --d-term-w: clamp(330px, 50vw, 540px);
     --d-term-left: var(--d-x);
     --d-term-right: calc(100% - var(--d-term-left) - var(--d-term-w));
   }
   .v-desktop .d-banner {
     width: 360px;
+  }
+  .v-desktop .d-f-terminal .d-term {
+    font-size: 12px;
   }
 }
 
@@ -1424,4 +1427,25 @@
   .v-desktop .d-toolbar .d-lights {
     display: none;
   }
+}
+
+.v-desktop .d-overview {
+  max-width: 62ch;
+}
+
+.v-desktop .d-overview-lead {
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -0.016em;
+  color: var(--d-ink);
+  text-wrap: pretty;
+}
+
+.v-desktop .d-overview-rest {
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--d-ink-2);
+  text-wrap: pretty;
 }

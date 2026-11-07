@@ -15,6 +15,7 @@ import { RunCode } from "@/components/variants/run/code"
 import { ComponentWindow } from "@/components/variants/run/component-window"
 import { RunCopy } from "@/components/variants/run/copy"
 import { LocalBar } from "@/components/variants/run/local-bar"
+import { PrevNext } from "@/components/variants/run/prev-next"
 import { SourceList } from "@/components/variants/run/source-list"
 import { MiniWindow } from "@/components/variants/run/window"
 import { dependencyCommands, shadcnCommands } from "@/lib/commands"
@@ -500,17 +501,18 @@ export default async function RunComponentPage({ params }: PageProps) {
               </section>
             ) : null}
 
-            <nav
-              aria-label="Component navigation"
-              className="mt-24 grid gap-px overflow-hidden rounded-[14px] bg-white/[0.08] sm:grid-cols-2"
-            >
-              {previous ? (
-                <PrevNext direction="previous" item={previous} />
-              ) : (
-                <span className="hidden bg-black sm:block" />
-              )}
-              {next ? <PrevNext direction="next" item={next} /> : <span className="hidden bg-black sm:block" />}
-            </nav>
+            <PrevNext
+              className="mt-24"
+              label="Component navigation"
+              previous={
+                previous
+                  ? { title: previous.title, href: href(`/components/${previous.slug}`) }
+                  : undefined
+              }
+              next={
+                next ? { title: next.title, href: href(`/components/${next.slug}`) } : undefined
+              }
+            />
           </div>
         </div>
       </main>
@@ -638,30 +640,5 @@ function DependencyBlock({
       )}
       {note ? <p className="mt-auto !text-[12px] !text-[#77777c]">{note}</p> : null}
     </div>
-  )
-}
-
-function PrevNext({
-  direction,
-  item,
-}: {
-  direction: "previous" | "next"
-  item: ComponentMetadata
-}) {
-  const isNext = direction === "next"
-  return (
-    <Link
-      href={href(`/components/${item.slug}`)}
-      className={`group flex flex-col gap-2 bg-black p-6 transition-colors hover:bg-[#0b0b0c] md:p-8 ${isNext ? "sm:items-end sm:text-right" : ""}`}
-    >
-      <span className="flex items-center gap-1.5 text-[13px] text-[#77777c]">
-        {isNext ? null : <ArrowLeft aria-hidden="true" className="size-3.5" />}
-        {isNext ? "Next" : "Previous"}
-        {isNext ? <ArrowRight aria-hidden="true" className="size-3.5" /> : null}
-      </span>
-      <span className="text-[clamp(1.375rem,2.4vw,1.875rem)] leading-[1.15] font-semibold tracking-[-0.02em]">
-        {item.title}
-      </span>
-    </Link>
   )
 }

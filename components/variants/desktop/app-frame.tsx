@@ -218,3 +218,44 @@ export function AppFrame({
 export function LiveCanvas({ slug }: { slug: string }) {
   return <div className="d-canvas">{renderPreview(slug)}</div>
 }
+
+/*
+ * The overview, set to be read: the first sentence as a standfirst, the rest
+ * at reading size on a ~62ch measure, folded past about 120 words so the
+ * preview above it stays the thing the page is about.
+ */
+export function Overview({ text }: { text: string }) {
+  const [open, setOpen] = React.useState(false)
+  const id = React.useId()
+  const match = /^(.+?[.!?])\s+(?=[A-Z“"])/.exec(text)
+  const lead = match ? match[1] : text
+  const rest = match ? text.slice(match[0].length) : ""
+  const words = rest.split(/\s+/).filter(Boolean)
+  const long = words.length > 120
+  const shown = long && !open ? `${words.slice(0, 100).join(" ")}…` : rest
+
+  return (
+    <section aria-labelledby={`${id}-h`} className="d-overview">
+      <h2 id={`${id}-h`} className="sr-only">
+        Overview
+      </h2>
+      <p className="d-overview-lead">{lead}</p>
+      {rest ? (
+        <p id={`${id}-rest`} className="d-overview-rest">
+          {shown}
+        </p>
+      ) : null}
+      {long ? (
+        <button
+          type="button"
+          className="d-link mt-2 text-[14px] font-medium"
+          aria-expanded={open}
+          aria-controls={`${id}-rest`}
+          onClick={() => setOpen((value) => !value)}
+        >
+          {open ? "Show less" : "Read more"}
+        </button>
+      ) : null}
+    </section>
+  )
+}
