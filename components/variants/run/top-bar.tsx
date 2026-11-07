@@ -43,7 +43,7 @@ export function RunTopBar({
   const [menuOpen, setMenuOpen] = React.useState(false)
 
   React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
+    const onScroll = () => setScrolled(window.scrollY > 0)
     onScroll()
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
@@ -54,7 +54,10 @@ export function RunTopBar({
   const lit = tone !== "idle"
 
   return (
-    <header className="run-topbar" data-scrolled={scrolled || menuOpen}>
+    <header
+      className="run-topbar data-[scrolled=true]:backdrop-blur-[20px] data-[scrolled=true]:backdrop-saturate-[1.7]"
+      data-scrolled={scrolled || menuOpen}
+    >
       <div className="run-container flex h-full items-center gap-2">
         <Link
           href={href("/")}

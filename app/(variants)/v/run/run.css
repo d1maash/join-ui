@@ -324,15 +324,12 @@
     height: 3.5rem;
     transition:
       background-color 300ms var(--run-ease),
-      box-shadow 300ms var(--run-ease),
-      backdrop-filter 300ms var(--run-ease);
+      box-shadow 300ms var(--run-ease);
   }
 
   .v-run .run-topbar[data-scrolled="true"] {
-    background: rgb(10 10 11 / 0.72);
+    background: rgb(10 10 11 / 0.8);
     box-shadow: inset 0 -1px 0 var(--run-line);
-    backdrop-filter: blur(20px) saturate(170%);
-    -webkit-backdrop-filter: blur(20px) saturate(170%);
   }
 
   .v-run .run-navlink {
@@ -1011,10 +1008,8 @@
     inset: 3.5rem 0 auto 0;
     z-index: 90;
     height: 3rem;
-    background: rgb(10 10 11 / 0.72);
+    background: rgb(10 10 11 / 0.8);
     box-shadow: inset 0 -1px 0 var(--run-line);
-    backdrop-filter: blur(20px) saturate(170%);
-    -webkit-backdrop-filter: blur(20px) saturate(170%);
     transition:
       transform 320ms var(--run-ease),
       opacity 320ms var(--run-ease);

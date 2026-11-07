@@ -40,7 +40,7 @@ export function LocalBar({
 
   return (
     <div
-      className="run-localbar"
+      className="run-localbar backdrop-blur-[20px] backdrop-saturate-[1.7]"
       data-shown={shown}
       aria-hidden={!shown}
       inert={!shown || undefined}

@@ -23,7 +23,7 @@ export default function PlateMissing() {
         <p className="sp-label">Error 404</p>
       </div>
 
-      <div className="sp-grid mt-8 items-end gap-y-6">
+      <div data-running="Plate missing" className="sp-grid mt-8 items-end gap-y-6">
         <h1 className="sp-display col-span-4 text-[clamp(56px,9vw,132px)] leading-[0.88] lg:col-span-8">
           This page was never printed.
         </h1>
