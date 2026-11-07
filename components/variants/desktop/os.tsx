@@ -67,6 +67,25 @@ interface OsValue {
 const OsContext = React.createContext<OsValue | null>(null)
 
 const WALLPAPER_KEY = "joinui-desktop-wallpaper"
+const WALLPAPER_EVENT = "joinui-desktop-wallpaper"
+
+/* The wallpaper choice, read from storage as an external store: "colour" on the server. */
+function subscribeWallpaper(callback: () => void) {
+  window.addEventListener(WALLPAPER_EVENT, callback)
+  window.addEventListener("storage", callback)
+  return () => {
+    window.removeEventListener(WALLPAPER_EVENT, callback)
+    window.removeEventListener("storage", callback)
+  }
+}
+
+function readWallpaper(): "colour" | "dither" {
+  try {
+    return window.localStorage.getItem(WALLPAPER_KEY) === "dither" ? "dither" : "colour"
+  } catch {
+    return "colour"
+  }
+}
 
 export function OsProvider({
   components,
@@ -82,7 +101,7 @@ export function OsProvider({
   const [pending, setPending] = React.useState<AppId | null>(null)
   const [booted, setBooted] = React.useState(false)
   const [spotlightOpen, setSpotlightOpen] = React.useState(false)
-  const [wallpaper, setWallpaperState] = React.useState<"colour" | "dither">("colour")
+  const wallpaper = React.useSyncExternalStore(subscribeWallpaper, readWallpaper, () => "colour" as const)
   const [badges, setBadges] = React.useState<Partial<Record<AppId, number>>>({})
   const z = React.useRef(10)
   const icons = React.useRef(new Map<AppId, HTMLElement>())
@@ -94,23 +113,14 @@ export function OsProvider({
   }, [])
   const handleDock = React.useCallback((id: AppId) => handlers.current.get(id)?.() ?? false, [])
 
-  /* A remembered wallpaper is a convenience; a missing one is the default. */
-  React.useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(WALLPAPER_KEY)
-      if (saved === "dither") setWallpaperState("dither")
-    } catch {
-      /* storage blocked — keep the default */
-    }
-  }, [])
-
+  /* A remembered wallpaper is a convenience; blocked storage just means the default. */
   const setWallpaper = React.useCallback((value: "colour" | "dither") => {
-    setWallpaperState(value)
     try {
       window.localStorage.setItem(WALLPAPER_KEY, value)
     } catch {
-      /* storage blocked — the choice lasts for this visit */
+      /* storage blocked — nothing to remember it in */
     }
+    window.dispatchEvent(new Event(WALLPAPER_EVENT))
   }, [])
 
   const raise = React.useCallback((id: AppId) => {
@@ -187,8 +197,8 @@ export function OsProvider({
    * Focus follows the frontmost open window when the focused one goes away,
    * the way the Mac hands key status to the next window down.
    */
-  React.useEffect(() => {
-    if (focused && wins[focused]?.status === "open") return
+  const key = React.useMemo<AppId | null>(() => {
+    if (focused && wins[focused]?.status === "open") return focused
     let best: AppId | null = null
     let bestZ = -1
     for (const [id, win] of Object.entries(wins) as [AppId, WinState][]) {
@@ -197,7 +207,7 @@ export function OsProvider({
         bestZ = win.z
       }
     }
-    if (best !== focused) setFocused(best)
+    return best
   }, [wins, focused])
 
   const value = React.useMemo<OsValue>(
@@ -205,7 +215,7 @@ export function OsProvider({
       components,
       component: (slug) => bySlug.get(slug),
       wins,
-      focused,
+      focused: key,
       open,
       close,
       minimize,
@@ -233,7 +243,7 @@ export function OsProvider({
       components,
       bySlug,
       wins,
-      focused,
+      key,
       open,
       close,
       minimize,

@@ -75,10 +75,12 @@ export function TerminalScene({
     const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms))
 
     if (still) {
-      setLines(FINISHED)
-      setReady(true)
-      played = true
-      installed.current?.()
+      at(0, () => {
+        setLines(FINISHED)
+        setReady(true)
+        played = true
+        installed.current?.()
+      })
       return () => timers.forEach(window.clearTimeout)
     }
 

@@ -52,7 +52,7 @@ export function ComponentWindow({
   return (
     <div className="run-window flex-col">
       <div className="run-toolbar justify-between gap-3 !pr-2 !pl-4 max-sm:!h-auto max-sm:flex-wrap max-sm:py-3">
-        <div className="flex min-w-0 items-center gap-4 sm:w-[12rem]">
+        <div className="flex min-w-0 items-center gap-4 sm:w-[14rem]">
           <TrafficLights />
           <span className="truncate font-mono text-[12px] text-[#77777c] max-lg:hidden">{title}</span>
         </div>
@@ -93,7 +93,7 @@ export function ComponentWindow({
           })}
         </div>
 
-        <div className="flex items-center justify-end sm:w-[12rem]">
+        <div className="flex items-center justify-end sm:w-[14rem]">
           <Link
             href={fullPreview}
             className="run-btn run-btn--ghost run-btn--sm run-btn--icon"

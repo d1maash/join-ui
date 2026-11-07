@@ -24,7 +24,6 @@ export function Wallpaper() {
           }
           sizes="100vw"
         />
-        {/* eslint-disable-next-line @next/next/no-img-element -- a fixed, art-directed backdrop; next/image would only add a wrapper */}
         <img
           src={dither ? "/hero-dither-1920.webp" : "/hero-colour-1920.webp"}
           srcSet={

@@ -105,7 +105,8 @@ export function Window({
     if (was === status) return
 
     if (status === "open") {
-      setShown(true)
+      /* Remembered as shown a frame later, so a close can play its flight. */
+      requestAnimationFrame(() => setShown(true))
       const via = win?.via ?? "other"
       const from = via === "dock" && !still ? dockOffset() : null
       if (still) {

@@ -139,7 +139,7 @@ export const ANATOMY: Record<string, Anatomy> = {
         title: "The copy",
         note: "Starts on top of the line above, identical, and travels down one line to seat.",
         spec: "timing.copy = 800",
-        at: { sel: "p > span:nth-child(2)", x: 0.7, y: 0.55 },
+        at: { sel: "p > span:nth-child(2)", x: 0.42, y: 0.55 },
       },
       {
         key: "C",
@@ -152,10 +152,11 @@ export const ANATOMY: Record<string, Anatomy> = {
   },
 
   "focus-stack": {
-    layout: "side",
+    layout: "split",
     callouts: [
       {
         key: "A",
+        side: "right",
         title: "The pill in focus",
         note: "Full size, sharp, upright — the one item the reader is meant to see.",
         spec: "index · onIndexChange",
@@ -163,24 +164,30 @@ export const ANATOMY: Record<string, Anatomy> = {
       },
       {
         key: "B",
+        side: "left",
         title: "Badge",
         note: "Each item's glyph, in its own accent.",
         spec: "icon · accent",
-        at: { sel: "button[aria-current] > span:nth-child(2)", x: 0.5, y: 0.5 },
+        at: { sel: "button[aria-current] > span:nth-child(2)", x: 0.1, y: 0.5 },
       },
       {
         key: "C",
+        side: "left",
         title: "The coil",
         note: "Neighbours twist away by depth and soften, so the list still reads as a list.",
         spec: "depth={2} · tilt · blur",
-        at: { sel: "ol > li:first-child button", x: 0.86, y: 0.6 },
+        at: [
+          { sel: "ol > li:has(+ li button[aria-current]) button", x: 0.08, y: 0.45 },
+          { sel: "ol > li:first-child button", x: 0.08, y: 0.45 },
+        ],
       },
       {
         key: "D",
-        title: "Timer, or the page",
-        note: "Turned every 2.6 s here. mode=\"scroll\" ties it to the page instead.",
-        spec: 'mode="auto" · interval={2600}',
-        at: { sel: "ol > li:last-child button", x: 0.84, y: 0.4 },
+        side: "right",
+        title: "Description",
+        note: "Set on the pill in focus. The neighbours let it fade, and keep only their label.",
+        spec: "items[].description",
+        at: { sel: "button[aria-current] > span:last-child > span:last-child", x: 0.92, y: 0.6 },
       },
     ],
   },
@@ -223,10 +230,11 @@ export const ANATOMY: Record<string, Anatomy> = {
   },
 
   "status-timeline": {
-    layout: "side",
+    layout: "split",
     callouts: [
       {
         key: "A",
+        side: "right",
         title: "Header and status",
         note: "Names the list for assistive technology and says where the run stands.",
         spec: "label · status",
@@ -234,32 +242,36 @@ export const ANATOMY: Record<string, Anatomy> = {
       },
       {
         key: "B",
-        title: "Timestamp",
-        note: "Optional, set right, in tabular figures.",
-        spec: "timestamp",
-        at: { sel: "ol > li:first-child > div:last-child > span", x: 0.96, y: 0.5, box: true, pad: 3 },
-      },
-      {
-        key: "C",
+        side: "left",
         title: "Connector",
         note: "Runs down to the next marker a tenth of a second after the cleared one turns.",
         spec: "transform · opacity",
         at: { sel: "ol > li:first-child > div:first-child > span:last-child", x: 0.5, y: 0.5 },
       },
       {
-        key: "D",
+        key: "C",
+        side: "left",
         title: "The step in flight",
         note: "Carries aria-current. On arrival two rings spread out of its marker, once.",
         spec: 'aria-current="step"',
         at: [
-          { sel: 'ol > li[aria-current="step"]', x: 0.99, y: 0.3, box: true, pad: 5 },
-          { sel: "ol > li:last-child", x: 0.99, y: 0.3, box: true, pad: 5 },
+          { sel: 'ol > li[aria-current="step"] > div:first-child > span:first-child', x: 0.5, y: 0.5, box: true, pad: 5 },
+          { sel: "ol > li:last-child > div:first-child > span:first-child", x: 0.5, y: 0.5, box: true, pad: 5 },
         ],
       },
       {
+        key: "D",
+        side: "right",
+        title: "Timestamp",
+        note: "Optional, set right, in tabular figures.",
+        spec: "timestamp",
+        at: { sel: "ol > li:nth-child(3) > div:last-child > span", x: 0.98, y: 0.5, box: true, pad: 3 },
+      },
+      {
         key: "E",
+        side: "left",
         title: "Upcoming",
-        note: "A quiet grey disc, and a hidden “Not started”. Colour never carries it alone.",
+        note: "A quiet grey disc and a hidden “Not started”. Colour never carries it alone.",
         spec: 'state: "upcoming"',
         at: { sel: "ol > li:last-child > div:first-child > span:first-child", x: 0.5, y: 0.5 },
       },
@@ -267,10 +279,11 @@ export const ANATOMY: Record<string, Anatomy> = {
   },
 
   "tool-trace": {
-    layout: "side",
+    layout: "split",
     callouts: [
       {
         key: "A",
+        side: "right",
         title: "Run header",
         note: "The trace's name and a status chip. The list is named by it for screen readers.",
         spec: "label · status",
@@ -278,16 +291,18 @@ export const ANATOMY: Record<string, Anatomy> = {
       },
       {
         key: "B",
+        side: "left",
         title: "State tile and rail",
         note: "Pending, running, done, failed, skipped — each a glyph and a hidden word.",
         spec: 'state: "running"',
         at: [
-          { sel: "ol > li[aria-current] > div:first-child > span:first-child", x: 0.5, y: 0.5, box: true, pad: 4 },
-          { sel: "ol > li:first-child > div:first-child > span:first-child", x: 0.5, y: 0.5, box: true, pad: 4 },
+          { sel: "ol > li[aria-current] > div:first-child > span:first-child", x: 0.1, y: 0.5, box: true, pad: 4 },
+          { sel: "ol > li:first-child > div:first-child > span:first-child", x: 0.1, y: 0.5, box: true, pad: 4 },
         ],
       },
       {
         key: "C",
+        side: "right",
         title: "Console",
         note: "The step in flight opens itself and writes its output a line at a time.",
         spec: "stream · lineSpeed={150}",
@@ -298,13 +313,15 @@ export const ANATOMY: Record<string, Anatomy> = {
       },
       {
         key: "D",
+        side: "left",
         title: "Step",
         note: "The tool's name in mono, its argument under it. Enter opens it and pins it open.",
         spec: "name · summary",
-        at: { sel: "ol > li:last-child button > span:first-child", x: 0.42, y: 0.3 },
+        at: { sel: "ol > li:last-child button > span:first-child > span:first-child", x: 0, y: 0.5 },
       },
       {
         key: "E",
+        side: "right",
         title: "Footer",
         note: "Anything you pass. Here, how far through the run is.",
         spec: "footer",

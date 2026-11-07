@@ -48,8 +48,11 @@ export function Desktop() {
   const mode = useOsMode()
   const still = useStill()
   const desk = React.useRef<HTMLDivElement>(null)
-  const [banner, setBanner] = React.useState(false)
-  const [dismissed, setDismissed] = React.useState(false)
+  /* The take whose request was dismissed, and the take whose answer has had its moment. */
+  const [dismissedTake, setDismissedTake] = React.useState<number | null>(null)
+  const [settledTake, setSettledTake] = React.useState<number | null>(() =>
+    run.decision !== null ? run.take : null
+  )
   const [installed, setInstalled] = React.useState(false)
   const [carbonTake, setCarbonTake] = React.useState(0)
   const live = mode === "desktop"
@@ -104,18 +107,16 @@ export function Desktop() {
 
   /* The notification: in when the agent asks, out a beat after it is answered. */
   const phase = run.phase
+  const take = run.take
+  const decided = run.decision !== null
+  const banner =
+    phase === "awaiting" ? dismissedTake !== take : decided && settledTake !== take
   React.useEffect(() => {
-    if (phase === "awaiting") {
-      if (!dismissed) setBanner(true)
-      return
-    }
-    setDismissed(false)
-    if (phase === "pushing" || phase === "denied" || phase === "expired") {
-      const timer = window.setTimeout(() => setBanner(false), 2400)
-      return () => window.clearTimeout(timer)
-    }
-    setBanner(false)
-  }, [phase, dismissed])
+    if (!decided || settledTake === take) return
+    const timer = window.setTimeout(() => setSettledTake(take), 2400)
+    return () => window.clearTimeout(timer)
+  }, [decided, settledTake, take])
+  const showRequest = React.useCallback(() => setDismissedTake(null), [])
 
   const waitingUnseen = phase === "awaiting" && !banner
   React.useEffect(() => {
@@ -125,14 +126,13 @@ export function Desktop() {
   React.useEffect(() => {
     setDockHandler("approval-gate", () => {
       if (phase === "awaiting" && !banner) {
-        setDismissed(false)
-        setBanner(true)
+        showRequest()
         return true
       }
       return false
     })
     return () => setDockHandler("approval-gate", null)
-  }, [phase, banner, setDockHandler])
+  }, [phase, banner, setDockHandler, showRequest])
 
   /* Escape closes the window in front, unless something else wants the key. */
   const { focused, close, dockIcon } = os
@@ -206,10 +206,7 @@ export function Desktop() {
           >
             <AgentRunScene
               requestHidden={!banner}
-              onShowRequest={() => {
-                setDismissed(false)
-                setBanner(true)
-              }}
+              onShowRequest={showRequest}
             />
           </Window>
 
@@ -276,9 +273,9 @@ export function Desktop() {
           </Window>
 
           <AnimatePresence>
-            {banner ? (
+            {banner && booted ? (
               <motion.div
-                key={`banner-${run.take}`}
+                key={`banner-${take}`}
                 className="d-banner d-glass"
                 role="region"
                 aria-label="Notification"
@@ -291,10 +288,7 @@ export function Desktop() {
                   <ApprovalNotice
                     hotkeys="global"
                     className="bg-[rgb(22_22_25/0.55)]"
-                    onClose={() => {
-                      setDismissed(true)
-                      setBanner(false)
-                    }}
+                    onClose={() => setDismissedTake(take)}
                   />
                 </div>
               </motion.div>

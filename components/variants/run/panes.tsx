@@ -147,6 +147,11 @@ function ScriptedCursor({
 /* ─── 02 Work ─────────────────────────────────────────────────────────────── */
 
 export function WorkPane({ steps, size }: { steps: ToolTraceStep[]; size: PaneSize }) {
+  /* Between two tool calls an agent is not queued, it is thinking — say so. */
+  const between =
+    !steps.some((step) => step.state === "running") &&
+    steps.some((step) => step.state === "done") &&
+    steps.some((step) => step.state === "pending")
   return (
     <div
       className={cn(
@@ -157,6 +162,13 @@ export function WorkPane({ steps, size }: { steps: ToolTraceStep[]; size: PaneSi
       <ToolTrace
         steps={steps}
         label={RUN_NO}
+        status={
+          between
+            ? steps.filter((step) => step.state === "pending").every((step) => step.id === "push")
+              ? "Needs approval"
+              : "Thinking"
+            : undefined
+        }
         size={size}
         maxConsoleHeight="6.5rem"
         className={cn(size === "sm" ? "max-w-full" : "max-w-[32rem]")}

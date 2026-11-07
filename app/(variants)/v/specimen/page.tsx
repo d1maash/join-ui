@@ -201,6 +201,7 @@ export default async function SpecimenLanding() {
       >
         <SpecimenPlate
           slug="tool-trace"
+          layout="side"
           fig={`FIG. ${traceSheet.no}.1`}
           note="Live · plays while on screen"
           stageClassName="min-h-[640px] py-16"
