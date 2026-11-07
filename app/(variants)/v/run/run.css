@@ -733,7 +733,6 @@
   position: relative;
   flex: 1;
   overflow: hidden;
-  container-type: size;
 }
 
 .v-run .run-thumb-frame > div {
