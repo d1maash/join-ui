@@ -33,6 +33,16 @@
   color: #1d1d1f;
 }
 
+/*
+ * Registered so the fill can transition — a glass button lifting toward
+ * white on hover, the nav capsule thickening as it condenses.
+ */
+@property --g-fill {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.56;
+}
+
 /* ── Tokens ────────────────────────────────────────────────────────────── */
 
 .v-glass {
