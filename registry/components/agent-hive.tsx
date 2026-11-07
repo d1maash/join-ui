@@ -66,6 +66,25 @@ const GLASS_LIT =
 /** Opacity of the wash of colour the comb is lit by. */
 const GLOW = "var(--agent-hive-glow, 0.45)"
 
+/**
+ * Light, at a strength that suits the room.
+ *
+ * Glass is lit from above in both themes, so the specular edge and the sheen
+ * are white in both — but the white that reads as a crisp rim on charcoal is
+ * lost on paper, and the white that reads on paper is a glare on charcoal. The
+ * alpha is therefore read off the page's own lightness: `onLight` on a white
+ * page, `onDark` on a black one, and in proportion between. A relative colour
+ * rather than a `dark:` variant, so a theme island still decides it; where the
+ * syntax is unsupported the declaration drops out and the glass is simply
+ * unlit.
+ */
+function light(onLight: number, onDark: number): string {
+  return `oklch(from var(--background) 1 0 0 / calc(${onDark} + l * ${round(onLight - onDark)}))`
+}
+
+/** The hairline that gives a cell its shape on a white card, where light cannot. */
+const RIM = "color-mix(in oklab, var(--foreground) 9%, transparent)"
+
 /** Spelled out beside the pip, so the state never rests on hue alone. */
 const RUN_LABEL: Record<AgentHiveRunState, string> = {
   queued: "Queued",
@@ -119,7 +138,7 @@ const HEX_ROUND = 0.12
 const SIZES = {
   sm: {
     frame: "max-w-xs",
-    pad: "p-4",
+    pad: "p-5",
     cell: 50,
     gapX: 7,
     gapY: 2.5,
@@ -128,15 +147,18 @@ const SIZES = {
     pip: 11,
     blur: 4,
     glyph: "size-[1.125rem]",
-    action: "h-9 px-6 text-[0.8125rem]",
-    name: "text-[0.8125rem]",
-    row: "gap-2.5 py-2.5",
-    prompt: "text-[0.75rem]",
-    status: "text-[0.6875rem]",
+    /* Apple's small capsule: 13pt semibold on a 36pt bar. */
+    action: "h-9 px-5 text-[0.8125rem]",
+    /* Subhead over caption. */
+    name: "text-[0.9375rem]",
+    description: "text-[0.75rem]",
+    row: "gap-3 py-2.5",
+    prompt: "text-[0.8125rem]",
+    status: "text-[0.75rem]",
   },
   md: {
     frame: "max-w-sm",
-    pad: "p-5",
+    pad: "p-6",
     cell: 62,
     gapX: 8,
     gapY: 3,
@@ -145,13 +167,20 @@ const SIZES = {
     pip: 13,
     blur: 6,
     glyph: "size-6",
-    action: "h-10 px-7 text-sm",
-    name: "text-sm",
+    /* A 44pt capsule — the touch target, at 15pt semibold. */
+    action: "h-11 px-7 text-[0.9375rem]",
+    /* Body over footnote. */
+    name: "text-[1.0625rem]",
+    description: "text-[0.8125rem]",
     row: "gap-3 py-3",
-    prompt: "text-[0.8125rem]",
-    status: "text-xs",
+    /* Subhead for the prompt, footnote for where it got to. */
+    prompt: "text-[0.9375rem]",
+    status: "text-[0.8125rem]",
   },
 } as const
+
+/** The gap between a run's pip and its prompt, in pixels — `gap-3`. */
+const ROW_GAP = 12
 
 /** Widths of the comb's rows. Three, four, three: a hexagon of hexagons. */
 const DEFAULT_COMB = [3, 4, 3]
@@ -168,7 +197,8 @@ const SPRING = { type: "spring", stiffness: 380, damping: 30, mass: 0.7 } as con
 const TRAVEL = { type: "spring", stiffness: 190, damping: 22, mass: 1 } as const
 /** The wake settling back. Slower than the tile, so the comb closes behind it. */
 const WAKE = { type: "spring", stiffness: 160, damping: 20, mass: 1 } as const
-const EASE = [0.22, 1, 0.36, 1] as const
+/** Apple's own curve: almost all of the travel early, then a long settle. */
+const EASE = [0.32, 0.72, 0, 1] as const
 
 /** Velocity, in px/s, at which the tile reaches its full stretch. */
 const LIQUID_AT = 1500
@@ -236,14 +266,15 @@ export interface AgentHiveProps extends Omit<
 /**
  * A honeycomb of models, one action, and the queue of runs it produces.
  *
- * The comb is glass. Every cell is a frosted hexagon with a lit top edge and a
- * shaded bottom one, and behind them sits a soft wash of the selected model's
- * own colour — so the light in the material belongs to the selection, and
- * moving the selection moves the light. The selected cell is a single tinted
- * tile that slides over the frosting rather than a state each cell paints for
- * itself, and while it travels it stretches along its own direction of travel
- * and settles out of it, with a plumb line swinging above. Nothing is stacked
- * or shadowed to fake depth; the depth is the material.
+ * The comb is glass. Every cell is a frosted hexagon — a pool of light under
+ * its top edge, a specular rim caught on its upper shoulder and again where the
+ * light leaves it — and behind them sits a soft wash of the selected model's
+ * own colour, so the light in the material belongs to the selection and moving
+ * the selection moves the light. The selected cell is a single tinted tile that
+ * slides over the frosting rather than a state each cell paints for itself; it
+ * is the one opaque piece, so it is the one that casts, and while it travels it
+ * stretches along its own direction of travel and settles out of it, with the
+ * marker on the rail above smearing after it.
  *
  * The queue is yours. `onGenerate` hands you the model that was picked and the
  * component renders whatever list you pass back, typing out the prompt of any
@@ -439,10 +470,12 @@ export function AgentHive({
         scale.frame,
         variant === "card" &&
           cn(
-            "overflow-hidden rounded-3xl border border-border bg-card",
-            /* The light catching the top edge of the panel. */
-            "before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px",
-            "before:bg-linear-to-r before:from-transparent before:via-foreground/15 before:to-transparent",
+            /*
+             * A sheet, not a box: a large continuous corner, a hairline only
+             * strong enough to hold the edge on a white page, and a wide, soft
+             * shadow rather than a rule to lift it off the one behind.
+             */
+            "overflow-hidden rounded-[2rem] border border-border/60 bg-card shadow-md",
             scale.pad
           ),
         className
@@ -450,23 +483,37 @@ export function AgentHive({
       aria-busy={running || undefined}
       {...props}
     >
+      {variant === "card" ? (
+        /* The light catching the top edge of the sheet — on charcoal, where it shows. */
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-10 top-0 h-px"
+          style={{
+            background: `linear-gradient(to right, transparent, ${light(0, 0.18)}, transparent)`,
+          }}
+        />
+      ) : null}
+
       {/*
        * The two paint servers the material is made of, declared once. `edge` is
-       * the lens: a lit top rim and a shaded bottom one, taken from the theme's
-       * own surface colours so it reads in both. `gloss` is the reflection on
-       * the tinted tile, which is white in every theme because it is light.
+       * the specular rim: light caught hard on the upper-left shoulder of each
+       * cell and faintly again on the lower-right, where it leaves the glass,
+       * with nothing across the middle — which is the difference between a lens
+       * and an outline. `gloss` is the same on the tinted tile, where it is
+       * white in every theme because the tile is lit, not frosted.
        */}
       <svg aria-hidden="true" className="pointer-events-none absolute size-0">
         <defs>
-          <linearGradient id={edge} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#fff" stopOpacity="0.55" />
-            <stop offset="42%" stopColor="#fff" stopOpacity="0.05" />
-            <stop offset="100%" stopColor="var(--background)" stopOpacity="0.55" />
+          <linearGradient id={edge} x1="0.1" y1="0" x2="0.9" y2="1">
+            <stop offset="0%" style={{ stopColor: light(1, 0.62) }} />
+            <stop offset="34%" style={{ stopColor: light(0.35, 0.1) }} />
+            <stop offset="62%" style={{ stopColor: light(0, 0) }} />
+            <stop offset="100%" style={{ stopColor: light(0.7, 0.26) }} />
           </linearGradient>
-          <linearGradient id={gloss} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#fff" stopOpacity="0.5" />
-            <stop offset="45%" stopColor="#fff" stopOpacity="0.04" />
-            <stop offset="100%" stopColor="#fff" stopOpacity="0.22" />
+          <linearGradient id={gloss} x1="0.1" y1="0" x2="0.9" y2="1">
+            <stop offset="0%" stopColor="oklch(1 0 0)" stopOpacity="0.7" />
+            <stop offset="45%" stopColor="oklch(1 0 0)" stopOpacity="0.06" />
+            <stop offset="100%" stopColor="oklch(1 0 0)" stopOpacity="0.3" />
           </linearGradient>
         </defs>
       </svg>
@@ -536,7 +583,7 @@ export function AgentHive({
                   key={index}
                   d={hexPath(layout.cellW, layout.cellH)}
                   transform={`translate(${slot.x} ${slot.y})`}
-                  fill="#fff"
+                  fill="white"
                 />
               ))}
             </mask>
@@ -559,7 +606,12 @@ export function AgentHive({
                 r={layout.cellW * 1.25}
                 fill={`url(#${glow})`}
                 style={{ filter: `blur(${Math.round(layout.cellW / 7)}px)` }}
-                /* The light swells a little while work is in flight, and only then. */
+                /*
+                 * The light swells a little while work is in flight, and only
+                 * then. The resting state is stated as the initial one, so the
+                 * server and a reduced-motion client draw the same first frame.
+                 */
+                initial={{ scale: 1, opacity: 1 }}
                 animate={
                   running && !reduceMotion
                     ? { scale: [1, 1.12, 1], opacity: [0.85, 1, 0.85] }
@@ -648,20 +700,34 @@ export function AgentHive({
       </div>
 
       {/* The selection, in words. The comb is glyphs, and glyphs are not a label. */}
-      <div className="mt-4 text-center">
+      <div className="mt-5 text-center">
         <AnimatePresence initial={false} mode="popLayout">
           <motion.div
             key={selected?.id ?? "none"}
-            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
-            transition={{ duration: 0.2, ease: EASE }}
+            initial={reduceMotion ? false : { opacity: 0, y: 6, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={
+              reduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, y: -6, filter: "blur(4px)" }
+            }
+            transition={{ duration: 0.32, ease: EASE }}
           >
-            <p className={cn("font-medium text-foreground", scale.name)}>
+            <p
+              className={cn(
+                "leading-snug font-semibold tracking-[-0.022em] text-foreground",
+                scale.name
+              )}
+            >
               {selected?.label ?? " "}
             </p>
             {selected?.description ? (
-              <p className="mt-0.5 text-xs text-muted-foreground">
+              <p
+                className={cn(
+                  "mt-0.5 leading-snug tracking-[-0.006em] text-muted-foreground",
+                  scale.description
+                )}
+              >
                 {selected.description}
               </p>
             ) : null}
@@ -684,9 +750,9 @@ export function AgentHive({
       <ol
         aria-live="polite"
         className={cn(
-          "mt-5 flex list-none flex-col border-t border-border",
+          "mt-6 flex list-none flex-col border-t border-border/70",
           /* More runs than rows: the last one dissolves rather than being cut. */
-          overflowing && "[mask-image:linear-gradient(to_bottom,#000_74%,transparent)]"
+          overflowing && "[mask-image:linear-gradient(to_bottom,black_74%,transparent)]"
         )}
       >
         <AnimatePresence initial={false}>
@@ -705,7 +771,12 @@ export function AgentHive({
           ))}
         </AnimatePresence>
         {runs.length === 0 ? (
-          <li className="py-4 text-center text-xs text-muted-foreground">
+          <li
+            className={cn(
+              "py-5 text-center tracking-[-0.006em] text-muted-foreground",
+              scale.status
+            )}
+          >
             {emptyLabel}
           </li>
         ) : null}
@@ -784,8 +855,7 @@ function useTravel(
 function useWake(
   centre: { cx: number; cy: number },
   travel: Travel,
-  reach: number,
-  still: boolean
+  reach: number
 ) {
   const raw = { x: travel.x, y: travel.y, speed: travel.speed }
 
@@ -818,7 +888,13 @@ function useWake(
   const y = useSpring(pushY, WAKE)
   const scale = useSpring(squash, WAKE)
 
-  return still ? {} : { x, y, scale }
+  /*
+   * Returned whatever the motion preference. Under reduced motion the travel
+   * already reports a speed of zero, so all three sit at rest — and dropping
+   * them instead would render a different `style` on the client than the
+   * server sent, since the preference is only known in the browser.
+   */
+  return { x, y, scale }
 }
 
 /** The push along one axis: direction, times reach, times how fast it is going. */
@@ -888,26 +964,42 @@ function Cell({
   onHover: (id: string | null) => void
   onFocusRing: (id: string | null) => void
 }) {
-  const wake = useWake(slot, travel, width * WAKE_REACH, still)
+  const wake = useWake(slot, travel, width * WAKE_REACH)
   const box = { left: slot.x, top: slot.y, width, height }
 
-  /* The comb assembles from the middle outwards, then never does it again. */
-  const arrival = still
-    ? undefined
-    : {
-        initial: { opacity: 0, scale: 0.86 },
-        animate: { opacity: 1, scale: 1 },
-        transition: { ...SPRING, delay },
-      }
+  /*
+   * The comb assembles from the middle outwards, then never does it again.
+   * Declared whatever the motion preference and landed in a single frame under
+   * it, so the server's markup and the client's first render agree.
+   */
+  const arrival = {
+    initial: { opacity: 0, scale: 0.86 },
+    animate: { opacity: 1, scale: 1 },
+    transition: still ? { duration: 0 } : { ...SPRING, delay },
+  }
+  /* A gesture answers at once: it must not inherit the arrival's place in the wave. */
+  const answer = still ? { duration: 0 } : SPRING
 
   const body = (
     <motion.span className="absolute inset-0 block" style={wake}>
       <Glass width={width} height={height} blur={blur} empty={!model} lit={hovered} />
+      {/*
+       * Two strokes on one path. The hairline is what holds the shape on a
+       * white card, where no amount of light would; the specular rides over
+       * it, and is what makes the cell read as a lens on charcoal.
+       */}
+      <Hex
+        stroke={RIM}
+        className={cn(
+          "transition-opacity duration-300",
+          model ? "opacity-100" : "opacity-60"
+        )}
+      />
       <Hex
         stroke={`url(#${edge})`}
         className={cn(
           "transition-opacity duration-300",
-          model ? (hovered ? "opacity-100" : "opacity-80") : "opacity-55"
+          model ? (hovered ? "opacity-100" : "opacity-85") : "opacity-55"
         )}
       />
     </motion.span>
@@ -945,8 +1037,21 @@ function Cell({
       )}
       style={box}
       {...arrival}
-      whileHover={still || disabled || model.disabled ? undefined : { scale: 1.06 }}
-      whileTap={still || disabled || model.disabled ? undefined : { scale: 0.94 }}
+      /*
+       * Declared whatever the motion preference, and flattened under it rather
+       * than removed: a tap gesture changes the button's server markup, and the
+       * preference is only known on the client.
+       */
+      whileHover={
+        disabled || model.disabled
+          ? undefined
+          : { scale: still ? 1 : 1.06, transition: answer }
+      }
+      whileTap={
+        disabled || model.disabled
+          ? undefined
+          : { scale: still ? 1 : 0.94, transition: answer }
+      }
     >
       {body}
     </motion.button>
@@ -986,15 +1091,17 @@ function CellGlyph({
   ringed: boolean
   delay: number
 }) {
-  const wake = useWake(slot, travel, width * WAKE_REACH, still)
+  const wake = useWake(slot, travel, width * WAKE_REACH)
 
   return (
     <motion.span
       className="absolute grid place-items-center"
       style={{ left: slot.x, top: slot.y, width, height, ...wake }}
-      initial={still ? false : { opacity: 0 }}
+      initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, ease: EASE, delay: delay + 0.1 }}
+      transition={
+        still ? { duration: 0 } : { duration: 0.3, ease: EASE, delay: delay + 0.1 }
+      }
     >
       {ringed ? <Hex stroke="var(--ring)" strokeWidth={2} /> : null}
       <motion.span
@@ -1061,6 +1168,20 @@ function Glass({
           background: lit ? GLASS_LIT : empty ? GLASS_EMPTY : GLASS,
           backdropFilter: filter,
           WebkitBackdropFilter: filter,
+        }}
+      />
+      {/*
+       * The body of the lens: light pooled under the top edge and gone by the
+       * waist, so the cell reads as convex rather than as a flat tint — and a
+       * faint return off the bottom, where the light leaves the glass.
+       */}
+      <span
+        className="absolute inset-0 block"
+        style={{
+          backgroundImage: [
+            `linear-gradient(to bottom, ${light(0.62, 0.09)}, transparent 58%)`,
+            `radial-gradient(70% 34% at 50% 104%, ${light(0.42, 0.07)}, transparent)`,
+          ].join(", "),
         }}
       />
     </span>
@@ -1132,13 +1253,32 @@ function Tile({
         y,
         rotate: travel.angle,
       }}
-      /* Arrives with the ring of comb it lands in, not before it. */
-      initial={still ? false : { opacity: 0, scale: 0.8 }}
+      /*
+       * Arrives with the ring of comb it lands in, not before it — and in one
+       * frame under reduced motion, declared either way so hydration agrees.
+       */
+      initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: visible ? 1 : 0, scale: visible ? 1 : 0.85 }}
       transition={still ? { duration: 0 } : { ...TRAVEL, delay: mountDelay }}
     >
       <motion.div className="size-full" style={{ scaleX: stretch, scaleY: squash }}>
         <motion.div className="relative size-full" style={{ rotate: counter }}>
+          {/*
+           * The lift. The tile is the one opaque thing in the comb, so it is
+           * the one thing that may cast — its own colour, a few pixels down
+           * and well blurred, which reads as a lit piece of glass held just
+           * above the frosting rather than as a sticker on it.
+           */}
+          <Hex
+            className="transition-[fill] duration-300"
+            style={{
+              fill: accent ?? "var(--primary)",
+              opacity: 0.42,
+              translate: "0 12%",
+              scale: "0.86",
+              filter: `blur(${Math.round(width / 9)}px)`,
+            }}
+          />
           <span
             className={cn(
               "absolute inset-0 block transition-colors duration-300",
@@ -1146,13 +1286,17 @@ function Tile({
             )}
             style={{ clipPath: clip, ...(accent ? { backgroundColor: accent } : {}) }}
           />
-          {/* The reflection: bright across the top, gone by the waist. */}
+          {/*
+           * The reflection: a soft pool of light under the top edge, gone by
+           * the waist, and a breath of shade at the foot — no horizon line
+           * across the middle, which is what dates a glossy button.
+           */}
           <motion.span
             className="absolute inset-0 block"
             style={{
               clipPath: clip,
               backgroundImage:
-                "linear-gradient(to bottom, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.06) 48%, rgb(255 255 255 / 0) 52%)",
+                "linear-gradient(to bottom, rgb(255 255 255 / 0.42), rgb(255 255 255 / 0.16) 30%, rgb(255 255 255 / 0) 55%, rgb(0 0 0 / 0) 80%, rgb(0 0 0 / 0.14))",
               backgroundSize: "100% 200%",
               backgroundPositionY: sheenPosition,
             }}
@@ -1262,8 +1406,13 @@ function Action({
   onPress: () => void
 }) {
   return (
-    <div className="relative mx-auto mt-4 flex">
-      {busy && !reduceMotion
+    <div className="relative mx-auto mt-5 flex">
+      {/*
+       * Rendered whenever the queue is busy, and put out at once under
+       * reduced motion rather than left out — the preference is only known in
+       * the browser, so leaving them out would change the server's markup.
+       */}
+      {busy
         ? [0, 1].map((rank) => (
             <motion.span
               key={rank}
@@ -1275,39 +1424,52 @@ function Action({
               style={accent ? { borderColor: accent } : undefined}
               initial={{ scale: 1, opacity: 0.35 }}
               animate={{ scale: 1.18, opacity: 0 }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                delay: rank * 1.1,
-                ease: "easeOut",
-              }}
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : {
+                      duration: 2.2,
+                      repeat: Infinity,
+                      delay: rank * 1.1,
+                      ease: "easeOut",
+                    }
+              }
             />
           ))
         : null}
 
+      {/*
+       * A filled capsule in the selection's own colour. It carries the same
+       * soft pool of light the tile does, and a shadow of its own colour
+       * rather than of black, so it sits on the sheet the way the tile sits
+       * on the comb. The gestures are declared whatever the motion preference
+       * and flattened under it — the tap changes the server markup.
+       */}
       <motion.button
         type="button"
         disabled={disabled}
         onClick={onPress}
         className={cn(
-          "relative inline-flex items-center justify-center overflow-hidden rounded-full font-medium",
-          "transition-[background-color,opacity] duration-300",
-          "shadow-[inset_0_1px_0_rgb(255_255_255/0.35)]",
+          "relative inline-flex items-center justify-center overflow-hidden rounded-full",
+          "font-semibold tracking-[-0.012em]",
+          "transition-[background-color,box-shadow,opacity] duration-300",
           "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
           "disabled:cursor-not-allowed disabled:opacity-40",
           !disabled && "cursor-pointer",
           accent ? undefined : "bg-primary text-primary-foreground",
           scale.action
         )}
-        style={accent ? { backgroundColor: accent, color: ON_ACCENT } : undefined}
-        whileHover={reduceMotion || disabled ? undefined : { scale: 1.02 }}
-        whileTap={reduceMotion || disabled ? undefined : { scale: 0.96 }}
+        style={{
+          ...(accent ? { backgroundColor: accent, color: ON_ACCENT } : {}),
+          boxShadow: `inset 0 1px 0 rgb(255 255 255 / 0.24), 0 8px 20px -10px color-mix(in oklab, ${accent ?? "var(--primary)"} 75%, transparent)`,
+        }}
+        whileHover={disabled ? undefined : { scale: reduceMotion ? 1 : 1.02 }}
+        whileTap={disabled ? undefined : { scale: reduceMotion ? 1 : 0.96 }}
         transition={SPRING}
       >
-        {/* The same reflection the tile carries, on a capsule. */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-linear-to-b from-white/22 to-transparent"
+          className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/18 via-white/0 via-55% to-black/6"
         />
         <span className="relative">{label}</span>
       </motion.button>
@@ -1365,11 +1527,17 @@ function Row({
       animate={{ opacity: 1, y: 0 }}
       exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
       transition={reduceMotion ? { duration: 0 } : SPRING}
-      className={cn(
-        "flex items-center not-first:border-t not-first:border-border",
-        scale.row
-      )}
+      className={cn("group/row relative flex items-center", scale.row)}
     >
+      {/*
+       * The separator is inset to the text, the way a grouped list draws it:
+       * the pips line up as one column and the rule only runs under the words.
+       */}
+      <span
+        aria-hidden="true"
+        className="absolute top-0 right-0 h-px bg-border/70 group-first/row:hidden"
+        style={{ left: scale.pip + ROW_GAP }}
+      />
       {/* The model's cell in miniature — the same shape, at a twelfth the area. */}
       <span
         aria-hidden="true"
@@ -1386,7 +1554,10 @@ function Row({
       </span>
 
       <span
-        className={cn("relative min-w-0 flex-1 font-mono leading-snug", scale.prompt)}
+        className={cn(
+          "relative min-w-0 flex-1 leading-[1.35] tracking-[-0.012em]",
+          scale.prompt
+        )}
       >
         <span className={cn("block opacity-0 select-none", tone.prompt)}>
           {run.prompt}
@@ -1397,13 +1568,19 @@ function Row({
             <motion.span
               className="ml-px inline-block h-[1.05em] w-px translate-y-[0.2em] align-baseline"
               style={{ backgroundColor: accent ?? "var(--foreground)" }}
-              animate={reduceMotion ? { opacity: 1 } : { opacity: [1, 1, 0, 0] }}
+              /*
+               * The blink ends where it starts, lit. Inside a presence that skips
+               * its first entrance the server draws the last keyframe, and a
+               * reduced-motion client draws a solid caret — so both must be on.
+               */
+              initial={{ opacity: 1 }}
+              animate={reduceMotion ? { opacity: 1 } : { opacity: [1, 1, 0, 0, 1] }}
               transition={
                 reduceMotion
                   ? { duration: 0 }
                   : {
                       duration: 1.05,
-                      times: [0, 0.49, 0.5, 1],
+                      times: [0, 0.49, 0.5, 0.995, 1],
                       repeat: Infinity,
                       ease: "linear",
                     }
@@ -1415,7 +1592,7 @@ function Row({
 
       <span
         className={cn(
-          "flex shrink-0 items-center gap-1.5 transition-colors duration-500",
+          "flex shrink-0 items-center gap-1.5 tracking-[-0.006em] tabular-nums transition-colors duration-500",
           scale.status,
           tone.ink
         )}
@@ -1428,11 +1605,17 @@ function Row({
               tone.pip
             )}
           />
-          {state === "working" && !reduceMotion ? (
+          {/* Put out at once under reduced motion, not left out: see the action's rings. */}
+          {state === "working" ? (
             <motion.span
               className={cn("absolute inset-0 rounded-full", tone.pip)}
-              animate={{ scale: [1, 2.6], opacity: [0.5, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
+              initial={{ scale: 1, opacity: 0.5 }}
+              animate={{ scale: 2.6, opacity: 0 }}
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : { duration: 1.6, repeat: Infinity, ease: "easeOut" }
+              }
             />
           ) : null}
         </span>

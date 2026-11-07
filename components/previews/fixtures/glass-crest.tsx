@@ -7,13 +7,13 @@ import type { GlassCrestMark } from "@/registry/components/glass-crest"
  * underneath to give it thickness — and a hairline stroke has nothing to cast.
  *
  * Nothing here is a real trademark; they are the shapes a token drawer reaches
- * for, in the palette the reference section used, left to right.
+ * for, tinted along Apple's system hues from warm to cool, left to right.
  */
 export const MARKS: GlassCrestMark[] = [
   {
     id: "prism",
     label: "Prism",
-    accent: "#2f7a63",
+    accent: "oklch(0.66 0.21 10)",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M12 1.5 19.2 12 12 16.2 4.8 12z" />
@@ -24,7 +24,7 @@ export const MARKS: GlassCrestMark[] = [
   {
     id: "tessera",
     label: "Tessera",
-    accent: "#d5d8d2",
+    accent: "oklch(0.74 0.17 55)",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M4 3h16v3.6h-6.1V21h-3.8V6.6H4z" />
@@ -35,7 +35,7 @@ export const MARKS: GlassCrestMark[] = [
   {
     id: "obol",
     label: "Obol",
-    accent: "#dda15e",
+    accent: "oklch(0.79 0.16 80)",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M10 1.5h2.3v3H10zM13.7 1.5H16v3h-2.3zM10 19.5h2.3v3H10zM13.7 19.5H16v3h-2.3z" />
@@ -46,7 +46,7 @@ export const MARKS: GlassCrestMark[] = [
   {
     id: "helix",
     label: "Helix",
-    accent: "#5cc396",
+    accent: "oklch(0.72 0.18 150)",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M12 1.6 20.6 6.8v10.4L12 22.4 3.4 17.2V6.8z" />
@@ -57,7 +57,7 @@ export const MARKS: GlassCrestMark[] = [
   {
     id: "cadence",
     label: "Cadence",
-    accent: "#a6bfd2",
+    accent: "oklch(0.7 0.12 215)",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M3.6 3.4h4.1L12 8.1l4.3-4.7h4.1L14 10.5a2.8 2.8 0 0 1-4 0z" />
@@ -71,7 +71,7 @@ export const MARKS: GlassCrestMark[] = [
   {
     id: "sterling",
     label: "Sterling",
-    accent: "#bcc1c7",
+    accent: "oklch(0.6 0.2 256)",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M9.4 2.4h4.2l-2.4 8.9 5.3-1.6-.8 3-5.3 1.6-1 3.8h9v3.5H4.6l1.9-7.1-2.6.8.8-3 2.6-.8z" />
@@ -81,7 +81,7 @@ export const MARKS: GlassCrestMark[] = [
   {
     id: "azimuth",
     label: "Azimuth",
-    accent: "#8fa2ee",
+    accent: "oklch(0.56 0.2 290)",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M6.6 4.6h13.8l-3.4 3.6H3.2z" />

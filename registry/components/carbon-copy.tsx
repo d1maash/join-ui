@@ -70,8 +70,21 @@ const LEAD = 150
 const ROLL_LEAD = 200
 
 const EXPO = [0.16, 1, 0.3, 1] as const
-const SOFT_OUT = [0.22, 1, 0.36, 1] as const
+/** Apple's own curve: almost all of the travel early, then a long settle. */
+const SOFT_OUT = [0.32, 0.72, 0, 1] as const
 const SOFT_IN_OUT = [0.65, 0, 0.35, 1] as const
+
+/**
+ * The focus a word is pulled out of, and drops back into.
+ *
+ * In ems, so it is the same softness at any size the type is set. It is the
+ * move Apple's own counters make when a digit turns over: the word in flight
+ * is never sharp, so the eye reads the turn as one motion rather than as two
+ * words sliding past each other — and it lands in focus, which is when it can
+ * actually be read.
+ */
+const SOFT = "blur(0.09em)"
+const SHARP = "blur(0em)"
 
 /**
  * The seat.
@@ -93,7 +106,7 @@ const SEAT = { type: "spring", stiffness: 190, damping: 20, mass: 1 } as const
  * ems, so the window is drawn at whatever size the type is.
  */
 const WINDOW =
-  "linear-gradient(to bottom, transparent 0.06em, #000 0.12em, #000 calc(100% - 0.16em), transparent)"
+  "linear-gradient(to bottom, transparent 0.06em, black 0.12em, black calc(100% - 0.16em), transparent)"
 
 const ALIGN = {
   start: "text-left",
@@ -156,9 +169,9 @@ function diff(prev: string, next: string): Segment[] {
  * Then a copy is taken: the next line starts exactly on top of the first,
  * identical to it, and travels down one line to its place, lifting a little
  * on the way and seating with a spring. While it travels, the words that
- * differ turn over in windows — the old word rolls down and out, the new one
- * drops in from above, the way a counter turns — so the copy lands already
- * reading as the next line. A third line is a copy of the second, and so on.
+ * differ turn over in windows — the old word rolls down and out of focus, the
+ * new one drops in from above and sharpens as it seats, the way a counter
+ * turns — so the copy lands already reading as the next line. A third line is a copy of the second, and so on.
  *
  * It is made for the sentence a product opens with, where the second line is
  * a revision of the first: copy, keep; build fast, build right. The movement
@@ -271,11 +284,11 @@ export function CarbonCopy({
 /**
  * The first line, inking.
  *
- * It appears as a hairline in its first fifth and fills over the rest, on the
- * in-out curve — ink flows, then settles. The weight is a number, so on a
- * variable font every frame is a real cut; on a static face the browser picks
- * the nearest one it has, which is a step rather than a fill, and the honest
- * thing to do there is pass `ink={false}`.
+ * It appears as a hairline in its first fifth, coming into focus as it does,
+ * and fills over the rest on the in-out curve — ink flows, then settles. The
+ * weight is a number, so on a variable font every frame is a real cut; on a
+ * static face the browser picks the nearest one it has, which is a step rather
+ * than a fill, and the honest thing to do there is pass `ink={false}`.
  */
 function FirstLine({
   text,
@@ -303,14 +316,21 @@ function FirstLine({
   return (
     <motion.span
       className="block"
-      initial={{ opacity: 0, fontWeight: inkFrom }}
+      initial={{ opacity: 0, fontWeight: inkFrom, filter: SOFT }}
       animate={
         active
-          ? { opacity: 1, fontWeight: weight }
-          : { opacity: 0, fontWeight: inkFrom }
+          ? {
+              opacity: 1,
+              fontWeight: weight,
+              filter: SHARP,
+              /* A resting line is plain text, not a filtered layer. */
+              transitionEnd: { filter: "none" },
+            }
+          : { opacity: 0, fontWeight: inkFrom, filter: SOFT }
       }
       transition={{
         opacity: { delay: at / 1000, duration: appear / 1000, ease: SOFT_OUT },
+        filter: { delay: at / 1000, duration: (appear * 2.5) / 1000, ease: SOFT_OUT },
         fontWeight: {
           delay: (at + appear) / 1000,
           duration: (duration - appear) / 1000,
@@ -364,7 +384,7 @@ function CopyLine({
     <motion.span
       className="block"
       initial={rest}
-      animate={active ? { opacity: 1, y: "0%", scale: [1, 1.028, 1] } : rest}
+      animate={active ? { opacity: 1, y: "0%", scale: [1, 1.02, 1] } : rest}
       transition={{
         opacity: { delay: copyAt / 1000, duration: 0 },
         y: { delay: copyAt / 1000, ...SEAT },
@@ -435,13 +455,20 @@ function Window({
   React.useEffect(() => {
     if (done) return
 
+    /*
+     * The used width, not the bounding box. A bounding box includes every
+     * transform above it, so a headline inside anything scaled — a zoomed
+     * preview, a thumbnail, or this line's own lift mid-copy — measures its
+     * words at the wrong size, and the window clips the word it was drawn for.
+     * The computed width is the layout width, to the sub-pixel.
+     */
     const measure = () => {
       const a = fromRef.current
       const b = toRef.current
       if (!a || !b) return
       setWidths({
-        from: a.getBoundingClientRect().width,
-        to: b.getBoundingClientRect().width,
+        from: parseFloat(getComputedStyle(a).width),
+        to: parseFloat(getComputedStyle(b).width),
       })
     }
 
@@ -476,8 +503,8 @@ function Window({
           aria-hidden="true"
           ref={fromRef}
           style={WORD}
-          initial={{ y: "0%" }}
-          animate={active ? { y: "135%" } : { y: "0%" }}
+          initial={{ y: "0%", filter: SHARP }}
+          animate={active ? { y: "135%", filter: SOFT } : { y: "0%", filter: SHARP }}
           transition={{ delay: at / 1000, duration: duration / 1000, ease: EXPO }}
         >
           {from}
@@ -486,8 +513,12 @@ function Window({
       <motion.span
         ref={toRef}
         style={WORD}
-        initial={{ y: "-135%" }}
-        animate={active ? { y: "0%" } : { y: "-135%" }}
+        initial={{ y: "-135%", filter: SOFT }}
+        animate={
+          active
+            ? { y: "0%", filter: SHARP, transitionEnd: { filter: "none" } }
+            : { y: "-135%", filter: SOFT }
+        }
         transition={{ delay: at / 1000, duration: duration / 1000, ease: EXPO }}
         onAnimationComplete={active ? () => setDone(true) : undefined}
       >

@@ -136,7 +136,13 @@ export function CopyFace({
   done: string
 }) {
   const still = useStill()
-  const travel = still ? 0 : TRAVEL
+  /*
+   * The resting offset is the same with or without reduced motion. Only the
+   * durations collapse to zero: the server cannot know the preference, so
+   * anything it renders into a style — like this offset — has to be the same
+   * on both sides or hydration patches it.
+   */
+  const travel = TRAVEL
 
   return (
     <span className="grid justify-items-start overflow-hidden">

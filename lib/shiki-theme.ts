@@ -3,24 +3,21 @@ import type { ThemeRegistrationRaw } from "shiki"
 /**
  * Syntax themes.
  *
- * Off-the-shelf Shiki themes are tuned for an editor at full saturation, which
- * on a documentation page reads as noise sitting inside otherwise quiet type —
- * and next to a chrome with no hue in it at all, it reads as a different site.
- * These two hold the grammar at roughly a third of an editor theme's chroma,
- * over the same neutral base as everything else: warm paper in the light
- * theme, charcoal in the dark one.
+ * Xcode's own two themes, "Default (Light)" and "Default (Dark)", so a listing
+ * on this site reads the way the same code would in Apple's editor: keywords
+ * in magenta, strings in red, numbers in blue (light) or gold (dark), types in
+ * teal-blue, comments in a cool grey.
  *
- * Six roles carry the whole grammar, and each keeps its hue across both themes
- * so a reader who learns the mapping once keeps it:
- *   keyword   — muted violet; control flow and declarations
- *   entity    — muted blue; functions and the things being called
- *   type      — muted teal; types, classes and JSX tags
- *   string    — muted green; strings and template literals
- *   number    — muted amber; numeric and language constants, JSX attributes
- *   comment   — neutral and italic, the quietest thing on the line
+ * Six roles carry the whole grammar:
+ *   keyword   — control flow and declarations
+ *   entity    — functions and the things being called
+ *   type      — types, classes and JSX tags
+ *   string    — strings and template literals
+ *   number    — numeric and language constants, JSX attributes
+ *   comment   — italic, the quietest thing on the line
  *
- * Every value clears 4.5:1 against its own theme's code background, so the
- * grammar stays legible for anyone reading the page in greyscale.
+ * Every value clears 4.5:1 against its own theme's code background (white and
+ * #1c1c1e), so the grammar stays legible for anyone reading in greyscale.
  */
 interface Ramp {
   plain: string
@@ -36,28 +33,28 @@ interface Ramp {
 }
 
 const LIGHT: Ramp = {
-  plain: "#3c3733",
-  keyword: "#6a5aa6",
-  entity: "#3c6a94",
-  type: "#2f7068",
-  string: "#4a7551",
-  number: "#96632c",
-  comment: "#79726b",
-  punctuation: "#7a736c",
-  deleted: "#9d5057",
+  plain: "#1d1d1f",
+  keyword: "#9b2393",
+  entity: "#326d74",
+  type: "#0b4f79",
+  string: "#c41a16",
+  number: "#1c00cf",
+  comment: "#5d6c79",
+  punctuation: "#424245",
+  deleted: "#c41a16",
   background: "transparent",
 }
 
 const DARK: Ramp = {
-  plain: "#d6d1cb",
-  keyword: "#b3a6dc",
-  entity: "#93b4d4",
-  type: "#82c4bb",
-  string: "#a2c49f",
-  number: "#d6ab7b",
-  comment: "#8b837b",
-  punctuation: "#9c948b",
-  deleted: "#d9989a",
+  plain: "#f5f5f7",
+  keyword: "#ff7ab2",
+  entity: "#67b7a4",
+  type: "#5dd8ff",
+  string: "#ff8170",
+  number: "#d9c97c",
+  comment: "#8e9aa6",
+  punctuation: "#c7c7cc",
+  deleted: "#ff8170",
   background: "transparent",
 }
 
@@ -88,7 +85,7 @@ function buildTheme(name: string, type: "light" | "dark", ramp: Ramp) {
           "storage.modifier",
           "variable.language",
         ],
-        settings: { foreground: ramp.keyword },
+        settings: { foreground: ramp.keyword, fontStyle: "bold" },
       },
 
       {

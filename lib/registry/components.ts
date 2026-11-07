@@ -27,7 +27,7 @@ export const components: ComponentMetadata[] = [
     description:
       "A colour-coded step tracker for orders, deployments and onboarding, still at rest and animated only when a step advances.",
     overview:
-      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue, the rest stay grey behind a dashed ring — or pin a state per step to describe a run that is waiting on someone or has failed outright. At rest it is a still drawing: nothing loops and nothing breathes. The motion is spent on the one moment worth showing, and spent as a sequence rather than as a flash — move activeStep on and the cleared step's marker turns first, a tenth of a second later the connector below it runs down to the next one, and only on arrival does that step announce itself with a pair of rings spreading out of it. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
+      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue, the rest stay on quiet grey discs — or pin a state per step to describe a run that is waiting on someone or has failed outright. At rest it is a still drawing: nothing loops and nothing breathes. The motion is spent on the one moment worth showing, and spent as a sequence rather than as a flash — move activeStep on and the cleared step's marker turns first, a tenth of a second later the connector below it runs down to the next one, and only on arrival does that step announce itself with a pair of rings spreading out of it. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
     category: "Data Display",
     tags: [
       "timeline",
@@ -49,7 +49,7 @@ export const components: ComponentMetadata[] = [
       'The step in flight carries `aria-current="step"`.',
       "Colour is never the only signal, which is what satisfies WCAG 1.4.1: every state also has its own glyph — a tick, a pip, a clock, a cross — and appends a visually hidden label reading “Completed”, “In progress”, “Waiting”, “Not started” or “Blocked”.",
       "A blocked step additionally shifts its title to the critical hue, so the failure is findable without reading every marker.",
-      "The list is named by the header eyebrow through `aria-labelledby`, or by `label` when the header is hidden.",
+      "The list is named by the header title through `aria-labelledby`, or by `label` when the header is hidden.",
       "Markers, trails and the arrival ring are `aria-hidden` and non-interactive; only content you pass to `footer` enters the tab order.",
       "Nothing animates on mount or loops at rest, so the component never competes with the page for attention; the advance transition animates `transform` and `opacity` only, and resolves instantly under `prefers-reduced-motion`.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
@@ -90,7 +90,7 @@ export const components: ComponentMetadata[] = [
             type: "string",
             defaultValue: '"Timeline"',
             description:
-              "Header eyebrow, and the accessible name of the list when the header is hidden.",
+              "Header title, and the accessible name of the list when the header is hidden.",
           },
           {
             name: "status",
@@ -109,7 +109,7 @@ export const components: ComponentMetadata[] = [
             name: "showHeader",
             type: "boolean",
             defaultValue: "true",
-            description: "Renders the eyebrow and status chip above the steps.",
+            description: "Renders the title and status chip above the steps.",
           },
           {
             name: "footer",
@@ -149,13 +149,13 @@ export const components: ComponentMetadata[] = [
             name: "timestamp",
             type: "string",
             description:
-              "Trailing meta, set in mono with tabular figures — a time, a duration, an ETA.",
+              "Trailing meta, set with tabular figures — a time, a duration, an ETA.",
           },
           {
             name: "state",
             type: '"complete" | "current" | "waiting" | "pending" | "blocked"',
             description:
-              "Pins the state instead of deriving it from activeStep, and picks the hue: green for complete, blue for current, amber for waiting, grey for pending, red for blocked.",
+              "Pins the state instead of deriving it from activeStep, and picks the hue: green for complete, blue for current, orange for waiting, grey for pending, red for blocked.",
           },
           {
             name: "icon",
@@ -203,7 +203,7 @@ export function Example() {
       {
         title: "Pin a step that failed, or one that is waiting",
         description:
-          "A state on the step wins over the one derived from activeStep, so a run that stalled can be described exactly. Blocked turns the marker and the title red; waiting turns the marker amber for something that is neither moving nor broken, like an approval sitting in a queue. Either way the header chip picks the state up on its own.",
+          "A state on the step wins over the one derived from activeStep, so a run that stalled can be described exactly. Blocked turns the marker and the title red; waiting turns the marker orange for something that is neither moving nor broken, like an approval sitting in a queue. Either way the header chip picks the state up on its own.",
         code: `<StatusTimeline
   label="Pipeline"
   steps={[
@@ -236,7 +236,7 @@ export function Example() {
       {
         title: "Give each step its own glyph",
         description:
-          "An icon replaces the default state glyph while the ring and the hidden state label keep carrying the meaning — a dashed grey circle before the step happens, a tinted one after. The component sizes it, so pass the element bare.",
+          "An icon replaces the default state glyph while the ring and the hidden state label keep carrying the meaning — a quiet grey disc before the step happens, a tinted one after. The component sizes it, so pass the element bare.",
         code: `import { MapPin, Package, ShoppingBag, Truck } from "lucide-react"
 
 <StatusTimeline
@@ -324,37 +324,37 @@ export function Example() {
         "color-critical": "var(--critical)",
         "color-critical-soft": "var(--critical-soft)",
         "color-critical-foreground": "var(--critical-foreground)",
-        "radius-soft-sm": "0.375rem",
-        "radius-soft": "0.625rem",
-        "radius-soft-lg": "1rem",
+        "radius-soft-sm": "0.5rem",
+        "radius-soft": "0.75rem",
+        "radius-soft-lg": "1.125rem",
       },
       light: {
-        info: "oklch(0.5 0.17 253)",
-        "info-soft": "oklch(0.965 0.022 253)",
-        "info-foreground": "oklch(0.99 0.005 253)",
-        positive: "oklch(0.5 0.13 158)",
-        "positive-soft": "oklch(0.965 0.03 158)",
-        "positive-foreground": "oklch(0.99 0.008 158)",
-        caution: "oklch(0.53 0.13 68)",
-        "caution-soft": "oklch(0.965 0.04 78)",
-        "caution-foreground": "oklch(0.99 0.008 68)",
-        critical: "oklch(0.52 0.19 23)",
-        "critical-soft": "oklch(0.965 0.025 23)",
-        "critical-foreground": "oklch(0.99 0.006 23)",
+        info: "#0068d1",
+        "info-soft": "#e8f1fc",
+        "info-foreground": "#ffffff",
+        positive: "#1a7f37",
+        "positive-soft": "#e6f4ea",
+        "positive-foreground": "#ffffff",
+        caution: "#b05a00",
+        "caution-soft": "#fdf1e1",
+        "caution-foreground": "#ffffff",
+        critical: "#d70015",
+        "critical-soft": "#fdeaea",
+        "critical-foreground": "#ffffff",
       },
       dark: {
-        info: "oklch(0.76 0.14 253)",
-        "info-soft": "oklch(0.255 0.058 253)",
-        "info-foreground": "oklch(0.16 0.04 253)",
-        positive: "oklch(0.78 0.14 158)",
-        "positive-soft": "oklch(0.25 0.05 158)",
-        "positive-foreground": "oklch(0.16 0.035 158)",
-        caution: "oklch(0.82 0.14 80)",
-        "caution-soft": "oklch(0.26 0.05 68)",
-        "caution-foreground": "oklch(0.17 0.035 68)",
-        critical: "oklch(0.72 0.17 23)",
-        "critical-soft": "oklch(0.26 0.07 23)",
-        "critical-foreground": "oklch(0.16 0.04 23)",
+        info: "#409cff",
+        "info-soft": "#0c2541",
+        "info-foreground": "#00152e",
+        positive: "#30d158",
+        "positive-soft": "#0d2b16",
+        "positive-foreground": "#002910",
+        caution: "#ffb340",
+        "caution-soft": "#2f2208",
+        "caution-foreground": "#2b1700",
+        critical: "#ff6961",
+        "critical-soft": "#35100f",
+        "critical-foreground": "#330000",
       },
     },
     related: ["tool-trace"],
@@ -637,7 +637,7 @@ export function Example() {
     description:
       "A honeycomb of frosted glass with one tinted tile that travels to whatever you pick, an action, and the queue of runs it dispatches.",
     overview:
-      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. The comb is glass — frosted hexagons with a lit top edge and a shaded bottom one, over a wash of the selected model's own colour that is masked to the cells, so the light lives inside the material rather than behind it. The selection is not a state each cell paints for itself but a single tinted tile that travels: it stretches along its own direction of movement, its reflection slides to the trailing edge, the cells it passes are shoved aside and drawn back a beat later, and a marker smears along a rail above the comb to keep the reading. Everything is driven off one shared spring, so nothing lags the shape making it. The comb assembles from the middle outwards on mount, a cell thickens and lifts under the cursor, and the light swells while work is in flight. Below it the action takes the selected accent and pushes a ring out for as long as something is running. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone.",
+      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. The comb is glass — frosted hexagons with a soft top light and a bright rim, over a wash of the selected model's own colour that is masked to the cells, so the light lives inside the material rather than behind it. The selection is not a state each cell paints for itself but a single tinted tile that travels: it stretches along its own direction of movement, its reflection slides to the trailing edge, the cells it passes are shoved aside and drawn back a beat later, and a marker smears along a rail above the comb to keep the reading. Everything is driven off one shared spring, so nothing lags the shape making it. The comb assembles from the middle outwards on mount, a cell thickens and lifts under the cursor, and the light swells while work is in flight. Below it the action takes the selected accent and pushes a ring out for as long as something is running. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone.",
     category: "Data Display",
     tags: [
       "ai",
@@ -665,7 +665,7 @@ export function Example() {
       'The queue is an ordered list with `aria-live="polite"`, so a run arriving or landing is announced without stealing focus.',
       "A typing row renders its prompt twice: the full text, invisible but in the accessibility tree, under the prefix typed so far, which is `aria-hidden`. Assistive technology reads the whole line at once instead of a character at a time, and the row reserves its final height so nothing below it reflows while it types.",
       "The only continuous motion is the ring leaving the action, the pip on a working run and the swell in the light behind the comb — all three tied to the queue, and all three stopping when it does.",
-      "`prefers-reduced-motion` is honoured structurally rather than by shortening durations: the mount wave, the typewriter, the caret, the ring, the smear, the wake and every spring are not started at all, and the tile and the marker are positioned rather than animated. What is left is a still component that still works.",
+      "`prefers-reduced-motion` is honoured structurally rather than by shortening durations: the typewriter, the caret, the smear, the wake and every spring are not started at all, the mount wave and the busy ring resolve at zero duration, and the tile and the marker are positioned rather than animated. What is left is a still component that still works.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
     ],
     keyboard: [
@@ -1067,31 +1067,31 @@ export function Example() {
         "color-critical": "var(--critical)",
         "color-critical-soft": "var(--critical-soft)",
         "color-critical-foreground": "var(--critical-foreground)",
-        "radius-soft-sm": "0.375rem",
-        "radius-soft": "0.625rem",
-        "radius-soft-lg": "1rem",
+        "radius-soft-sm": "0.5rem",
+        "radius-soft": "0.75rem",
+        "radius-soft-lg": "1.125rem",
       },
       light: {
-        positive: "oklch(0.5 0.13 158)",
-        "positive-soft": "oklch(0.965 0.03 158)",
-        "positive-foreground": "oklch(0.99 0.008 158)",
-        caution: "oklch(0.53 0.13 68)",
-        "caution-soft": "oklch(0.965 0.04 78)",
-        "caution-foreground": "oklch(0.99 0.008 68)",
-        critical: "oklch(0.52 0.19 23)",
-        "critical-soft": "oklch(0.965 0.025 23)",
-        "critical-foreground": "oklch(0.99 0.006 23)",
+        positive: "#1a7f37",
+        "positive-soft": "#e6f4ea",
+        "positive-foreground": "#ffffff",
+        caution: "#b05a00",
+        "caution-soft": "#fdf1e1",
+        "caution-foreground": "#ffffff",
+        critical: "#d70015",
+        "critical-soft": "#fdeaea",
+        "critical-foreground": "#ffffff",
       },
       dark: {
-        positive: "oklch(0.78 0.14 158)",
-        "positive-soft": "oklch(0.25 0.05 158)",
-        "positive-foreground": "oklch(0.16 0.035 158)",
-        caution: "oklch(0.82 0.14 80)",
-        "caution-soft": "oklch(0.26 0.05 68)",
-        "caution-foreground": "oklch(0.17 0.035 68)",
-        critical: "oklch(0.72 0.17 23)",
-        "critical-soft": "oklch(0.26 0.07 23)",
-        "critical-foreground": "oklch(0.16 0.04 23)",
+        positive: "#30d158",
+        "positive-soft": "#0d2b16",
+        "positive-foreground": "#002910",
+        caution: "#ffb340",
+        "caution-soft": "#2f2208",
+        "caution-foreground": "#2b1700",
+        critical: "#ff6961",
+        "critical-soft": "#35100f",
+        "critical-foreground": "#330000",
       },
     },
     related: ["status-timeline", "focus-stack", "tool-trace", "approval-gate"],
@@ -1105,7 +1105,7 @@ export function Example() {
     description:
       "A run log for agent tool calls: the step in flight opens itself, writes its output a line at a time, then folds away and goes still.",
     overview:
-      "ToolTrace is what one run looks like from the inside — every tool the agent reached for, in order, and what came back. Pass the steps with a state on each and it draws a rail through them: dashed markers for what has not happened yet, tinted ones for what has, a hairline filling behind each step as it resolves. The motion is spent on the step in flight and nowhere else. It opens as it starts, its console fills a line at a time, and the moment it lands the panel folds away and hands the rail to the next tool — so an unattended trace always shows the work that is actually happening without the reader touching anything. Every other step is a still drawing. Open one yourself and follow yields for good, because a reader who went looking should not have the page close under them. States carry a glyph and a spoken label as well as a hue, transitions are announced through a single polite live region rather than by streaming the console at a screen reader, and the whole thing resolves instantly under prefers-reduced-motion.",
+      "ToolTrace is what one run looks like from the inside — every tool the agent reached for, in order, and what came back. Pass the steps with a state on each and it draws a rail through them: quiet grey tiles for what has not happened yet, tinted ones for what has, a hairline filling behind each step as it resolves. The motion is spent on the step in flight and nowhere else. It opens as it starts, its console fills a line at a time, and the moment it lands the panel folds away and hands the rail to the next tool — so an unattended trace always shows the work that is actually happening without the reader touching anything. Every other step is a still drawing. Open one yourself and follow yields for good, because a reader who went looking should not have the page close under them. States carry a glyph and a spoken label as well as a hue, transitions are announced through a single polite live region rather than by streaming the console at a screen reader, and the whole thing resolves instantly under prefers-reduced-motion.",
     category: "Feedback",
     tags: [
       "ai",
@@ -1175,7 +1175,7 @@ export function Example() {
             type: "string",
             defaultValue: '"Run"',
             description:
-              "Header eyebrow, and the accessible name of the list when the header is hidden.",
+              "Header title, and the accessible name of the list when the header is hidden.",
           },
           {
             name: "status",
@@ -1194,7 +1194,7 @@ export function Example() {
             name: "showHeader",
             type: "boolean",
             defaultValue: "true",
-            description: "Renders the eyebrow and status chip above the steps.",
+            description: "Renders the title and status chip above the steps.",
           },
           {
             name: "size",
@@ -1308,7 +1308,7 @@ export function Example() {
             name: "meta",
             type: "string",
             description:
-              "Trailing meta, set in mono with tabular figures — a duration, a token count.",
+              "Trailing meta, set with tabular figures — a duration, a token count.",
           },
           {
             name: "detail",
@@ -1482,31 +1482,31 @@ export function Example() {
         "color-critical": "var(--critical)",
         "color-critical-soft": "var(--critical-soft)",
         "color-critical-foreground": "var(--critical-foreground)",
-        "radius-soft-sm": "0.375rem",
-        "radius-soft": "0.625rem",
-        "radius-soft-lg": "1rem",
+        "radius-soft-sm": "0.5rem",
+        "radius-soft": "0.75rem",
+        "radius-soft-lg": "1.125rem",
       },
       light: {
-        info: "oklch(0.5 0.17 253)",
-        "info-soft": "oklch(0.965 0.022 253)",
-        "info-foreground": "oklch(0.99 0.005 253)",
-        positive: "oklch(0.5 0.13 158)",
-        "positive-soft": "oklch(0.965 0.03 158)",
-        "positive-foreground": "oklch(0.99 0.008 158)",
-        critical: "oklch(0.52 0.19 23)",
-        "critical-soft": "oklch(0.965 0.025 23)",
-        "critical-foreground": "oklch(0.99 0.006 23)",
+        info: "#0068d1",
+        "info-soft": "#e8f1fc",
+        "info-foreground": "#ffffff",
+        positive: "#1a7f37",
+        "positive-soft": "#e6f4ea",
+        "positive-foreground": "#ffffff",
+        critical: "#d70015",
+        "critical-soft": "#fdeaea",
+        "critical-foreground": "#ffffff",
       },
       dark: {
-        info: "oklch(0.76 0.14 253)",
-        "info-soft": "oklch(0.255 0.058 253)",
-        "info-foreground": "oklch(0.16 0.04 253)",
-        positive: "oklch(0.78 0.14 158)",
-        "positive-soft": "oklch(0.25 0.05 158)",
-        "positive-foreground": "oklch(0.16 0.035 158)",
-        critical: "oklch(0.72 0.17 23)",
-        "critical-soft": "oklch(0.26 0.07 23)",
-        "critical-foreground": "oklch(0.16 0.04 23)",
+        info: "#409cff",
+        "info-soft": "#0c2541",
+        "info-foreground": "#00152e",
+        positive: "#30d158",
+        "positive-soft": "#0d2b16",
+        "positive-foreground": "#002910",
+        critical: "#ff6961",
+        "critical-soft": "#35100f",
+        "critical-foreground": "#330000",
       },
     },
     related: ["agent-hive", "approval-gate", "status-timeline"],
@@ -1521,7 +1521,7 @@ export function Example() {
     description:
       "A hero section led by an arc of tinted glass discs, solved from a count and a spread, that assembles on mount and then answers only the pointer.",
     overview:
-      "GlassCrest is the section a product opens with: a crescent of glass marks over the sentence that explains them. The crest is drawn rather than photographed — each disc is tinted glass with a lit top edge, a shaded belly, an off-centre specular and a rim in its own accent, and the glyph stands on it as a relief, printed twice so the blurred copy underneath gives the extrusion its thickness. Nothing is an image, so a mark is any icon you pass and any colour you name, and the whole crest recolours with the page instead of being lit for one theme. The arc is geometry rather than layout: give it a count and a spread and it solves for the radius that fits the marks across their own box, the diameter that laps them by overlap, and the aspect ratio that leaves room for the bow — so three marks on a phone and eleven on a monitor are the same calculation, expressed entirely in percentages and needing no measurement at all. It moves only when something moves it. It assembles apex-first on mount — sprung, so each disc rises, goes a hair past its place on the arc and settles onto it, because a hero arriving is the one moment a page may perform — and after that it answers the pointer: the arc swings from a pivot below itself while the outer marks travel further than the inner ones, the disc under the cursor lifts on a spring of its own, and a mark that is pulled comes out of the pack on a leash while its neighbours part along the arc, then springs home on release. Pass onMarkSelect and every disc becomes a real button behind a single tab stop, pressing into the page under the hand, with the arrow keys walking the arc; a pull that never crossed the threshold is still a press.",
+      "GlassCrest is the section a product opens with: a crescent of glass marks over the sentence that explains them. The crest is drawn rather than photographed — each disc is tinted glass with a soft top light, a shaded belly and a thin bright rim in its own accent, and the glyph stands on it as a relief, printed twice so the blurred copy underneath gives the extrusion its thickness. Nothing is an image, so a mark is any icon you pass and any colour you name, and the whole crest recolours with the page instead of being lit for one theme. The arc is geometry rather than layout: give it a count and a spread and it solves for the radius that fits the marks across their own box, the diameter that laps them by overlap, and the aspect ratio that leaves room for the bow — so three marks on a phone and eleven on a monitor are the same calculation, expressed entirely in percentages and needing no measurement at all. It moves only when something moves it. It assembles apex-first on mount — sprung, so each disc rises, goes a hair past its place on the arc and settles onto it, because a hero arriving is the one moment a page may perform — and after that it answers the pointer: the arc swings from a pivot below itself while the outer marks travel further than the inner ones, the disc under the cursor lifts on a spring of its own, and a mark that is pulled comes out of the pack on a leash while its neighbours part along the arc, then springs home on release. Pass onMarkSelect and every disc becomes a real button behind a single tab stop, pressing into the page under the hand, with the arrow keys walking the arc; a pull that never crossed the threshold is still a press.",
     category: "Marketing",
     tags: [
       "hero",
@@ -1591,7 +1591,7 @@ export function Example() {
           {
             name: "eyebrow",
             type: "React.ReactNode",
-            description: "Small tracked line above the headline.",
+            description: "Short line above the headline, in the secondary colour.",
           },
           {
             name: "eyebrowIcon",
@@ -1743,7 +1743,7 @@ export function Example() {
       {
         name: "CrestAction",
         description:
-          "The pill the section was drawn with: solid ink, and a badge that rolls its arrow away and brings a second one in behind it.",
+          "The capsule the section was drawn with: a 44px solid-ink pill with a chevron.",
         props: [
           {
             name: "children",
@@ -2116,7 +2116,7 @@ export function Example() {
     description:
       "An inline request from an agent to run a command: the tool, the command, a clock that holds while you read, and two keys to answer with.",
     overview:
-      "ApprovalGate is the moment an agent stops and asks. Where ToolTrace is what a run looks like from the inside, this is the one step in it that cannot happen without a person: the tool it wants, the command it would give, and two ways to answer. At rest it is a still card, and a quiet one — a title, a word beside it, the command on a wash of the page's own ink, and the two answers. The one thing that moves while it waits is the clock, a hairline ring around the marker draining clockwise from twelve with the seconds left set inside it, and it holds whenever the reader is plainly reading: pointer over the card, focus inside it, or the card scrolled out of view, because a timeout is a safety net for a gate nobody is looking at rather than a race against the person in front of it. Hue is spent only where there is risk. A request that cannot break anything waits in the page's own ink with the word “Awaiting” beside it; one that might waits in caution and says so; one that will waits in critical and says “Destructive”. A decision is one move each way: allowing lets the buttons go and sets a tick in the ring; denying draws a strike through the command, left to right, and takes the ink out of it as it goes; letting the clock run out does neither — the ring goes dashed, the command dims, and the word says so. The keys are declared on the buttons through aria-keyshortcuts and shown beside the labels only while they would actually work, every outcome carries a glyph and a spoken word as well as a hue, and the whole thing resolves instantly under prefers-reduced-motion.",
+      "ApprovalGate is the moment an agent stops and asks. Where ToolTrace is what a run looks like from the inside, this is the one step in it that cannot happen without a person: the tool it wants, the command it would give, and two ways to answer. At rest it is a still card, and a quiet one — a title, a word beside it, the command on a wash of the page's own ink, and the two answers. The one thing that moves while it waits is the clock, a ring around the marker draining clockwise from twelve with the seconds left set inside it, and it holds whenever the reader is plainly reading: pointer over the card, focus inside it, or the card scrolled out of view, because a timeout is a safety net for a gate nobody is looking at rather than a race against the person in front of it. Hue is spent only where there is risk. A request that cannot break anything waits in the page's own ink with the word “Awaiting” beside it; one that might waits in caution and says so; one that will waits in critical and says “Destructive”. A decision is one move each way: allowing lets the buttons go and sets a tick in the ring; denying draws a strike through the command, left to right, and takes the ink out of it as it goes; letting the clock run out does neither — the ring goes quiet, the command dims, and the word says so. The keys are declared on the buttons through aria-keyshortcuts and shown beside the labels only while they would actually work, every outcome carries a glyph and a spoken word as well as a hue, and the whole thing resolves instantly under prefers-reduced-motion.",
     category: "Feedback",
     tags: [
       "ai",
@@ -2142,7 +2142,7 @@ export function Example() {
       "The keys never fight the buttons: a key that would activate the focused button anyway — Enter, Space — is left to it, so an answer is never given twice, and a shortcut typed into a field is left alone entirely.",
       "The countdown is a `timer` whose visible number is followed by a hidden “of 30 seconds left”, and it is not live: a clock announcing every second is noise, and the time allowed is already in the announcement.",
       "A time limit on a decision is only acceptable if the person can defeat it, which is WCAG 2.2.1. The clock holds while focus is inside the gate, so a keyboard user who has reached the buttons is never timed out of them, and it holds under the pointer for the same reason. Leave `timeout` unset and there is no limit at all.",
-      "Colour is never the only signal, which satisfies WCAG 1.4.1: the risk is a word beside the title as well as a hue, and every outcome is a glyph in the ring and a word beside the title — a tick, a cross, an hourglass; “Allowed”, “Denied”, “Expired”.",
+      "Colour is never the only signal, which satisfies WCAG 1.4.1: the risk is a word in a capsule beside the title as well as a hue, and every outcome is a glyph in the ring and a word beside the title — a tick, a cross, an hourglass; “Allowed”, “Denied”, “Expired”.",
       "A denied command is struck through, not merely dimmed, so the refusal survives a monochrome print. The struck copy is a second rendering laid over the first and hidden from assistive technology; the plain text underneath is what gets read, and it is the text you can select.",
       "Focus is kept. When a decision removes the buttons, focus that was on one of them is handed to the gate itself rather than dropped to the document — the gate is focusable for that reason, and so that the keys work after a click on it.",
       "The card does not change height under a decision: the row the answers sat in stays, with the tool and its meta still in it, so nothing below the gate jumps as it resolves.",
@@ -2215,12 +2215,12 @@ export function Example() {
             type: '"low" | "medium" | "high"',
             defaultValue: '"low"',
             description:
-              "Picks the hue and the word beside the title: the page's own ink and “Awaiting”, caution and “Caution”, critical and “Destructive”.",
+              "Picks the hue and the word in the capsule beside the title: the page's own ink and “Awaiting”, caution and “Caution”, critical and “Destructive”.",
           },
           {
             name: "riskLabel",
             type: "string",
-            description: "Overrides the word set beside the title while the gate waits.",
+            description: "Overrides the word in the capsule beside the title while the gate waits.",
           },
           {
             name: "icon",
@@ -2420,7 +2420,7 @@ export function Example() {
       {
         title: "Render the receipt",
         description:
-          "A gate loaded from history is a document, not a question. Pass the decision it ended with and it renders at rest — struck through if it was denied, dashed if it lapsed — with no buttons, no clock and, with announce off, nothing said. Nothing replays on mount.",
+          "A gate loaded from history is a document, not a question. Pass the decision it ended with and it renders at rest — struck through if it was denied, quietened if it lapsed — with no buttons, no clock and, with announce off, nothing said. Nothing replays on mount.",
         code: `<ApprovalGate
   size="sm"
   variant="plain"
@@ -2474,31 +2474,31 @@ export function Example() {
         "color-critical": "var(--critical)",
         "color-critical-soft": "var(--critical-soft)",
         "color-critical-foreground": "var(--critical-foreground)",
-        "radius-soft-sm": "0.375rem",
-        "radius-soft": "0.625rem",
-        "radius-soft-lg": "1rem",
+        "radius-soft-sm": "0.5rem",
+        "radius-soft": "0.75rem",
+        "radius-soft-lg": "1.125rem",
       },
       light: {
-        positive: "oklch(0.5 0.13 158)",
-        "positive-soft": "oklch(0.965 0.03 158)",
-        "positive-foreground": "oklch(0.99 0.008 158)",
-        caution: "oklch(0.53 0.13 68)",
-        "caution-soft": "oklch(0.965 0.04 78)",
-        "caution-foreground": "oklch(0.99 0.008 68)",
-        critical: "oklch(0.52 0.19 23)",
-        "critical-soft": "oklch(0.965 0.025 23)",
-        "critical-foreground": "oklch(0.99 0.006 23)",
+        positive: "#1a7f37",
+        "positive-soft": "#e6f4ea",
+        "positive-foreground": "#ffffff",
+        caution: "#b05a00",
+        "caution-soft": "#fdf1e1",
+        "caution-foreground": "#ffffff",
+        critical: "#d70015",
+        "critical-soft": "#fdeaea",
+        "critical-foreground": "#ffffff",
       },
       dark: {
-        positive: "oklch(0.78 0.14 158)",
-        "positive-soft": "oklch(0.25 0.05 158)",
-        "positive-foreground": "oklch(0.16 0.035 158)",
-        caution: "oklch(0.82 0.14 80)",
-        "caution-soft": "oklch(0.26 0.05 68)",
-        "caution-foreground": "oklch(0.17 0.035 68)",
-        critical: "oklch(0.72 0.17 23)",
-        "critical-soft": "oklch(0.26 0.07 23)",
-        "critical-foreground": "oklch(0.16 0.04 23)",
+        positive: "#30d158",
+        "positive-soft": "#0d2b16",
+        "positive-foreground": "#002910",
+        caution: "#ffb340",
+        "caution-soft": "#2f2208",
+        "caution-foreground": "#2b1700",
+        critical: "#ff6961",
+        "critical-soft": "#35100f",
+        "critical-foreground": "#330000",
       },
     },
     related: ["tool-trace", "agent-hive"],

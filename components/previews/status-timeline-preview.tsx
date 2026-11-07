@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { MapPin, Package, RefreshCw, ShoppingBag, Star, Truck } from "lucide-react"
+import { MapPin, Package, RotateCcw, ShoppingBag, Star, Truck } from "lucide-react"
 
 import {
   StatusTimeline,
@@ -78,7 +78,7 @@ const ONBOARDING: StatusTimelineStep[] = [
  * many lines the caption above them happens to run to. `1fr` on the second row
  * then holds the two cards to a single height.
  */
-const PAIR = "grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-3"
+const PAIR = "grid grid-cols-1 gap-14 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-5"
 const ALIGNED = "lg:row-span-2 lg:grid lg:grid-rows-subgrid"
 
 export default function StatusTimelinePreview() {
@@ -86,12 +86,12 @@ export default function StatusTimelinePreview() {
   const done = active >= DELIVERY.length
 
   return (
-    <div className="flex w-full max-w-5xl flex-col gap-10">
+    <div className="flex w-full max-w-5xl flex-col gap-14 font-sans">
       <div className={PAIR}>
         <Panel
           className={ALIGNED}
           caption="Driven by activeStep"
-          description="One index decides everything. Advance it and the line draws down, the next marker cross-fades into blue and pulses once — then everything goes still again."
+          description="One index decides everything. Advance it and the line draws down, the next step turns blue and pulses once — then everything is still again."
         >
           <StatusTimeline
             label="Delivery"
@@ -100,17 +100,17 @@ export default function StatusTimelinePreview() {
             className="max-w-md"
             footer={
               <div className="flex items-center justify-between gap-3">
-                <span className="text-xs font-medium text-muted-foreground tabular-nums">
-                  {Math.min(active + 1, DELIVERY.length)} / {DELIVERY.length}
+                <span className="text-[0.8125rem] text-muted-foreground tabular-nums">
+                  Step {Math.min(active + 1, DELIVERY.length)} of {DELIVERY.length}
                 </span>
-                <div className="flex items-center gap-1.5">
-                  <Pill onClick={() => setActive((step) => step + 1)} disabled={done}>
-                    Advance
-                  </Pill>
-                  <Pill tone="quiet" onClick={() => setActive(0)}>
-                    <RefreshCw aria-hidden="true" className="size-3.5" />
+                <div className="flex items-center gap-2">
+                  <Button tone="gray" onClick={() => setActive(0)}>
+                    <RotateCcw aria-hidden="true" className="size-3.5" strokeWidth={2.5} />
                     Reset
-                  </Pill>
+                  </Button>
+                  <Button onClick={() => setActive((step) => step + 1)} disabled={done}>
+                    Advance
+                  </Button>
                 </div>
               </div>
             }
@@ -120,7 +120,7 @@ export default function StatusTimelinePreview() {
         <Panel
           className={ALIGNED}
           caption="Finished, with an action"
-          description="Past the last index every step is complete, and the header chip goes green with it."
+          description="Past the last index every step is complete, and the header chip turns green with it."
         >
           <StatusTimeline
             label="Delivery"
@@ -128,10 +128,10 @@ export default function StatusTimelinePreview() {
             activeStep={DELIVERY.length}
             className="max-w-md"
             footer={
-              <Pill tone="positive" className="w-full justify-center">
-                <Star aria-hidden="true" className="size-3.5" />
+              <Button tone="positive" className="h-10 w-full justify-center text-[0.9375rem]">
+                <Star aria-hidden="true" className="size-4" strokeWidth={2.25} />
                 Rate this delivery
-              </Pill>
+              </Button>
             }
           />
         </Panel>
@@ -139,7 +139,7 @@ export default function StatusTimelinePreview() {
 
       <Panel
         caption={<Code>orientation=&quot;horizontal&quot;</Code>}
-        description="The same steps laid along a rule — a checkout or wizard header."
+        description="The same steps laid along a rail — a checkout or wizard header."
       >
         <StatusTimeline
           label="Checkout"
@@ -154,7 +154,7 @@ export default function StatusTimelinePreview() {
         <Panel
           className={ALIGNED}
           caption={<Code>state: &quot;waiting&quot;</Code>}
-          description="Amber for a step that is neither moving nor broken — an approval, a review, a queue."
+          description="Orange for a step that is neither moving nor broken — an approval, a review, a queue."
         >
           <StatusTimeline label="Onboarding" steps={ONBOARDING} className="max-w-md" />
         </Panel>
@@ -162,7 +162,7 @@ export default function StatusTimelinePreview() {
         <Panel
           className={ALIGNED}
           caption={<Code>state: &quot;blocked&quot;, variant=&quot;plain&quot;</Code>}
-          description="Red for a step that failed, with the card and header dropped so the list can sit in a surface you own."
+          description="Red for a step that failed. Plain drops the card and the header, so the list sits in a surface you own."
         >
           <StatusTimeline
             steps={PIPELINE}
@@ -192,10 +192,14 @@ function Panel({
   children: React.ReactNode
 }) {
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
-      <div className="flex flex-col gap-1">
-        <span className="label-section text-foreground">{caption}</span>
-        <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
+    <div className={cn("flex min-w-0 flex-col gap-5", className)}>
+      <div className="flex max-w-xl flex-col gap-1.5 px-1">
+        <span className="text-[1.0625rem] leading-[1.375rem] font-semibold tracking-[-0.022em] text-foreground">
+          {caption}
+        </span>
+        <p className="text-[0.9375rem] leading-[1.35rem] tracking-[-0.009em] text-muted-foreground">
+          {description}
+        </p>
       </div>
       {children}
     </div>
@@ -204,36 +208,32 @@ function Panel({
 
 /** Mono is reserved for the captions that really are quoting the API. */
 function Code({ children }: { children: string }) {
-  return (
-    <code className="font-mono text-[0.75rem] font-medium text-foreground">
-      {children}
-    </code>
-  )
+  return <code className="font-mono text-[0.92em] font-medium text-foreground">{children}</code>
 }
 
-/** Pill-shaped, tinted control — a demo affordance, not the site's own button. */
-function Pill({
-  tone = "neutral",
+/**
+ * The button styles the demo needs: tinted for the action, grey beside it —
+ * a demo affordance, not the site's own button.
+ */
+function Button({
+  tone = "tinted",
   className,
   children,
   ...props
 }: React.ComponentPropsWithoutRef<"button"> & {
-  tone?: "neutral" | "quiet" | "positive"
+  tone?: "tinted" | "gray" | "positive"
 }) {
   return (
     <button
       type="button"
       className={cn(
-        "inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium",
-        "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+        "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-[0.8125rem] font-semibold tracking-[-0.006em]",
+        "transition-[background-color,opacity,scale] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)] active:scale-[0.97]",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         "disabled:pointer-events-none disabled:opacity-40",
-        tone === "neutral" &&
-          "bg-info-soft text-info hover:bg-info hover:text-info-foreground",
-        tone === "quiet" &&
-          "text-muted-foreground hover:bg-muted hover:text-foreground",
-        tone === "positive" &&
-          "bg-positive-soft text-positive hover:bg-positive hover:text-positive-foreground",
+        tone === "tinted" && "bg-info-soft text-info hover:bg-info/20",
+        tone === "gray" && "bg-muted/70 text-foreground hover:bg-muted",
+        tone === "positive" && "bg-positive-soft text-positive hover:bg-positive/20",
         className
       )}
       {...props}

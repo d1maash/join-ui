@@ -1,6 +1,7 @@
 import "server-only"
 
 import { createHighlighter, type Highlighter } from "shiki"
+import { createJavaScriptRegexEngine } from "shiki/engine/javascript"
 
 import { joinuiDark, joinuiLight } from "@/lib/shiki-theme"
 
@@ -44,17 +45,30 @@ export function normalizeLanguage(language: string | undefined): SupportedLangua
 }
 
 /**
- * One highlighter for the whole build. `createHighlighter` loads WASM and
- * grammars, which is far too expensive to repeat per code block.
+ * One highlighter for the whole process. Loading grammars is far too
+ * expensive to repeat per code block.
+ *
+ * Two choices keep it alive under the dev server:
+ * - The JavaScript regex engine instead of the default Oniguruma WASM build.
+ *   Under Turbopack's hot reload the WASM instance could end up shared between
+ *   module generations and corrupt its own pattern buffer — every request
+ *   after that died with a `ShikiError` quoting a mangled regex, on every page
+ *   that shows code, until the server was restarted. The JS engine has no
+ *   native state to corrupt, and covers every grammar this site loads.
+ * - The promise is parked on `globalThis`, so a hot reload of this module
+ *   reuses the highlighter instead of building a second one beside it.
  */
-let highlighterPromise: Promise<Highlighter> | null = null
+const store = globalThis as typeof globalThis & {
+  __joinuiHighlighter?: Promise<Highlighter>
+}
 
 function getHighlighter(): Promise<Highlighter> {
-  highlighterPromise ??= createHighlighter({
+  store.__joinuiHighlighter ??= createHighlighter({
     themes: [joinuiLight, joinuiDark],
     langs: [...SUPPORTED_LANGUAGES],
+    engine: createJavaScriptRegexEngine(),
   })
-  return highlighterPromise
+  return store.__joinuiHighlighter
 }
 
 export interface HighlightOptions {

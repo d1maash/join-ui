@@ -21,9 +21,15 @@ import "./globals.css"
  * components rather than in what was downloaded.
  */
 const sans = Inter({
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   variable: "--font-inter",
   display: "swap",
+  /*
+   * The optical-size axis is what makes Inter stand in for San Francisco off
+   * Apple hardware: at display sizes it draws the tighter, higher-contrast
+   * "Display" cut, at body sizes the open "Text" cut, the same split SF makes.
+   */
+  axes: ["opsz"],
 })
 
 /*

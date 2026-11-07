@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
  * of them through `subgrid`, and so the cards start on the same line however
  * many lines the caption above them happens to run to.
  */
-const PAIR = "grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-3"
+const PAIR = "grid grid-cols-1 gap-14 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-5"
 const ALIGNED = "lg:row-span-2 lg:grid lg:grid-rows-subgrid"
 
 export default function ApprovalGatePreview() {
@@ -27,10 +27,10 @@ export default function ApprovalGatePreview() {
   const [take, setTake] = React.useState(0)
 
   return (
-    <div className="flex w-full max-w-5xl flex-col gap-10">
+    <div className="flex w-full max-w-5xl flex-col gap-14 font-sans">
       <Panel
         caption="A request, as it arrives"
-        description="The agent has stopped and asked. The ring is the time it will wait, and it holds while the pointer is over the card or focus is inside it. Click into the card and the keys come on: Y allows, N denies. Denying strikes the command through."
+        description="The ring is how long the agent will wait, and it holds while you read. Click into the card and the keys come on — Y allows, N denies. Denying strikes the command through."
         onReplay={decision === null ? undefined : () => setDecision(null)}
       >
         <div className="flex max-w-xl flex-col gap-3">
@@ -46,7 +46,7 @@ export default function ApprovalGatePreview() {
             decision={decision}
             onDecision={setDecision}
           />
-          <p className="px-1 font-mono text-[0.6875rem] text-muted-foreground">
+          <p className="px-1 font-mono text-xs text-muted-foreground">
             {decision === null ? "onDecision — waiting" : `onDecision("${decision}")`}
           </p>
         </div>
@@ -60,7 +60,7 @@ export default function ApprovalGatePreview() {
               <Code>{'risk="low"'}</Code>, <Code>icon</Code>, no clock
             </>
           }
-          description="A request that cannot break anything waits in the page's own ink, without a clock, for as long as it takes. An icon of your own sits in the marker instead of the pip. Small, and plain, so it lives inside a surface you already own."
+          description="A request that cannot break anything waits in the page's own ink, for as long as it takes, with your icon in the marker. Small and plain, it lives inside a surface you already own."
           onReplay={() => setTake((n) => n + 1)}
         >
           <ApprovalGate
@@ -80,9 +80,9 @@ export default function ApprovalGatePreview() {
         <Panel
           className={ALIGNED}
           caption="At rest"
-          description="A gate rendered with its outcome already known is a still drawing: nothing replays. The struck command is what a refusal leaves behind, and the dashed ring is a clock that ran out with nobody there."
+          description="Rendered with its outcome already known, a gate is a still drawing. The struck command is what a refusal leaves behind; the hourglass is a clock that ran out with nobody there."
         >
-          <div className="flex max-w-md flex-col gap-5">
+          <div className="flex max-w-md flex-col gap-6">
             <ApprovalGate
               size="sm"
               variant="plain"
@@ -131,27 +131,31 @@ function Panel({
   children: React.ReactNode
 }) {
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
-      <div className="flex flex-col gap-1">
-        <div className="flex min-h-6 items-center justify-between gap-3">
-          <span className="label-section text-foreground">{caption}</span>
+    <div className={cn("flex min-w-0 flex-col gap-5", className)}>
+      <div className="flex max-w-xl flex-col gap-1.5 px-1">
+        <div className="flex min-h-7 items-center justify-between gap-3">
+          <span className="text-[1.0625rem] leading-[1.375rem] font-semibold tracking-[-0.022em] text-foreground">
+            {caption}
+          </span>
           {onReplay ? (
             <button
               type="button"
               onClick={onReplay}
               className={cn(
-                "inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-muted-foreground",
-                "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
-                "hover:bg-muted hover:text-foreground",
+                "-mr-2 inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-2.5 text-[0.9375rem] font-medium tracking-[-0.009em] text-info",
+                "transition-[background-color,opacity] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+                "hover:bg-info-soft active:opacity-60",
                 "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               )}
             >
-              <RotateCcw aria-hidden="true" className="size-3" />
+              <RotateCcw aria-hidden="true" className="size-3.5" strokeWidth={2.5} />
               Ask again
             </button>
           ) : null}
         </div>
-        <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
+        <p className="text-[0.9375rem] leading-[1.35rem] tracking-[-0.009em] text-muted-foreground">
+          {description}
+        </p>
       </div>
       {children}
     </div>
@@ -160,9 +164,5 @@ function Panel({
 
 /** Mono is reserved for the captions that really are quoting the API. */
 function Code({ children }: { children: React.ReactNode }) {
-  return (
-    <code className="font-mono text-[0.75rem] font-medium text-foreground">
-      {children}
-    </code>
-  )
+  return <code className="font-mono text-[0.92em] font-medium text-foreground">{children}</code>
 }

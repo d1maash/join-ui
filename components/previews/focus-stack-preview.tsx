@@ -28,7 +28,7 @@ const PLAIN: FocusStackItem[] = [
  * of them through `subgrid`, so the stacks start on the same line however many
  * lines the caption above them happens to run to.
  */
-const PAIR = "grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-3"
+const PAIR = "grid gap-14 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12 lg:gap-y-6"
 const ALIGNED = "lg:row-span-2 lg:grid lg:grid-rows-subgrid"
 
 export default function FocusStackPreview() {
@@ -37,18 +37,19 @@ export default function FocusStackPreview() {
   const [scrolled, setScrolled] = React.useState(0)
 
   return (
-    <div className="flex w-full max-w-5xl flex-col gap-10">
+    <div className="flex w-full max-w-5xl flex-col gap-16 py-4">
       <div className={PAIR}>
         <Panel
           className={ALIGNED}
-          caption={<Code>mode=&quot;auto&quot;</Code>}
-          description="Advances on a timer, and stops the moment a pointer, a caret or a reduced-motion setting says so. Click a pill or arrow into it to take the turn yourself."
+          caption="Autoplay"
+          code={'mode="auto"'}
+          description="Turns on a timer, and holds for a pointer, a caret or reduced motion. Click a pill, or arrow into it."
           aside={
             <Pill onClick={() => setPaused((value) => !value)}>
               {paused ? (
-                <Play aria-hidden="true" className="size-3" />
+                <Play aria-hidden="true" className="size-3 fill-current" />
               ) : (
-                <Pause aria-hidden="true" className="size-3" />
+                <Pause aria-hidden="true" className="size-3 fill-current" />
               )}
               {paused ? "Play" : "Pause"}
             </Pill>
@@ -68,8 +69,9 @@ export default function FocusStackPreview() {
 
         <Panel
           className={ALIGNED}
-          caption={<Code>mode=&quot;scroll&quot;</Code>}
-          description="The same drawing, with the focus handed to the page. Scroll this preview through the viewport and the stack turns with it — no timer, and nothing moves that the reader did not move."
+          caption="Scroll-driven"
+          code={'mode="scroll"'}
+          description="The same coil, turned by the page. Scroll it through the viewport — nothing moves that you did not move."
           readout={SYSTEM[scrolled]?.label}
         >
           <FocusStack
@@ -83,8 +85,8 @@ export default function FocusStackPreview() {
       </div>
 
       <Panel
-        caption="Labels only, tighter coil"
-        description="No accents and no second line, with tilt and depth pulled in — a quieter stack for a sidebar or a narrow column."
+        caption="Labels only"
+        description="No accents and no second line, with the tilt and depth pulled in — a quieter coil for a sidebar."
       >
         <FocusStack
           label="Process"
@@ -100,16 +102,23 @@ export default function FocusStackPreview() {
   )
 }
 
+/*
+ * Captions in Apple's two text styles: a 17pt semibold headline over a 15pt
+ * subhead in the secondary ink. Mono appears only where a caption quotes the
+ * API, as a quiet tag beside the title rather than as the title itself.
+ */
 function Panel({
   caption,
+  code,
   description,
   aside,
   readout,
   className,
   children,
 }: {
-  /** A `<Code>` where the caption names an actual prop, plain text otherwise. */
-  caption: React.ReactNode
+  caption: string
+  /** The prop the panel demonstrates, quoted exactly. */
+  code?: string
   description: string
   /** A control belonging to the demo, not to the component. */
   aside?: React.ReactNode
@@ -120,32 +129,38 @@ function Panel({
   children: React.ReactNode
 }) {
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-3">
-          <span className="label-section flex-1 text-foreground">{caption}</span>
-          {readout ? (
-            <span className="truncate text-xs text-muted-foreground">{readout}</span>
-          ) : null}
+    <div className={cn("flex flex-col gap-6", className)}>
+      <div className="flex flex-col gap-1.5">
+        <div className="flex min-h-8 items-center gap-3">
+          <div className="flex min-w-0 flex-1 items-baseline gap-2.5">
+            <p className="text-[1.0625rem] leading-snug font-semibold tracking-[-0.022em] text-foreground">
+              {caption}
+            </p>
+            {code ? (
+              <code className="truncate font-mono text-[0.8125rem] text-muted-foreground">
+                {code}
+              </code>
+            ) : null}
+          </div>
           {aside}
         </div>
-        <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
+        <p className="max-w-md text-[0.9375rem] leading-[1.47] tracking-[-0.009em] text-pretty text-muted-foreground">
+          {description}
+        </p>
+        {readout ? (
+          <p
+            className="mt-1 text-[0.8125rem] tracking-[-0.006em] text-muted-foreground"
+          >
+            In focus <span className="font-semibold text-foreground">{readout}</span>
+          </p>
+        ) : null}
       </div>
       {children}
     </div>
   )
 }
 
-/** Mono is reserved for the captions that really are quoting the API. */
-function Code({ children }: { children: string }) {
-  return (
-    <code className="font-mono text-[0.75rem] font-medium text-foreground">
-      {children}
-    </code>
-  )
-}
-
-/** Pill-shaped, tinted control — a demo affordance, not the site's own button. */
+/** Apple's gray capsule button — a demo control, not the site's own button. */
 function Pill({
   className,
   children,
@@ -155,9 +170,10 @@ function Pill({
     <button
       type="button"
       className={cn(
-        "inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
-        "text-muted-foreground hover:bg-muted hover:text-foreground",
-        "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+        "inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-muted px-3.5",
+        "text-[0.8125rem] font-semibold tracking-[-0.006em] text-foreground",
+        "transition-[background-color,scale] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+        "hover:bg-border active:scale-[0.96]",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className
       )}

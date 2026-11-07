@@ -61,7 +61,7 @@ const QUEUE: AgentHiveRun[] = [
  * of them through `subgrid`, so the hives start on the same line however many
  * lines the caption above them happens to run to.
  */
-const PAIR = "grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-4"
+const PAIR = "grid gap-14 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12 lg:gap-y-7"
 const ALIGNED = "lg:row-span-2 lg:grid lg:grid-rows-subgrid"
 
 export default function AgentHivePreview() {
@@ -100,11 +100,11 @@ export default function AgentHivePreview() {
   }
 
   return (
-    <div className={cn("w-full max-w-4xl", PAIR)}>
+    <div className={cn("w-full max-w-4xl py-4", PAIR)}>
       <Panel
         className={ALIGNED}
         caption="Pick, then generate"
-        description="The comb is frosted glass over a wash of the selected model's colour, and one tinted tile slides between the cells — stretching along its own direction of travel, with the marker smearing along the rail above. Press the action: a run drops in and types itself out, and the one below it is finished text the moment it does."
+        description="One tinted tile glides between frosted cells and lights the glass around it. Press Generate and the run types itself into the queue."
       >
         <AgentHive
           label="Model"
@@ -118,8 +118,9 @@ export default function AgentHivePreview() {
 
       <Panel
         className={ALIGNED}
-        caption={<Code>size=&quot;sm&quot;</Code>}
-        description="A tighter comb and every run state at once. Nothing types here — these rows were on screen at mount, and history does not retype itself."
+        caption="Compact"
+        code={'size="sm"'}
+        description="A tighter comb, with every run state at once. Rows that were there at mount are history, and never retype."
       >
         <AgentHive
           label="Engine"
@@ -135,35 +136,42 @@ export default function AgentHivePreview() {
   )
 }
 
+/*
+ * Captions in Apple's two text styles: a 17pt semibold headline over a 15pt
+ * subhead in the secondary ink. Mono appears only where a caption quotes the
+ * API, as a quiet tag beside the title rather than as the title itself.
+ */
 function Panel({
   caption,
+  code,
   description,
   className,
   children,
 }: {
-  /** A `<Code>` where the caption names an actual prop, plain text otherwise. */
-  caption: React.ReactNode
+  caption: string
+  /** The prop the panel demonstrates, quoted exactly. */
+  code?: string
   description: string
   /** Carries `ALIGNED` when the panel is one half of a two-up row. */
   className?: string
   children: React.ReactNode
 }) {
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
-      <div className="flex flex-col gap-1">
-        <span className="label-section text-foreground">{caption}</span>
-        <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
+    <div className={cn("flex flex-col gap-6", className)}>
+      <div className="flex max-w-md flex-col gap-1.5">
+        <div className="flex items-baseline gap-2.5">
+          <p className="text-[1.0625rem] leading-snug font-semibold tracking-[-0.022em] text-foreground">
+            {caption}
+          </p>
+          {code ? (
+            <code className="font-mono text-[0.8125rem] text-muted-foreground">{code}</code>
+          ) : null}
+        </div>
+        <p className="text-[0.9375rem] leading-[1.47] tracking-[-0.009em] text-pretty text-muted-foreground">
+          {description}
+        </p>
       </div>
       <div className="flex items-start justify-center">{children}</div>
     </div>
-  )
-}
-
-/** Mono is reserved for the captions that really are quoting the API. */
-function Code({ children }: { children: string }) {
-  return (
-    <code className="font-mono text-[0.75rem] font-medium text-foreground">
-      {children}
-    </code>
   )
 }

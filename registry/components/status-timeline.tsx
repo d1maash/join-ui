@@ -14,7 +14,7 @@ export interface StatusTimelineStep {
   id: string
   title: string
   description?: string
-  /** Trailing meta, set in mono — e.g. `17 Nov, 13:45`. */
+  /** Trailing meta, set with tabular figures — e.g. `17 Nov, 13:45`. */
   timestamp?: string
   /** Pins the state instead of deriving it from `activeStep`. */
   state?: StatusTimelineState
@@ -39,80 +39,74 @@ const STATE_LABEL: Record<StatusTimelineState, string> = {
  * One hue per state, taken from the component palette rather than a literal
  * colour, so a consumer can retint the whole family in `globals.css`.
  *
- * `ring` is the marker's outline and tint together, because the two cross-fade
- * as one shape when a step advances — a dashed grey circle turning into a
- * tinted one is a single move, not two.
+ * `disc` is the marker's fill. The step in flight is the one solid shape in
+ * the sequence, haloed in its own tint; everything else sits on a tint of its
+ * own hue — the same rule the header chip follows.
  */
 const TONES: Record<
   StatusTimelineState,
-  { ring: string; ink: string; title: string; chip: string; chipIcon: string }
+  { disc: string; ink: string; title: string; chip: string }
 > = {
   complete: {
-    ring: "border-positive/35 bg-positive-soft",
+    disc: "bg-positive-soft",
     ink: "text-positive",
     title: "text-foreground",
     chip: "bg-positive-soft text-positive",
-    chipIcon: "bg-positive text-positive-foreground",
   },
   current: {
-    ring: "border-info/50 bg-info-soft ring-[3px] ring-info/12",
-    ink: "text-info",
+    disc: "bg-info ring-4 ring-info-soft",
+    ink: "text-info-foreground",
     title: "text-foreground",
     chip: "bg-info-soft text-info",
-    chipIcon: "bg-info text-info-foreground",
   },
   waiting: {
-    ring: "border-dashed border-caution/45 bg-caution-soft",
+    disc: "bg-caution-soft",
     ink: "text-caution",
     title: "text-foreground",
     chip: "bg-caution-soft text-caution",
-    chipIcon: "bg-caution text-caution-foreground",
   },
   pending: {
-    ring: "border-dashed border-border bg-muted/40",
+    disc: "bg-muted",
     ink: "text-muted-foreground",
     title: "text-muted-foreground",
     chip: "bg-muted text-muted-foreground",
-    chipIcon: "bg-muted-foreground/25 text-muted-foreground",
   },
   blocked: {
-    ring: "border-critical/40 bg-critical-soft",
+    disc: "bg-critical-soft",
     ink: "text-critical",
     title: "text-critical",
     chip: "bg-critical-soft text-critical",
-    chipIcon: "bg-critical text-critical-foreground",
   },
 }
 
 /** The colour the connector takes once the step above it has been cleared. */
-const TRAIL_FILL = "bg-positive/70"
+const TRAIL_FILL = "bg-positive/60"
 
 /*
- * The chip label. Set in whatever face the host app uses for its interface,
- * because an installed component has no business asserting a second family —
- * and because a status word ("In review", "Blocked") is read, not decoded.
+ * The hairline. A rule is a whisper of the border colour, not the border
+ * itself, so the card reads as one surface rather than as a stack of boxes.
  */
-const MICRO_LABEL = "text-[0.6875rem] leading-none font-medium tracking-[-0.005em]"
+const HAIRLINE = "bg-border/70"
 
 /*
- * The vocabulary.
+ * The motion vocabulary.
  *
  * Which of these a move gets is decided by one question: can anything
  * countermand it half way through? A connector drawing down its lane cannot —
  * it is a finished statement, it takes the time it takes — so it is a tween on
- * a decisive curve. A ring blooming or a glyph landing can be overtaken by the
- * next state a fraction of a second later, and a tween restarted from where it
- * stood plays its whole duration again from a standstill. A spring carries the
- * velocity it already had into the new target, which is the difference between
- * a marker that stutters through a fast sequence and one that flows through it.
+ * the system's own deceleration curve. A disc blooming or a glyph landing can
+ * be overtaken by the next state a fraction of a second later, and a spring
+ * carries the velocity it already had into the new target, which is the
+ * difference between a marker that stutters through a fast sequence and one
+ * that flows through it.
  *
- * `RING` is damped just short of critical, because a ring that overshoots reads
- * as a wobble. `GLYPH` is deliberately looser: a tick arriving in a cleared
- * step is allowed to land with a little weight behind it.
+ * `DISC` is held to a small bounce, because a disc that overshoots reads as a
+ * wobble. `GLYPH` is deliberately looser: a tick arriving in a cleared step is
+ * allowed to land with a little weight behind it.
  */
-const EASE = [0.22, 1, 0.36, 1] as const
-const RING = { type: "spring", stiffness: 420, damping: 34, mass: 0.8 } as const
-const GLYPH = { type: "spring", stiffness: 620, damping: 26, mass: 0.6 } as const
+const EASE = [0.32, 0.72, 0, 1] as const
+const DISC = { type: "spring", visualDuration: 0.4, bounce: 0.18 } as const
+const GLYPH = { type: "spring", visualDuration: 0.3, bounce: 0.3 } as const
 
 /*
  * The beats of an advance, in seconds.
@@ -135,34 +129,52 @@ const ARRIVAL_DELAY = 0.3
  * out from the marker.
  */
 const RIPPLES = [
-  { id: "near", scale: 1.55, opacity: 0.5, duration: 0.78, delay: 0 },
-  { id: "far", scale: 2.05, opacity: 0.26, duration: 0.94, delay: 0.13 },
+  { id: "near", scale: 1.6, opacity: 0.45, duration: 0.85, delay: 0 },
+  { id: "far", scale: 2.1, opacity: 0.22, duration: 1, delay: 0.13 },
 ] as const
 
+/*
+ * The two scales. `offset` sets the title's first line on the marker's centre
+ * line: (marker - title line) / 2.
+ */
 const SIZES = {
   sm: {
-    marker: "size-8",
+    marker: "size-7",
     glyph: "size-3.5",
     pip: "size-1.5",
-    title: "text-[0.8125rem]",
-    meta: "text-xs",
-    trail: "pb-5",
+    title: "text-[0.9375rem] leading-5 tracking-[-0.016em]",
+    description: "text-[0.8125rem] leading-[1.125rem]",
+    meta: "text-xs leading-5",
+    trail: "pb-4",
     columnGap: "gap-3",
-    contentOffset: "pt-1.5",
-    padding: "p-4",
-    lane: "my-2",
+    contentOffset: "pt-1",
+    lane: "my-1",
+    header: "px-3.5 pt-3.5 pb-1",
+    heading: "text-[0.9375rem] leading-5 tracking-[-0.016em]",
+    chip: "h-6 gap-1 px-2 text-xs",
+    chipGlyph: "size-3",
+    body: "px-3.5 pb-3.5",
+    bodyTop: { header: "pt-3", bare: "pt-3.5" },
+    footer: "px-3.5 py-3",
   },
   md: {
-    marker: "size-10",
-    glyph: "size-[1.125rem]",
+    marker: "size-9",
+    glyph: "size-4",
     pip: "size-2",
-    title: "text-[0.9375rem]",
-    meta: "text-[0.8125rem]",
-    trail: "pb-7",
-    columnGap: "gap-4",
-    contentOffset: "pt-2.5",
-    padding: "p-5",
-    lane: "my-2.5",
+    title: "text-[1.0625rem] leading-[1.375rem] tracking-[-0.022em]",
+    description: "text-[0.9375rem] leading-5 tracking-[-0.009em]",
+    meta: "text-[0.8125rem] leading-[1.375rem]",
+    trail: "pb-6",
+    columnGap: "gap-3.5",
+    contentOffset: "pt-[0.4375rem]",
+    lane: "my-1.5",
+    header: "px-4 pt-4 pb-1",
+    heading: "text-[1.0625rem] leading-[1.375rem] tracking-[-0.022em]",
+    chip: "h-7 gap-1.5 px-2.5 text-[0.8125rem]",
+    chipGlyph: "size-3.5",
+    body: "px-4 pb-4",
+    bodyTop: { header: "pt-3.5", bare: "pt-4" },
+    footer: "px-4 py-3",
   },
 } as const
 
@@ -178,7 +190,7 @@ export interface StatusTimelineProps extends Omit<
   activeStep?: number
   orientation?: "vertical" | "horizontal"
   size?: "sm" | "md"
-  /** Header eyebrow, and the accessible name of the list. */
+  /** Header title, and the accessible name of the list. */
   label?: string
   /** Header chip copy. Derived from the resolved steps when omitted. */
   status?: string
@@ -193,18 +205,19 @@ export interface StatusTimelineProps extends Omit<
  * A step tracker for anything that moves through a fixed sequence: an order
  * being fulfilled, a deployment, an onboarding checklist.
  *
- * At rest it is a still drawing — dashed rings for what has not happened yet,
- * tinted ones for what has, a hairline running between them. Nothing loops and
- * nothing breathes. The motion is spent entirely on the one moment worth
- * showing, and it is spent as a sequence rather than as a flash: when
- * `activeStep` moves on, the cleared step's marker turns first, a tenth of a
- * second later the connector below it runs down to the next one, and only when
- * it arrives does that step announce itself with a pair of rings spreading out
- * of it. Three beats, a tenth of a second apart, which is the difference
- * between an order you can follow and three things happening at once.
+ * At rest it is a still drawing — tinted discs for what has happened or is
+ * yet to, one solid disc for the step in flight, a rounded rail running
+ * between them. Nothing loops and nothing breathes. The motion is spent
+ * entirely on the one moment worth showing, and it is spent as a sequence
+ * rather than as a flash: when `activeStep` moves on, the cleared step's disc
+ * turns first, a tenth of a second later the connector below it runs down to
+ * the next one, and only when it arrives does that step announce itself with a
+ * pair of rings spreading out of it. Three beats, a tenth of a second apart,
+ * which is the difference between an order you can follow and three things
+ * happening at once.
  *
  * Each state gets its own hue — green behind a finished step, blue on the one
- * in flight, amber on one that is waiting, red on one that failed — and each
+ * in flight, orange on one that is waiting, red on one that failed — and each
  * hue is backed by a glyph and a text label, so nothing depends on being able
  * to tell the colours apart.
  */
@@ -244,73 +257,50 @@ export function StatusTimeline({
       className={cn(
         // A column, so a card given a height taller than its steps keeps the
         // footer on the bottom rule rather than floating it under the list.
-        "flex w-full flex-col text-foreground",
-        chrome && "rounded-soft-lg border border-border bg-card",
+        "flex w-full flex-col font-sans text-foreground",
+        chrome && "rounded-soft-lg border border-border/60 bg-card",
         className
       )}
       {...props}
     >
       {showHeader ? (
-        <div
-          className={cn(
-            "flex items-center gap-3",
-            chrome ? "border-b border-border px-4 py-3" : "pb-3.5"
-          )}
-        >
+        <div className={cn("flex items-center gap-3", chrome ? scale.header : "pb-3")}>
           <span
             id={labelId}
-            className={cn(
-              MICRO_LABEL,
-              "rounded-full border border-dashed border-border px-2.5 py-1.5 text-muted-foreground"
-            )}
+            className={cn("min-w-0 flex-1 truncate font-semibold", scale.heading)}
           >
             {label}
           </span>
 
           <span
-            aria-hidden="true"
-            className="min-w-4 flex-1 border-t border-dashed border-border"
-          />
-
-          <span
             className={cn(
-              "flex shrink-0 items-center gap-1.5 rounded-full py-1 pr-2.5 pl-1",
-              "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
+              "inline-flex shrink-0 items-center rounded-full leading-none font-medium tracking-[-0.006em]",
+              "transition-colors duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
+              scale.chip,
               summaryTone.chip
             )}
           >
-            <span
-              className={cn(
-                "flex size-5 items-center justify-center rounded-full",
-                "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
-                summaryTone.chipIcon
-              )}
+            <Swap
+              token={glyphKey(summary.state)}
+              animate={animate}
+              className="flex items-center justify-center"
             >
-              <Swap
-                token={glyphKey(summary.state)}
-                animate={animate}
-                className="flex items-center justify-center"
-              >
-                <StateGlyph
-                  state={summary.state}
-                  className="size-3"
-                  pipClassName="size-1.5"
-                />
-              </Swap>
-            </span>
+              <StateGlyph
+                state={summary.state}
+                className={scale.chipGlyph}
+                pipClassName="size-1.5 bg-current"
+              />
+            </Swap>
 
             {/*
               Stacked in a single grid cell so the outgoing and incoming words
-              overlap instead of shunting the pill sideways mid-cross-fade.
+              overlap instead of shunting the capsule sideways mid-cross-fade.
             */}
             <span className="grid">
               <Swap
                 token={summaryLabel}
                 animate={animate}
-                className={cn(
-                  MICRO_LABEL,
-                  "col-start-1 row-start-1 whitespace-nowrap"
-                )}
+                className="col-start-1 row-start-1 whitespace-nowrap"
               >
                 {summaryLabel}
               </Swap>
@@ -325,7 +315,8 @@ export function StatusTimeline({
         className={cn(
           "flex flex-1",
           horizontal ? "flex-row" : "flex-col",
-          chrome && scale.padding
+          chrome && scale.body,
+          chrome && (showHeader ? scale.bodyTop.header : scale.bodyTop.bare)
         )}
       >
         {resolved.map((step, index) => {
@@ -346,7 +337,7 @@ export function StatusTimeline({
               <div
                 className={cn(
                   "flex shrink-0",
-                  horizontal ? "w-full items-center gap-2" : "flex-col items-center"
+                  horizontal ? "w-full items-center" : "flex-col items-center"
                 )}
               >
                 <Marker
@@ -371,13 +362,20 @@ export function StatusTimeline({
                 ) : null}
               </div>
 
+              {/*
+                Set the way a list cell is: the title and the timestamp share
+                the first line, and the description runs the full width under
+                both, so a narrow card does not squeeze it into a column. The
+                grid places them; the reading order stays title, description,
+                timestamp.
+              */}
               <div
                 className={cn(
-                  "flex min-w-0",
+                  "min-w-0",
                   horizontal
-                    ? cn("flex-col gap-1", !isLast && "pr-4")
+                    ? cn("flex flex-col gap-0.5", !isLast && "pr-4")
                     : cn(
-                        "flex-1 items-baseline gap-3",
+                        "grid flex-1 grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-0.5",
                         scale.contentOffset,
                         // Spacing lives on the content so the marker column
                         // stretches over it and the trail reaches the next step.
@@ -385,35 +383,33 @@ export function StatusTimeline({
                       )
                 )}
               >
-                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <p
+                  className={cn(
+                    scale.title,
+                    "col-start-1 row-start-1 font-semibold",
+                    "transition-colors duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
+                    tone.title
+                  )}
+                >
+                  {step.title}
+                  <span className="sr-only">{`, ${STATE_LABEL[step.state]}`}</span>
+                </p>
+                {step.description ? (
                   <p
                     className={cn(
-                      scale.title,
-                      "font-semibold tracking-tight",
-                      "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
-                      tone.title
+                      scale.description,
+                      "col-span-2 row-start-2 text-muted-foreground"
                     )}
                   >
-                    {step.title}
-                    <span className="sr-only">{`, ${STATE_LABEL[step.state]}`}</span>
+                    {step.description}
                   </p>
-                  {step.description ? (
-                    <p
-                      className={cn(
-                        scale.meta,
-                        "leading-relaxed text-muted-foreground"
-                      )}
-                    >
-                      {step.description}
-                    </p>
-                  ) : null}
-                </div>
+                ) : null}
 
                 {step.timestamp ? (
                   <span
                     className={cn(
                       scale.meta,
-                      "shrink-0 text-muted-foreground tabular-nums"
+                      "col-start-2 row-start-1 whitespace-nowrap text-muted-foreground tabular-nums"
                     )}
                   >
                     {step.timestamp}
@@ -426,7 +422,10 @@ export function StatusTimeline({
       </ol>
 
       {footer ? (
-        <div className={cn(chrome ? "border-t border-border px-4 py-3" : "pt-3.5")}>
+        <div className={cn(chrome ? cn("relative", scale.footer) : "pt-3")}>
+          {chrome ? (
+            <span aria-hidden="true" className={cn("absolute inset-x-0 top-0 h-px", HAIRLINE)} />
+          ) : null}
           {footer}
         </div>
       ) : null}
@@ -435,11 +434,11 @@ export function StatusTimeline({
 }
 
 /**
- * The circle. Its ring is a separate absolutely-positioned layer keyed on the
- * state, so advancing cross-fades one whole marker into the next — the old ring
- * expands away as the new one blooms up from the centre — rather than snapping
- * a dashed border to a solid one. `initial={false}` keeps all of that off the
- * first paint: a timeline that is merely rendered does not animate.
+ * The disc. Its fill is a separate absolutely-positioned layer keyed on the
+ * state, so advancing cross-fades one whole disc into the next — the old fill
+ * swells away as the new one blooms up from the centre — rather than snapping
+ * a colour. `initial={false}` keeps all of that off the first paint: a
+ * timeline that is merely rendered does not animate.
  */
 function Marker({
   state,
@@ -462,7 +461,7 @@ function Marker({
     <span
       className={cn(
         "relative flex shrink-0 items-center justify-center rounded-full",
-        "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
+        "transition-colors duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
         sizeClassName,
         tone.ink
       )}
@@ -471,23 +470,20 @@ function Marker({
         <motion.span
           key={state}
           aria-hidden="true"
-          className={cn(
-            "pointer-events-none absolute inset-0 rounded-full border",
-            tone.ring
-          )}
-          initial={{ opacity: 0, scale: 0.62 }}
+          className={cn("pointer-events-none absolute inset-0 rounded-full", tone.disc)}
+          initial={{ opacity: 0, scale: 0.6 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.18 }}
+          exit={{ opacity: 0, scale: 1.12 }}
           /*
            * Split, because the two properties are doing different jobs. The
            * scale is the move and wants the spring's carry; the opacity is
-           * only the handover between the outgoing ring and the incoming one,
+           * only the handover between the outgoing disc and the incoming one,
            * and a spring settling asymptotically towards zero would hold a
-           * ring that has finished expanding on screen at 2% for as long again.
+           * disc that has finished swelling on screen at 2% for as long again.
            */
           transition={
             animate
-              ? { scale: RING, opacity: { duration: 0.24, ease: EASE } }
+              ? { scale: DISC, opacity: { duration: 0.22, ease: EASE } }
               : { duration: 0 }
           }
         />
@@ -508,13 +504,13 @@ function Marker({
                 className="pointer-events-none absolute inset-0 rounded-full border-2 border-info"
                 initial={{ opacity: 0, scale: 1 }}
                 animate={{ opacity: [0, ripple.opacity, 0], scale: ripple.scale }}
-                exit={{ opacity: 0 }}
+                exit={{ opacity: 0, transition: { duration: 0 } }}
                 transition={
                   animate
                     ? {
                         duration: ripple.duration,
                         delay: ARRIVAL_DELAY + ripple.delay,
-                        ease: "easeOut",
+                        ease: EASE,
                         /* Up to full within the first eighth, out over the rest. */
                         times: [0, 0.12, 1],
                       }
@@ -544,7 +540,7 @@ function Marker({
           <StateGlyph
             state={state}
             className={glyphClassName}
-            pipClassName={pipClassName}
+            pipClassName={cn(state === "current" ? "bg-current" : "bg-current opacity-50", pipClassName)}
           />
         </Swap>
       )}
@@ -553,8 +549,8 @@ function Marker({
 }
 
 /**
- * The hairline between two markers: a static rule with a tinted overlay that
- * draws from the marker above down to the one below the instant its step is
+ * The rail between two discs: a rounded track with a tinted overlay that
+ * draws from the disc above down to the one below the instant its step is
  * cleared. This is the move that reads as progress.
  */
 function Trail({
@@ -572,12 +568,14 @@ function Trail({
     <span
       aria-hidden="true"
       className={cn(
-        "relative bg-border",
-        horizontal ? "mx-1 h-px min-w-3 flex-1" : cn("w-px min-h-3 flex-1", laneClassName)
+        "relative overflow-hidden rounded-full bg-border/70",
+        horizontal
+          ? "mx-1.5 h-0.5 min-w-3 flex-1"
+          : cn("min-h-3 w-0.5 flex-1", laneClassName)
       )}
     >
       <motion.span
-        className={cn("absolute inset-0", TRAIL_FILL)}
+        className={cn("absolute inset-0 rounded-full", TRAIL_FILL)}
         style={{ transformOrigin: horizontal ? "left center" : "center top" }}
         initial={false}
         animate={
@@ -586,14 +584,14 @@ function Trail({
             : { scaleY: filled ? 1 : 0 }
         }
         /*
-         * Delayed on the way out only. Filling waits a beat so the marker
-         * above has visibly turned before the line leaves it; emptying — which
-         * only happens when a timeline is wound backwards — has nothing to
-         * wait for, and a lag there just reads as the component being slow.
+         * Delayed on the way out only. Filling waits a beat so the disc above
+         * has visibly turned before the line leaves it; emptying — which only
+         * happens when a timeline is wound backwards — has nothing to wait
+         * for, and a lag there just reads as the component being slow.
          */
         transition={
           animate
-            ? { duration: 0.45, ease: EASE, delay: filled ? TRAIL_DELAY : 0 }
+            ? { duration: 0.5, ease: EASE, delay: filled ? TRAIL_DELAY : 0 }
             : { duration: 0 }
         }
       />
@@ -606,11 +604,11 @@ function Trail({
  * otherwise — including on mount, which is what keeps a freshly rendered
  * timeline from performing.
  *
- * The outgoing glyph leaves upward and the incoming one arrives from below,
- * because a step only ever advances in one direction and the swap should say
- * so. The scale rides a loose spring, so a tick landing in a cleared step has
- * a fraction of overshoot on it — that overshoot is the whole difference
- * between a mark being placed and two images being dissolved into each other.
+ * The way a symbol replaces another: the outgoing glyph shrinks and softens
+ * out of focus, the incoming one arrives from below on a loose spring, so a
+ * tick landing in a cleared step has a fraction of overshoot on it — the whole
+ * difference between a mark being placed and two images being dissolved into
+ * each other.
  */
 function Swap({
   token,
@@ -628,23 +626,29 @@ function Swap({
       <motion.span
         key={token}
         className={className}
-        initial={{ opacity: 0, scale: 0.5, y: 4 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.6, y: 3, filter: "blur(2px)" }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
         /*
          * The way out is a tween and not the spring, because `mode="wait"`
          * holds the incoming glyph until this one has finished: a spring
          * settling on its own terms would put a quarter of a second of empty
-         * marker between the two.
+         * disc between the two.
          */
         exit={{
           opacity: 0,
-          scale: 0.5,
-          y: -4,
+          scale: 0.6,
+          y: -3,
+          filter: "blur(2px)",
           transition: animate ? { duration: 0.12, ease: EASE } : { duration: 0 },
         }}
         transition={
           animate
-            ? { scale: GLYPH, y: GLYPH, opacity: { duration: 0.14, ease: EASE } }
+            ? {
+                scale: GLYPH,
+                y: GLYPH,
+                opacity: { duration: 0.16, ease: EASE },
+                filter: { duration: 0.2, ease: EASE },
+              }
             : { duration: 0 }
         }
       >
@@ -664,24 +668,15 @@ function StateGlyph({
   pipClassName?: string
 }) {
   if (state === "complete") {
-    return <Check aria-hidden="true" className={cn("shrink-0", className)} />
+    return <Check aria-hidden="true" strokeWidth={3} className={cn("shrink-0", className)} />
   }
   if (state === "blocked") {
-    return <X aria-hidden="true" className={cn("shrink-0", className)} />
+    return <X aria-hidden="true" strokeWidth={3} className={cn("shrink-0", className)} />
   }
   if (state === "waiting") {
-    return <Clock aria-hidden="true" className={cn("shrink-0", className)} />
+    return <Clock aria-hidden="true" strokeWidth={2.5} className={cn("shrink-0", className)} />
   }
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "shrink-0 rounded-full",
-        state === "current" ? "bg-current" : "bg-border",
-        pipClassName
-      )}
-    />
-  )
+  return <span aria-hidden="true" className={cn("shrink-0 rounded-full", pipClassName)} />
 }
 
 /**
