@@ -76,7 +76,7 @@ export function AirSearch({
                   value={query}
                   onValueChange={setQuery}
                   placeholder="Search Join UI"
-                  className="h-12 w-full min-w-0 bg-transparent text-[24px] font-semibold tracking-[-0.022em] text-[#1d1d1f] outline-none placeholder:text-[#86868b] sm:text-[28px]"
+                  className="h-12 w-full min-w-0 bg-transparent text-[24px] font-semibold tracking-[-0.022em] text-[#1d1d1f] outline-none placeholder:text-[#6e6e73] sm:text-[28px]"
                 />
                 <Dialog.Close
                   aria-label="Close search"
