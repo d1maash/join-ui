@@ -74,3 +74,16 @@ export function useActiveSection(ids: string[], offset = 160): string | null {
 
   return active
 }
+
+const noop = () => () => {}
+
+/**
+ * False on the server and through hydration, true from the first client
+ * render after it. For live components whose markup depends on a media query
+ * read during render — the registry pieces ask for reduced motion that way, so
+ * rendering them on the server would hand a reader who asked for stillness a
+ * tree that cannot hydrate.
+ */
+export function useHydrated(): boolean {
+  return React.useSyncExternalStore(noop, () => true, () => false)
+}

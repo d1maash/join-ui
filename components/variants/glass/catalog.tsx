@@ -90,7 +90,7 @@ export function GlassCatalog({ items }: { items: CatalogItem[] }) {
 
   return (
     <div>
-      <div className="sticky top-[70px] z-30">
+      <div className="relative z-30 lg:sticky lg:top-[70px]">
         <div
           role="search"
           aria-label="Filter components"
@@ -106,7 +106,7 @@ export function GlassCatalog({ items }: { items: CatalogItem[] }) {
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 lg:ml-auto lg:flex-nowrap">
+          <div className="-mx-1 flex items-center gap-1.5 overflow-x-auto px-1 [scrollbar-width:none] lg:mx-0 lg:ml-auto lg:overflow-visible lg:px-0">
             {COMPONENT_TRAITS.map((trait) => {
               const on = traits.includes(trait)
               return (

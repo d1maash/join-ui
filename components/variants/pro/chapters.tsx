@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
+import { Reveal } from "./reveal"
 import { Scene } from "./scenes"
 import { textLinkClass, type } from "./styles"
 
@@ -177,9 +178,10 @@ function Caption({
   active: boolean
 }) {
   return (
-    <div
+    <Reveal
+      y={32}
       className={cn(
-        "max-w-[30rem] transition-opacity duration-500 lg:pl-6",
+        "max-w-[30rem] lg:pl-6",
         "lg:border-l-2",
         active ? "lg:border-[var(--chapter-accent)]" : "lg:border-white/[0.08]"
       )}
@@ -206,7 +208,7 @@ function Caption({
           </span>
         </Link>
       </p>
-    </div>
+    </Reveal>
   )
 }
 

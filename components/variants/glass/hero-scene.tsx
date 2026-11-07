@@ -17,7 +17,7 @@ import { StatusTimeline } from "@/registry/components/status-timeline"
 import { ToolTrace, type ToolTraceStep } from "@/registry/components/tool-trace"
 import { cn } from "@/lib/utils"
 
-import { useStill } from "./hooks"
+import { useHydrated, useStill } from "./hooks"
 
 /*
  * The run the centre pane plays, on a loop. `dwell` is how long each tool
@@ -102,6 +102,7 @@ const PILLS = [
  */
 export function HeroScene() {
   const still = useStill()
+  const live = useHydrated()
   const stage = React.useRef<HTMLDivElement>(null)
 
   const pointerX = useMotionValue(0)
@@ -141,14 +142,18 @@ export function HeroScene() {
           depth={0.35}
           className="top-[132px] left-0 hidden w-[320px] lg:block"
         >
-          <div style={{ animationDelay: "260ms" }} className="g-float-in g-glass g-thick rounded-[30px] p-5">
-            <StatusTimeline
-              label="Release"
-              steps={RELEASE}
-              activeStep={release}
-              size="sm"
-              variant="plain"
-            />
+          <div style={{ animationDelay: "260ms" }} className="g-float-in g-glass rounded-[30px] p-5 [--g-fill:0.62]">
+            {live ? (
+              <StatusTimeline
+                label="Release"
+                steps={RELEASE}
+                activeStep={release}
+                size="sm"
+                variant="plain"
+              />
+            ) : (
+              <div className="h-[206px]" />
+            )}
           </div>
         </Pane>
 
@@ -159,7 +164,9 @@ export function HeroScene() {
           className="top-0 right-0 hidden w-[300px] lg:block"
         >
           <div style={{ animationDelay: "380ms" }} className="g-float-in g-glass g-thin flex h-[220px] items-center justify-center overflow-hidden rounded-[30px] px-4">
-            <FocusStack items={PILLS} size="sm" label="Highlights" interval={2400} />
+            {live ? (
+              <FocusStack items={PILLS} size="sm" label="Highlights" interval={2400} />
+            ) : null}
           </div>
         </Pane>
 
@@ -169,17 +176,21 @@ export function HeroScene() {
           depth={0.6}
           className="top-0 left-1/2 w-[min(100%,560px)] -translate-x-1/2"
         >
-          <div style={{ animationDelay: "120ms" }} className="g-float-in g-glass g-thick rounded-[34px] p-5 sm:p-6">
-            <ToolTrace
-              label="Agent run"
-              steps={run}
-              size="sm"
-              variant="plain"
-              follow
-              stream
-              lineSpeed={260}
-              announce={false}
-            />
+          <div style={{ animationDelay: "120ms" }} className="g-float-in g-glass rounded-[34px] p-5 [--g-fill:0.64] sm:p-6">
+            {live ? (
+              <ToolTrace
+                label="Agent run"
+                steps={run}
+                size="sm"
+                variant="plain"
+                follow
+                stream
+                lineSpeed={260}
+                announce={false}
+              />
+            ) : (
+              <div className="h-[322px]" />
+            )}
           </div>
         </Pane>
 
@@ -189,20 +200,24 @@ export function HeroScene() {
           depth={1}
           className="top-[318px] right-2 left-2 sm:top-[340px] sm:right-[4%] sm:left-auto sm:w-[440px] lg:right-[2%]"
         >
-          <div style={{ animationDelay: "520ms" }} className="g-float-in g-glass rounded-[30px] p-5 [--g-fill:0.66]">
-            <ApprovalGate
-              title="Reinstall the dependencies"
-              reason="The lockfile no longer matches node_modules."
-              tool="bash"
-              meta="~/my-app"
-              prefix="$"
-              command="rm -rf node_modules && pnpm install"
-              risk="medium"
-              size="sm"
-              variant="plain"
-              hotkeys="off"
-              announce={false}
-            />
+          <div style={{ animationDelay: "520ms" }} className="g-float-in g-glass rounded-[30px] p-5 [--g-fill:0.6]">
+            {live ? (
+              <ApprovalGate
+                title="Reinstall the dependencies"
+                reason="The lockfile no longer matches node_modules."
+                tool="bash"
+                meta="~/my-app"
+                prefix="$"
+                command="rm -rf node_modules && pnpm install"
+                risk="medium"
+                size="sm"
+                variant="plain"
+                hotkeys="off"
+                announce={false}
+              />
+            ) : (
+              <div className="h-[130px]" />
+            )}
           </div>
         </Pane>
       </div>

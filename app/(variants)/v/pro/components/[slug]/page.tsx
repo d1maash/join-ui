@@ -161,7 +161,9 @@ export default async function ProComponentPage({ params }: PageProps) {
                 {component.category}
               </Link>
             </p>
-            <h1 className={cn(type.hero, "mt-3 text-[#f5f5f7]")}>{component.title}</h1>
+            <h1 className="mt-3 text-[clamp(3rem,7.2vw,6rem)] leading-[1] font-semibold tracking-[-0.045em] text-balance text-[#f5f5f7]">
+              {component.title}
+            </h1>
             <p className={cn(type.intro, "mx-auto mt-6 max-w-[42rem] text-[#86868b]")}>
               {component.description}
             </p>
