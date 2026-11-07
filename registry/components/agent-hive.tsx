@@ -694,20 +694,34 @@ export function AgentHive({
       </div>
 
       {/* The selection, in words. The comb is glyphs, and glyphs are not a label. */}
-      <div className="mt-4 text-center">
+      <div className="mt-5 text-center">
         <AnimatePresence initial={false} mode="popLayout">
           <motion.div
             key={selected?.id ?? "none"}
-            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
-            transition={{ duration: 0.2, ease: EASE }}
+            initial={reduceMotion ? false : { opacity: 0, y: 6, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={
+              reduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, y: -6, filter: "blur(4px)" }
+            }
+            transition={{ duration: 0.32, ease: EASE }}
           >
-            <p className={cn("font-medium text-foreground", scale.name)}>
+            <p
+              className={cn(
+                "leading-snug font-semibold tracking-[-0.022em] text-foreground",
+                scale.name
+              )}
+            >
               {selected?.label ?? " "}
             </p>
             {selected?.description ? (
-              <p className="mt-0.5 text-xs text-muted-foreground">
+              <p
+                className={cn(
+                  "mt-0.5 leading-snug tracking-[-0.006em] text-muted-foreground",
+                  scale.description
+                )}
+              >
                 {selected.description}
               </p>
             ) : null}
@@ -730,9 +744,9 @@ export function AgentHive({
       <ol
         aria-live="polite"
         className={cn(
-          "mt-5 flex list-none flex-col border-t border-border",
+          "mt-6 flex list-none flex-col border-t border-border/70",
           /* More runs than rows: the last one dissolves rather than being cut. */
-          overflowing && "[mask-image:linear-gradient(to_bottom,#000_74%,transparent)]"
+          overflowing && "[mask-image:linear-gradient(to_bottom,black_74%,transparent)]"
         )}
       >
         <AnimatePresence initial={false}>
@@ -751,7 +765,12 @@ export function AgentHive({
           ))}
         </AnimatePresence>
         {runs.length === 0 ? (
-          <li className="py-4 text-center text-xs text-muted-foreground">
+          <li
+            className={cn(
+              "py-5 text-center tracking-[-0.006em] text-muted-foreground",
+              scale.status
+            )}
+          >
             {emptyLabel}
           </li>
         ) : null}
@@ -949,11 +968,23 @@ function Cell({
   const body = (
     <motion.span className="absolute inset-0 block" style={wake}>
       <Glass width={width} height={height} blur={blur} empty={!model} lit={hovered} />
+      {/*
+       * Two strokes on one path. The hairline is what holds the shape on a
+       * white card, where no amount of light would; the specular rides over
+       * it, and is what makes the cell read as a lens on charcoal.
+       */}
+      <Hex
+        stroke={RIM}
+        className={cn(
+          "transition-opacity duration-300",
+          model ? "opacity-100" : "opacity-60"
+        )}
+      />
       <Hex
         stroke={`url(#${edge})`}
         className={cn(
           "transition-opacity duration-300",
-          model ? (hovered ? "opacity-100" : "opacity-80") : "opacity-55"
+          model ? (hovered ? "opacity-100" : "opacity-85") : "opacity-55"
         )}
       />
     </motion.span>
@@ -991,8 +1022,13 @@ function Cell({
       )}
       style={box}
       {...arrival}
-      whileHover={still || disabled || model.disabled ? undefined : { scale: 1.06 }}
-      whileTap={still || disabled || model.disabled ? undefined : { scale: 0.94 }}
+      /*
+       * Declared whatever the motion preference, and flattened under it rather
+       * than removed: a tap gesture changes the button's server markup, and the
+       * preference is only known on the client.
+       */
+      whileHover={disabled || model.disabled ? undefined : { scale: still ? 1 : 1.06 }}
+      whileTap={disabled || model.disabled ? undefined : { scale: still ? 1 : 0.94 }}
     >
       {body}
     </motion.button>
@@ -1109,6 +1145,20 @@ function Glass({
           WebkitBackdropFilter: filter,
         }}
       />
+      {/*
+       * The body of the lens: light pooled under the top edge and gone by the
+       * waist, so the cell reads as convex rather than as a flat tint — and a
+       * faint return off the bottom, where the light leaves the glass.
+       */}
+      <span
+        className="absolute inset-0 block"
+        style={{
+          backgroundImage: [
+            `linear-gradient(to bottom, ${light(0.62, 0.09)}, transparent 58%)`,
+            `radial-gradient(70% 34% at 50% 104%, ${light(0.42, 0.07)}, transparent)`,
+          ].join(", "),
+        }}
+      />
     </span>
   )
 }
@@ -1185,6 +1235,22 @@ function Tile({
     >
       <motion.div className="size-full" style={{ scaleX: stretch, scaleY: squash }}>
         <motion.div className="relative size-full" style={{ rotate: counter }}>
+          {/*
+           * The lift. The tile is the one opaque thing in the comb, so it is
+           * the one thing that may cast — its own colour, a few pixels down
+           * and well blurred, which reads as a lit piece of glass held just
+           * above the frosting rather than as a sticker on it.
+           */}
+          <Hex
+            className="transition-[fill] duration-300"
+            style={{
+              fill: accent ?? "var(--primary)",
+              opacity: 0.42,
+              translate: "0 12%",
+              scale: "0.86",
+              filter: `blur(${Math.round(width / 9)}px)`,
+            }}
+          />
           <span
             className={cn(
               "absolute inset-0 block transition-colors duration-300",
@@ -1192,13 +1258,17 @@ function Tile({
             )}
             style={{ clipPath: clip, ...(accent ? { backgroundColor: accent } : {}) }}
           />
-          {/* The reflection: bright across the top, gone by the waist. */}
+          {/*
+           * The reflection: a soft pool of light under the top edge, gone by
+           * the waist, and a breath of shade at the foot — no horizon line
+           * across the middle, which is what dates a glossy button.
+           */}
           <motion.span
             className="absolute inset-0 block"
             style={{
               clipPath: clip,
               backgroundImage:
-                "linear-gradient(to bottom, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.06) 48%, rgb(255 255 255 / 0) 52%)",
+                "linear-gradient(to bottom, rgb(255 255 255 / 0.42), rgb(255 255 255 / 0.16) 30%, rgb(255 255 255 / 0) 55%, rgb(0 0 0 / 0) 80%, rgb(0 0 0 / 0.14))",
               backgroundSize: "100% 200%",
               backgroundPositionY: sheenPosition,
             }}
@@ -1308,7 +1378,7 @@ function Action({
   onPress: () => void
 }) {
   return (
-    <div className="relative mx-auto mt-4 flex">
+    <div className="relative mx-auto mt-5 flex">
       {busy && !reduceMotion
         ? [0, 1].map((rank) => (
             <motion.span
@@ -1331,29 +1401,38 @@ function Action({
           ))
         : null}
 
+      {/*
+       * A filled capsule in the selection's own colour. It carries the same
+       * soft pool of light the tile does, and a shadow of its own colour
+       * rather than of black, so it sits on the sheet the way the tile sits
+       * on the comb. The gestures are declared whatever the motion preference
+       * and flattened under it — the tap changes the server markup.
+       */}
       <motion.button
         type="button"
         disabled={disabled}
         onClick={onPress}
         className={cn(
-          "relative inline-flex items-center justify-center overflow-hidden rounded-full font-medium",
-          "transition-[background-color,opacity] duration-300",
-          "shadow-[inset_0_1px_0_rgb(255_255_255/0.35)]",
+          "relative inline-flex items-center justify-center overflow-hidden rounded-full",
+          "font-semibold tracking-[-0.012em]",
+          "transition-[background-color,box-shadow,opacity] duration-300",
           "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
           "disabled:cursor-not-allowed disabled:opacity-40",
           !disabled && "cursor-pointer",
           accent ? undefined : "bg-primary text-primary-foreground",
           scale.action
         )}
-        style={accent ? { backgroundColor: accent, color: ON_ACCENT } : undefined}
-        whileHover={reduceMotion || disabled ? undefined : { scale: 1.02 }}
-        whileTap={reduceMotion || disabled ? undefined : { scale: 0.96 }}
+        style={{
+          ...(accent ? { backgroundColor: accent, color: ON_ACCENT } : {}),
+          boxShadow: `inset 0 1px 0 rgb(255 255 255 / 0.24), 0 8px 20px -10px color-mix(in oklab, ${accent ?? "var(--primary)"} 75%, transparent)`,
+        }}
+        whileHover={disabled ? undefined : { scale: reduceMotion ? 1 : 1.02 }}
+        whileTap={disabled ? undefined : { scale: reduceMotion ? 1 : 0.96 }}
         transition={SPRING}
       >
-        {/* The same reflection the tile carries, on a capsule. */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-linear-to-b from-white/22 to-transparent"
+          className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/18 via-white/0 via-55% to-black/6"
         />
         <span className="relative">{label}</span>
       </motion.button>
@@ -1411,11 +1490,17 @@ function Row({
       animate={{ opacity: 1, y: 0 }}
       exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
       transition={reduceMotion ? { duration: 0 } : SPRING}
-      className={cn(
-        "flex items-center not-first:border-t not-first:border-border",
-        scale.row
-      )}
+      className={cn("group/row relative flex items-center", scale.row)}
     >
+      {/*
+       * The separator is inset to the text, the way a grouped list draws it:
+       * the pips line up as one column and the rule only runs under the words.
+       */}
+      <span
+        aria-hidden="true"
+        className="absolute top-0 right-0 h-px bg-border/70 group-first/row:hidden"
+        style={{ left: scale.pip + ROW_GAP }}
+      />
       {/* The model's cell in miniature — the same shape, at a twelfth the area. */}
       <span
         aria-hidden="true"
@@ -1432,7 +1517,10 @@ function Row({
       </span>
 
       <span
-        className={cn("relative min-w-0 flex-1 font-mono leading-snug", scale.prompt)}
+        className={cn(
+          "relative min-w-0 flex-1 leading-[1.35] tracking-[-0.012em]",
+          scale.prompt
+        )}
       >
         <span className={cn("block opacity-0 select-none", tone.prompt)}>
           {run.prompt}
@@ -1461,7 +1549,7 @@ function Row({
 
       <span
         className={cn(
-          "flex shrink-0 items-center gap-1.5 transition-colors duration-500",
+          "flex shrink-0 items-center gap-1.5 tracking-[-0.006em] tabular-nums transition-colors duration-500",
           scale.status,
           tone.ink
         )}
