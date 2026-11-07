@@ -12,14 +12,14 @@
  * whole layer is deleted.
  */
 
-export type VariantId = "pro" | "air" | "glass"
+export type VariantId = "run" | "specimen" | "desktop"
 
 export interface Variant {
   id: VariantId
   name: string
   /** One line for the chooser. */
   tagline: string
-  /** Which Apple surface it is modelled on. */
+  /** What it borrows from. */
   reference: string
   /** The colour scheme the variant renders in. */
   scheme: "light" | "dark"
@@ -27,25 +27,25 @@ export interface Variant {
 
 export const VARIANTS: Variant[] = [
   {
-    id: "pro",
-    name: "Pro",
-    tagline: "Black stage, keynote type, components lit like products.",
-    reference: "apple.com product pages (iPhone Pro, MacBook Pro)",
+    id: "run",
+    name: "Run",
+    tagline: "The whole page is one agent run. Scroll, and you watch it ship a feature.",
+    reference: "Linear, Apple keynotes, Resend",
     scheme: "dark",
   },
   {
-    id: "air",
-    name: "Air",
-    tagline: "Bright, airy tiles and shelves, blue pill actions.",
-    reference: "apple.com home, Apple Store, Apple Developer",
+    id: "specimen",
+    name: "Specimen",
+    tagline: "Every component drawn up as a numbered plate in a field manual.",
+    reference: "Dieter Rams, Teenage Engineering, Devouring Details",
     scheme: "light",
   },
   {
-    id: "glass",
-    name: "Glass",
-    tagline: "Liquid Glass panels floating over a living wallpaper.",
-    reference: "visionOS, iOS 26 and macOS Tahoe",
-    scheme: "light",
+    id: "desktop",
+    name: "Desktop",
+    tagline: "The site is a tiny operating system. Components open as windows.",
+    reference: "macOS, Raycast, visionOS",
+    scheme: "dark",
   },
 ]
 

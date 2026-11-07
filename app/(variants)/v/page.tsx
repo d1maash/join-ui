@@ -17,16 +17,16 @@ export const metadata: Metadata = {
  * belongs to none of the variants it introduces.
  */
 const BACKDROP: Record<string, React.CSSProperties | undefined> = {
-  glass: {
+  desktop: {
     background:
-      "radial-gradient(60% 80% at 15% 20%, #a5c8ff 0%, transparent 60%), radial-gradient(60% 70% at 85% 30%, #ffb8d9 0%, transparent 60%), radial-gradient(70% 80% at 50% 100%, #b9f3e4 0%, transparent 60%), #eef0f7",
+      "linear-gradient(180deg, rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.55)), url(/hero-colour-1280.webp) center / cover",
   },
 }
 
 const SWATCH: Record<string, string> = {
-  pro: "bg-[radial-gradient(120%_90%_at_50%_0%,#3a3a3c_0%,#0b0b0c_55%,#000_100%)] text-white",
-  air: "bg-[linear-gradient(180deg,#ffffff_0%,#f5f5f7_100%)] text-[#1d1d1f] shadow-[inset_0_0_0_1px_rgb(0_0_0/0.06)]",
-  glass: "text-[#1d1d1f]",
+  run: "bg-[radial-gradient(120%_90%_at_50%_0%,#2a2a2c_0%,#0b0b0c_55%,#000_100%)] text-white",
+  specimen: "bg-[#ecebe6] text-[#111] shadow-[inset_0_0_0_1px_rgb(0_0_0/0.08)]",
+  desktop: "text-white",
 }
 
 export default function VariantsPage() {
@@ -41,7 +41,7 @@ export default function VariantsPage() {
           Pick a direction.
         </h1>
         <p className="mt-5 max-w-2xl text-[19px] leading-[1.45] text-[#6e6e73]">
-          Three complete, Apple-style versions of the site. Every one renders the
+          Three complete versions of the site, each built around one idea. Every one renders the
           landing page, the catalog, each component page and the docs. The pill at
           the bottom of every page jumps to the same screen in another variant.
         </p>
