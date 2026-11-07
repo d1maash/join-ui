@@ -544,6 +544,7 @@ export default async function ProComponentPage({ params }: PageProps) {
               code={prompt}
               language="text"
               title={`${component.slug}.prompt.txt`}
+              wrap
               collapsible
               collapsedHeight={360}
             />

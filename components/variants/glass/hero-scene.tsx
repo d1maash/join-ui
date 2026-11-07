@@ -161,7 +161,7 @@ export function HeroScene() {
         <Pane
           {...depth}
           depth={0.2}
-          className="top-0 right-0 hidden w-[300px] lg:block"
+          className="top-0 right-0 hidden w-[300px] xl:block"
         >
           <div style={{ animationDelay: "380ms" }} className="g-float-in g-glass g-thin flex h-[220px] items-center justify-center overflow-hidden rounded-[30px] px-4">
             {live ? (

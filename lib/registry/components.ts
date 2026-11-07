@@ -26,7 +26,7 @@ export const components: ComponentMetadata[] = [
     description:
       "A colour-coded step tracker for orders, deployments and onboarding, still at rest and animated only when a step advances.",
     overview:
-      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue, the rest stay grey behind a dashed ring — or pin a state per step to describe a run that is waiting on someone or has failed outright. At rest it is a still drawing: nothing loops and nothing breathes. The motion is spent on the one moment worth showing, and spent as a sequence rather than as a flash — move activeStep on and the cleared step's marker turns first, a tenth of a second later the connector below it runs down to the next one, and only on arrival does that step announce itself with a pair of rings spreading out of it. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
+      "StatusTimeline renders a fixed sequence of steps and marks where the process currently stands. Pass an activeStep index and it derives the rest — earlier steps turn green, the one in flight turns blue, the rest stay on quiet grey discs — or pin a state per step to describe a run that is waiting on someone or has failed outright. At rest it is a still drawing: nothing loops and nothing breathes. The motion is spent on the one moment worth showing, and spent as a sequence rather than as a flash — move activeStep on and the cleared step's marker turns first, a tenth of a second later the connector below it runs down to the next one, and only on arrival does that step announce itself with a pair of rings spreading out of it. It lays out vertically as a tracking card or horizontally as a wizard header, and every hue is backed by a glyph and a text label, so the state never rests on colour alone.",
     category: "Data Display",
     tags: [
       "timeline",
@@ -48,7 +48,7 @@ export const components: ComponentMetadata[] = [
       'The step in flight carries `aria-current="step"`.',
       "Colour is never the only signal, which is what satisfies WCAG 1.4.1: every state also has its own glyph — a tick, a pip, a clock, a cross — and appends a visually hidden label reading “Completed”, “In progress”, “Waiting”, “Not started” or “Blocked”.",
       "A blocked step additionally shifts its title to the critical hue, so the failure is findable without reading every marker.",
-      "The list is named by the header eyebrow through `aria-labelledby`, or by `label` when the header is hidden.",
+      "The list is named by the header title through `aria-labelledby`, or by `label` when the header is hidden.",
       "Markers, trails and the arrival ring are `aria-hidden` and non-interactive; only content you pass to `footer` enters the tab order.",
       "Nothing animates on mount or loops at rest, so the component never competes with the page for attention; the advance transition animates `transform` and `opacity` only, and resolves instantly under `prefers-reduced-motion`.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
@@ -89,7 +89,7 @@ export const components: ComponentMetadata[] = [
             type: "string",
             defaultValue: '"Timeline"',
             description:
-              "Header eyebrow, and the accessible name of the list when the header is hidden.",
+              "Header title, and the accessible name of the list when the header is hidden.",
           },
           {
             name: "status",
@@ -108,7 +108,7 @@ export const components: ComponentMetadata[] = [
             name: "showHeader",
             type: "boolean",
             defaultValue: "true",
-            description: "Renders the eyebrow and status chip above the steps.",
+            description: "Renders the title and status chip above the steps.",
           },
           {
             name: "footer",
@@ -148,13 +148,13 @@ export const components: ComponentMetadata[] = [
             name: "timestamp",
             type: "string",
             description:
-              "Trailing meta, set in mono with tabular figures — a time, a duration, an ETA.",
+              "Trailing meta, set with tabular figures — a time, a duration, an ETA.",
           },
           {
             name: "state",
             type: '"complete" | "current" | "waiting" | "pending" | "blocked"',
             description:
-              "Pins the state instead of deriving it from activeStep, and picks the hue: green for complete, blue for current, amber for waiting, grey for pending, red for blocked.",
+              "Pins the state instead of deriving it from activeStep, and picks the hue: green for complete, blue for current, orange for waiting, grey for pending, red for blocked.",
           },
           {
             name: "icon",
@@ -202,7 +202,7 @@ export function Example() {
       {
         title: "Pin a step that failed, or one that is waiting",
         description:
-          "A state on the step wins over the one derived from activeStep, so a run that stalled can be described exactly. Blocked turns the marker and the title red; waiting turns the marker amber for something that is neither moving nor broken, like an approval sitting in a queue. Either way the header chip picks the state up on its own.",
+          "A state on the step wins over the one derived from activeStep, so a run that stalled can be described exactly. Blocked turns the marker and the title red; waiting turns the marker orange for something that is neither moving nor broken, like an approval sitting in a queue. Either way the header chip picks the state up on its own.",
         code: `<StatusTimeline
   label="Pipeline"
   steps={[
@@ -235,7 +235,7 @@ export function Example() {
       {
         title: "Give each step its own glyph",
         description:
-          "An icon replaces the default state glyph while the ring and the hidden state label keep carrying the meaning — a dashed grey circle before the step happens, a tinted one after. The component sizes it, so pass the element bare.",
+          "An icon replaces the default state glyph while the ring and the hidden state label keep carrying the meaning — a quiet grey disc before the step happens, a tinted one after. The component sizes it, so pass the element bare.",
         code: `import { MapPin, Package, ShoppingBag, Truck } from "lucide-react"
 
 <StatusTimeline
@@ -1104,7 +1104,7 @@ export function Example() {
     description:
       "A run log for agent tool calls: the step in flight opens itself, writes its output a line at a time, then folds away and goes still.",
     overview:
-      "ToolTrace is what one run looks like from the inside — every tool the agent reached for, in order, and what came back. Pass the steps with a state on each and it draws a rail through them: dashed markers for what has not happened yet, tinted ones for what has, a hairline filling behind each step as it resolves. The motion is spent on the step in flight and nowhere else. It opens as it starts, its console fills a line at a time, and the moment it lands the panel folds away and hands the rail to the next tool — so an unattended trace always shows the work that is actually happening without the reader touching anything. Every other step is a still drawing. Open one yourself and follow yields for good, because a reader who went looking should not have the page close under them. States carry a glyph and a spoken label as well as a hue, transitions are announced through a single polite live region rather than by streaming the console at a screen reader, and the whole thing resolves instantly under prefers-reduced-motion.",
+      "ToolTrace is what one run looks like from the inside — every tool the agent reached for, in order, and what came back. Pass the steps with a state on each and it draws a rail through them: quiet grey tiles for what has not happened yet, tinted ones for what has, a hairline filling behind each step as it resolves. The motion is spent on the step in flight and nowhere else. It opens as it starts, its console fills a line at a time, and the moment it lands the panel folds away and hands the rail to the next tool — so an unattended trace always shows the work that is actually happening without the reader touching anything. Every other step is a still drawing. Open one yourself and follow yields for good, because a reader who went looking should not have the page close under them. States carry a glyph and a spoken label as well as a hue, transitions are announced through a single polite live region rather than by streaming the console at a screen reader, and the whole thing resolves instantly under prefers-reduced-motion.",
     category: "Feedback",
     tags: [
       "ai",
@@ -1174,7 +1174,7 @@ export function Example() {
             type: "string",
             defaultValue: '"Run"',
             description:
-              "Header eyebrow, and the accessible name of the list when the header is hidden.",
+              "Header title, and the accessible name of the list when the header is hidden.",
           },
           {
             name: "status",
@@ -1193,7 +1193,7 @@ export function Example() {
             name: "showHeader",
             type: "boolean",
             defaultValue: "true",
-            description: "Renders the eyebrow and status chip above the steps.",
+            description: "Renders the title and status chip above the steps.",
           },
           {
             name: "size",
@@ -1307,7 +1307,7 @@ export function Example() {
             name: "meta",
             type: "string",
             description:
-              "Trailing meta, set in mono with tabular figures — a duration, a token count.",
+              "Trailing meta, set with tabular figures — a duration, a token count.",
           },
           {
             name: "detail",
@@ -2115,7 +2115,7 @@ export function Example() {
     description:
       "An inline request from an agent to run a command: the tool, the command, a clock that holds while you read, and two keys to answer with.",
     overview:
-      "ApprovalGate is the moment an agent stops and asks. Where ToolTrace is what a run looks like from the inside, this is the one step in it that cannot happen without a person: the tool it wants, the command it would give, and two ways to answer. At rest it is a still card, and a quiet one — a title, a word beside it, the command on a wash of the page's own ink, and the two answers. The one thing that moves while it waits is the clock, a hairline ring around the marker draining clockwise from twelve with the seconds left set inside it, and it holds whenever the reader is plainly reading: pointer over the card, focus inside it, or the card scrolled out of view, because a timeout is a safety net for a gate nobody is looking at rather than a race against the person in front of it. Hue is spent only where there is risk. A request that cannot break anything waits in the page's own ink with the word “Awaiting” beside it; one that might waits in caution and says so; one that will waits in critical and says “Destructive”. A decision is one move each way: allowing lets the buttons go and sets a tick in the ring; denying draws a strike through the command, left to right, and takes the ink out of it as it goes; letting the clock run out does neither — the ring goes dashed, the command dims, and the word says so. The keys are declared on the buttons through aria-keyshortcuts and shown beside the labels only while they would actually work, every outcome carries a glyph and a spoken word as well as a hue, and the whole thing resolves instantly under prefers-reduced-motion.",
+      "ApprovalGate is the moment an agent stops and asks. Where ToolTrace is what a run looks like from the inside, this is the one step in it that cannot happen without a person: the tool it wants, the command it would give, and two ways to answer. At rest it is a still card, and a quiet one — a title, a word beside it, the command on a wash of the page's own ink, and the two answers. The one thing that moves while it waits is the clock, a ring around the marker draining clockwise from twelve with the seconds left set inside it, and it holds whenever the reader is plainly reading: pointer over the card, focus inside it, or the card scrolled out of view, because a timeout is a safety net for a gate nobody is looking at rather than a race against the person in front of it. Hue is spent only where there is risk. A request that cannot break anything waits in the page's own ink with the word “Awaiting” beside it; one that might waits in caution and says so; one that will waits in critical and says “Destructive”. A decision is one move each way: allowing lets the buttons go and sets a tick in the ring; denying draws a strike through the command, left to right, and takes the ink out of it as it goes; letting the clock run out does neither — the ring goes quiet, the command dims, and the word says so. The keys are declared on the buttons through aria-keyshortcuts and shown beside the labels only while they would actually work, every outcome carries a glyph and a spoken word as well as a hue, and the whole thing resolves instantly under prefers-reduced-motion.",
     category: "Feedback",
     tags: [
       "ai",
@@ -2141,7 +2141,7 @@ export function Example() {
       "The keys never fight the buttons: a key that would activate the focused button anyway — Enter, Space — is left to it, so an answer is never given twice, and a shortcut typed into a field is left alone entirely.",
       "The countdown is a `timer` whose visible number is followed by a hidden “of 30 seconds left”, and it is not live: a clock announcing every second is noise, and the time allowed is already in the announcement.",
       "A time limit on a decision is only acceptable if the person can defeat it, which is WCAG 2.2.1. The clock holds while focus is inside the gate, so a keyboard user who has reached the buttons is never timed out of them, and it holds under the pointer for the same reason. Leave `timeout` unset and there is no limit at all.",
-      "Colour is never the only signal, which satisfies WCAG 1.4.1: the risk is a word beside the title as well as a hue, and every outcome is a glyph in the ring and a word beside the title — a tick, a cross, an hourglass; “Allowed”, “Denied”, “Expired”.",
+      "Colour is never the only signal, which satisfies WCAG 1.4.1: the risk is a word in a capsule beside the title as well as a hue, and every outcome is a glyph in the ring and a word beside the title — a tick, a cross, an hourglass; “Allowed”, “Denied”, “Expired”.",
       "A denied command is struck through, not merely dimmed, so the refusal survives a monochrome print. The struck copy is a second rendering laid over the first and hidden from assistive technology; the plain text underneath is what gets read, and it is the text you can select.",
       "Focus is kept. When a decision removes the buttons, focus that was on one of them is handed to the gate itself rather than dropped to the document — the gate is focusable for that reason, and so that the keys work after a click on it.",
       "The card does not change height under a decision: the row the answers sat in stays, with the tool and its meta still in it, so nothing below the gate jumps as it resolves.",
@@ -2214,12 +2214,12 @@ export function Example() {
             type: '"low" | "medium" | "high"',
             defaultValue: '"low"',
             description:
-              "Picks the hue and the word beside the title: the page's own ink and “Awaiting”, caution and “Caution”, critical and “Destructive”.",
+              "Picks the hue and the word in the capsule beside the title: the page's own ink and “Awaiting”, caution and “Caution”, critical and “Destructive”.",
           },
           {
             name: "riskLabel",
             type: "string",
-            description: "Overrides the word set beside the title while the gate waits.",
+            description: "Overrides the word in the capsule beside the title while the gate waits.",
           },
           {
             name: "icon",
@@ -2419,7 +2419,7 @@ export function Example() {
       {
         title: "Render the receipt",
         description:
-          "A gate loaded from history is a document, not a question. Pass the decision it ended with and it renders at rest — struck through if it was denied, dashed if it lapsed — with no buttons, no clock and, with announce off, nothing said. Nothing replays on mount.",
+          "A gate loaded from history is a document, not a question. Pass the decision it ended with and it renders at rest — struck through if it was denied, quietened if it lapsed — with no buttons, no clock and, with announce off, nothing said. Nothing replays on mount.",
         code: `<ApprovalGate
   size="sm"
   variant="plain"

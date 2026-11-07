@@ -20,6 +20,7 @@ export function ProCodeShell({
   collapsedHeight = 380,
   showLineNumbers = false,
   bare = false,
+  wrap = false,
   className,
 }: {
   html: string
@@ -31,6 +32,8 @@ export function ProCodeShell({
   showLineNumbers?: boolean
   /** No title bar — the copy button floats in the corner instead. */
   bare?: boolean
+  /** Wrap long lines, for prose such as a prompt. */
+  wrap?: boolean
   className?: string
 }) {
   const [expanded, setExpanded] = React.useState(false)
@@ -65,6 +68,7 @@ export function ProCodeShell({
         className={cn(
           "overflow-x-auto py-4 font-mono text-[13px] leading-[1.75]",
           bare && "pr-12",
+          wrap && "pro-code-wrap",
           clipped && "pro-code-clip"
         )}
         style={

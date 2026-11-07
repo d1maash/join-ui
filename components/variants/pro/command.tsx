@@ -57,8 +57,8 @@ export function CommandBox({
           onChange={setManager}
           label={`${label}: package manager`}
         />
-        <div className="flex w-full max-w-[56rem] items-center gap-2 rounded-full bg-[#161617] py-2 pr-2 pl-6 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.1),0_30px_80px_-30px_rgb(41_151_255/0.35)] sm:pl-9">
-          <code className="pro-no-scrollbar min-w-0 flex-1 overflow-x-auto py-3 font-mono text-[clamp(0.875rem,1.9vw,1.375rem)] whitespace-nowrap text-[#f5f5f7]">
+        <div className="flex w-full max-w-[56rem] items-center gap-2 rounded-[26px] bg-[#161617] py-2 pr-2 pl-6 sm:rounded-full shadow-[inset_0_0_0_1px_rgb(255_255_255/0.1),0_30px_80px_-30px_rgb(41_151_255/0.35)] sm:pl-9">
+          <code className="pro-no-scrollbar min-w-0 flex-1 overflow-x-auto py-3 text-left font-mono text-[clamp(0.875rem,1.9vw,1.375rem)] [overflow-wrap:anywhere] text-[#f5f5f7] sm:whitespace-nowrap">
             <span aria-hidden="true" className="mr-3 text-[#6e6e73] select-none">
               $
             </span>

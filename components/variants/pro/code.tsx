@@ -12,6 +12,7 @@ export async function ProCode({
   collapsible = false,
   collapsedHeight,
   bare = false,
+  wrap = false,
   className,
 }: {
   code: string
@@ -22,6 +23,7 @@ export async function ProCode({
   collapsible?: boolean
   collapsedHeight?: number
   bare?: boolean
+  wrap?: boolean
   className?: string
 }) {
   const html = await highlightCode(code, { language, highlightLines })
@@ -36,6 +38,7 @@ export async function ProCode({
       collapsible={collapsible}
       collapsedHeight={collapsedHeight}
       bare={bare}
+      wrap={wrap}
       className={className}
     />
   )

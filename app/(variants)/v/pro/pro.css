@@ -254,3 +254,20 @@
 .v-pro .pro-no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* An empty line keeps its height, so a listing without numbers keeps its paragraphs. */
+.v-pro .pro-code .shiki .line {
+  min-height: 1lh;
+}
+
+/* Prose-like listings (a prompt) wrap instead of scrolling sideways. */
+.v-pro .pro-code-wrap .shiki code {
+  display: block;
+  min-width: 0;
+}
+
+.v-pro .pro-code-wrap .shiki .line {
+  display: block;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
