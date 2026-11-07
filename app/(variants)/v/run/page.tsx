@@ -30,8 +30,8 @@ export default function RunHome() {
 
         <div className="mt-8 flex flex-col gap-7 md:mt-10 md:flex-row md:items-end md:justify-between md:gap-12">
           <p className="run-lede max-w-[33rem] md:text-[1.3125rem] md:leading-[1.45]">
-            <strong>Seven motion-first React components for agent products.</strong> Installed as
-            source you own.
+            <strong>Seven motion-first React components for agent products.</strong>{" "}
+            Installed as source you own.
           </p>
           <div className="flex shrink-0 items-center gap-2">
             <Link href={href("/components")} className="run-btn run-btn--primary">
@@ -52,8 +52,8 @@ export default function RunHome() {
         className="run-container pt-28 pb-12 md:pt-40 lg:pt-48"
       >
         <h2 id="run-install" className="run-lede mb-10 max-w-[36rem] md:mb-14">
-          <strong>Every part of that run is one command away.</strong> The CLI writes the source
-          into your project, not a package into node_modules.
+          <strong>Every part of that run is one command away.</strong> The CLI writes
+          the source into your project, not a package into node_modules.
         </h2>
         <InstallLine items={CAST.map(({ slug, title }) => ({ slug, title }))} />
       </section>

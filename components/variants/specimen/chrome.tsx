@@ -69,7 +69,7 @@ export function Mark({ className }: { className?: string }) {
     <svg viewBox="0 0 20 20" aria-hidden="true" className={cn("shrink-0", className)}>
       <circle cx="10" cy="10" r="6.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
       <path d="M10 0v20M0 10h20" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="10" cy="10" r="2.25" fill="#ff4f00" />
+      <circle cx="10" cy="10" r="2.25" fill="currentColor" />
     </svg>
   )
 }

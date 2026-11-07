@@ -186,7 +186,7 @@ export function Desktop() {
               bottom: "calc(var(--d-dock-space) + 40px)",
               width: "clamp(460px, 38vw, 580px)",
             }}
-            bodyClassName="flex-none h-[clamp(190px,27vh,280px)] !bg-transparent"
+            bodyClassName="flex-none h-[clamp(176px,24vh,236px)] !bg-transparent"
           >
             <TerminalScene onInstalled={() => setInstalled(true)} onOpen={openApp} />
           </Window>

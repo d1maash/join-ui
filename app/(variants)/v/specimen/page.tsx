@@ -285,7 +285,7 @@ export default async function SpecimenLanding() {
                     {principle.body}
                   </p>
                   <p className="sp-mono mt-4 text-[12px] text-[var(--sp-ink)]">
-                    <span aria-hidden="true" className="mr-2 text-[var(--sp-signal)]">
+                    <span aria-hidden="true" className="mr-2 text-[var(--sp-ink-2)]">
                       →
                     </span>
                     {principle.proof}

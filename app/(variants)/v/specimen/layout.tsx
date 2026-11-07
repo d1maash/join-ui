@@ -9,6 +9,8 @@ import {
   RunningHead,
   SkipLink,
 } from "@/components/variants/specimen/chrome"
+import { IndexTabs } from "@/components/variants/specimen/index-tabs"
+import { getPlateIndex } from "@/components/variants/specimen/plates"
 
 import "./specimen.css"
 
@@ -51,6 +53,9 @@ export default function SpecimenLayout({ children }: { children: React.ReactNode
       <SkipLink />
       <RunningHead />
       <MarginRuler />
+      <IndexTabs
+        plates={getPlateIndex().map(({ slug, no, title, href }) => ({ slug, no, title, href }))}
+      />
       {children}
       <Colophon />
       <VariantSwitcherDock current="specimen" />
