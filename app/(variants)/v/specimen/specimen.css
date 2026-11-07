@@ -526,7 +526,7 @@
   fill: var(--sp-ink);
 }
 
-@media (max-width: 1023.98px) {
+@media (max-width: 1279.98px) {
   .v-specimen .sp-leader-path,
   .v-specimen .sp-leader-dot,
   .v-specimen .sp-leader-ring {

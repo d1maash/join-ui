@@ -188,6 +188,15 @@ export function AppFrame({
             </nav>
             <main id="main-content" ref={scroller} tabIndex={-1} className="d-main">
               <h1 className="d-large-title md:hidden">{title}</h1>
+              <div className="flex items-center justify-between gap-3 px-5 pt-1 md:hidden">
+                <span className="flex items-center gap-1.5 text-[13px] text-[var(--d-ink-3)]">
+                  <span className="size-2 rounded-full" style={{ background: tagColour(category) }} aria-hidden="true" />
+                  {category}
+                </span>
+                <span className="d-tb-prompt">
+                  <CopyPromptButton prompt={prompt} componentName={title} />
+                </span>
+              </div>
               <div className="d-content">
                 {VIEWS.map((entry) => (
                   <section

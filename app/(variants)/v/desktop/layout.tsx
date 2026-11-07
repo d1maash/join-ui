@@ -7,6 +7,7 @@ import { MenuBar, type DocsSection } from "@/components/variants/desktop/menu-ba
 import { OsProvider } from "@/components/variants/desktop/os"
 import { PhoneStatusBar } from "@/components/variants/desktop/phone-bar"
 import { RunProvider } from "@/components/variants/desktop/run"
+import { SkipLink } from "@/components/variants/desktop/skip-link"
 import { Spotlight } from "@/components/variants/desktop/spotlight"
 import { Wallpaper } from "@/components/variants/desktop/wallpaper"
 import { VariantSwitcherDock } from "@/components/variants/variant-switcher"
@@ -65,12 +66,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
     <OsProvider components={components}>
       <RunProvider>
         <div className="v-desktop dark relative isolate min-h-dvh">
-          <a
-            href="#main-content"
-            className="sr-only z-[300] rounded-lg bg-[#0a84ff] px-4 py-2 text-[14px] font-medium text-white focus:not-sr-only focus:fixed focus:top-10 focus:left-3"
-          >
-            Skip to content
-          </a>
+          <SkipLink />
           <Wallpaper />
           <MenuBar docs={docs} />
           <PhoneStatusBar />

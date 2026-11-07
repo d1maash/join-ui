@@ -2,7 +2,7 @@ import type * as React from "react"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeft, ArrowRight, ExternalLink, Maximize2 } from "lucide-react"
+import { ExternalLink, Maximize2 } from "lucide-react"
 
 import {
   CommandSwitch,
@@ -29,7 +29,7 @@ import {
 import { getComponentSources } from "@/lib/registry/source"
 import { siteConfig } from "@/lib/site"
 import { variantHref } from "@/lib/variants"
-import type { ComponentMetadata, PropDefinition } from "@/types/registry"
+import type { PropDefinition } from "@/types/registry"
 
 interface PageProps {
   params: Promise<{ slug: string }>

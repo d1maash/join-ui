@@ -11,8 +11,10 @@ import {
 import { useReducedMotionPref } from "../plate-figure"
 
 /*
- * Plate 06. A deploy, advancing a step at a time while the plate is on screen
- * and holding at the end before it starts again. Still, it rests mid-run.
+ * Plate 06. A deploy, advancing a step at a time while the plate is on screen.
+ * It runs from Build to Deploy and starts the next deploy from there, so there
+ * is always a step cleared, one in flight and one still to come — every part
+ * the plate letters is on the drawing. Still, it rests on Test.
  */
 const STEPS: StatusTimelineStep[] = [
   { id: "queued", title: "Queued", description: "Picked up by runner 4.", timestamp: "14:02" },
@@ -22,28 +24,31 @@ const STEPS: StatusTimelineStep[] = [
   { id: "live", title: "Live", description: "Serving production traffic.", timestamp: "14:09" },
 ]
 
-const BEATS = [1600, 1800, 1800, 1800, 1800, 3000]
+/** The steps a deploy is shown in flight at, and how long each is held. */
+const STATES = [1, 2, 3] as const
+const BEATS = [2200, 2200, 3200]
 
 export default function StatusTimelineScene() {
   const ref = React.useRef<HTMLDivElement>(null)
   const reduce = useReducedMotionPref()
   const inView = useInView(ref, { amount: 0.4 })
-  const [active, setActive] = React.useState(2)
+  const [beat, setBeat] = React.useState(1)
+  const active = STATES[beat] ?? 2
 
   React.useEffect(() => {
     if (reduce || !inView) return
     const timer = window.setTimeout(
-      () => setActive((index) => (index + 1) % BEATS.length),
-      BEATS[active]
+      () => setBeat((index) => (index + 1) % STATES.length),
+      BEATS[beat]
     )
     return () => window.clearTimeout(timer)
-  }, [active, inView, reduce])
+  }, [beat, inView, reduce])
 
   return (
     <div ref={ref} className="w-full max-w-[420px]">
       <StatusTimeline
         label="Deploy"
-        status={active >= STEPS.length ? "Live" : "Deploying"}
+        status="Deploying"
         steps={STEPS}
         activeStep={reduce ? 2 : active}
       />

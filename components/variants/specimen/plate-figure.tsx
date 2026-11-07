@@ -96,9 +96,20 @@ const KEY_CENTRE = 12
 /** Labels only move once their part has moved this far, so they never jitter. */
 const SETTLE = 14
 
-function textBox(element: Element): DOMRect {
+/** The box of the glyphs themselves — all of them, or only the last run of text. */
+function textBox(element: Element, mode: true | "last"): DOMRect {
   const range = document.createRange()
-  range.selectNodeContents(element)
+  if (mode === "last") {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
+    let last: Node | null = null
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (node.textContent?.trim()) last = node
+    }
+    if (last) range.selectNodeContents(last)
+    else range.selectNodeContents(element)
+  } else {
+    range.selectNodeContents(element)
+  }
   return range.getBoundingClientRect()
 }
 
@@ -123,6 +134,7 @@ export function PlateFigure({
   const itemRefs = React.useRef<Array<HTMLLIElement | null>>([])
   const listRefs = React.useRef<Record<string, HTMLOListElement | null>>({})
   const placed = React.useRef<Array<number | null>>([])
+  const lastY = React.useRef<Array<number | null>>([])
   const pathRefs = React.useRef<Array<SVGPathElement | null>>([])
   const dotRefs = React.useRef<Array<SVGCircleElement | null>>([])
   const ringRefs = React.useRef<Array<SVGCircleElement | null>>([])
@@ -180,7 +192,9 @@ export function PlateFigure({
       for (const candidate of anchors) {
         const found = candidate.sel ? stage.querySelector(candidate.sel) : stage
         if (!found) continue
-        const box = candidate.text ? textBox(found) : found.getBoundingClientRect()
+        const box = candidate.text
+          ? textBox(found, candidate.text)
+          : found.getBoundingClientRect()
         if (box.width === 0 && box.height === 0) continue
         return { at: candidate, box }
       }
@@ -201,16 +215,20 @@ export function PlateFigure({
       const s = stage.getBoundingClientRect()
 
       // 1. Where every part is.
-      const targets = callouts.map((callout) => {
+      const targets = callouts.map((callout, index) => {
         const anchors = Array.isArray(callout.at) ? callout.at : [callout.at]
         const hit = locate(anchors)
         const at = hit?.at ?? anchors[anchors.length - 1]!
         const box = hit?.box ?? s
+        const y = box.top - f.top + box.height * (at.y ?? 0.5)
+        const hidden = !hit && callout.optional === true
+        if (!hidden) lastY.current[index] = y
         return {
           at,
+          hidden,
           box: hit ? box : null,
           x: box.left - f.left + box.width * (at.x ?? 0.5),
-          y: box.top - f.top + box.height * (at.y ?? 0.5),
+          y: hidden ? (lastY.current[index] ?? y) : y,
         }
       })
 
@@ -274,6 +292,17 @@ export function PlateFigure({
         const ty = target.y
         const key = keyRefs.current[index]
         const path = pathRefs.current[index]
+        if (target.hidden) {
+          path?.setAttribute("d", "M0 0")
+          for (const node of [dotRefs.current[index], ringRefs.current[index]]) {
+            node?.setAttribute("cx", "-100")
+            node?.setAttribute("cy", "-100")
+          }
+          markerRefs.current[index]?.setAttribute("transform", "translate(-100 -100)")
+          boxRefs.current[index]?.setAttribute("width", "0")
+          boxRefs.current[index]?.setAttribute("height", "0")
+          return
+        }
         if (key && path && key.offsetParent !== null) {
           const k = key.getBoundingClientRect()
           const side = sideOf(index)

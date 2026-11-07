@@ -9,7 +9,7 @@ import { CodeTabs } from "@/components/site/code-tabs"
 import { CopyButton } from "@/components/site/copy-button"
 import { CopyPromptButton } from "@/components/site/copy-prompt-button"
 import { PackageManagerTabs } from "@/components/site/package-manager-tabs"
-import { AppFrame, LiveCanvas } from "@/components/variants/desktop/app-frame"
+import { AppFrame, LiveCanvas, Overview } from "@/components/variants/desktop/app-frame"
 import { AppIcon } from "@/components/variants/desktop/app-icon"
 import { isComponentSlug, tagColour, vh } from "@/components/variants/desktop/apps"
 import { dependencyCommands, shadcnCommands } from "@/lib/commands"
@@ -271,7 +271,20 @@ export default async function ComponentPage({ params }: PageProps) {
   }
 
   const below = (
-    <div className="d-code-host mt-12 flex flex-col gap-12">
+    <div className="d-code-host mt-8 flex flex-col gap-12">
+      <Overview text={component.overview} />
+
+      <Section id="accessibility" title="Accessibility">
+        <ul className="flex max-w-[62ch] flex-col gap-2.5 text-[15px] leading-[1.6] text-[var(--d-ink-2)]">
+          {component.accessibility.map((note) => (
+            <li key={note} className="flex gap-3">
+              <span className="mt-[0.6em] size-1.5 shrink-0 rounded-full bg-[var(--d-blue)]" aria-hidden="true" />
+              {note}
+            </li>
+          ))}
+        </ul>
+      </Section>
+
       <Section id="usage" title="Usage">
         <CodeBlock code={component.usage} language="tsx" title="example.tsx" />
       </Section>
@@ -346,13 +359,6 @@ export default async function ComponentPage({ params }: PageProps) {
         </div>
       </div>
 
-      <section aria-labelledby="overview">
-        <h2 id="overview" className="d-ins-head">
-          Overview
-        </h2>
-        <p className="text-[13.5px] leading-[1.6] text-[var(--d-ink-2)]">{component.overview}</p>
-      </section>
-
       <section aria-labelledby="installation">
         <h2 id="installation" className="d-ins-head">
           Install
@@ -404,20 +410,6 @@ export default async function ComponentPage({ params }: PageProps) {
               : "None"}
           </dd>
         </dl>
-      </section>
-
-      <section aria-labelledby="accessibility">
-        <h2 id="accessibility" className="d-ins-head">
-          Accessibility
-        </h2>
-        <ul className="flex flex-col gap-2 text-[13px] leading-[1.55] text-[var(--d-ink-2)]">
-          {component.accessibility.map((note) => (
-            <li key={note} className="flex gap-2">
-              <span className="mt-[0.55em] size-1 shrink-0 rounded-full bg-[var(--d-ink-3)]" aria-hidden="true" />
-              {note}
-            </li>
-          ))}
-        </ul>
       </section>
 
       <section aria-labelledby="keyboard">

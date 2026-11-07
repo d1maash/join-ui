@@ -96,7 +96,7 @@ export default function ToolTraceScene() {
         lineSpeed={150}
         announce={false}
         maxConsoleHeight="5.5rem"
-        className="h-[500px]"
+        className="min-h-[500px]"
         footer={
           <div className="flex items-center justify-between gap-3">
             <span className="text-[13px] text-muted-foreground tabular-nums">

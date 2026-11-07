@@ -117,7 +117,7 @@ export default function ApprovalGateScene() {
     >
       <div className="flex flex-col gap-3">
         <span className="sp-label">State 0 — waiting</span>
-        <div data-legend-top="" className="mt-5 mb-6 hidden lg:block" />
+        <div data-legend-top="" className="mt-5 mb-6 hidden xl:block" />
         <div ref={live} data-live="">
           <ApprovalGate
             {...REQUEST}
@@ -144,7 +144,7 @@ export default function ApprovalGateScene() {
             <span className="sp-label hidden sm:inline">Click the card, then Y or N</span>
           )}
         </div>
-        <div data-legend-bottom="" className="mt-8 hidden lg:block" />
+        <div data-legend-bottom="" className="mt-8 hidden xl:block" />
       </div>
 
       <ol className="flex flex-col gap-7">
