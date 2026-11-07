@@ -222,16 +222,14 @@ export default async function PlatePage({ params }: PageProps) {
 
       {/* ─── Overview, set as a reading column with a side note ─────────── */}
       <section aria-label="Overview" className="sp-wrap mt-24 lg:mt-32">
-        <div className="sp-grid gap-y-6">
+        <div className="sp-grid gap-y-8">
           <p className="sp-label col-span-4 lg:col-span-2">Overview</p>
-          <p className="col-span-4 max-w-[62ch] text-[18px] leading-[1.65] text-pretty lg:col-span-6">
+          <p className="sp-serif col-span-4 text-[clamp(26px,2.6vw,36px)] leading-[1.15] text-[var(--sp-ink)] lg:col-span-8">
+            {PURPOSE[component.slug]}
+          </p>
+          <p className="col-span-4 text-[16.5px] leading-[1.7] text-pretty text-[var(--sp-ink-2)] lg:col-span-10 lg:col-start-3 xl:columns-2 xl:gap-12">
             {component.overview}
           </p>
-          <aside className="col-span-4 lg:col-span-3 lg:col-start-10">
-            <p className="sp-serif border-l border-[var(--sp-signal)] pl-4 text-[21px] leading-[1.3] text-[var(--sp-ink-2)]">
-              {PURPOSE[component.slug]}
-            </p>
-          </aside>
         </div>
       </section>
 
