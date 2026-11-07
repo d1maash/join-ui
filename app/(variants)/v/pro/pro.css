@@ -8,181 +8,185 @@
  * reveals, the code theme) and the reduced-motion overrides.
  */
 
-:root:has(.v-pro) {
-  background: #000;
-  color-scheme: dark;
+@layer base {
+  :root:has(.v-pro) {
+    background: #000;
+    color-scheme: dark;
+  }
+
+  .v-pro {
+    /* The palette — apple.com's dark product pages. */
+    --pro-bg: #000;
+    --pro-ink: #f5f5f7;
+    --pro-ink-2: #86868b; /* 5.9:1 on black, 5.0:1 on a tile */
+    --pro-ink-body: #cdcdd2; /* long-form reading on black */
+    --pro-tile: #161617;
+    --pro-tile-2: #1d1d1f;
+    --pro-tile-3: #2a2a2d;
+    --pro-line: rgb(255 255 255 / 0.1);
+    --pro-line-strong: #424245;
+    --pro-link: #2997ff;
+    --pro-blue: #0071e3;
+    --pro-blue-hover: #0077ed;
+    --pro-orange: #ff9f0a;
+
+    /* Apple's own easing for reveals and the slow, settled movements. */
+    --pro-ease: cubic-bezier(0.28, 0.11, 0.32, 1);
+    --pro-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* The tokens the shared components read, nudged onto the Pro greys. */
+    --background: #000;
+    --card: #1c1c1e;
+    --border: #38383a;
+    --ring: #2997ff;
+    --code-bg: #161617;
+
+    background: var(--pro-bg);
+    color: var(--pro-ink);
+    letter-spacing: -0.01em;
+  }
+
+  .v-pro ::selection {
+    background: rgb(41 151 255 / 0.35);
+  }
 }
 
-.v-pro {
-  /* The palette — apple.com's dark product pages. */
-  --pro-bg: #000;
-  --pro-ink: #f5f5f7;
-  --pro-ink-2: #86868b; /* 5.9:1 on black, 5.0:1 on a tile */
-  --pro-ink-body: #cdcdd2; /* long-form reading on black */
-  --pro-tile: #161617;
-  --pro-tile-2: #1d1d1f;
-  --pro-tile-3: #2a2a2d;
-  --pro-line: rgb(255 255 255 / 0.1);
-  --pro-line-strong: #424245;
-  --pro-link: #2997ff;
-  --pro-blue: #0071e3;
-  --pro-blue-hover: #0077ed;
-  --pro-orange: #ff9f0a;
+@layer components {
+  /* ------------------------------------------------------------------------ */
+  /* Type                                                                      */
+  /* ------------------------------------------------------------------------ */
 
-  /* Apple's own easing for reveals and the slow, settled movements. */
-  --pro-ease: cubic-bezier(0.28, 0.11, 0.32, 1);
-  --pro-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Titanium — the restrained metallic used on one word or one numeral. */
+  .v-pro .pro-titanium {
+    background: linear-gradient(180deg, #ffffff 0%, #e3e3e8 38%, #a1a1a6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 
-  /* The tokens the shared components read, nudged onto the Pro greys. */
-  --background: #000;
-  --card: #1c1c1e;
-  --border: #38383a;
-  --ring: #2997ff;
-  --code-bg: #161617;
+  /* The Pro accent, kept to eyebrows and a single word per screen. */
+  .v-pro .pro-ember {
+    background: linear-gradient(92deg, #ffb340 0%, #ff8a3d 55%, #ff6a3d 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 
-  background: var(--pro-bg);
-  color: var(--pro-ink);
-  font-feature-settings: "cv11", "ss01";
-  letter-spacing: -0.01em;
-}
+  .v-pro .pro-numeral {
+    font-variant-numeric: tabular-nums;
+  }
 
-.v-pro ::selection {
-  background: rgb(41 151 255 / 0.35);
-}
+  /* ------------------------------------------------------------------------ */
+  /* Global nav                                                                */
+  /* ------------------------------------------------------------------------ */
 
-/* ------------------------------------------------------------------------ */
-/* Type                                                                      */
-/* ------------------------------------------------------------------------ */
+  .v-pro .pro-globalnav {
+    background: rgb(22 22 23 / 0.8);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
 
-/* Titanium — the restrained metallic used on one word or one numeral. */
-.v-pro .pro-titanium {
-  background: linear-gradient(180deg, #ffffff 0%, #e3e3e8 38%, #a1a1a6 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* The Pro accent, kept to eyebrows and a single word per screen. */
-.v-pro .pro-ember {
-  background: linear-gradient(92deg, #ffb340 0%, #ff8a3d 55%, #ff6a3d 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.v-pro .pro-numeral {
-  font-variant-numeric: tabular-nums;
-}
-
-/* ------------------------------------------------------------------------ */
-/* Global nav                                                                */
-/* ------------------------------------------------------------------------ */
-
-.v-pro .pro-globalnav {
-  background: rgb(22 22 23 / 0.8);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
-}
-
-/*
+  /*
  * On a product page the global nav scrolls away and the local nav takes the
  * top edge, the way apple.com hands one to the other.
  */
-.v-pro:has([data-pro-localnav]) .pro-globalnav-wrap {
-  position: relative;
-}
+  .v-pro:has([data-pro-localnav]) .pro-globalnav-wrap {
+    position: relative;
+  }
 
-.v-pro .pro-localnav {
-  background: rgb(0 0 0 / 0.72);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
-}
+  .v-pro .pro-localnav {
+    background: rgb(0 0 0 / 0.72);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
 
-/* ------------------------------------------------------------------------ */
-/* Stage                                                                     */
-/* ------------------------------------------------------------------------ */
+  /* ------------------------------------------------------------------------ */
+  /* Stage                                                                     */
+  /* ------------------------------------------------------------------------ */
 
-/* A soft key light from above, falling off into the black. */
-.v-pro .pro-spotlight {
-  background:
-    radial-gradient(
-      60% 55% at 50% 0%,
-      rgb(255 255 255 / 0.13) 0%,
-      rgb(255 255 255 / 0.04) 45%,
-      transparent 75%
-    ),
-    radial-gradient(90% 70% at 50% 110%, rgb(255 255 255 / 0.05) 0%, transparent 60%);
-}
+  /* A soft key light from above, falling off into the black. */
+  .v-pro .pro-spotlight {
+    background:
+      radial-gradient(
+        60% 55% at 50% 0%,
+        rgb(255 255 255 / 0.13) 0%,
+        rgb(255 255 255 / 0.04) 45%,
+        transparent 75%
+      ),
+      radial-gradient(90% 70% at 50% 110%, rgb(255 255 255 / 0.05) 0%, transparent 60%);
+  }
 
-/* The floor under a lit object: an elliptical pool of light, a reflection. */
-.v-pro .pro-floor {
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    rgb(255 255 255 / 0.16) 0%,
-    rgb(255 255 255 / 0.05) 40%,
-    transparent 72%
-  );
-  filter: blur(18px);
-}
+  /* The floor under a lit object: an elliptical pool of light, a reflection. */
+  .v-pro .pro-floor {
+    background: radial-gradient(
+      50% 50% at 50% 50%,
+      rgb(255 255 255 / 0.16) 0%,
+      rgb(255 255 255 / 0.05) 40%,
+      transparent 72%
+    );
+    filter: blur(18px);
+  }
 
-.v-pro .pro-stage {
-  background:
-    radial-gradient(
-      70% 60% at 50% 0%,
-      color-mix(in oklab, var(--pro-stage-tint, #ffffff) 14%, transparent) 0%,
-      transparent 70%
-    ),
-    linear-gradient(180deg, #121213 0%, #0a0a0b 100%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.07),
-    inset 0 0 0 1px rgb(255 255 255 / 0.05);
-}
+  .v-pro .pro-stage {
+    background:
+      radial-gradient(
+        70% 60% at 50% 0%,
+        color-mix(in oklab, var(--pro-stage-tint, #ffffff) 14%, transparent) 0%,
+        transparent 70%
+      ),
+      linear-gradient(180deg, #121213 0%, #0a0a0b 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.07),
+      inset 0 0 0 1px rgb(255 255 255 / 0.05);
+  }
 
-.v-pro .pro-window {
-  background: linear-gradient(180deg, #1c1c1e 0%, #141415 100%);
-  box-shadow:
-    0 0 0 1px rgb(255 255 255 / 0.09),
-    inset 0 1px 0 rgb(255 255 255 / 0.08),
-    0 40px 120px -20px rgb(0 0 0 / 0.9),
-    0 30px 80px -40px rgb(41 151 255 / 0.18);
-}
+  .v-pro .pro-window {
+    background: linear-gradient(180deg, #1c1c1e 0%, #141415 100%);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.09),
+      inset 0 1px 0 rgb(255 255 255 / 0.08),
+      0 40px 120px -20px rgb(0 0 0 / 0.9),
+      0 30px 80px -40px rgb(41 151 255 / 0.18);
+  }
 
-.v-pro .pro-tile-hairline {
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
-}
+  .v-pro .pro-tile-hairline {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
+  }
 
-/* ------------------------------------------------------------------------ */
-/* Reveals                                                                   */
-/* ------------------------------------------------------------------------ */
+  /* ------------------------------------------------------------------------ */
+  /* Reveals                                                                   */
+  /* ------------------------------------------------------------------------ */
 
-/*
+  /*
  * `Reveal` marks an element hidden only once script has run, only while it is
  * still below the fold, and never when Reduce Motion is on — so the server
  * HTML is always complete, and nothing that is already on screen blinks.
  */
-.v-pro [data-pro-reveal="hidden"] {
-  opacity: 0;
-  transform: translate3d(0, var(--pro-reveal-y, 48px), 0) scale(var(--pro-reveal-scale, 1));
-}
-
-.v-pro [data-pro-reveal="shown"] {
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity 900ms var(--pro-ease) var(--pro-reveal-delay, 0ms),
-    transform 1200ms var(--pro-ease-out) var(--pro-reveal-delay, 0ms);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .v-pro [data-pro-reveal] {
-    opacity: 1 !important;
-    transform: none !important;
+  .v-pro [data-pro-reveal="hidden"] {
+    opacity: 0;
+    transform: translate3d(0, var(--pro-reveal-y, 48px), 0)
+      scale(var(--pro-reveal-scale, 1));
   }
 
-  /* Scroll-linked transforms collapse to their resting state. */
-  .v-pro [data-pro-parallax] {
-    transform: none !important;
-    opacity: 1 !important;
+  .v-pro [data-pro-reveal="shown"] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 900ms var(--pro-ease) var(--pro-reveal-delay, 0ms),
+      transform 1200ms var(--pro-ease-out) var(--pro-reveal-delay, 0ms);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .v-pro [data-pro-reveal] {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    /* Scroll-linked transforms collapse to their resting state. */
+    .v-pro [data-pro-parallax] {
+      transform: none !important;
+      opacity: 1 !important;
+    }
   }
 }
 
@@ -248,9 +252,4 @@
 
 .v-pro .pro-no-scrollbar::-webkit-scrollbar {
   display: none;
-}
-
-.v-pro :focus-visible {
-  outline: 2px solid var(--pro-link);
-  outline-offset: 3px;
 }
