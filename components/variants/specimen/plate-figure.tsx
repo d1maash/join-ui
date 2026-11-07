@@ -390,9 +390,9 @@ export function PlateFigure({
   const labelList = (
     items: typeof indexed,
     side: Side,
-    options: { register?: boolean; placed?: boolean } = {}
+    options: { register?: boolean; placed?: boolean; legend?: boolean } = {}
   ) => {
-    const { register = true, placed: isPlaced = false } = options
+    const { register = true, placed: isPlaced = false, legend = false } = options
     return (
       <ol
         ref={
@@ -404,8 +404,9 @@ export function PlateFigure({
         }
         className={cn(
           "flex flex-col gap-5",
+          legend && "md:grid md:grid-cols-2 md:gap-x-10 md:gap-y-6",
           isPlaced && "xl:relative xl:block xl:h-full",
-          side === "below" && !slotted && "xl:grid xl:auto-cols-fr xl:grid-flow-col xl:gap-6",
+          side === "below" && !slotted && "xl:grid xl:grid-cols-none xl:auto-cols-fr xl:grid-flow-col xl:gap-6",
           (side === "below" || side === "above") &&
             slotted &&
             "xl:grid xl:grid-cols-2 xl:gap-x-8 xl:gap-y-7",
@@ -494,7 +495,7 @@ export function PlateFigure({
         */}
         {beside ? (
           <div className="order-3 xl:hidden">
-            {labelList(indexed, "right", { register: false })}
+            {labelList(indexed, "right", { register: false, legend: true })}
           </div>
         ) : null}
 
@@ -543,7 +544,7 @@ export function PlateFigure({
             </div>
           </div>
         ) : slotted ? null : (
-          <div className="order-3 xl:order-none">{labelList(right, "below")}</div>
+          <div className="order-3 xl:order-none">{labelList(right, "below", { legend: true })}</div>
         )}
       </div>
 
