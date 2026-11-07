@@ -135,6 +135,11 @@ export function HeroScene() {
       onPointerLeave={onPointerLeave}
       className="relative mx-auto h-[540px] w-full max-w-[1180px] sm:h-[600px] lg:h-[640px]"
     >
+      <p className="sr-only">
+        Four Join UI components running live on panes of glass: Tool Trace playing an
+        agent run, Approval Gate asking to run a command, Status Timeline advancing a
+        release, and Focus Stack turning through its items.
+      </p>
       <div inert aria-hidden="true" className="absolute inset-0">
         {/* Back left — a release, advancing. */}
         <Pane
