@@ -77,6 +77,11 @@ export function RunningTitle({ plates }: { plates: PlateRef[] }) {
   }, [pathname])
 
   const isCover = pathname === BASE
+  const shelf = pathname.startsWith(`${BASE}/docs`)
+    ? "Manual"
+    : pathname === `${BASE}/components`
+      ? "Plates"
+      : null
 
   return (
     <p
@@ -89,6 +94,8 @@ export function RunningTitle({ plates }: { plates: PlateRef[] }) {
         </span>
       ) : isCover ? (
         <span className="sp-label shrink-0 !text-[var(--sp-ink)]">Vol. 1</span>
+      ) : shelf ? (
+        <span className="sp-label shrink-0 !text-[var(--sp-ink)]">{shelf}</span>
       ) : null}
       {section ? (
         <>
