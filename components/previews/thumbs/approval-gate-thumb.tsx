@@ -168,7 +168,8 @@ function Gate({
       hotkeys="off"
       announce={false}
       decision={decision}
-      className="relative shadow-[0_1px_2px_rgb(0_0_0/0.04),0_20px_48px_-16px_rgb(0_0_0/0.22)]"
+      /* Opaque here: the stack behind would otherwise show through the material. */
+      className="relative bg-card shadow-[0_1px_2px_rgb(0_0_0/0.04),0_20px_48px_-16px_rgb(0_0_0/0.22)]"
     />
   )
 }

@@ -75,7 +75,7 @@ export function InstallDemo({ items }: { items: InstallDemoItem[] }) {
 
         <div className="g-inset m-2 rounded-[22px] px-4 py-4 font-mono text-[13px] leading-[1.75] sm:px-5">
           <div className="flex items-start gap-3">
-            <p className="min-w-0 flex-1 break-all text-[#1d1d1f]">
+            <p className="min-w-0 flex-1 [overflow-wrap:anywhere] text-[#1d1d1f]">
               <span aria-hidden="true" className="mr-2 text-[#0a7d5a] select-none">
                 ~/my-app $
               </span>

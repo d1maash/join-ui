@@ -335,11 +335,18 @@ export function ApprovalGate({
    * so it holds while the pointer is over the card or focus is inside it — and
    * whenever the card is off screen, which is the family's rule for anything
    * that runs on its own.
+   *
+   * The view starts out "not seen": a gate that mounts below the fold never
+   * enters the viewport, so an observer that assumed it was visible would
+   * never hear otherwise and the clock would run out unwatched. Only the
+   * reader's own hold dims the ring — the off-screen one is never seen, and
+   * dimming for it would flash the ring on every mount.
    */
   const [hovered, setHovered] = React.useState(false)
   const [focused, setFocused] = React.useState(false)
-  const inView = useInView(root, { amount: 0.4, initial: true })
-  const held = !inView || (pauseWhileReading && (hovered || focused))
+  const inView = useInView(root, { amount: 0.4 })
+  const reading = pauseWhileReading && (hovered || focused)
+  const held = !inView || reading
 
   /*
    * The key hints are shown only while the keys would work: always for global
@@ -485,7 +492,7 @@ export function ApprovalGate({
         <Marker
           phase={phase}
           counting={counting}
-          held={held}
+          held={reading}
           progress={progress}
           count={count}
           wholeSeconds={wholeSeconds}

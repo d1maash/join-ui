@@ -132,7 +132,7 @@ export function HeroStage() {
           <span aria-hidden="true" className="w-[52px]" />
         </div>
 
-        <div className="grid gap-6 p-4 sm:p-8 lg:grid-cols-[1.08fr_1fr] lg:gap-8 lg:p-10">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-6 p-3 sm:p-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)] lg:gap-8 lg:p-10">
           <ToolTrace
             className="order-2 lg:order-1"
             label="Agent run"

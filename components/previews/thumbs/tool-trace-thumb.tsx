@@ -13,7 +13,7 @@ import { ToolTrace, type ToolTraceStep } from "@/registry/components/tool-trace"
  * motion it is the same card, still, with the third tool in flight.
  */
 
-const SCENE = { width: 500, height: 380 }
+const SCENE = { width: 500, height: 352 }
 
 const SCRIPT: Array<{ step: ToolTraceStep; dwell: number }> = [
   {
@@ -90,6 +90,11 @@ export default function Thumb() {
     meta: index < at ? step.meta : undefined,
   })) satisfies ToolTraceStep[]
   const done = Math.max(0, Math.min(at, SCRIPT.length))
+  /*
+   * Held open by hand rather than by `follow`, so the finished run keeps its
+   * last console showing and the card is never a column of empty space.
+   */
+  const open = at < 0 ? [] : [SCRIPT[Math.min(at, SCRIPT.length - 1)]?.step.id ?? ""]
 
   return (
     <div ref={ref} className="relative flex size-full items-center justify-center overflow-hidden">
@@ -110,12 +115,13 @@ export default function Thumb() {
           <ToolTrace
             label="Agent run"
             steps={steps}
+            expanded={open}
             size="sm"
             stream={!reduceMotion}
             lineSpeed={150}
             announce={false}
             maxConsoleHeight="4.5rem"
-            className="relative h-[372px] w-[436px] overflow-hidden shadow-[0_1px_2px_rgb(0_0_0/0.04),0_18px_44px_-14px_rgb(0_0_0/0.18)]"
+            className="relative h-[344px] w-[436px] overflow-hidden shadow-[0_1px_2px_rgb(0_0_0/0.04),0_18px_44px_-14px_rgb(0_0_0/0.18)]"
             footer={
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs text-muted-foreground tabular-nums">

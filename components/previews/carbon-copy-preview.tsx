@@ -39,7 +39,7 @@ export default function CarbonCopyPreview() {
             key={first}
             as="h2"
             lines={["Copy the code.", "Keep the code."]}
-            className={cn("text-[clamp(2.5rem,6.4vw,4.75rem)]", DISPLAY)}
+            className={cn("text-[clamp(2rem,6.4vw,4.75rem)]", DISPLAY)}
           />
         </Stage>
       </Panel>
@@ -56,7 +56,7 @@ export default function CarbonCopyPreview() {
               key={second}
               as="h3"
               lines={["Build it fast.", "Build it right.", "Build it once."]}
-              className={cn("text-[clamp(2rem,3.8vw,3rem)]", DISPLAY)}
+              className={cn("text-[clamp(1.875rem,3.8vw,3rem)]", DISPLAY)}
             />
           </Stage>
         </Panel>
@@ -99,7 +99,7 @@ export default function CarbonCopyPreview() {
             timing={{ ink: 1400, copy: 950, roll: 650, pause: 240 }}
             lines={["Ship on Friday.", "Sleep on Friday."]}
             onComplete={() => setSettled(true)}
-            className={cn("text-[clamp(2.25rem,5.4vw,4rem)]", DISPLAY)}
+            className={cn("text-[clamp(1.875rem,5.4vw,4rem)]", DISPLAY)}
           />
           <div
             aria-hidden={!settled}

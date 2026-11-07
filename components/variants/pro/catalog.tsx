@@ -99,7 +99,7 @@ export function ProCatalog({
         </div>
 
         <div className="flex w-full max-w-[40rem] flex-col items-center gap-4 sm:flex-row">
-          <label className="flex h-11 w-full flex-1 items-center gap-2.5 rounded-full bg-white/[0.08] px-4 transition-shadow focus-within:shadow-[0_0_0_2px_#2997ff]">
+          <label className="flex h-11 w-full items-center sm:flex-1 gap-2.5 rounded-full bg-white/[0.08] px-4 transition-shadow focus-within:shadow-[0_0_0_2px_#2997ff]">
             <Search aria-hidden="true" className="size-4 shrink-0 text-[#86868b]" />
             <span className="sr-only">Search components</span>
             <input
