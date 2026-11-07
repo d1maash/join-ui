@@ -39,11 +39,20 @@ export function LocalBar({
   }, [sentinel])
 
   return (
-    <div className="run-localbar" data-shown={shown} aria-hidden={!shown} inert={!shown || undefined}>
+    <div
+      className="run-localbar"
+      data-shown={shown}
+      aria-hidden={!shown}
+      inert={!shown || undefined}
+    >
       <div className="run-container flex h-full items-center gap-3">
         <p className="flex min-w-0 flex-1 items-baseline gap-2.5">
-          <span className="truncate text-[14px] font-semibold tracking-[-0.01em]">{title}</span>
-          <span className="truncate text-[13px] text-[#77777c] max-sm:hidden">{category}</span>
+          <span className="truncate text-[14px] font-semibold tracking-[-0.01em]">
+            {title}
+          </span>
+          <span className="truncate text-[13px] text-[#77777c] max-sm:hidden">
+            {category}
+          </span>
         </p>
         <RunCopy
           value={install}

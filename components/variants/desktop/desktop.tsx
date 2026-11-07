@@ -186,7 +186,7 @@ export function Desktop() {
               bottom: "calc(var(--d-dock-space) + 40px)",
               width: "clamp(460px, 38vw, 580px)",
             }}
-            bodyClassName="h-[clamp(190px,27vh,280px)] !bg-transparent"
+            bodyClassName="flex-none h-[clamp(190px,27vh,280px)] !bg-transparent"
           >
             <TerminalScene onInstalled={() => setInstalled(true)} onOpen={openApp} />
           </Window>
@@ -253,7 +253,7 @@ export function Desktop() {
             subtitle={`${os.components.length} components`}
             desk={desk}
             frame={{ left: "calc(50% - 380px)", top: "clamp(30px, 7vh, 90px)", width: 760 }}
-            bodyClassName="h-[440px]"
+            bodyClassName="flex-none h-[440px]"
             toolbar={
               <Link href={vh("/components")} className="d-btn h-7 px-2.5">
                 Open full catalog

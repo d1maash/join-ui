@@ -1,5 +1,12 @@
 import type * as React from "react"
-import { BellRing, CandlestickChart, Fingerprint, Repeat2, ShieldCheck, Snowflake } from "lucide-react"
+import {
+  BellRing,
+  CandlestickChart,
+  Fingerprint,
+  Repeat2,
+  ShieldCheck,
+  Snowflake,
+} from "lucide-react"
 
 import type { ApprovalGateDecision } from "@/registry/components/approval-gate"
 import type { FocusStackItem } from "@/registry/components/focus-stack"
@@ -133,7 +140,11 @@ const WORK: Array<Omit<ToolTraceStep, "state">> = [
     name: "edit_file",
     summary: "app/(marketing)/page.tsx",
     meta: "1.1s",
-    output: ["+ 64 insertions  − 18 deletions", "+ GlassCrest, CarbonCopy, FocusStack", "→ 1 file changed"],
+    output: [
+      "+ 64 insertions  − 18 deletions",
+      "+ GlassCrest, CarbonCopy, FocusStack",
+      "→ 1 file changed",
+    ],
   },
   {
     id: "test",
@@ -169,7 +180,11 @@ export type Decision = ApprovalGateDecision | null
  * at the bottom from the start — queued, waiting to be allowed — so the reader
  * can see the question coming before the gate asks it.
  */
-export function traceSteps(beat: number, decision: Decision, asking: boolean): ToolTraceStep[] {
+export function traceSteps(
+  beat: number,
+  decision: Decision,
+  asking: boolean
+): ToolTraceStep[] {
   const steps: ToolTraceStep[] = WORK.map((step, index) => {
     const started = beat >= index * 2 + 1
     const landed = beat >= index * 2 + 2
@@ -222,7 +237,10 @@ export function traceSteps(beat: number, decision: Decision, asking: boolean): T
 
 /* ─── 03 Ask ──────────────────────────────────────────────────────────────── */
 
-export const DECISION_LINE: Record<ApprovalGateDecision, { lead: string; body: string }> = {
+export const DECISION_LINE: Record<
+  ApprovalGateDecision,
+  { lead: string; body: string }
+> = {
   allow: {
     lead: "Allowed.",
     body: "It pushes over the stale commit and moves on.",

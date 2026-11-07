@@ -68,7 +68,9 @@ export function RunTopBar({
           <span
             className="run-pip ml-0.5"
             style={
-              { "--run-state-solid": lit ? TONE_COLOR[tone] : undefined } as React.CSSProperties
+              {
+                "--run-state-solid": lit ? TONE_COLOR[tone] : undefined,
+              } as React.CSSProperties
             }
             aria-hidden="true"
             title={`Run: ${TONE_LABEL[tone]}`}

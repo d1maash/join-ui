@@ -6,15 +6,30 @@ import { motion, type MotionValue } from "motion/react"
 import { MODELS } from "@/components/previews/fixtures/agent-hive"
 import { MARKS } from "@/components/previews/fixtures/glass-crest"
 import { cn } from "@/lib/utils"
-import { AgentHive, type AgentHiveModel, type AgentHiveRun } from "@/registry/components/agent-hive"
-import { ApprovalGate, type ApprovalGateDecision } from "@/registry/components/approval-gate"
+import {
+  AgentHive,
+  type AgentHiveModel,
+  type AgentHiveRun,
+} from "@/registry/components/agent-hive"
+import {
+  ApprovalGate,
+  type ApprovalGateDecision,
+} from "@/registry/components/approval-gate"
 import { CarbonCopy } from "@/registry/components/carbon-copy"
 import { FocusStack } from "@/registry/components/focus-stack"
 import { CrestAction, CrestQuiet, GlassCrest } from "@/registry/components/glass-crest"
 import { StatusTimeline } from "@/registry/components/status-timeline"
 import { ToolTrace, type ToolTraceStep } from "@/registry/components/tool-trace"
 
-import { BRANCH, FEATURES, PUSH_COMMAND, RUN_NO, SITE, shipSteps, type Decision } from "./script"
+import {
+  BRANCH,
+  FEATURES,
+  PUSH_COMMAND,
+  RUN_NO,
+  SITE,
+  shipSteps,
+  type Decision,
+} from "./script"
 
 export { MODELS }
 
@@ -47,7 +62,9 @@ export function PickPane({
       onPointerEnter={() => setHand(true)}
       onPointerLeave={() => setHand(false)}
     >
-      {cursor && !hand ? <ScriptedCursor host={host} target={cursor.target} pressed={cursor.pressed} /> : null}
+      {cursor && !hand ? (
+        <ScriptedCursor host={host} target={cursor.target} pressed={cursor.pressed} />
+      ) : null}
       <AgentHive
         label="Model"
         models={MODELS}
@@ -87,9 +104,9 @@ function ScriptedCursor({
     const measure = () => {
       const node =
         target === "generate"
-          ? Array.from(root.querySelectorAll<HTMLElement>("button:not([role=radio])")).find(
-              (button) => button.textContent?.trim() === "Generate"
-            )
+          ? Array.from(
+              root.querySelectorAll<HTMLElement>("button:not([role=radio])")
+            ).find((button) => button.textContent?.trim() === "Generate")
           : root.querySelector<HTMLElement>(`[role=radio][aria-label="${target}"]`)
       if (!node) return
       const box = root.getBoundingClientRect()
@@ -164,7 +181,9 @@ export function WorkPane({ steps, size }: { steps: ToolTraceStep[]; size: PaneSi
         label={RUN_NO}
         status={
           between
-            ? steps.filter((step) => step.state === "pending").every((step) => step.id === "push")
+            ? steps
+                .filter((step) => step.state === "pending")
+                .every((step) => step.id === "push")
               ? "Needs approval"
               : "Thinking"
             : undefined

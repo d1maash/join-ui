@@ -31,7 +31,10 @@ export function RunFooter() {
               </Link>
             </li>
             <li>
-              <Link href={href("/docs/registry-setup")} className="hover:text-[#f5f5f7]">
+              <Link
+                href={href("/docs/registry-setup")}
+                className="hover:text-[#f5f5f7]"
+              >
                 Registry
               </Link>
             </li>

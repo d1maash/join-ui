@@ -9,7 +9,7 @@ import { ToolTrace } from "@/registry/components/tool-trace"
 import { cn } from "@/lib/utils"
 
 import { AppIcon } from "../app-icon"
-import { GATE, deploySteps, traceStatus, traceSteps, useRun } from "../run"
+import { GATE, deployStatus, deploySteps, traceStatus, traceSteps, useRun } from "../run"
 
 /*
  * The three faces of the one run — see `run.tsx` for why they share it.
@@ -119,6 +119,7 @@ export function DeployWidget({ className }: { className?: string }) {
       <StatusTimeline
         label="Deploy · acme-app"
         steps={deploySteps(run.phase)}
+        status={deployStatus(run.phase)}
         variant="plain"
         size="sm"
       />

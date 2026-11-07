@@ -226,6 +226,26 @@ export function traceStatus(phase: RunPhase): string {
   }
 }
 
+export function deployStatus(phase: RunPhase): string {
+  switch (phase) {
+    case "idle":
+    case "editing":
+      return "Queued"
+    case "testing":
+      return "Checking"
+    case "awaiting":
+      return "Waiting"
+    case "pushing":
+      return "Pushing"
+    case "opening":
+      return "Building"
+    case "done":
+      return "Preview ready"
+    default:
+      return "Blocked"
+  }
+}
+
 export function deploySteps(phase: RunPhase): StatusTimelineStep[] {
   const checks: StatusTimelineStep =
     phase === "idle" || phase === "editing"

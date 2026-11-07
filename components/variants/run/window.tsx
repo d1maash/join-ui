@@ -9,9 +9,18 @@ import { cn } from "@/lib/utils"
 const EASE = [0.32, 0.72, 0, 1] as const
 
 /** Grey until the pointer comes to them, the way an inactive Mac window draws them. */
-export function TrafficLights({ small = false, className }: { small?: boolean; className?: string }) {
+export function TrafficLights({
+  small = false,
+  className,
+}: {
+  small?: boolean
+  className?: string
+}) {
   return (
-    <span aria-hidden="true" className={cn("run-lights", small && "run-lights--sm", className)}>
+    <span
+      aria-hidden="true"
+      className={cn("run-lights", small && "run-lights--sm", className)}
+    >
       <span />
       <span />
       <span />
@@ -92,10 +101,17 @@ export function RunWindow({
                 key="browser"
                 className="flex min-w-0 flex-1 items-center gap-3"
                 initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0, transition: { duration: 0.35, delay: 0.12, ease: EASE } }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.35, delay: 0.12, ease: EASE },
+                }}
                 exit={{ opacity: 0, y: -4, transition: { duration: 0.16, ease: EASE } }}
               >
-                <span className="flex shrink-0 items-center gap-1 text-[#5c5c61]" aria-hidden="true">
+                <span
+                  className="flex shrink-0 items-center gap-1 text-[#5c5c61]"
+                  aria-hidden="true"
+                >
                   <ChevronLeft className="size-4" />
                   <ChevronRight className="size-4" />
                 </span>
@@ -103,14 +119,21 @@ export function RunWindow({
                   <Lock aria-hidden="true" className="size-3 text-[#77777c]" />
                   <span className="truncate text-[#c7c7cc]">{url}</span>
                 </div>
-                <RotateCw aria-hidden="true" className="size-3.5 shrink-0 text-[#5c5c61]" />
+                <RotateCw
+                  aria-hidden="true"
+                  className="size-3.5 shrink-0 text-[#5c5c61]"
+                />
               </motion.div>
             ) : (
               <motion.div
                 key="app"
                 className="flex min-w-0 flex-1 items-center gap-3"
                 initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0, transition: { duration: 0.35, delay: 0.12, ease: EASE } }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.35, delay: 0.12, ease: EASE },
+                }}
                 exit={{ opacity: 0, y: -4, transition: { duration: 0.16, ease: EASE } }}
               >
                 {toolbar}

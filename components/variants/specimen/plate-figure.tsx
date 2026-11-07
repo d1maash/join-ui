@@ -377,7 +377,7 @@ export function PlateFigure({
         {slotted ? null : (
           <div
             className={cn(
-              "order-3 lg:order-none",
+              labelsHeader ? "contents lg:block" : "order-3 lg:order-none",
               columns?.labels ??
                 (layout === "split"
                   ? "lg:col-span-3"
@@ -386,8 +386,17 @@ export function PlateFigure({
                     : "")
             )}
           >
-            {labelsHeader}
-            {labelList(right, layout === "below" ? "below" : "right")}
+            {labelsHeader ? (
+              <>
+                {/* Before the board on a phone, above the letters beside it on a desk. */}
+                <div className="order-0 lg:order-none">{labelsHeader}</div>
+                <div className="order-3 lg:order-none">
+                  {labelList(right, layout === "below" ? "below" : "right")}
+                </div>
+              </>
+            ) : (
+              labelList(right, layout === "below" ? "below" : "right")
+            )}
           </div>
         )}
       </div>

@@ -6,7 +6,12 @@ import { toast } from "sonner"
 import { Check, ChevronDown, Copy, Sparkles } from "lucide-react"
 
 import { copyToClipboard } from "@/lib/clipboard"
-import { PACKAGE_MANAGERS, shadcnAddCommand, siteConfig, type PackageManager } from "@/lib/site"
+import {
+  PACKAGE_MANAGERS,
+  shadcnAddCommand,
+  siteConfig,
+  type PackageManager,
+} from "@/lib/site"
 
 interface Item {
   slug: string
@@ -29,9 +34,12 @@ Reference: ${siteConfig.url}/components/${item.slug}`
 function useCopied() {
   const [copied, setCopied] = React.useState(false)
   const timer = React.useRef<number | null>(null)
-  React.useEffect(() => () => {
-    if (timer.current) window.clearTimeout(timer.current)
-  }, [])
+  React.useEffect(
+    () => () => {
+      if (timer.current) window.clearTimeout(timer.current)
+    },
+    []
+  )
   const flash = React.useCallback(() => {
     setCopied(true)
     if (timer.current) window.clearTimeout(timer.current)
@@ -147,8 +155,8 @@ export function InstallLine({ items }: { items: Item[] }) {
         <code className="font-mono text-[14px] text-[#f5f5f7]">
           {siteConfig.installTarget}/{item.slug}.tsx
         </code>{" "}
-        into your project and nothing else — no wrapper package, no runtime to keep in step. MIT,
-        WCAG 2.2 AA, and a still fallback for reduced motion.
+        into your project and nothing else — no wrapper package, no runtime to keep in
+        step. MIT, WCAG 2.2 AA, and a still fallback for reduced motion.
       </p>
     </div>
   )

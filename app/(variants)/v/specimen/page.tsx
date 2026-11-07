@@ -181,7 +181,7 @@ export default async function SpecimenLanding() {
           id="pl-gate"
           sheet={gateSheet}
           kicker="State diagram"
-          lede="One request, three ways out. The live gate on the left is the real component — click into it and answer with Y or N, or let the clock run down — and the path it takes is inked on the right."
+          lede="One request, three ways out. The waiting gate is the real component — click into it and answer with Y or N, or let the clock run down — and the path it takes is inked in orange."
         />
         <SpecimenPlate
           slug="approval-gate"

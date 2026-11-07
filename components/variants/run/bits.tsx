@@ -15,7 +15,15 @@ export function RunPreview({ slug }: { slug: string }) {
 }
 
 /** A thumbnail drawn at its own size and scaled into whatever holds it. */
-export function RunThumb({ slug, scale, height }: { slug: string; scale: number; height: number }) {
+export function RunThumb({
+  slug,
+  scale,
+  height,
+}: {
+  slug: string
+  scale: number
+  height: number
+}) {
   return (
     <div
       className="run-thumb-frame dark bg-background"
@@ -42,7 +50,11 @@ export function CommandSwitch({
   return (
     <div className="run-code">
       <div className="run-code-head !pl-1.5">
-        <div className="run-seg !bg-transparent !shadow-none" role="group" aria-label={label}>
+        <div
+          className="run-seg !bg-transparent !shadow-none"
+          role="group"
+          aria-label={label}
+        >
           {PACKAGE_MANAGERS.map((entry) => (
             <button
               key={entry}
@@ -71,7 +83,7 @@ export function CommandSwitch({
           toastMessage="Command copied"
         />
       </div>
-      <pre className="overflow-x-auto px-4 py-3.5 font-mono text-[13px] leading-[1.6] text-[#f5f5f7] [scrollbar-width:thin]">
+      <pre className="[scrollbar-width:thin] overflow-x-auto px-4 py-3.5 font-mono text-[13px] leading-[1.6] text-[#f5f5f7]">
         <span className="text-[#48484c] select-none" aria-hidden="true">
           ${" "}
         </span>
