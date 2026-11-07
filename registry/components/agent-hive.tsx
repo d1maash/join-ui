@@ -1250,8 +1250,11 @@ function Tile({
         y,
         rotate: travel.angle,
       }}
-      /* Arrives with the ring of comb it lands in, not before it. */
-      initial={still ? false : { opacity: 0, scale: 0.8 }}
+      /*
+       * Arrives with the ring of comb it lands in, not before it — and in one
+       * frame under reduced motion, declared either way so hydration agrees.
+       */
+      initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: visible ? 1 : 0, scale: visible ? 1 : 0.85 }}
       transition={still ? { duration: 0 } : { ...TRAVEL, delay: mountDelay }}
     >
