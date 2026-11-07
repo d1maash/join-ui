@@ -1,10 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { motion, type MotionValue } from "motion/react"
+import { AnimatePresence, motion, type MotionValue } from "motion/react"
 
 import { MODELS } from "@/components/previews/fixtures/agent-hive"
 import { MARKS } from "@/components/previews/fixtures/glass-crest"
+import { renderThumb } from "@/components/previews/thumbs/registry"
 import { cn } from "@/lib/utils"
 import {
   AgentHive,
@@ -35,6 +36,18 @@ export { MODELS }
 
 export type PaneSize = "sm" | "md"
 
+/** A view's own header row, the way an app titles the page you are on. */
+function PaneHeader({ title, meta }: { title: string; meta?: string }) {
+  return (
+    <div className="flex h-11 shrink-0 items-center justify-between gap-3 px-5 shadow-[inset_0_-1px_0_rgb(255_255_255/0.06)]">
+      <span className="text-[13px] font-medium text-[#f5f5f7]">{title}</span>
+      {meta ? (
+        <span className="truncate text-[12px] text-[#77777c]">{meta}</span>
+      ) : null}
+    </div>
+  )
+}
+
 /* ─── 01 Pick ─────────────────────────────────────────────────────────────── */
 
 export function PickPane({
@@ -58,25 +71,33 @@ export function PickPane({
   return (
     <div
       ref={host}
-      className="relative flex h-full w-full items-center justify-center px-6 py-5"
+      className="relative flex h-full w-full flex-col"
       onPointerEnter={() => setHand(true)}
       onPointerLeave={() => setHand(false)}
     >
       {cursor && !hand ? (
         <ScriptedCursor host={host} target={cursor.target} pressed={cursor.pressed} />
       ) : null}
-      <AgentHive
-        label="Model"
-        models={MODELS}
-        value={model}
-        onValueChange={onModel}
-        runs={runs}
-        onGenerate={onGenerate}
-        variant="plain"
-        size={size}
-        maxRuns={size === "sm" ? 2 : 3}
-        className={cn("w-full", size === "sm" ? "max-w-[20rem]" : "max-w-[23rem]")}
-      />
+      <PaneHeader title="Models" meta="4 available · pick one for this run" />
+      <div
+        className={cn(
+          "flex min-h-0 flex-1 justify-center",
+          size === "sm" ? "px-3 pt-3" : "px-6 pt-5"
+        )}
+      >
+        <AgentHive
+          label="Model"
+          models={MODELS}
+          value={model}
+          onValueChange={onModel}
+          runs={runs}
+          onGenerate={onGenerate}
+          variant="plain"
+          size={size}
+          maxRuns={2}
+          className="w-full"
+        />
+      </div>
     </div>
   )
 }
@@ -172,11 +193,12 @@ export function WorkPane({ steps, size }: { steps: ToolTraceStep[]; size: PaneSi
   return (
     <div
       className={cn(
-        "flex h-full w-full justify-center",
-        size === "sm" ? "items-start px-3 py-3" : "items-start px-8 pt-7 pb-6"
+        "h-full w-full overflow-hidden",
+        size === "sm" ? "px-3 py-3" : "px-5 pt-3 pb-4"
       )}
     >
       <ToolTrace
+        variant="plain"
         steps={steps}
         label={RUN_NO}
         status={
@@ -190,7 +212,7 @@ export function WorkPane({ steps, size }: { steps: ToolTraceStep[]; size: PaneSi
         }
         size={size}
         maxConsoleHeight="6.5rem"
-        className={cn(size === "sm" ? "max-w-full" : "max-w-[32rem]")}
+        className="w-full"
       />
     </div>
   )
@@ -256,18 +278,52 @@ export function ShipPane({
   return (
     <div
       className={cn(
-        "flex h-full w-full items-center justify-center",
-        size === "sm" ? "px-3 py-3" : "px-8 py-6"
+        "flex h-full w-full flex-col overflow-hidden",
+        size === "sm" ? "px-3 py-3" : "px-5 pt-3 pb-4"
       )}
     >
       <StatusTimeline
-        label="Deploy"
+        variant="plain"
+        label="Deploy to production"
         steps={shipSteps(active, safePath)}
         activeStep={active}
         size={size}
         status={active >= 4 ? "Live" : undefined}
-        className={cn(size === "sm" ? "max-w-full" : "max-w-[27rem]")}
+        className="w-full"
       />
+      <AnimatePresence initial={false}>
+        {active >= 2 ? (
+          <motion.div
+            key="preview"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+            className="mt-4 flex items-center gap-4 rounded-[10px] p-2.5 pr-4 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08)]"
+          >
+            <div
+              className="light relative h-[86px] w-[129px] shrink-0 overflow-hidden rounded-[6px] bg-background shadow-[0_0_0_1px_rgb(255_255_255/0.1)]"
+              inert
+              aria-hidden="true"
+            >
+              <div className="absolute top-1/2 left-1/2 h-[320px] w-[480px] -translate-x-1/2 -translate-y-1/2 scale-[0.27]">
+                {renderThumb("glass-crest")}
+              </div>
+            </div>
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <span className="text-[13px] font-medium text-[#f5f5f7]">
+                Preview ready
+              </span>
+              <span className="truncate font-mono text-[11.5px] text-[#8b8b90]">
+                {safePath ? "launch-page-2.lumen.dev" : "launch-page.lumen.dev"}
+              </span>
+              <span className="text-[11.5px] text-[#77777c]">
+                {active >= 4 ? "Promoted to lumen.app" : "Waiting on checks"}
+              </span>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 }

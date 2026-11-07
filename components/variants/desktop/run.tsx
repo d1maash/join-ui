@@ -37,8 +37,8 @@ const NEXT: Partial<Record<RunPhase, RunPhase>> = {
 
 /* Long enough for each step's console to finish writing before it folds. */
 const DWELL: Partial<Record<RunPhase, number>> = {
-  editing: 1500,
-  testing: 1700,
+  editing: 1250,
+  testing: 1450,
   pushing: 1300,
   opening: 1500,
 }
@@ -153,13 +153,6 @@ export function traceSteps(phase: RunPhase): ToolTraceStep[] {
       name: "read_file",
       summary: "components/joinui/approval-gate.tsx",
       meta: "0.2s",
-      state: "done",
-    },
-    {
-      id: "grep",
-      name: "grep_search",
-      summary: 'pattern: "requestApproval"',
-      meta: "0.3s",
       state: "done",
     },
     {
