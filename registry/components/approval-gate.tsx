@@ -510,8 +510,13 @@ export function ApprovalGate({
         {/* `offset` sets the title's first line on the marker's centre line. */}
         <div className={cn("flex min-w-0 flex-1 flex-col", scale.stack, scale.offset)}>
           <div className="flex flex-col gap-0.5">
-            <div className="flex items-start gap-3">
-              <p id={titleId} className={cn("min-w-0 flex-1 font-semibold", scale.title)}>
+            {/*
+              The capsule rides beside the title while there is room for both,
+              and drops under it on a narrow card rather than squeezing the
+              title into a column.
+            */}
+            <div className="flex flex-wrap items-start gap-x-3 gap-y-1">
+              <p id={titleId} className={cn("min-w-0 grow basis-40 font-semibold", scale.title)}>
                 <span className="sr-only">{label}: </span>
                 {title}
               </p>
@@ -575,11 +580,20 @@ export function ApprovalGate({
                     : { duration: 0 },
                 }}
               >
-                <div className={cn("flex items-center justify-between gap-3", scale.row)}>
+                {/*
+                  The caption gives way first; only when even six characters of
+                  it would not fit do the answers wrap under it, to the right.
+                */}
+                <div
+                  className={cn(
+                    "flex flex-wrap items-center justify-between gap-x-3 gap-y-2",
+                    scale.row
+                  )}
+                >
                   {caption ? (
                     <span
                       className={cn(
-                        "min-w-0 truncate font-mono text-muted-foreground",
+                        "min-w-0 grow basis-24 truncate font-mono text-muted-foreground",
                         scale.caption
                       )}
                     >
@@ -599,7 +613,7 @@ export function ApprovalGate({
                     {pending ? (
                       <motion.div
                         key="actions"
-                        className="flex shrink-0 items-center gap-2"
+                        className="ml-auto flex shrink-0 items-center gap-2"
                         initial={false}
                         /*
                          * The answers leave the way a sheet's buttons do: a
@@ -849,7 +863,11 @@ function Command({
   animate: boolean
   scale: Scale
 }) {
-  const body = cn("font-mono leading-relaxed break-words whitespace-pre-wrap", scale.command)
+  /* `anywhere` rather than `break-word`: a long URL then cannot widen the column it sits in. */
+  const body = cn(
+    "font-mono leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]",
+    scale.command
+  )
 
   return (
     <div className="relative overflow-hidden rounded-soft" style={{ background: SURFACE }}>

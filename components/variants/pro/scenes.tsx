@@ -57,14 +57,23 @@ function usePhase(count: number, interval: number, still: number) {
 
   React.useEffect(() => {
     if (reduce) return
-    const id = window.setInterval(() => setPhase((value) => (value + 1) % count), interval)
+    const id = window.setInterval(
+      () => setPhase((value) => (value + 1) % count),
+      interval
+    )
     return () => window.clearInterval(id)
   }, [reduce, count, interval])
 
   return reduce ? still : phase
 }
 
-function Replay({ onClick, label = "Replay" }: { onClick: () => void; label?: string }) {
+function Replay({
+  onClick,
+  label = "Replay",
+}: {
+  onClick: () => void
+  label?: string
+}) {
   return (
     <button
       type="button"
@@ -103,7 +112,9 @@ export function ApprovalScene() {
       />
       <div className="flex h-8 items-center">
         {decision === null ? (
-          <p className="text-[13px] text-[#86868b]">Focus the card, then press Y or N.</p>
+          <p className="text-[13px] text-[#86868b]">
+            Focus the card, then press Y or N.
+          </p>
         ) : (
           <Replay onClick={() => setDecision(null)} label="Ask again" />
         )}
@@ -167,7 +178,12 @@ export function TraceScene() {
 /* ------------------------------------------------------------------------ */
 
 const DELIVERY = [
-  { id: "confirmed", title: "Order confirmed", timestamp: "17 Nov, 13:45", icon: <ShoppingBag /> },
+  {
+    id: "confirmed",
+    title: "Order confirmed",
+    timestamp: "17 Nov, 13:45",
+    icon: <ShoppingBag />,
+  },
   { id: "packed", title: "Packed", timestamp: "17 Nov, 16:02", icon: <Package /> },
   { id: "transit", title: "In transit", timestamp: "18 Nov, 08:20", icon: <Truck /> },
   { id: "delivered", title: "Delivered", timestamp: "Today", icon: <MapPin /> },
@@ -223,10 +239,34 @@ export function FocusScene() {
 /* ------------------------------------------------------------------------ */
 
 const MODELS: AgentHiveModel[] = [
-  { id: "aster", label: "Aster 3", description: "Long context", icon: <Asterisk />, accent: "oklch(0.68 0.19 42)" },
-  { id: "prism", label: "Prism Flash", description: "Drafts and rewrites", icon: <Sparkles />, accent: "oklch(0.6 0.2 268)" },
-  { id: "nimbus", label: "Nimbus 2", description: "Code and structured output", icon: <Atom />, accent: "oklch(0.66 0.13 195)" },
-  { id: "quartz", label: "Quartz Mini", description: "Cheap enough for every row", icon: <Gem />, accent: "oklch(0.64 0.15 155)" },
+  {
+    id: "aster",
+    label: "Aster 3",
+    description: "Long context",
+    icon: <Asterisk />,
+    accent: "oklch(0.68 0.19 42)",
+  },
+  {
+    id: "prism",
+    label: "Prism Flash",
+    description: "Drafts and rewrites",
+    icon: <Sparkles />,
+    accent: "oklch(0.6 0.2 268)",
+  },
+  {
+    id: "nimbus",
+    label: "Nimbus 2",
+    description: "Code and structured output",
+    icon: <Atom />,
+    accent: "oklch(0.66 0.13 195)",
+  },
+  {
+    id: "quartz",
+    label: "Quartz Mini",
+    description: "Cheap enough for every row",
+    icon: <Gem />,
+    accent: "oklch(0.64 0.15 155)",
+  },
 ]
 
 const PROMPTS = [
@@ -263,7 +303,9 @@ export function HiveScene() {
     timers.current.push(
       window.setTimeout(() => {
         setRuns((current) =>
-          current.map((run) => (run.id === id ? { ...run, state: "done", status: "Done" } : run))
+          current.map((run) =>
+            run.id === id ? { ...run, state: "done", status: "Done" } : run
+          )
         )
       }, 2600)
     )
@@ -343,7 +385,10 @@ const MARKS: GlassCrestMark[] = [
     icon: (
       <Glyph>
         <path d="M3.6 3.4h4.1L12 8.1l4.3-4.7h4.1L14 10.5a2.8 2.8 0 0 1-4 0z" />
-        <path d="M3.6 20.6h4.1L12 15.9l4.3 4.7h4.1L14 13.5a2.8 2.8 0 0 0-4 0z" opacity={0.72} />
+        <path
+          d="M3.6 20.6h4.1L12 15.9l4.3 4.7h4.1L14 13.5a2.8 2.8 0 0 0-4 0z"
+          opacity={0.72}
+        />
       </Glyph>
     ),
   },

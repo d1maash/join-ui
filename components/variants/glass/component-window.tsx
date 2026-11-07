@@ -54,7 +54,18 @@ export function ComponentWindow({
   React.useEffect(() => {
     function fromHash() {
       const hash = window.location.hash.slice(1)
-      if (isView(hash)) setView(hash)
+      if (!isView(hash)) return
+      setView(hash)
+      /*
+       * Bring the whole window under the floating chrome once the panel has
+       * swapped — the browser's own jump runs before the new view lays out.
+       */
+      window.requestAnimationFrame(() => {
+        const node = frame.current
+        if (!node) return
+        const top = node.getBoundingClientRect().top + window.scrollY - 136
+        window.scrollTo({ top, behavior: "instant" })
+      })
     }
     fromHash()
     window.addEventListener("hashchange", fromHash)
@@ -76,7 +87,7 @@ export function ComponentWindow({
           key={entry.value}
           id={entry.value}
           aria-hidden="true"
-          className="absolute top-0 left-0"
+          className="absolute top-0 left-0 scroll-mt-[136px]"
         />
       ))}
 

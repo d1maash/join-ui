@@ -279,10 +279,9 @@ export function ApprovalGateScene() {
   )
 
   return (
-    <div className="w-full max-w-[30rem]">
+    <div className="w-full max-w-[34rem]">
       <ApprovalGate
         key={take}
-        size="sm"
         title="Push the release tag"
         reason="The changelog is written and every check has passed."
         tool="bash"

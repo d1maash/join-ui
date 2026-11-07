@@ -362,13 +362,20 @@ export function StatusTimeline({
                 ) : null}
               </div>
 
+              {/*
+                Set the way a list cell is: the title and the timestamp share
+                the first line, and the description runs the full width under
+                both, so a narrow card does not squeeze it into a column. The
+                grid places them; the reading order stays title, description,
+                timestamp.
+              */}
               <div
                 className={cn(
-                  "flex min-w-0",
+                  "min-w-0",
                   horizontal
-                    ? cn("flex-col gap-0.5", !isLast && "pr-4")
+                    ? cn("flex flex-col gap-0.5", !isLast && "pr-4")
                     : cn(
-                        "flex-1 items-baseline gap-3",
+                        "grid flex-1 grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-0.5",
                         scale.contentOffset,
                         // Spacing lives on the content so the marker column
                         // stretches over it and the trail reaches the next step.
@@ -376,30 +383,33 @@ export function StatusTimeline({
                       )
                 )}
               >
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <p
+                  className={cn(
+                    scale.title,
+                    "col-start-1 row-start-1 font-semibold",
+                    "transition-colors duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
+                    tone.title
+                  )}
+                >
+                  {step.title}
+                  <span className="sr-only">{`, ${STATE_LABEL[step.state]}`}</span>
+                </p>
+                {step.description ? (
                   <p
                     className={cn(
-                      scale.title,
-                      "font-semibold",
-                      "transition-colors duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
-                      tone.title
+                      scale.description,
+                      "col-span-2 row-start-2 text-muted-foreground"
                     )}
                   >
-                    {step.title}
-                    <span className="sr-only">{`, ${STATE_LABEL[step.state]}`}</span>
+                    {step.description}
                   </p>
-                  {step.description ? (
-                    <p className={cn(scale.description, "text-muted-foreground")}>
-                      {step.description}
-                    </p>
-                  ) : null}
-                </div>
+                ) : null}
 
                 {step.timestamp ? (
                   <span
                     className={cn(
                       scale.meta,
-                      "shrink-0 text-muted-foreground tabular-nums"
+                      "col-start-2 row-start-1 whitespace-nowrap text-muted-foreground tabular-nums"
                     )}
                   >
                     {step.timestamp}

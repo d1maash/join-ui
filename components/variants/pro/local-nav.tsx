@@ -28,9 +28,12 @@ export function LocalNav({ title, links }: { title: string; links: LocalNavLink[
   React.useEffect(() => {
     const element = sentinel.current
     if (!element) return
-    const observer = new IntersectionObserver(([entry]) => setStuck(!entry?.isIntersecting), {
-      threshold: 0,
-    })
+    const observer = new IntersectionObserver(
+      ([entry]) => setStuck(!entry?.isIntersecting),
+      {
+        threshold: 0,
+      }
+    )
     observer.observe(element)
     return () => observer.disconnect()
   }, [])
@@ -41,7 +44,8 @@ export function LocalNav({ title, links }: { title: string; links: LocalNavLink[
       .filter((node): node is HTMLElement => node !== null)
     const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) if (entry.isIntersecting) setCurrent(entry.target.id)
+        for (const entry of entries)
+          if (entry.isIntersecting) setCurrent(entry.target.id)
       },
       { rootMargin: "-30% 0px -60% 0px" }
     )
@@ -98,7 +102,10 @@ export function LocalNav({ title, links }: { title: string; links: LocalNavLink[
             >
               <ChevronDown
                 aria-hidden="true"
-                className={cn("size-4 transition-transform duration-300", open && "rotate-180")}
+                className={cn(
+                  "size-4 transition-transform duration-300",
+                  open && "rotate-180"
+                )}
               />
             </button>
 

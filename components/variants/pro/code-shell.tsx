@@ -67,7 +67,9 @@ export function ProCodeShell({
           bare && "pr-12",
           clipped && "pro-code-clip"
         )}
-        style={clipped ? { maxHeight: collapsedHeight, overflowY: "hidden" } : undefined}
+        style={
+          clipped ? { maxHeight: collapsedHeight, overflowY: "hidden" } : undefined
+        }
         data-line-numbers={showLineNumbers ? "" : undefined}
         dangerouslySetInnerHTML={{ __html: html }}
       />

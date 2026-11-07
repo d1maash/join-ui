@@ -76,7 +76,9 @@ export function ProCatalog({
 
   function toggle(trait: ComponentTrait) {
     setTraits((current) =>
-      current.includes(trait) ? current.filter((value) => value !== trait) : [...current, trait]
+      current.includes(trait)
+        ? current.filter((value) => value !== trait)
+        : [...current, trait]
     )
   }
 
@@ -99,7 +101,7 @@ export function ProCatalog({
         </div>
 
         <div className="flex w-full max-w-[40rem] flex-col items-center gap-4 sm:flex-row">
-          <label className="flex h-11 w-full items-center sm:flex-1 gap-2.5 rounded-full bg-white/[0.08] px-4 transition-shadow focus-within:shadow-[0_0_0_2px_#2997ff]">
+          <label className="flex h-11 w-full items-center gap-2.5 rounded-full bg-white/[0.08] px-4 transition-shadow focus-within:shadow-[0_0_0_2px_#2997ff] sm:flex-1">
             <Search aria-hidden="true" className="size-4 shrink-0 text-[#86868b]" />
             <span className="sr-only">Search components</span>
             <input
@@ -122,7 +124,11 @@ export function ProCatalog({
           </label>
         </div>
 
-        <div role="group" aria-label="Traits" className="flex flex-wrap justify-center gap-2">
+        <div
+          role="group"
+          aria-label="Traits"
+          className="flex flex-wrap justify-center gap-2"
+        >
           {TRAITS.map((trait) => {
             const on = traits.includes(trait.value)
             return (
@@ -167,7 +173,11 @@ export function ProCatalog({
         <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((item) => (
             <li key={item.slug} className="flex">
-              <ComponentTile item={item} accent={accents[item.slug] ?? "#a1a1a6"} className="w-full" />
+              <ComponentTile
+                item={item}
+                accent={accents[item.slug] ?? "#a1a1a6"}
+                className="w-full"
+              />
             </li>
           ))}
         </ul>
@@ -176,7 +186,9 @@ export function ProCatalog({
           <p className="text-[24px] font-semibold tracking-[-0.025em] text-[#f5f5f7]">
             Nothing matches.
           </p>
-          <p className="mt-2 text-[17px] text-[#86868b]">Try a different word, or clear the filters.</p>
+          <p className="mt-2 text-[17px] text-[#86868b]">
+            Try a different word, or clear the filters.
+          </p>
           <button
             type="button"
             onClick={reset}

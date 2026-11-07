@@ -166,7 +166,10 @@ export function CopyPromptPill({
       {copied ? (
         <Check aria-hidden="true" className={size === "sm" ? "size-3.5" : "size-4"} />
       ) : (
-        <Sparkles aria-hidden="true" className={size === "sm" ? "size-3.5" : "size-4"} />
+        <Sparkles
+          aria-hidden="true"
+          className={size === "sm" ? "size-3.5" : "size-4"}
+        />
       )}
       <span>{copied ? "Copied" : label}</span>
       <span aria-live="polite" className="sr-only">

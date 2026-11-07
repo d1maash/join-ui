@@ -84,7 +84,11 @@ export function Chapters({ chapters }: { chapters: Chapter[] }) {
             data-index={index}
             className="flex flex-col gap-10 lg:min-h-[76vh] lg:justify-center lg:py-16"
           >
-            <Caption chapter={chapter} index={index} active={!desktop || index === active} />
+            <Caption
+              chapter={chapter}
+              index={index}
+              active={!desktop || index === active}
+            />
             <div className="lg:hidden">
               <InlineStage chapter={chapter} />
             </div>
@@ -120,7 +124,10 @@ export function Chapters({ chapters }: { chapters: Chapter[] }) {
                       initial={{ opacity: 0, scale: 0.965, y: 12 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.985, y: -8 }}
-                      transition={{ duration: reduce ? 0 : 0.45, ease: [0.28, 0.11, 0.32, 1] }}
+                      transition={{
+                        duration: reduce ? 0 : 0.45,
+                        ease: [0.28, 0.11, 0.32, 1],
+                      }}
                     >
                       <Scene slug={current.slug} />
                     </motion.div>
@@ -183,7 +190,12 @@ function Caption({
         {chapter.title}
       </p>
       <h3 className={cn(type.headline, "mt-3 text-[#f5f5f7]")}>{chapter.headline}</h3>
-      <p className={cn(type.body, "mt-5 text-[#86868b] lg:text-[19px] lg:leading-[1.42]")}>
+      <p
+        className={cn(
+          type.body,
+          "mt-5 text-[#86868b] lg:text-[19px] lg:leading-[1.42]"
+        )}
+      >
         {chapter.body}
       </p>
       <p className="mt-6">

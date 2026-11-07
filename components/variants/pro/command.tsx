@@ -19,7 +19,11 @@ function isPackageManager(value: string): value is PackageManager {
  * stores, so picking bun here picks it on every command on every page.
  */
 function usePackageManager() {
-  return useStoredPreference<PackageManager>("joinui-package-manager", "pnpm", isPackageManager)
+  return useStoredPreference<PackageManager>(
+    "joinui-package-manager",
+    "pnpm",
+    isPackageManager
+  )
 }
 
 const MANAGER_OPTIONS = PACKAGE_MANAGERS.map((pm) => ({ value: pm, label: pm }))

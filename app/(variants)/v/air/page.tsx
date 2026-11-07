@@ -220,8 +220,8 @@ function BigTile({
         </p>
         <TileActions slug={slug} title={component.title} tone={dark ? "dark" : "light"} size="md" />
       </Reveal>
-      <Reveal delay={120} className="mx-auto mt-12 flex max-w-[64rem] justify-center sm:mt-16">
-        {scene}
+      <Reveal delay={120} className="mx-auto mt-12 max-w-[64rem] sm:mt-16">
+        <div className="air-zoom flex justify-center">{scene}</div>
       </Reveal>
     </section>
   )

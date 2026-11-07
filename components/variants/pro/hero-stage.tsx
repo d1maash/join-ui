@@ -70,7 +70,10 @@ export function HeroStage() {
           ? "done"
           : "running"
 
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "center 55%"] })
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "center 55%"],
+  })
   const rotateX = useTransform(scrollYProgress, [0, 1], [16, 0])
   const scale = useTransform(scrollYProgress, [0, 1], [0.9, 1])
   const glow = useTransform(scrollYProgress, [0, 1], [0.35, 1])
@@ -106,7 +109,10 @@ export function HeroStage() {
   }
 
   return (
-    <div ref={ref} className="relative mx-auto w-full max-w-[1120px] [perspective:2400px]">
+    <div
+      ref={ref}
+      className="relative mx-auto w-full max-w-[1120px] [perspective:2400px]"
+    >
       {/* The key light behind the object. */}
       <motion.div
         aria-hidden="true"
@@ -137,7 +143,11 @@ export function HeroStage() {
             className="order-2 lg:order-1"
             label="Agent run"
             status={
-              push === "done" ? "Finished" : push === "skipped" ? "Stopped" : "Waiting on you"
+              push === "done"
+                ? "Finished"
+                : push === "skipped"
+                  ? "Stopped"
+                  : "Waiting on you"
             }
             steps={steps}
           />

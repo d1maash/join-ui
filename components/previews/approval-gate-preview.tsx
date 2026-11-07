@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
  * of them through `subgrid`, and so the cards start on the same line however
  * many lines the caption above them happens to run to.
  */
-const PAIR = "grid gap-14 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-5"
+const PAIR = "grid grid-cols-1 gap-14 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-5"
 const ALIGNED = "lg:row-span-2 lg:grid lg:grid-rows-subgrid"
 
 export default function ApprovalGatePreview() {
@@ -131,7 +131,7 @@ function Panel({
   children: React.ReactNode
 }) {
   return (
-    <div className={cn("flex flex-col gap-5", className)}>
+    <div className={cn("flex min-w-0 flex-col gap-5", className)}>
       <div className="flex max-w-xl flex-col gap-1.5 px-1">
         <div className="flex min-h-7 items-center justify-between gap-3">
           <span className="text-[1.0625rem] leading-[1.375rem] font-semibold tracking-[-0.022em] text-foreground">

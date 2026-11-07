@@ -5,7 +5,12 @@ import { useRouter } from "next/navigation"
 import { Command } from "cmdk"
 import { ArrowRight, Box, FileText, LayoutGrid, Search } from "lucide-react"
 
-import { groupResults, searchIndex, type SearchEntry, type SearchGroup } from "@/lib/search"
+import {
+  groupResults,
+  searchIndex,
+  type SearchEntry,
+  type SearchGroup,
+} from "@/lib/search"
 import { cn } from "@/lib/utils"
 
 const GROUP_ICON: Record<SearchGroup, React.ComponentType<{ className?: string }>> = {
@@ -19,7 +24,12 @@ const GROUP_ICON: Record<SearchGroup, React.ComponentType<{ className?: string }
  * apple.com opens on a short list rather than on an empty box.
  */
 function quickLinks(index: SearchEntry[]): SearchEntry[] {
-  const wanted = ["doc:installation", "doc:registry-setup", "doc:ai", "doc:accessibility"]
+  const wanted = [
+    "doc:installation",
+    "doc:registry-setup",
+    "doc:ai",
+    "doc:accessibility",
+  ]
   return wanted
     .map((id) => index.find((entry) => entry.id === id))
     .filter((entry): entry is SearchEntry => entry !== undefined)

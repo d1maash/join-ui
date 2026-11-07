@@ -262,6 +262,31 @@
   }
 }
 
+/*
+ * Scroll-linked: a tile's product grows into place as it is scrolled to, the
+ * way Apple's product shots do. CSS scroll timelines only — nothing to
+ * hydrate — and only where the browser has them and motion is welcome.
+ */
+@keyframes air-zoom {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .v-air .air-zoom {
+      animation: air-zoom linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 40%;
+      transform-origin: 50% 100%;
+    }
+  }
+}
+
 /* Shelves scroll sideways with the bar hidden; the arrows and touch drive them. */
 .v-air .air-shelf {
   scrollbar-width: none;
@@ -294,7 +319,7 @@
 /* The frosted bars. */
 .v-air .air-frost,
 .v-air.air-frost {
-  background-color: rgb(255 255 255 / 0.78);
+  background-color: rgb(255 255 255 / 0.82);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
 }

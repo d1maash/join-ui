@@ -61,7 +61,9 @@ export function GlobalNav({
             className="-ml-2 flex h-11 items-center gap-2 rounded-md px-2 text-[#f5f5f7] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#2997ff]"
           >
             <LogoMark className="size-[18px]" />
-            <span className="text-[14px] font-semibold tracking-[-0.02em]">Join UI</span>
+            <span className="text-[14px] font-semibold tracking-[-0.02em]">
+              Join UI
+            </span>
           </Link>
 
           <ul className="hidden flex-1 items-center justify-evenly md:flex">
@@ -136,7 +138,11 @@ export function GlobalNav({
                     </Dialog.Close>
                   </div>
                   <div className="px-8 pt-4 pb-28">
-                    <MobileMenu links={links} components={components} isActive={isActive} />
+                    <MobileMenu
+                      links={links}
+                      components={components}
+                      isActive={isActive}
+                    />
                   </div>
                 </Dialog.Content>
               </Dialog.Portal>
@@ -184,7 +190,11 @@ function MobileMenu({
       : {
           initial: { opacity: 0, y: -8 },
           animate: { opacity: 1, y: 0 },
-          transition: { delay: 0.04 + index * 0.025, duration: 0.32, ease: [0.4, 0, 0.6, 1] as const },
+          transition: {
+            delay: 0.04 + index * 0.025,
+            duration: 0.32,
+            ease: [0.4, 0, 0.6, 1] as const,
+          },
         }
 
   return (

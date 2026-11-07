@@ -66,7 +66,10 @@ export function ComponentTile({
         <p className="mt-3 line-clamp-3 flex-1 text-[15px] leading-[1.45] tracking-[-0.016em] text-[#86868b]">
           {item.description}
         </p>
-        <p aria-hidden="true" className="mt-5 text-[15px] text-[#2997ff] group-hover:underline">
+        <p
+          aria-hidden="true"
+          className="mt-5 text-[15px] text-[#2997ff] group-hover:underline"
+        >
           Learn more ›
         </p>
       </div>

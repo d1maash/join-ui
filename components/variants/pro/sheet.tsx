@@ -28,13 +28,20 @@ export function ProSection({
     <section
       id={id}
       aria-labelledby={`${id}-title`}
-      className={cn("scroll-mt-[72px] border-t border-white/[0.12] pt-14 pb-20 sm:pt-20 sm:pb-24", className)}
+      className={cn(
+        "scroll-mt-[72px] border-t border-white/[0.12] pt-14 pb-20 sm:pt-20 sm:pb-24",
+        className
+      )}
     >
       <h2 id={`${id}-title`} className={cn(type.headline, "text-[#f5f5f7]")}>
         {title}
       </h2>
       {lead ? (
-        <p className={cn(type.intro, "mt-4 max-w-[40rem] font-semibold text-[#86868b]")}>{lead}</p>
+        <p
+          className={cn(type.intro, "mt-4 max-w-[40rem] font-semibold text-[#86868b]")}
+        >
+          {lead}
+        </p>
       ) : null}
       <div className="mt-10 sm:mt-14">{children}</div>
     </section>
@@ -107,7 +114,9 @@ export function PropsSheet({ groups }: { groups: PropGroup[] }) {
                     {prop.name}
                   </span>
                   {prop.required ? (
-                    <span className="text-[12px] font-semibold text-[#ff9f0a]">Required</span>
+                    <span className="text-[12px] font-semibold text-[#ff9f0a]">
+                      Required
+                    </span>
                   ) : null}
                 </dt>
                 <dd className="flex flex-col gap-2 sm:col-span-8">
@@ -146,8 +155,8 @@ export function KeyboardSheet({
   if (entries.length === 0) {
     return (
       <p className="text-[17px] leading-[1.47] text-[#86868b]">
-        {title} renders no interactive controls of its own, so it adds nothing to the tab
-        order.
+        {title} renders no interactive controls of its own, so it adds nothing to the
+        tab order.
       </p>
     )
   }

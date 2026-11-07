@@ -40,7 +40,12 @@ function rewrite(href: string): string {
   return href.startsWith("/") ? proHref(href) : href
 }
 
-function Anchor({ href = "", className, children, ...props }: React.ComponentPropsWithoutRef<"a">) {
+function Anchor({
+  href = "",
+  className,
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<"a">) {
   const style = cn(
     "rounded-sm text-[#2997ff] underline-offset-[0.18em] hover:underline",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2997ff]",
@@ -54,7 +59,13 @@ function Anchor({ href = "", className, children, ...props }: React.ComponentPro
     )
   }
   return (
-    <a href={href} target="_blank" rel="noreferrer noopener" className={style} {...props}>
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer noopener"
+      className={style}
+      {...props}
+    >
       {children}
       <span className="sr-only"> (opens in a new tab)</span>
     </a>
@@ -67,7 +78,9 @@ interface CodeElementProps {
   children?: React.ReactNode
 }
 
-function isCodeElement(node: React.ReactNode): node is React.ReactElement<CodeElementProps> {
+function isCodeElement(
+  node: React.ReactNode
+): node is React.ReactElement<CodeElementProps> {
   return React.isValidElement<CodeElementProps>(node)
 }
 
@@ -76,7 +89,9 @@ function Pre({ children }: React.ComponentPropsWithoutRef<"pre">) {
   const { className, children: content } = children.props
   const code = typeof content === "string" ? content : ""
   const language = /language-([\w-]+)/.exec(className ?? "")?.[1] ?? "text"
-  const { title, highlightLines, showLineNumbers } = parseCodeMeta(children.props["data-meta"])
+  const { title, highlightLines, showLineNumbers } = parseCodeMeta(
+    children.props["data-meta"]
+  )
 
   return (
     <div className="my-7">
@@ -95,7 +110,12 @@ function Pre({ children }: React.ComponentPropsWithoutRef<"pre">) {
 const CALLOUT = {
   note: { icon: Info, label: "Note", tint: "#64d2ff", surface: "bg-[#161617]" },
   tip: { icon: CheckCircle2, label: "Tip", tint: "#30d158", surface: "bg-[#161617]" },
-  warning: { icon: AlertTriangle, label: "Warning", tint: "#ff9f0a", surface: "bg-[#211a0e]" },
+  warning: {
+    icon: AlertTriangle,
+    label: "Warning",
+    tint: "#ff9f0a",
+    surface: "bg-[#211a0e]",
+  },
   danger: { icon: Ban, label: "Careful", tint: "#ff6961", surface: "bg-[#2a1312]" },
 } as const
 
@@ -116,9 +136,16 @@ function Callout({
         surface
       )}
     >
-      <Icon aria-hidden="true" className="mt-1 size-[18px] shrink-0" style={{ color: tint }} />
+      <Icon
+        aria-hidden="true"
+        className="mt-1 size-[18px] shrink-0"
+        style={{ color: tint }}
+      />
       <div className="min-w-0 flex-1">
-        <p className="text-[15px] font-semibold tracking-[-0.016em]" style={{ color: tint }}>
+        <p
+          className="text-[15px] font-semibold tracking-[-0.016em]"
+          style={{ color: tint }}
+        >
           {title ?? label}
         </p>
         <div className="mt-1 flex flex-col gap-2 text-[15px] leading-[1.55] tracking-[-0.016em] text-[#d2d2d7] [&_p]:my-0 [&_p]:text-[15px] [&_p]:text-[#d2d2d7]">
@@ -151,22 +178,46 @@ function Step({ title, children }: { title: string; children: React.ReactNode })
   )
 }
 
-function CardGroup({ children, columns = 2 }: { children: React.ReactNode; columns?: 2 | 3 }) {
+function CardGroup({
+  children,
+  columns = 2,
+}: {
+  children: React.ReactNode
+  columns?: 2 | 3
+}) {
   return (
-    <div className={cn("my-8 grid gap-4", columns === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
+    <div
+      className={cn(
+        "my-8 grid gap-4",
+        columns === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"
+      )}
+    >
       {children}
     </div>
   )
 }
 
-function Card({ title, href, children }: { title: string; href: string; children?: React.ReactNode }) {
+function Card({
+  title,
+  href,
+  children,
+}: {
+  title: string
+  href: string
+  children?: React.ReactNode
+}) {
   const external = href.startsWith("http")
   const body = (
     <>
       <span className="flex items-start justify-between gap-3">
-        <span className="text-[17px] font-semibold tracking-[-0.022em] text-[#f5f5f7]">{title}</span>
+        <span className="text-[17px] font-semibold tracking-[-0.022em] text-[#f5f5f7]">
+          {title}
+        </span>
         {external ? (
-          <ArrowUpRight aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[#86868b]" />
+          <ArrowUpRight
+            aria-hidden="true"
+            className="mt-0.5 size-4 shrink-0 text-[#86868b]"
+          />
         ) : null}
       </span>
       {children ? (
@@ -174,7 +225,10 @@ function Card({ title, href, children }: { title: string; href: string; children
           {children}
         </span>
       ) : null}
-      <span aria-hidden="true" className="mt-4 block text-[15px] text-[#2997ff] group-hover:underline">
+      <span
+        aria-hidden="true"
+        className="mt-4 block text-[15px] text-[#2997ff] group-hover:underline"
+      >
         Learn more ›
       </span>
     </>
@@ -224,7 +278,13 @@ function ComponentPreview({
   )
 }
 
-function PackageManagerTabs({ commands, label }: { commands: CommandSet; label?: string }) {
+function PackageManagerTabs({
+  commands,
+  label,
+}: {
+  commands: CommandSet
+  label?: string
+}) {
   return <CommandBox commands={commands} label={label} className="my-6" />
 }
 
@@ -278,7 +338,10 @@ export const proMdxComponents = {
 
   p: ({ className, ...props }: React.ComponentPropsWithoutRef<"p">) => (
     <p
-      className={cn("my-5 text-[17px] leading-[1.65] tracking-[-0.018em] text-[#cdcdd2]", className)}
+      className={cn(
+        "my-5 text-[17px] leading-[1.65] tracking-[-0.018em] text-[#cdcdd2]",
+        className
+      )}
       {...props}
     />
   ),
@@ -304,7 +367,10 @@ export const proMdxComponents = {
   li: ({ className, ...props }: React.ComponentPropsWithoutRef<"li">) => (
     <li className={cn("pl-1 [&>ul]:my-2", className)} {...props} />
   ),
-  blockquote: ({ className, ...props }: React.ComponentPropsWithoutRef<"blockquote">) => (
+  blockquote: ({
+    className,
+    ...props
+  }: React.ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
       className={cn(
         "my-8 border-l-2 border-[#2997ff] pl-5 text-[19px] leading-[1.5] text-[#f5f5f7] [&>p]:text-[19px] [&>p]:text-[#f5f5f7]",
@@ -316,11 +382,16 @@ export const proMdxComponents = {
   hr: ({ className, ...props }: React.ComponentPropsWithoutRef<"hr">) => (
     <hr className={cn("my-14 border-white/[0.12]", className)} {...props} />
   ),
-  code: ({ children }: React.ComponentPropsWithoutRef<"code">) => <InlineCode>{children}</InlineCode>,
+  code: ({ children }: React.ComponentPropsWithoutRef<"code">) => (
+    <InlineCode>{children}</InlineCode>
+  ),
   pre: Pre,
   table: ({ className, ...props }: React.ComponentPropsWithoutRef<"table">) => (
     <div className="my-8 overflow-x-auto rounded-[20px] bg-[#161617] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.06)]">
-      <table className={cn("w-full border-collapse text-left text-[15px]", className)} {...props} />
+      <table
+        className={cn("w-full border-collapse text-left text-[15px]", className)}
+        {...props}
+      />
     </div>
   ),
   th: ({ className, ...props }: React.ComponentPropsWithoutRef<"th">) => (

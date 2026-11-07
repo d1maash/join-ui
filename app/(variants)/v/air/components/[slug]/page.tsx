@@ -172,7 +172,7 @@ export default async function AirComponentPage({ params }: PageProps) {
           <h2 id="overview-title" className="sr-only">
             Overview
           </h2>
-          <p className="text-[clamp(1.3125rem,2.2vw,1.75rem)] leading-[1.32] font-semibold tracking-[-0.022em] text-[#86868b]">
+          <p className="text-[clamp(1.1875rem,2.2vw,1.75rem)] leading-[1.34] font-semibold tracking-[-0.02em] text-[#86868b]">
             <span className="text-[#1d1d1f]">{lead}</span> {rest.join(" ")}
           </p>
         </Reveal>
@@ -436,7 +436,7 @@ export default async function AirComponentPage({ params }: PageProps) {
                         className="border-b border-[#e8e8ed] align-top last:border-b-0"
                       >
                         <th scope="row" className="py-3 pr-6 font-normal whitespace-nowrap">
-                          <span className="flex flex-wrap gap-1.5">
+                          <span className="flex gap-1.5">
                             {entry.keys.map((key) => (
                               <kbd
                                 key={key}
@@ -638,7 +638,9 @@ function InstallRow({
 function SpecRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="grid gap-4 border-b border-[#d2d2d7] py-10 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10">
-      <dt className="text-[24px] font-semibold tracking-[-0.024em] text-[#1d1d1f]">{label}</dt>
+      <dt className="self-start text-[24px] font-semibold tracking-[-0.024em] text-[#1d1d1f] md:sticky md:top-[76px]">
+        {label}
+      </dt>
       <dd className="min-w-0">{children}</dd>
     </div>
   )

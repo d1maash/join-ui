@@ -52,7 +52,9 @@ export function DocsSidebar({
                   >
                     {item.title}
                     {item.label ? (
-                      <span className="text-[11px] font-semibold text-[#ff9f0a]">{item.label}</span>
+                      <span className="text-[11px] font-semibold text-[#ff9f0a]">
+                        {item.label}
+                      </span>
                     ) : null}
                   </Link>
                 </li>
@@ -102,7 +104,10 @@ export function DocsMobileMenu({
         </span>
         <ChevronDown
           aria-hidden="true"
-          className={cn("size-4 text-[#a1a1a6] transition-transform", open && "rotate-180")}
+          className={cn(
+            "size-4 text-[#a1a1a6] transition-transform",
+            open && "rotate-180"
+          )}
         />
       </button>
       <div

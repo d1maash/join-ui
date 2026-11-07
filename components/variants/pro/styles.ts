@@ -24,8 +24,8 @@ export const pillClass = (tone: PillTone, size: "sm" | "md" | "lg" = "md") =>
 
 /** The blue "Learn more ›" text link. */
 export const textLinkClass = cn(
-  "group/link inline-flex items-center gap-0.5 rounded-sm text-[#2997ff] tracking-[-0.022em]",
-  "hover:underline underline-offset-[0.2em] decoration-1",
+  "group/link inline-flex items-center gap-0.5 rounded-sm tracking-[-0.022em] text-[#2997ff]",
+  "decoration-1 underline-offset-[0.2em] hover:underline",
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2997ff]"
 )
 
@@ -36,8 +36,10 @@ export const type = {
     "text-[clamp(2.5rem,6vw,5rem)] leading-[1.02] font-semibold tracking-[-0.042em] text-balance",
   headline:
     "text-[clamp(2rem,4.2vw,3.5rem)] leading-[1.06] font-semibold tracking-[-0.035em] text-balance",
-  title: "text-[clamp(1.625rem,2.6vw,2.5rem)] leading-[1.1] font-semibold tracking-[-0.03em]",
-  eyebrow: "text-[clamp(1.0625rem,1.6vw,1.3125rem)] leading-[1.2] font-semibold tracking-[-0.02em]",
+  title:
+    "text-[clamp(1.625rem,2.6vw,2.5rem)] leading-[1.1] font-semibold tracking-[-0.03em]",
+  eyebrow:
+    "text-[clamp(1.0625rem,1.6vw,1.3125rem)] leading-[1.2] font-semibold tracking-[-0.02em]",
   intro:
     "text-[clamp(1.1875rem,1.9vw,1.5rem)] leading-[1.38] font-semibold tracking-[-0.025em] text-pretty",
   body: "text-[17px] leading-[1.47] tracking-[-0.022em]",

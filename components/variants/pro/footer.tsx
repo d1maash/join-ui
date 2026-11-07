@@ -21,7 +21,10 @@ export function ProFooter() {
     },
     ...docsNav.map((section) => ({
       title: section.title,
-      links: section.items.map((page) => ({ label: page.title, href: proHref(page.href) })),
+      links: section.items.map((page) => ({
+        label: page.title,
+        href: proHref(page.href),
+      })),
     })),
     {
       title: "Project",
@@ -42,7 +45,10 @@ export function ProFooter() {
           <span className="text-[#d2d2d7]">{siteConfig.namespace}</span> namespace.
         </p>
 
-        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 md:grid-cols-5">
+        <nav
+          aria-label="Footer"
+          className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 md:grid-cols-5"
+        >
           {columns.map((column) => (
             <div key={column.title}>
               <h2 className="mb-2.5 font-semibold text-[#e8e8ed]">{column.title}</h2>
