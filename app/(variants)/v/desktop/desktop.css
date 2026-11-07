@@ -1835,3 +1835,34 @@
     inset: 0;
   }
 }
+
+.v-desktop .d-gallery {
+  display: grid;
+  flex: 1;
+  grid-template-areas: "stage" "strip" "info";
+  gap: 16px 24px;
+  padding: 20px 24px 24px;
+  align-content: start;
+}
+
+@media (min-width: 1280px) {
+  .v-desktop .d-gallery {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-areas: "stage info" "strip strip";
+  }
+}
+
+.v-desktop .d-gallery .d-gallery-stage {
+  grid-area: stage;
+}
+
+.v-desktop .d-gallery .d-gallery-info {
+  grid-area: info;
+}
+
+.v-desktop .d-gallery .d-filmstrip {
+  grid-area: strip;
+  margin: 0 -8px;
+  padding: 4px 8px 0;
+  border-top: 0;
+}
