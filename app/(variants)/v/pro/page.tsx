@@ -52,7 +52,7 @@ export default async function ProHome() {
       {/* ---------------------------------------------------------------- */}
       {/* Hero                                                              */}
       {/* ---------------------------------------------------------------- */}
-      <section aria-labelledby="hero-title" className="relative pt-14 pb-36 sm:pt-20 lg:pb-44">
+      <section aria-labelledby="hero-title" className="relative pt-14 pb-20 sm:pt-20 lg:pb-24">
         <div
           aria-hidden="true"
           className="pro-spotlight pointer-events-none absolute inset-x-0 top-0 h-[1100px]"

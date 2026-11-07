@@ -142,7 +142,7 @@ export function HeroStage() {
             steps={steps}
           />
 
-          <div className="order-1 flex flex-col gap-4 lg:order-2 lg:pt-10">
+          <div className="order-1 flex flex-col gap-4 lg:order-2 lg:justify-center">
             <ApprovalGate
               key={take}
               title="Push the branch"

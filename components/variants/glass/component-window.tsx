@@ -147,8 +147,10 @@ export function ComponentWindow({
 function LivePreview({ slug }: { slug: string }) {
   const demo = renderPreview(slug)
   return (
-    <div className="flex min-h-[30rem] items-center justify-center px-4 py-10 text-foreground sm:px-10 sm:py-14">
-      {demo ?? (
+    <div className="flex min-h-[30rem] items-center justify-center overflow-x-auto px-3 py-10 text-foreground sm:px-10 sm:py-14">
+      {demo ? (
+        <div className="flex w-full min-w-0 justify-center">{demo}</div>
+      ) : (
         <p className="max-w-sm text-center text-[15px] text-[#56565b]">
           No demo is registered for this component yet.
         </p>

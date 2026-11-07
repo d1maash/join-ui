@@ -87,7 +87,7 @@ export function ApprovalScene() {
   const [decision, setDecision] = React.useState<ApprovalGateDecision | null>(null)
 
   return (
-    <div className="flex w-full max-w-lg flex-col items-center gap-5">
+    <div className="flex w-full max-w-xl flex-col items-center gap-5">
       <ApprovalGate
         className="w-full"
         title="Reinstall the dependencies"
@@ -156,7 +156,7 @@ export function TraceScene() {
 
   return (
     <ToolTrace
-      className="w-full max-w-lg"
+      className="w-full max-w-xl"
       label="Agent run"
       status={phase >= TRACE.length ? "Finished" : undefined}
       steps={steps}

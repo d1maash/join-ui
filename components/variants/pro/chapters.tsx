@@ -82,7 +82,7 @@ export function Chapters({ chapters }: { chapters: Chapter[] }) {
               items.current[index] = node
             }}
             data-index={index}
-            className="flex flex-col gap-10 lg:min-h-[86vh] lg:justify-center lg:py-16"
+            className="flex flex-col gap-10 lg:min-h-[76vh] lg:justify-center lg:py-16"
           >
             <Caption chapter={chapter} index={index} active={!desktop || index === active} />
             <div className="lg:hidden">

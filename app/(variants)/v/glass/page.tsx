@@ -108,10 +108,10 @@ export default async function GlassHome() {
             className="g-type-in mt-9 flex flex-wrap items-center justify-center gap-3"
             style={{ animationDelay: "300ms" }}
           >
-            <Link href={g("/components")} className={pill("primary", "lg")}>
+            <Link href={g("/components")} className={pill("primary", "lg", "max-sm:h-11 max-sm:px-5 max-sm:text-[16px]")}>
               Browse components
             </Link>
-            <Link href={g("/docs/installation")} className={pill("glass", "lg")}>
+            <Link href={g("/docs/installation")} className={pill("glass", "lg", "max-sm:h-11 max-sm:px-5 max-sm:text-[16px]")}>
               Get started
             </Link>
           </div>
@@ -360,10 +360,10 @@ export default async function GlassHome() {
             Pick a component, run one command, and make it yours.
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <Link href={g("/components")} className={pill("primary", "lg")}>
+            <Link href={g("/components")} className={pill("primary", "lg", "max-sm:h-11 max-sm:px-5 max-sm:text-[16px]")}>
               Browse components
             </Link>
-            <Link href={g("/docs")} className={pill("glass", "lg")}>
+            <Link href={g("/docs")} className={pill("glass", "lg", "max-sm:h-11 max-sm:px-5 max-sm:text-[16px]")}>
               Read the docs
             </Link>
           </div>
