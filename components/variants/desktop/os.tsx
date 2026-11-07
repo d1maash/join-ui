@@ -59,6 +59,9 @@ interface OsValue {
   /** Notification badges on Dock icons. */
   badges: Partial<Record<AppId, number>>
   setBadge: (id: AppId, count: number) => void
+  /** Lets the desktop answer a Dock click itself — say, by re-showing a notification. */
+  setDockHandler: (id: AppId, handler: (() => boolean) | null) => void
+  handleDock: (id: AppId) => boolean
 }
 
 const OsContext = React.createContext<OsValue | null>(null)
@@ -83,6 +86,13 @@ export function OsProvider({
   const [badges, setBadges] = React.useState<Partial<Record<AppId, number>>>({})
   const z = React.useRef(10)
   const icons = React.useRef(new Map<AppId, HTMLElement>())
+  const handlers = React.useRef(new Map<AppId, () => boolean>())
+
+  const setDockHandler = React.useCallback((id: AppId, handler: (() => boolean) | null) => {
+    if (handler) handlers.current.set(id, handler)
+    else handlers.current.delete(id)
+  }, [])
+  const handleDock = React.useCallback((id: AppId) => handlers.current.get(id)?.() ?? false, [])
 
   /* A remembered wallpaper is a convenience; a missing one is the default. */
   React.useEffect(() => {
@@ -216,6 +226,8 @@ export function OsProvider({
       setWallpaper,
       badges,
       setBadge,
+      setDockHandler,
+      handleDock,
     }),
     [
       components,
@@ -238,6 +250,8 @@ export function OsProvider({
       setWallpaper,
       badges,
       setBadge,
+      setDockHandler,
+      handleDock,
     ]
   )
 
