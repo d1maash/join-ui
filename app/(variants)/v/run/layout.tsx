@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist_Mono, Instrument_Serif } from "next/font/google"
 
 import { RunFooter } from "@/components/variants/run/footer"
+import { RunMotion } from "@/components/variants/run/motion-config"
 import { RunTopBar } from "@/components/variants/run/top-bar"
 import { VariantSwitcherDock } from "@/components/variants/variant-switcher"
 import { componentsByName } from "@/lib/registry"
@@ -58,9 +59,11 @@ export default function RunLayout({ children }: { children: React.ReactNode }) {
       <a href="#main-content" className="run-skip">
         Skip to content
       </a>
-      <RunTopBar searchIndex={searchIndex} components={components} />
-      {children}
-      <RunFooter />
+      <RunMotion>
+        <RunTopBar searchIndex={searchIndex} components={components} />
+        {children}
+        <RunFooter />
+      </RunMotion>
       <VariantSwitcherDock current="run" />
     </div>
   )

@@ -1169,14 +1169,23 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) 312px;
     align-items: start;
+    /* The inspector's column, drawn on the scroller so it runs full height. */
+    background: linear-gradient(
+      90deg,
+      var(--d-pane-solid) calc(100% - 313px),
+      rgb(255 255 255 / 0.1) calc(100% - 313px) calc(100% - 312px),
+      #1e1e21 calc(100% - 312px)
+    );
   }
   .v-desktop .d-inspector {
     position: sticky;
     top: 0;
-    max-height: 100%;
-    min-height: 100%;
+    max-height: calc(100dvh - var(--d-menubar) - 132px);
     overflow-y: auto;
-    border-left: 1px solid var(--d-hair);
+    background: transparent;
+  }
+  .v-desktop .d-stage-full .d-inspector {
+    max-height: calc(100dvh - var(--d-menubar) - 56px);
   }
 }
 

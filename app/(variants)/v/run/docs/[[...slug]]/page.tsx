@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
+import { ChevronDown } from "lucide-react"
 import { MDXRemote } from "next-mdx-remote/rsc"
 import rehypeSlug from "rehype-slug"
 import remarkGfm from "remark-gfm"
@@ -11,6 +12,7 @@ import { SourceList } from "@/components/variants/run/source-list"
 import { Toc } from "@/components/variants/run/toc"
 import {
   DOCS_INDEX_SLUG,
+  docsNav,
   docsSlugs,
   getDocsPage,
   getDocsSiblings,
@@ -87,6 +89,36 @@ export default async function RunDocsPage({ params }: PageProps) {
             <p className="mt-6 max-w-[38rem] text-[clamp(1.125rem,1.5vw,1.3125rem)] leading-[1.45] tracking-[-0.012em] text-pretty text-[#8b8b90]">
               {page.description}
             </p>
+
+            <details className="group mt-8 rounded-[12px] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08)] lg:hidden">
+              <summary className="flex h-11 cursor-pointer list-none items-center justify-between px-4 text-[14px] text-[#c7c7cc] [&::-webkit-details-marker]:hidden">
+                All guides
+                <ChevronDown
+                  aria-hidden="true"
+                  className="size-4 text-[#77777c] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <div className="flex flex-col gap-5 px-4 pt-1 pb-4">
+                {docsNav.map((group) => (
+                  <div key={group.title}>
+                    <p className="run-label pb-1.5">{group.title}</p>
+                    <ul className="flex flex-col">
+                      {group.items.map((item) => (
+                        <li key={item.slug}>
+                          <Link
+                            href={href(item.href)}
+                            aria-current={item.slug === page.slug ? "page" : undefined}
+                            className="block py-1.5 text-[15px] text-[#8b8b90] aria-[current=page]:text-[#f5f5f7]"
+                          >
+                            {item.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </details>
 
             <div className="mt-12 border-t border-white/[0.08] pt-10 md:mt-16 md:pt-12">
               <MDXRemote
