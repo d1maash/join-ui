@@ -231,27 +231,27 @@
     transform: translate3d(0, 2.5rem, 0);
   }
 
-  .v-air .air-overlay[data-state="open"] {
+  :is(.v-air.air-overlay, .v-air .air-overlay)[data-state="open"] {
     animation: air-fade-in 0.3s ease both;
   }
 
-  .v-air .air-overlay[data-state="closed"] {
+  :is(.v-air.air-overlay, .v-air .air-overlay)[data-state="closed"] {
     animation: air-fade-out 0.2s ease both;
   }
 
-  .v-air .air-flyout[data-state="open"] {
+  :is(.v-air.air-flyout, .v-air .air-flyout)[data-state="open"] {
     animation: air-drop 0.42s var(--air-ease-out) both;
   }
 
-  .v-air .air-flyout[data-state="closed"] {
+  :is(.v-air.air-flyout, .v-air .air-flyout)[data-state="closed"] {
     animation: air-fade-out 0.18s ease both;
   }
 
-  .v-air .air-sheet[data-state="open"] {
+  :is(.v-air.air-sheet, .v-air .air-sheet)[data-state="open"] {
     animation: air-sheet 0.5s var(--air-ease-out) both;
   }
 
-  .v-air .air-sheet[data-state="closed"] {
+  :is(.v-air.air-sheet, .v-air .air-sheet)[data-state="closed"] {
     animation: air-sheet-out 0.22s ease both;
   }
 
