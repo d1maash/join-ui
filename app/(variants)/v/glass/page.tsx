@@ -139,12 +139,12 @@ export default async function GlassHome() {
               <>
                 {count} components.
                 <br />
-                Every one of them alive.
+                All of them alive.
               </>
             }
           >
-            Each tile below is running the real thing. Every preview on this site runs
-            the exact source the CLI installs.
+            Every tile is running the real thing — the same source the CLI puts in your
+            project.
           </Head>
 
           <ul className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-12">

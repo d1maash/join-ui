@@ -25,19 +25,22 @@ export function Reveal({
   delay?: number
 } & React.HTMLAttributes<HTMLElement>) {
   const ref = React.useRef<HTMLElement | null>(null)
-  const [shown, setShown] = React.useState(false)
 
+  // The attribute is written straight to the element rather than through
+  // state: React never sets `data-shown`, so it never takes it away again,
+  // and releasing an entrance costs no re-render.
   React.useEffect(() => {
     const element = ref.current
-    if (!element || shown) return
+    if (!element) return
+    const show = () => element.setAttribute("data-shown", "")
     if (typeof IntersectionObserver === "undefined") {
-      setShown(true)
+      show()
       return
     }
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
-          setShown(true)
+          show()
           observer.disconnect()
         }
       },
@@ -45,14 +48,13 @@ export function Reveal({
     )
     observer.observe(element)
     return () => observer.disconnect()
-  }, [shown])
+  }, [])
 
   return React.createElement(
     Tag,
     {
       ref,
       "data-air-reveal": "",
-      "data-shown": shown ? "" : undefined,
       className,
       style: delay ? { ...style, ["--air-delay" as string]: `${delay}ms` } : style,
       ...props,

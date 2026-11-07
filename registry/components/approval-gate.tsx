@@ -109,8 +109,9 @@ const WAITING_LABEL: Record<ApprovalGateRisk, string> = {
  *
  * `stroke` is the clock's arc and `track` the circle it drains from; `disc`
  * fills the marker while the gate waits without a clock. A destructive request
- * also sets its answer in the destructive style — red, as the system sets any
- * button that does something that cannot be taken back.
+ * sets its answer in the destructive style — red, and tinted rather than
+ * filled, because the system never gives the action that cannot be taken back
+ * the most prominent button on the screen.
  */
 const RISK_TONES: Record<
   ApprovalGateRisk,
@@ -138,7 +139,7 @@ const RISK_TONES: Record<
     track: "stroke-critical/16",
     disc: "bg-critical-soft",
     chip: "bg-critical-soft text-critical",
-    allow: "bg-critical text-critical-foreground hover:bg-critical/85",
+    allow: "bg-critical-soft text-critical hover:bg-critical/20",
   },
 }
 

@@ -258,7 +258,8 @@ export function HiveScene() {
     const index = count.current++
     const id = `run-${index}`
     const prompt = PROMPTS[index % PROMPTS.length]!
-    setRuns((current) => [{ id, prompt, modelId: model.id, state: "working" }, ...current].slice(0, 3))
+    const run: AgentHiveRun = { id, prompt, modelId: model.id, state: "working" }
+    setRuns((current) => [run, ...current].slice(0, 3))
     timers.current.push(
       window.setTimeout(() => {
         setRuns((current) =>

@@ -440,6 +440,16 @@
   }
 }
 
+/* The same settle, transform only, for an entrance that holds live glass. */
+@keyframes g-settle {
+  from {
+    transform: translate3d(0, 72px, 0) scale(0.97);
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 @keyframes g-type-in {
   from {
     opacity: 0;
@@ -475,6 +485,10 @@
 
   .v-glass .g-float-in {
     animation: g-float-in 1200ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+
+  .v-glass .g-settle {
+    animation: g-settle 1300ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
   }
 
   .v-glass .g-type-in {

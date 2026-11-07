@@ -53,14 +53,14 @@ export default function AirComponentsPage() {
             </li>
           </ul>
         </header>
-        {/*
-          The catalog reads `?category=` with `useSearchParams`, so it needs a
-          Suspense boundary to keep this page statically rendered.
-        */}
-        <Suspense fallback={<AirCatalogFallback count={items.length} />}>
-          <AirCatalog items={items} />
-        </Suspense>
       </div>
+      {/*
+        The catalog reads `?category=` with `useSearchParams`, so it needs a
+        Suspense boundary to keep this page statically rendered.
+      */}
+      <Suspense fallback={<AirCatalogFallback count={items.length} />}>
+        <AirCatalog items={items} />
+      </Suspense>
     </main>
   )
 }

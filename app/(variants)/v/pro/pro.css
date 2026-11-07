@@ -86,13 +86,6 @@
     backdrop-filter: saturate(180%) blur(20px);
   }
 
-  /*
- * On a product page the global nav scrolls away and the local nav takes the
- * top edge, the way apple.com hands one to the other.
- */
-  .v-pro:has([data-pro-localnav]) .pro-globalnav-wrap {
-    position: relative;
-  }
 
   .v-pro .pro-localnav {
     background: rgb(0 0 0 / 0.72);
@@ -188,6 +181,15 @@
       opacity: 1 !important;
     }
   }
+}
+
+/*
+ * On a product page the global nav scrolls away and the local nav takes the
+ * top edge, the way apple.com hands one to the other. Unlayered, so it beats
+ * the `sticky` utility on the same element.
+ */
+.v-pro:has([data-pro-localnav]) .pro-globalnav-wrap {
+  position: relative;
 }
 
 /* ------------------------------------------------------------------------ */

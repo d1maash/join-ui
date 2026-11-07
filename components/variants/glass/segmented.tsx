@@ -27,6 +27,7 @@ export function Segmented<T extends string>({
   label,
   id,
   size = "md",
+  wrap = false,
   className,
 }: {
   options: SegmentedOption<T>[]
@@ -34,10 +35,14 @@ export function Segmented<T extends string>({
   onChange: (value: T) => void
   label: string
   /** Namespaces the lens, so two controls on one page never trade it. */
-  id: string
+  id?: string
   size?: "sm" | "md"
+  /** Lets the segments run onto a second row instead of overflowing. */
+  wrap?: boolean
   className?: string
 }) {
+  const generated = React.useId()
+  const lens = `${id ?? generated}-lens`
   const refs = React.useRef<Array<HTMLButtonElement | null>>([])
 
   function move(index: number) {
@@ -69,7 +74,8 @@ export function Segmented<T extends string>({
       role="radiogroup"
       aria-label={label}
       className={cn(
-        "g-well inline-flex max-w-full items-center rounded-full p-[3px]",
+        "g-well max-w-full items-center p-[3px]",
+        wrap ? "flex flex-wrap gap-y-0.5 rounded-[18px]" : "inline-flex rounded-full",
         className
       )}
     >
@@ -98,7 +104,7 @@ export function Segmented<T extends string>({
           >
             {checked ? (
               <motion.span
-                layoutId={`${id}-lens`}
+                layoutId={lens}
                 transition={LENS_SPRING}
                 aria-hidden="true"
                 className="g-lens absolute inset-0 rounded-full"

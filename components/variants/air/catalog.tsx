@@ -106,7 +106,7 @@ export function AirCatalog({ items }: { items: CatalogItem[] }) {
   return (
     <div>
       {/* The icon row. */}
-      <div className="border-b border-[#d2d2d7]/70">
+      <div className="border-b border-[#d2d2d7]/70 bg-white">
         <ul
           aria-label="Filter by category"
           className="air-shelf mx-auto flex max-w-[75rem] gap-2 overflow-x-auto px-3 sm:justify-center sm:gap-4"
@@ -252,7 +252,7 @@ export function AirCatalog({ items }: { items: CatalogItem[] }) {
 export function AirCatalogFallback({ count }: { count: number }) {
   return (
     <div aria-hidden="true">
-      <div className="h-[7.75rem] border-b border-[#d2d2d7]/70" />
+      <div className="h-[7.75rem] border-b border-[#d2d2d7]/70 bg-white" />
       <div className="mx-auto max-w-[75rem] px-5 pt-16">
         <div className="h-10 w-80 max-w-full rounded-lg bg-[#e8e8ed]" />
         <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

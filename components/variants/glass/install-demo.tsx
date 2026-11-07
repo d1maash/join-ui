@@ -103,11 +103,13 @@ export function InstallDemo({ items }: { items: InstallDemoItem[] }) {
         </div>
       </div>
 
-      <div className="-mx-1 overflow-x-auto px-1 py-1 [scrollbar-width:none]">
+      <div>
         <Segmented
           id="g-install-item"
           label="Component to install"
           size="sm"
+          wrap
+          className="w-fit"
           options={items.map((entry) => ({ value: entry.slug, label: entry.title }))}
           value={item.slug}
           onChange={setSlug}
