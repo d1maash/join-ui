@@ -18,7 +18,13 @@ import {
   Type,
 } from "lucide-react"
 
-import { CommandSwitch, RunPreview, RunThumb } from "@/components/variants/run/bits"
+import {
+  CommandSwitch,
+  ExpandList,
+  ReadMore,
+  RunPreview,
+  RunThumb,
+} from "@/components/variants/run/bits"
 import { RunCode } from "@/components/variants/run/code"
 import { ComponentWindow } from "@/components/variants/run/component-window"
 import { RunCopy } from "@/components/variants/run/copy"
@@ -429,7 +435,7 @@ export default async function RunComponentPage({ params }: PageProps) {
                         </span>
                       </li>
                     ))}
-                  </ol>
+                  />
                 </Section>
 
                 <Section id="keyboard" title="Keyboard">
