@@ -25,6 +25,8 @@ export interface Callout {
   note?: string
   spec?: string
   side?: "left" | "right"
+  /** Which legend slot of the scene the label is set in, when it has them. */
+  slot?: "top" | "bottom"
   at: CalloutAnchor | CalloutAnchor[]
 }
 
@@ -32,7 +34,7 @@ export interface Anatomy {
   layout: "side" | "split" | "below"
   callouts: Callout[]
   /** Where in the scene the legend is set on wide screens, if anywhere. */
-  legendSlot?: string
+  legendSlots?: Record<string, string>
 }
 
 export const ANATOMY: Record<string, Anatomy> = {
@@ -84,10 +86,11 @@ export const ANATOMY: Record<string, Anatomy> = {
 
   "approval-gate": {
     layout: "below",
-    legendSlot: "[data-legend-slot]",
+    legendSlots: { top: "[data-legend-top]", bottom: "[data-legend-bottom]" },
     callouts: [
       {
         key: "A",
+        slot: "top",
         title: "Countdown ring",
         note: "Thirty seconds, held while the pointer or focus is on the card.",
         spec: "timeout={30_000}",
@@ -95,6 +98,7 @@ export const ANATOMY: Record<string, Anatomy> = {
       },
       {
         key: "B",
+        slot: "top",
         title: "Risk capsule",
         note: "Destructive, Caution or Awaiting — and the outcome, once answered.",
         spec: 'risk="high"',

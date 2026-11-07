@@ -37,7 +37,7 @@ export function SpecimenPlate({ slug, layout, ...props }: SpecimenPlateProps) {
     <PlateFigure
       callouts={anatomy.callouts}
       layout={layout ?? anatomy.layout}
-      legendSlot={anatomy.legendSlot}
+      legendSlots={anatomy.legendSlots}
       {...props}
     >
       <Scene />

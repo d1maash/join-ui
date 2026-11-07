@@ -7,6 +7,7 @@ import {
   motion,
   useMotionValue,
   useMotionValueEvent,
+  useInView,
   useScroll,
   useTransform,
   type MotionValue,
@@ -1050,9 +1051,12 @@ function StackedChapter({
     setT((current) => (current === next ? current : next))
   })
 
+  /* Still, the chapters are all finished at once; the question stays open until
+     the reader has actually scrolled on to the deploy. */
+  const seen = useInView(ref, { amount: 0.5 })
   React.useEffect(() => {
-    if (id === "ship" && t > 0.05) onShip()
-  }, [id, t, onShip])
+    if (id === "ship" && (still ? seen : t > 0.05)) onShip()
+  }, [id, t, still, seen, onShip])
 
   const { decision } = m
   const pickBeat = id === "pick" ? pickBeatAt(t, true) : 3
@@ -1071,7 +1075,7 @@ function StackedChapter({
   }, [still, t, tone])
 
   return (
-    <div className="grid items-center gap-7 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-14">
+    <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-7 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-14">
       <div className="flex flex-col gap-5">
         <p className="run-index">
           {chapter.no} <span className="ml-1.5 text-[#f5f5f7]">{chapter.name}</span>

@@ -50,7 +50,7 @@ export interface PlateFigureProps {
    * A selector inside the stage to set the legend into on wide screens, when
    * the scene leaves room for it beside the part it annotates.
    */
-  legendSlot?: string
+  legendSlots?: Record<string, string>
 }
 
 const reduceQuery = "(prefers-reduced-motion: reduce)"
@@ -98,7 +98,7 @@ export function PlateFigure({
   columns,
   autoplay = true,
   labelsHeader,
-  legendSlot,
+  legendSlots,
 }: PlateFigureProps) {
   const figRef = React.useRef<HTMLElement>(null)
   const stageRef = React.useRef<HTMLDivElement>(null)
@@ -116,11 +116,12 @@ export function PlateFigure({
   const [hover, setHover] = React.useState<number | null>(null)
   const active = hover ?? walk
   const wide = useWide()
-  const [slot, setSlot] = React.useState<HTMLElement | null>(null)
-  const slotted = wide && slot !== null
+  const [slots, setSlots] = React.useState<Record<string, HTMLElement> | null>(null)
+  const slotted = wide && slots !== null
 
   const sideOf = React.useCallback(
     (index: number) => {
+      if (slotted && callouts[index]?.slot === "top") return "above" as const
       if (layout === "below" || slotted) return "below" as const
       if (layout === "split") return callouts[index]?.side ?? (index % 2 ? "right" : "left")
       return "right" as const
@@ -158,9 +159,13 @@ export function PlateFigure({
     if (!figure || !stage) return
 
     const measure = () => {
-      if (legendSlot && !slot) {
-        const found = stage.querySelector<HTMLElement>(legendSlot)
-        if (found) setSlot(found)
+      if (legendSlots && !slots) {
+        const found: Record<string, HTMLElement> = {}
+        for (const [name, selector] of Object.entries(legendSlots)) {
+          const node = stage.querySelector<HTMLElement>(selector)
+          if (node) found[name] = node
+        }
+        if (Object.keys(found).length === Object.keys(legendSlots).length) setSlots(found)
       }
       const f = figure.getBoundingClientRect()
       const s = stage.getBoundingClientRect()
@@ -190,7 +195,11 @@ export function PlateFigure({
           const k = key.getBoundingClientRect()
           const side = sideOf(index)
           let d: string
-          if (side === "below") {
+          if (side === "above") {
+            const sx = k.left - f.left + k.width / 2
+            const sy = k.bottom - f.top + 6
+            d = `M${sx.toFixed(1)} ${sy.toFixed(1)} V${(sy + 10).toFixed(1)} L${tx.toFixed(1)} ${ty.toFixed(1)}`
+          } else if (side === "below") {
             const sx = k.left - f.left + k.width / 2
             const sy = k.top - f.top - 6
             d = `M${sx.toFixed(1)} ${sy.toFixed(1)} V${(sy - 14).toFixed(1)} L${tx.toFixed(1)} ${ty.toFixed(1)}`
@@ -254,7 +263,7 @@ export function PlateFigure({
       cancelAnimationFrame(frame)
       resize.disconnect()
     }
-  }, [callouts, inView, sideOf, legendSlot, slot])
+  }, [callouts, inView, sideOf, legendSlots, slots])
 
   /* The walk: once inked, the orange steps through the parts in turn. */
   React.useEffect(() => {
@@ -267,12 +276,14 @@ export function PlateFigure({
     return () => window.clearTimeout(timer)
   }, [inked, reduce, autoplay, inView, hover, walk, callouts.length])
 
-  const labelList = (items: typeof left, side: "left" | "right" | "below") => (
+  const labelList = (items: typeof left, side: "left" | "right" | "below" | "above") => (
     <ol
       className={cn(
         "flex flex-col gap-5",
         side === "below" && !slotted && "lg:grid lg:auto-cols-fr lg:grid-flow-col lg:gap-6",
-        side === "below" && slotted && "lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-7",
+        (side === "below" || side === "above") &&
+          slotted &&
+          "lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-7",
         side === "left" && "lg:items-end lg:text-right"
       )}
     >
@@ -297,7 +308,7 @@ export function PlateFigure({
           >
             {callout.key}
           </span>
-          <div className={cn("min-w-0", side !== "below" && "max-w-[30ch]")}>
+          <div className={cn("min-w-0", side !== "below" && side !== "above" && "max-w-[30ch]")}>
             <p className="sp-callout-title text-[15px] leading-[1.3] font-semibold tracking-[-0.01em]">
               <span className="sr-only">{callout.key}. </span>
               {callout.title}
@@ -381,7 +392,18 @@ export function PlateFigure({
         )}
       </div>
 
-      {slotted && slot ? createPortal(labelList(right, "below"), slot) : null}
+      {slotted && slots
+        ? Object.entries(slots).map(([name, node]) =>
+            createPortal(
+              labelList(
+                right.filter(({ callout }) => (callout.slot ?? "bottom") === name),
+                name === "top" ? "above" : "below"
+              ),
+              node,
+              name
+            )
+          )
+        : null}
 
       {caption ? (
         <figcaption className="mt-5 flex items-baseline gap-4 border-t border-[var(--sp-rule)] pt-3">
