@@ -636,7 +636,7 @@ export function Example() {
     description:
       "A honeycomb of frosted glass with one tinted tile that travels to whatever you pick, an action, and the queue of runs it dispatches.",
     overview:
-      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. The comb is glass — frosted hexagons with a lit top edge and a shaded bottom one, over a wash of the selected model's own colour that is masked to the cells, so the light lives inside the material rather than behind it. The selection is not a state each cell paints for itself but a single tinted tile that travels: it stretches along its own direction of movement, its reflection slides to the trailing edge, the cells it passes are shoved aside and drawn back a beat later, and a marker smears along a rail above the comb to keep the reading. Everything is driven off one shared spring, so nothing lags the shape making it. The comb assembles from the middle outwards on mount, a cell thickens and lifts under the cursor, and the light swells while work is in flight. Below it the action takes the selected accent and pushes a ring out for as long as something is running. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone.",
+      "AgentHive is the console pattern every AI product ends up drawing: choose an engine, send it something, watch the work come back. The comb is glass — frosted hexagons with a soft top light and a bright rim, over a wash of the selected model's own colour that is masked to the cells, so the light lives inside the material rather than behind it. The selection is not a state each cell paints for itself but a single tinted tile that travels: it stretches along its own direction of movement, its reflection slides to the trailing edge, the cells it passes are shoved aside and drawn back a beat later, and a marker smears along a rail above the comb to keep the reading. Everything is driven off one shared spring, so nothing lags the shape making it. The comb assembles from the middle outwards on mount, a cell thickens and lifts under the cursor, and the light swells while work is in flight. Below it the action takes the selected accent and pushes a ring out for as long as something is running. The queue is yours: onGenerate hands you the model that was picked, you push a row, and the component types out any run that arrives after mount while leaving the rows that were already there alone.",
     category: "Data Display",
     tags: [
       "ai",
@@ -664,7 +664,7 @@ export function Example() {
       'The queue is an ordered list with `aria-live="polite"`, so a run arriving or landing is announced without stealing focus.',
       "A typing row renders its prompt twice: the full text, invisible but in the accessibility tree, under the prefix typed so far, which is `aria-hidden`. Assistive technology reads the whole line at once instead of a character at a time, and the row reserves its final height so nothing below it reflows while it types.",
       "The only continuous motion is the ring leaving the action, the pip on a working run and the swell in the light behind the comb — all three tied to the queue, and all three stopping when it does.",
-      "`prefers-reduced-motion` is honoured structurally rather than by shortening durations: the mount wave, the typewriter, the caret, the ring, the smear, the wake and every spring are not started at all, and the tile and the marker are positioned rather than animated. What is left is a still component that still works.",
+      "`prefers-reduced-motion` is honoured structurally rather than by shortening durations: the typewriter, the caret, the smear, the wake and every spring are not started at all, the mount wave and the busy ring resolve at zero duration, and the tile and the marker are positioned rather than animated. What is left is a still component that still works.",
       "Both themes are covered by the tokens rather than by `dark:` variants, so the component keeps its contrast inside a forced-theme subtree.",
     ],
     keyboard: [
@@ -1520,7 +1520,7 @@ export function Example() {
     description:
       "A hero section led by an arc of tinted glass discs, solved from a count and a spread, that assembles on mount and then answers only the pointer.",
     overview:
-      "GlassCrest is the section a product opens with: a crescent of glass marks over the sentence that explains them. The crest is drawn rather than photographed — each disc is tinted glass with a lit top edge, a shaded belly, an off-centre specular and a rim in its own accent, and the glyph stands on it as a relief, printed twice so the blurred copy underneath gives the extrusion its thickness. Nothing is an image, so a mark is any icon you pass and any colour you name, and the whole crest recolours with the page instead of being lit for one theme. The arc is geometry rather than layout: give it a count and a spread and it solves for the radius that fits the marks across their own box, the diameter that laps them by overlap, and the aspect ratio that leaves room for the bow — so three marks on a phone and eleven on a monitor are the same calculation, expressed entirely in percentages and needing no measurement at all. It moves only when something moves it. It assembles apex-first on mount — sprung, so each disc rises, goes a hair past its place on the arc and settles onto it, because a hero arriving is the one moment a page may perform — and after that it answers the pointer: the arc swings from a pivot below itself while the outer marks travel further than the inner ones, the disc under the cursor lifts on a spring of its own, and a mark that is pulled comes out of the pack on a leash while its neighbours part along the arc, then springs home on release. Pass onMarkSelect and every disc becomes a real button behind a single tab stop, pressing into the page under the hand, with the arrow keys walking the arc; a pull that never crossed the threshold is still a press.",
+      "GlassCrest is the section a product opens with: a crescent of glass marks over the sentence that explains them. The crest is drawn rather than photographed — each disc is tinted glass with a soft top light, a shaded belly and a thin bright rim in its own accent, and the glyph stands on it as a relief, printed twice so the blurred copy underneath gives the extrusion its thickness. Nothing is an image, so a mark is any icon you pass and any colour you name, and the whole crest recolours with the page instead of being lit for one theme. The arc is geometry rather than layout: give it a count and a spread and it solves for the radius that fits the marks across their own box, the diameter that laps them by overlap, and the aspect ratio that leaves room for the bow — so three marks on a phone and eleven on a monitor are the same calculation, expressed entirely in percentages and needing no measurement at all. It moves only when something moves it. It assembles apex-first on mount — sprung, so each disc rises, goes a hair past its place on the arc and settles onto it, because a hero arriving is the one moment a page may perform — and after that it answers the pointer: the arc swings from a pivot below itself while the outer marks travel further than the inner ones, the disc under the cursor lifts on a spring of its own, and a mark that is pulled comes out of the pack on a leash while its neighbours part along the arc, then springs home on release. Pass onMarkSelect and every disc becomes a real button behind a single tab stop, pressing into the page under the hand, with the arrow keys walking the arc; a pull that never crossed the threshold is still a press.",
     category: "Marketing",
     tags: [
       "hero",
@@ -1590,7 +1590,7 @@ export function Example() {
           {
             name: "eyebrow",
             type: "React.ReactNode",
-            description: "Small tracked line above the headline.",
+            description: "Short line above the headline, in the secondary colour.",
           },
           {
             name: "eyebrowIcon",
@@ -1742,7 +1742,7 @@ export function Example() {
       {
         name: "CrestAction",
         description:
-          "The pill the section was drawn with: solid ink, and a badge that rolls its arrow away and brings a second one in behind it.",
+          "The capsule the section was drawn with: a 44px solid-ink pill with a chevron.",
         props: [
           {
             name: "children",

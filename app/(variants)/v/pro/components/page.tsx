@@ -17,7 +17,9 @@ export const metadata: Metadata = {
 export default function ProComponentsPage() {
   const items = getCatalogItems()
   const stats = getRegistryStats()
-  const accents = Object.fromEntries(items.map((item) => [item.slug, accentFor(item.slug)]))
+  const accents = Object.fromEntries(
+    items.map((item) => [item.slug, accentFor(item.slug)])
+  )
 
   return (
     <main id="main-content" className="px-6 pt-16 pb-32 sm:pt-24">
@@ -26,7 +28,9 @@ export default function ProComponentsPage() {
           <h1 className={cn(type.display, "text-[#f5f5f7]")}>Components.</h1>
           <p className={cn(type.intro, "mx-auto mt-5 max-w-[36rem] text-[#86868b]")}>
             {stats.total} of them, across {stats.categories} categories.{" "}
-            <span className="text-[#f5f5f7]">Every one live, documented and one command away.</span>
+            <span className="text-[#f5f5f7]">
+              Every one live, documented and one command away.
+            </span>
           </p>
         </header>
 

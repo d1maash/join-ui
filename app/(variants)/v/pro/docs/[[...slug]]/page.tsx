@@ -4,7 +4,11 @@ import { MDXRemote } from "next-mdx-remote/rsc"
 import rehypeSlug from "rehype-slug"
 import remarkGfm from "remark-gfm"
 
-import { DocsMobileMenu, DocsSidebar, DocsToc } from "@/components/variants/pro/docs-nav"
+import {
+  DocsMobileMenu,
+  DocsSidebar,
+  DocsToc,
+} from "@/components/variants/pro/docs-nav"
 import { proHref } from "@/components/variants/pro/href"
 import { proMdxComponents } from "@/components/variants/pro/mdx"
 import { PagerLink } from "@/components/variants/pro/sheet"
@@ -125,12 +129,21 @@ export default async function ProDocsPage({ params }: PageProps) {
               className="mt-20 grid gap-4 border-t border-white/[0.12] pt-10 sm:grid-cols-2"
             >
               {previous ? (
-                <PagerLink href={proHref(previous.href)} direction="Previous" title={previous.title} />
+                <PagerLink
+                  href={proHref(previous.href)}
+                  direction="Previous"
+                  title={previous.title}
+                />
               ) : (
                 <span className="hidden sm:block" />
               )}
               {next ? (
-                <PagerLink href={proHref(next.href)} direction="Next" title={next.title} end />
+                <PagerLink
+                  href={proHref(next.href)}
+                  direction="Next"
+                  title={next.title}
+                  end
+                />
               ) : null}
             </nav>
           </article>

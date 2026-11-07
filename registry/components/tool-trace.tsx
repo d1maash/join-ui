@@ -954,7 +954,7 @@ function Console({
       ref={viewport}
       className={cn(
         "overflow-y-auto rounded-soft px-3.5 py-3",
-        "font-mono leading-relaxed whitespace-pre-wrap",
+        "font-mono leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]",
         failed ? "text-critical" : "text-muted-foreground",
         scale.console
       )}

@@ -11,7 +11,9 @@ export default function ProNotFound() {
       className="flex min-h-[70vh] flex-col items-center justify-center px-6 py-32 text-center"
     >
       <p className={cn(type.eyebrow, "text-[#86868b]")}>404</p>
-      <h1 className={cn(type.display, "mt-2 text-[#f5f5f7]")}>Nothing on this stage.</h1>
+      <h1 className={cn(type.display, "mt-2 text-[#f5f5f7]")}>
+        Nothing on this stage.
+      </h1>
       <p className={cn(type.intro, "mt-5 max-w-[32rem] text-[#86868b]")}>
         The page you were after has moved, or never existed.
       </p>
@@ -20,7 +22,10 @@ export default function ProNotFound() {
           Browse components
         </Link>
         <Link href={proHref("/")} className={cn(textLinkClass, "text-[17px]")}>
-          Back to the start<span aria-hidden="true" className="ml-0.5">›</span>
+          Back to the start
+          <span aria-hidden="true" className="ml-0.5">
+            ›
+          </span>
         </Link>
       </div>
     </main>

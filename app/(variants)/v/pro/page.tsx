@@ -52,7 +52,10 @@ export default async function ProHome() {
       {/* ---------------------------------------------------------------- */}
       {/* Hero                                                              */}
       {/* ---------------------------------------------------------------- */}
-      <section aria-labelledby="hero-title" className="relative pt-14 pb-20 sm:pt-20 lg:pb-24">
+      <section
+        aria-labelledby="hero-title"
+        className="relative pt-14 pb-20 sm:pt-20 lg:pb-24"
+      >
         <div
           aria-hidden="true"
           className="pro-spotlight pointer-events-none absolute inset-x-0 top-0 h-[1100px]"
@@ -72,15 +75,20 @@ export default async function ProHome() {
               "mx-auto mt-7 max-w-[38rem] font-semibold text-[#86868b]"
             )}
           >
-            Seven motion-first React components for agent interfaces and product
-            pages. <span className="text-[#f5f5f7]">Installed as source, yours from the first line.</span>
+            Seven motion-first React components for agent interfaces and product pages.{" "}
+            <span className="text-[#f5f5f7]">
+              Installed as source, yours from the first line.
+            </span>
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
             <Link href={proHref("/components")} className={pillClass("primary")}>
               Browse components
             </Link>
             <Link href={proHref("/docs")} className={cn(textLinkClass, "text-[17px]")}>
-              Get started<span aria-hidden="true" className="ml-0.5">›</span>
+              Get started
+              <span aria-hidden="true" className="ml-0.5">
+                ›
+              </span>
             </Link>
           </div>
         </div>
@@ -101,8 +109,8 @@ export default async function ProHome() {
                 Take a closer look.
               </h2>
               <p className={cn(type.intro, "mt-5 text-[#86868b]")}>
-                {chapters.length === 7 ? "Seven" : chapters.length} components, every one
-                running live on this page.{" "}
+                {chapters.length === 7 ? "Seven" : chapters.length} components, every
+                one running live on this page.{" "}
                 <span className="text-[#f5f5f7]">Not a screenshot in sight.</span>
               </p>
             </Reveal>
@@ -132,7 +140,9 @@ export default async function ProHome() {
                 className="pro-tile-hairline relative flex flex-col overflow-hidden rounded-[30px] bg-[#161617] md:col-span-6 lg:col-span-4 lg:row-span-2"
               >
                 <div className="px-8 pt-10 sm:px-11 sm:pt-12">
-                  <p className={cn(type.eyebrow, "pro-ember inline-block")}>For coding agents</p>
+                  <p className={cn(type.eyebrow, "pro-ember inline-block")}>
+                    For coding agents
+                  </p>
                   <h3 className={cn(type.title, "mt-2 max-w-[22ch] text-[#f5f5f7]")}>
                     One click briefs your agent.
                   </h3>
@@ -145,8 +155,14 @@ export default async function ProHome() {
                     <PromptProvider prompt={prompt} name={featured.title}>
                       <CopyPromptPill label={`Copy the ${featured.title} prompt`} />
                     </PromptProvider>
-                    <Link href={proHref("/docs/ai")} className={cn(textLinkClass, "text-[17px]")}>
-                      How it’s built<span aria-hidden="true" className="ml-0.5">›</span>
+                    <Link
+                      href={proHref("/docs/ai")}
+                      className={cn(textLinkClass, "text-[17px]")}
+                    >
+                      How it’s built
+                      <span aria-hidden="true" className="ml-0.5">
+                        ›
+                      </span>
                     </Link>
                   </div>
                 </div>
@@ -211,7 +227,12 @@ export default async function ProHome() {
               </div>
             </Reveal>
 
-            <StatTile className="md:col-span-2" figure={siteConfig.namespace} delay={160} small>
+            <StatTile
+              className="md:col-span-2"
+              figure={siteConfig.namespace}
+              delay={160}
+              small
+            >
               A real shadcn registry. Install by name, or straight from a URL.
             </StatTile>
           </div>
@@ -236,10 +257,10 @@ export default async function ProHome() {
               One command.
             </h2>
             <p className={cn(type.intro, "mx-auto mt-6 max-w-[40rem] text-[#86868b]")}>
-              Add the <span className="text-[#f5f5f7]">{siteConfig.namespace}</span> namespace
-              to <span className="text-[#f5f5f7]">components.json</span> once. Then every
-              component is a single line away — dependencies resolved, source written into
-              your repo.
+              Add the <span className="text-[#f5f5f7]">{siteConfig.namespace}</span>{" "}
+              namespace to <span className="text-[#f5f5f7]">components.json</span> once.
+              Then every component is a single line away — dependencies resolved, source
+              written into your repo.
             </p>
           </Reveal>
           <Reveal delay={120} className="mt-14">
@@ -249,12 +270,27 @@ export default async function ProHome() {
               label="Install a component"
             />
           </Reveal>
-          <Reveal delay={200} className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-3">
-            <Link href={proHref("/docs/registry-setup")} className={cn(textLinkClass, "text-[17px]")}>
-              Registry setup<span aria-hidden="true" className="ml-0.5">›</span>
+          <Reveal
+            delay={200}
+            className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-3"
+          >
+            <Link
+              href={proHref("/docs/registry-setup")}
+              className={cn(textLinkClass, "text-[17px]")}
+            >
+              Registry setup
+              <span aria-hidden="true" className="ml-0.5">
+                ›
+              </span>
             </Link>
-            <Link href={proHref("/docs/installation")} className={cn(textLinkClass, "text-[17px]")}>
-              Installation guide<span aria-hidden="true" className="ml-0.5">›</span>
+            <Link
+              href={proHref("/docs/installation")}
+              className={cn(textLinkClass, "text-[17px]")}
+            >
+              Installation guide
+              <span aria-hidden="true" className="ml-0.5">
+                ›
+              </span>
             </Link>
           </Reveal>
         </div>
@@ -263,7 +299,10 @@ export default async function ProHome() {
       {/* ---------------------------------------------------------------- */}
       {/* Close                                                             */}
       {/* ---------------------------------------------------------------- */}
-      <section aria-labelledby="close-title" className="px-6 pt-12 pb-36 text-center sm:pb-44">
+      <section
+        aria-labelledby="close-title"
+        className="px-6 pt-12 pb-36 text-center sm:pb-44"
+      >
         <Reveal className="mx-auto max-w-[900px]">
           <h2 id="close-title" className={cn(type.display, "text-[#f5f5f7]")}>
             Pick one. <span className="pro-titanium">Make it yours.</span>
@@ -273,7 +312,10 @@ export default async function ProHome() {
               Browse components
             </Link>
             <Link href={proHref("/docs")} className={cn(textLinkClass, "text-[17px]")}>
-              Read the docs<span aria-hidden="true" className="ml-0.5">›</span>
+              Read the docs
+              <span aria-hidden="true" className="ml-0.5">
+                ›
+              </span>
             </Link>
           </div>
         </Reveal>

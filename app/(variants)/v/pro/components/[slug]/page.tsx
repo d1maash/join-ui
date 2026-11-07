@@ -7,7 +7,11 @@ import { ArrowUpRight, Check } from "lucide-react"
 import { accentFor } from "@/components/variants/pro/chapters-data"
 import { ProCode } from "@/components/variants/pro/code"
 import { CommandBox } from "@/components/variants/pro/command"
-import { CopyPill, CopyPromptPill, PromptProvider } from "@/components/variants/pro/copy"
+import {
+  CopyPill,
+  CopyPromptPill,
+  PromptProvider,
+} from "@/components/variants/pro/copy"
 import { proHref } from "@/components/variants/pro/href"
 import { LocalNav } from "@/components/variants/pro/local-nav"
 import { ProPreview } from "@/components/variants/pro/preview"
@@ -26,7 +30,13 @@ import { textLinkClass, type } from "@/components/variants/pro/styles"
 import { ComponentTile } from "@/components/variants/pro/tile"
 import { dependencyCommands, shadcnCommands } from "@/lib/commands"
 import { buildComponentPrompt } from "@/lib/prompts/build-prompt"
-import { allComponents, getComponent, getRelated, getSiblings, getTraits } from "@/lib/registry"
+import {
+  allComponents,
+  getComponent,
+  getRelated,
+  getSiblings,
+  getTraits,
+} from "@/lib/registry"
 import { toCatalogItem } from "@/lib/registry/catalog"
 import { getComponentSources } from "@/lib/registry/source"
 import { siteConfig } from "@/lib/site"
@@ -126,7 +136,10 @@ export default async function ProComponentPage({ params }: PageProps) {
         {/* -------------------------------------------------------------- */}
         {/* Hero                                                            */}
         {/* -------------------------------------------------------------- */}
-        <header id="top" className="relative scroll-mt-20 px-6 pt-16 text-center sm:pt-24">
+        <header
+          id="top"
+          className="relative scroll-mt-20 px-6 pt-16 text-center sm:pt-24"
+        >
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 top-0 h-[720px]"
@@ -140,7 +153,9 @@ export default async function ProComponentPage({ params }: PageProps) {
                 <span className="mr-2 text-[#ff9f0a]">New</span>
               ) : null}
               <Link
-                href={proHref(`/components?category=${encodeURIComponent(component.category)}`)}
+                href={proHref(
+                  `/components?category=${encodeURIComponent(component.category)}`
+                )}
                 className="rounded-sm text-[#86868b] hover:text-[#f5f5f7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2997ff]"
               >
                 {component.category}
@@ -170,8 +185,14 @@ export default async function ProComponentPage({ params }: PageProps) {
                 <ArrowUpRight aria-hidden="true" className="size-4" />
                 <span className="sr-only">on GitHub (opens in a new tab)</span>
               </a>
-              <Link href={`/preview/${component.slug}`} className={cn(textLinkClass, "text-[17px]")}>
-                Open full preview<span aria-hidden="true" className="ml-0.5">›</span>
+              <Link
+                href={`/preview/${component.slug}`}
+                className={cn(textLinkClass, "text-[17px]")}
+              >
+                Open full preview
+                <span aria-hidden="true" className="ml-0.5">
+                  ›
+                </span>
               </Link>
             </div>
           </div>
@@ -281,7 +302,10 @@ export default async function ProComponentPage({ params }: PageProps) {
                       <p className="text-[15px] leading-[1.5] text-[#86868b]">
                         Needs the {siteConfig.namespace} namespace in your{" "}
                         <InlineCode>components.json</InlineCode>.{" "}
-                        <Link href={proHref("/docs/registry-setup")} className={textLinkClass}>
+                        <Link
+                          href={proHref("/docs/registry-setup")}
+                          className={textLinkClass}
+                        >
                           Registry setup ›
                         </Link>
                       </p>
@@ -298,8 +322,8 @@ export default async function ProComponentPage({ params }: PageProps) {
                         label="Install from a URL"
                       />
                       <p className="text-[15px] leading-[1.5] text-[#86868b]">
-                        No namespace to configure. The registry item is a plain JSON file,
-                        and the CLI resolves its dependencies on its own.
+                        No namespace to configure. The registry item is a plain JSON
+                        file, and the CLI resolves its dependencies on its own.
                       </p>
                     </div>
                   ),
@@ -343,14 +367,23 @@ export default async function ProComponentPage({ params }: PageProps) {
 
             <div className="mt-16">
               <h3 className={cn(type.title, "text-[#f5f5f7]")}>Then use it.</h3>
-              <ProCode code={component.usage} language="tsx" title="example.tsx" className="mt-6" />
+              <ProCode
+                code={component.usage}
+                language="tsx"
+                title="example.tsx"
+                className="mt-6"
+              />
             </div>
           </ProSection>
 
           {/* ------------------------------------------------------------ */}
           {/* Props                                                         */}
           {/* ------------------------------------------------------------ */}
-          <ProSection id="props" title="Props." lead="Every prop the component takes, typed and defaulted.">
+          <ProSection
+            id="props"
+            title="Props."
+            lead="Every prop the component takes, typed and defaulted."
+          >
             <PropsSheet groups={component.props} />
           </ProSection>
 
@@ -368,12 +401,16 @@ export default async function ProComponentPage({ params }: PageProps) {
                 {component.updated ? (
                   <>
                     {" · Updated "}
-                    <time dateTime={component.updated}>{formatDate(component.updated)}</time>
+                    <time dateTime={component.updated}>
+                      {formatDate(component.updated)}
+                    </time>
                   </>
                 ) : null}
               </SpecRow>
               <SpecRow label="Installs to">
-                <span className="font-mono text-[15px] text-[#f5f5f7]">{primary.target}</span>
+                <span className="font-mono text-[15px] text-[#f5f5f7]">
+                  {primary.target}
+                </span>
               </SpecRow>
               <SpecRow label="npm dependencies">
                 {component.dependencies.length > 0 ? (
@@ -399,7 +436,9 @@ export default async function ProComponentPage({ params }: PageProps) {
                 )}
               </SpecRow>
               <SpecRow label="Traits">
-                {traits.length > 0 ? traits.map((trait) => TRAIT_LABEL[trait] ?? trait).join(" · ") : "—"}
+                {traits.length > 0
+                  ? traits.map((trait) => TRAIT_LABEL[trait] ?? trait).join(" · ")
+                  : "—"}
               </SpecRow>
               <SpecRow label="Licence">MIT</SpecRow>
             </dl>
@@ -446,7 +485,10 @@ export default async function ProComponentPage({ params }: PageProps) {
             >
               <div className="flex flex-col gap-16">
                 {component.customization.map((example) => (
-                  <div key={example.title} className="grid gap-6 lg:grid-cols-12 lg:gap-10">
+                  <div
+                    key={example.title}
+                    className="grid gap-6 lg:grid-cols-12 lg:gap-10"
+                  >
                     <div className="lg:col-span-4">
                       <h3 className="text-[21px] leading-[1.2] font-semibold tracking-[-0.025em] text-[#f5f5f7]">
                         {example.title}
@@ -456,7 +498,11 @@ export default async function ProComponentPage({ params }: PageProps) {
                       </p>
                     </div>
                     <div className="min-w-0 lg:col-span-8">
-                      <ProCode code={example.code} language={example.language ?? "tsx"} bare />
+                      <ProCode
+                        code={example.code}
+                        language={example.language ?? "tsx"}
+                        bare
+                      />
                     </div>
                   </div>
                 ))}
@@ -474,14 +520,22 @@ export default async function ProComponentPage({ params }: PageProps) {
               <>
                 A complete brief for Cursor, Claude Code or Codex, built from this
                 component’s metadata and its real source.{" "}
-                <span className="text-[#f5f5f7]">It cannot describe a prop that does not exist.</span>
+                <span className="text-[#f5f5f7]">
+                  It cannot describe a prop that does not exist.
+                </span>
               </>
             }
           >
             <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-3">
               <CopyPromptPill />
-              <Link href={proHref("/docs/ai")} className={cn(textLinkClass, "text-[17px]")}>
-                How the prompt is built<span aria-hidden="true" className="ml-0.5">›</span>
+              <Link
+                href={proHref("/docs/ai")}
+                className={cn(textLinkClass, "text-[17px]")}
+              >
+                How the prompt is built
+                <span aria-hidden="true" className="ml-0.5">
+                  ›
+                </span>
               </Link>
             </div>
             <ProCode
