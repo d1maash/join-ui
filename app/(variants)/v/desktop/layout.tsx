@@ -20,7 +20,7 @@ import "./desktop.css"
 
 export const metadata: Metadata = {
   title: {
-    default: `${siteConfig.name} — Desktop`,
+    default: "Desktop",
     template: `%s — ${siteConfig.name}`,
   },
   description: siteConfig.description,
