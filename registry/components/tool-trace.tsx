@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Check, ChevronRight, Minus, X } from "lucide-react"
-import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { AnimatePresence, motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
@@ -120,6 +120,27 @@ const HAIRLINE = "bg-border/70"
  * through a fast sequence and one that flows through it.
  */
 const EASE = [0.32, 0.72, 0, 1] as const
+
+/*
+ * The reduced-motion preference, read so that hydration is safe. The server
+ * cannot know it, so the first client render agrees with the server (motion
+ * on) and the real value arrives on the render after. Reading it straight from
+ * Motion's hook instead changes markup on the very first client render — the
+ * running step's halo is there on the server and missing on the client.
+ */
+const STILL = "(prefers-reduced-motion: reduce)"
+
+function subscribeStill(onChange: () => void) {
+  const query = window.matchMedia(STILL)
+  query.addEventListener("change", onChange)
+  return () => query.removeEventListener("change", onChange)
+}
+
+function readStill() {
+  return window.matchMedia(STILL).matches
+}
+
+const stillOnServer = () => false
 const TILE = { type: "spring", visualDuration: 0.38, bounce: 0.18 } as const
 const GLYPH = { type: "spring", visualDuration: 0.3, bounce: 0.3 } as const
 const CHEVRON = { type: "spring", visualDuration: 0.32, bounce: 0.12 } as const
@@ -275,7 +296,7 @@ export function ToolTrace({
   className,
   ...props
 }: ToolTraceProps) {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = React.useSyncExternalStore(subscribeStill, readStill, stillOnServer)
   const labelId = React.useId()
   const scale = SIZES[size]
   const chrome = variant === "card"
