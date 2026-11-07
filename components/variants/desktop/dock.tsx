@@ -115,7 +115,9 @@ export function Dock() {
                   running={
                     os.wins[entry.id]?.status === "open" ||
                     os.wins[entry.id]?.status === "minimized" ||
-                    entry.id === pageSlug
+                    entry.id === pageSlug ||
+                    (entry.id === "catalog" && /\/v\/desktop\/components\/?$/.test(pathname)) ||
+                    (entry.id === "docs" && /\/v\/desktop\/docs/.test(pathname))
                   }
                   badge={os.badges[entry.id]}
                   launches={os.launches[entry.id] ?? 0}

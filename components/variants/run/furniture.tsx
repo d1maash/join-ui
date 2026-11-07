@@ -100,7 +100,9 @@ export function WindowSidebar({
               style={{ background: TONE_COLOR[run.tone] }}
             />
             <span className="truncate">{run.title}</span>
-            <span className="sr-only">{run.tone === "shipped" ? "Shipped" : "Denied"}</span>
+            <span className="sr-only">
+              {run.tone === "shipped" ? "Shipped" : "Denied"}
+            </span>
           </li>
         ))}
       </ul>
@@ -147,7 +149,10 @@ function ModelMark({ model }: { model: string }) {
   if (!current) return null
   return (
     <span className="flex min-w-0 items-center gap-1.5">
-      <span className="size-3.5 shrink-0 text-[#c7c7cc] [&_svg]:size-full" aria-hidden="true">
+      <span
+        className="size-3.5 shrink-0 text-[#c7c7cc] [&_svg]:size-full"
+        aria-hidden="true"
+      >
         {current.icon}
       </span>
       <span className="truncate">{current.label}</span>
@@ -255,9 +260,18 @@ export function Inspector({
     },
     ...(data.edited
       ? [
-          { path: "components/joinui/glass-crest.tsx", stat: <span className="text-[#30d158]">new</span> },
-          { path: "components/joinui/carbon-copy.tsx", stat: <span className="text-[#30d158]">new</span> },
-          { path: "components/joinui/focus-stack.tsx", stat: <span className="text-[#30d158]">new</span> },
+          {
+            path: "components/joinui/glass-crest.tsx",
+            stat: <span className="text-[#30d158]">new</span>,
+          },
+          {
+            path: "components/joinui/carbon-copy.tsx",
+            stat: <span className="text-[#30d158]">new</span>,
+          },
+          {
+            path: "components/joinui/focus-stack.tsx",
+            stat: <span className="text-[#30d158]">new</span>,
+          },
         ]
       : []),
   ]
@@ -334,8 +348,13 @@ export function Inspector({
               key={file.path}
               className="flex items-center gap-2 text-[11.5px] leading-[1.6] text-[#c7c7cc]"
             >
-              <FileCode2 aria-hidden="true" className="size-3.5 shrink-0 text-[#77777c]" />
-              <span className="min-w-0 flex-1 truncate font-mono">{file.path.split("/").pop()}</span>
+              <FileCode2
+                aria-hidden="true"
+                className="size-3.5 shrink-0 text-[#77777c]"
+              />
+              <span className="min-w-0 flex-1 truncate font-mono">
+                {file.path.split("/").pop()}
+              </span>
               <span className="shrink-0 font-mono text-[11px]">{file.stat}</span>
             </li>
           ))}

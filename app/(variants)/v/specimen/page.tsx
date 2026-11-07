@@ -7,7 +7,8 @@ import { CodeBlock } from "@/components/site/code-block"
 import { CopyPromptButton } from "@/components/site/copy-prompt-button"
 import { PackageManagerTabs } from "@/components/site/package-manager-tabs"
 import { Contents } from "@/components/variants/specimen/contents"
-import { CoverTitle } from "@/components/variants/specimen/cover"
+import { CropMarks, RegMark } from "@/components/variants/specimen/marks"
+import FocusStackScene from "@/components/variants/specimen/scenes/focus-stack"
 import { PURPOSE, getPlateIndex, href, plateNo } from "@/components/variants/specimen/plates"
 import { SpecimenPlate } from "@/components/variants/specimen/scenes"
 import { Keycap } from "@/components/variants/specimen/type"
@@ -15,6 +16,7 @@ import { shadcnCommands } from "@/lib/commands"
 import { buildComponentPrompt } from "@/lib/prompts/build-prompt"
 import { getComponent } from "@/lib/registry"
 import { getComponentSources } from "@/lib/registry/source"
+import { CarbonCopy } from "@/registry/components/carbon-copy"
 import { siteConfig } from "@/lib/site"
 import type { ComponentMetadata } from "@/types/registry"
 
@@ -93,7 +95,7 @@ export default async function SpecimenLanding() {
     <main id="main-content">
       {/* ─── Cover ───────────────────────────────────────────────────────── */}
       <section aria-label="Cover" className="sp-wrap pt-6 lg:pt-8">
-        <dl className="sp-grid border-y border-[var(--sp-ink)] py-2.5">
+        <dl className="sp-grid border-y border-[var(--sp-ink)] py-2">
           <CoverFact className="col-span-2 lg:col-span-3" term="Title" value="Join UI — Field manual" />
           <CoverFact className="col-span-2 lg:col-span-2" term="Volume" value="One" />
           <CoverFact className="hidden lg:col-span-2 lg:block" term="Contents" value="Seven plates" />
@@ -102,40 +104,62 @@ export default async function SpecimenLanding() {
           <CoverFact className="hidden lg:col-span-1 lg:block" term="Ed." value="11.26" />
         </dl>
 
-        <div className="pt-10 lg:pt-12">
-          <CoverTitle
-            note={
-              <>
-                <span className="font-semibold text-[var(--sp-ink)]">Fig. 0 — this line is PL. 03.</span>{" "}
-                Carbon Copy sets the first line, copies it down, and turns over only the
-                words that changed.
-              </>
-            }
-            intro={
-              <p className="max-w-[44ch] text-[18px] leading-[1.5] text-pretty">
-                Seven React components for products where an agent does the work and a
-                person signs off. Each is drawn up here as a plate — parts lettered, keys
-                listed, source attached — and installs as files you keep.
-              </p>
-            }
-            action={
-              <div className="flex flex-col items-start gap-3">
-                <a
-                  href="#contents"
-                  className="group inline-flex h-12 items-center gap-3 bg-[var(--sp-ink)] pr-5 pl-6 text-[15px] font-semibold text-white transition-colors hover:bg-[#2a2a28]"
-                >
-                  Open the manual
-                  <ArrowDown
-                    aria-hidden="true"
-                    className="size-4 transition-transform duration-300 group-hover:translate-y-0.5"
-                  />
-                </a>
-                <span className="sp-mono text-[12px] text-[var(--sp-ink-2)]">
-                  or <Keycap small>⌘</Keycap> <Keycap small>K</Keycap> to look a part up
-                </span>
+        <div className="sp-grid gap-y-12 pt-8 lg:items-stretch lg:pt-10">
+          <div className="col-span-4 flex flex-col lg:col-span-7">
+            <CarbonCopy
+              as="h1"
+              trigger="mount"
+              align="start"
+              lines={["Read the manual.", "Own the source."]}
+              timing={{ delay: 250 }}
+              className="sp-display max-w-[7.2em] text-[clamp(54px,7.9vw,116px)] leading-[0.9] tracking-[-0.035em]"
+            />
+            <p className="sp-label mt-5">
+              The title is set live by PL. 03, Carbon Copy
+            </p>
+            <p className="mt-8 max-w-[44ch] text-[18px] leading-[1.5] text-pretty lg:mt-auto lg:pt-6">
+              Seven React components for products where an agent does the work and a
+              person signs off. Each is drawn up here as a plate — parts lettered, keys
+              listed, source attached — and installs as files you keep.
+            </p>
+            <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <a
+                href="#contents"
+                className="group inline-flex h-12 items-center gap-3 bg-[var(--sp-ink)] pr-5 pl-6 text-[15px] font-semibold text-white transition-colors hover:bg-[#2a2a28]"
+              >
+                Open the manual
+                <ArrowDown
+                  aria-hidden="true"
+                  className="size-4 transition-transform duration-300 group-hover:translate-y-0.5"
+                />
+              </a>
+              <span className="sp-mono text-[12px] text-[var(--sp-ink-2)]">
+                or <Keycap small>⌘</Keycap> <Keycap small>K</Keycap> to look a part up
+              </span>
+            </div>
+          </div>
+
+          <figure className="col-span-4 flex flex-col lg:col-span-5">
+            <div className="sp-board relative flex flex-1 flex-col">
+              <CropMarks />
+              <span aria-hidden="true" className="sp-scale" />
+              <RegMark className="-top-[37px] left-1/2 -translate-x-1/2" />
+              <div className="pointer-events-none absolute inset-x-4 top-3 z-10 flex justify-between">
+                <span className="sp-label">Fig. 0 — Cover</span>
+                <span className="sp-label">PL. 04 · live</span>
               </div>
-            }
-          />
+              <div className="flex min-h-[380px] flex-1 items-center justify-center overflow-hidden px-4 pt-10 pb-6">
+                <FocusStackScene />
+              </div>
+            </div>
+            <figcaption className="mt-4 flex items-baseline gap-4 border-t border-[var(--sp-rule)] pt-3">
+              <span className="sp-label shrink-0">Fig. 0</span>
+              <span className="sp-serif text-[19px] leading-[1.3] text-[var(--sp-ink-2)]">
+                Focus Stack, turned by its timer. Take it over with a click or the arrow
+                keys.
+              </span>
+            </figcaption>
+          </figure>
         </div>
       </section>
 
@@ -201,7 +225,6 @@ export default async function SpecimenLanding() {
       >
         <SpecimenPlate
           slug="tool-trace"
-          layout="side"
           fig={`FIG. ${traceSheet.no}.1`}
           note="Live · plays while on screen"
           stageClassName="min-h-[640px] py-16"
@@ -396,9 +419,9 @@ function CoverFact({
   className?: string
 }) {
   return (
-    <div className={className}>
+    <div className={`flex flex-wrap items-baseline gap-x-3 ${className ?? ""}`}>
       <dt className="sp-label">{term}</dt>
-      <dd className="mt-0.5 text-[14px] font-medium">{value}</dd>
+      <dd className="text-[14px] font-medium">{value}</dd>
     </div>
   )
 }

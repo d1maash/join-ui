@@ -129,7 +129,10 @@ export function RunWindow({
                   <Lock aria-hidden="true" className="size-3 text-[#77777c]" />
                   <span className="truncate text-[#c7c7cc]">{url}</span>
                 </div>
-                <RotateCw aria-hidden="true" className="size-3.5 shrink-0 text-[#5c5c61]" />
+                <RotateCw
+                  aria-hidden="true"
+                  className="size-3.5 shrink-0 text-[#5c5c61]"
+                />
               </motion.div>
             ) : (
               <motion.div
@@ -156,7 +159,10 @@ export function RunWindow({
               <motion.div
                 className="shrink-0 overflow-hidden"
                 initial={false}
-                animate={{ height: footerShown ? "auto" : 0, opacity: footerShown ? 1 : 0 }}
+                animate={{
+                  height: footerShown ? "auto" : 0,
+                  opacity: footerShown ? 1 : 0,
+                }}
                 transition={FOLD}
                 inert={!footerShown || undefined}
               >

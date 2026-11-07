@@ -49,7 +49,7 @@ export function MissionControlRoute({ items }: { items: CatalogItem[] }) {
     if (next === ALL) params.delete("category")
     else params.set("category", next)
     const search = params.toString()
-    router.replace(search ?  : pathname, { scroll: false })
+    router.replace(search ? `${pathname}?${search}` : pathname, { scroll: false })
   }
   return (
     <MissionControl
@@ -91,7 +91,8 @@ export function MissionControl({
 
   const categories = React.useMemo(() => {
     const counts = new Map<string, number>()
-    for (const item of items) counts.set(item.category, (counts.get(item.category) ?? 0) + 1)
+    for (const item of items)
+      counts.set(item.category, (counts.get(item.category) ?? 0) + 1)
     return [
       { name: ALL, count: items.length },
       ...[...counts.entries()]
@@ -99,15 +100,11 @@ export function MissionControl({
         .map(([name, count]) => ({ name, count })),
     ]
   }, [items])
-  const category = categories.some((entry) => entry.name === requested) ? requested : ALL
+  const category = categories.some((entry) => entry.name === requested)
+    ? requested
+    : ALL
 
-  const setCategory = (next: string) => {
-    const params = new URLSearchParams(searchParams)
-    if (next === ALL) params.delete("category")
-    else params.set("category", next)
-    const search = params.toString()
-    router.replace(search ? `${pathname}?${search}` : pathname, { scroll: false })
-  }
+  const setCategory = (next: string) => onCategory?.(next)
 
   const shown = React.useMemo(() => {
     const needle = query.trim().toLowerCase()
@@ -131,7 +128,7 @@ export function MissionControl({
         <div
           role="group"
           aria-label="Category"
-          className="run-seg -mx-1 max-w-full overflow-x-auto [scrollbar-width:none]"
+          className="run-seg -mx-1 max-w-full [scrollbar-width:none] overflow-x-auto"
         >
           {categories.map((entry) => (
             <button
@@ -149,14 +146,19 @@ export function MissionControl({
                 />
               ) : null}
               {entry.name}
-              <span className="ml-1.5 text-[11px] text-[#77777c] tabular-nums">{entry.count}</span>
+              <span className="ml-1.5 text-[11px] text-[#77777c] tabular-nums">
+                {entry.count}
+              </span>
             </button>
           ))}
         </div>
 
         <label className="relative flex h-9 w-full items-center md:w-[17rem]">
           <span className="sr-only">Search components</span>
-          <Search aria-hidden="true" className="pointer-events-none absolute left-3 size-3.5 text-[#77777c]" />
+          <Search
+            aria-hidden="true"
+            className="pointer-events-none absolute left-3 size-3.5 text-[#77777c]"
+          />
           <input
             type="search"
             value={query}
@@ -193,18 +195,28 @@ export function MissionControl({
                 layout
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.22, ease: EASE } }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.92,
+                  transition: { duration: 0.22, ease: EASE },
+                }}
                 transition={TILE}
                 style={{ width: tile.w }}
               >
-                <Link href={href(`/components/${item.slug}`)} className="group block rounded-[12px]">
+                <Link
+                  href={href(`/components/${item.slug}`)}
+                  className="group block rounded-[12px]"
+                >
                   <MiniWindow title={item.title}>
                     <div
                       className="run-thumb-frame dark bg-background"
                       style={
                         {
                           height: tile.h - BAR,
-                          "--run-thumb-scale": Math.min(tile.w / 480, (tile.h - BAR) / 320),
+                          "--run-thumb-scale": Math.min(
+                            tile.w / 480,
+                            (tile.h - BAR) / 320
+                          ),
                         } as React.CSSProperties
                       }
                       inert

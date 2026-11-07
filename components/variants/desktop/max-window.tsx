@@ -25,6 +25,7 @@ export function MaxWindow({
   children,
   mainClassName,
   mainRef,
+  adapt = false,
 }: {
   /** The app name, used in the controls' accessible names. */
   title: string
@@ -38,16 +39,24 @@ export function MaxWindow({
   children: React.ReactNode
   mainClassName?: string
   mainRef?: React.Ref<HTMLElement>
+  /** On a phone, become the page itself instead of handing over to a phone layout. */
+  adapt?: boolean
 }) {
   const [full, setFull] = React.useState(false)
 
   return (
-    <div className={cn("d-stage d-desk-only", full && "d-stage-full")}>
+    <div className={cn("d-stage", !adapt && "d-desk-only", full && "d-stage-full")}>
       <div className="d-appwin d-glass" role="region" aria-label={label}>
         <div className="d-win-clip">
           <div className="d-toolbar">
             <StageLights title={title} full={full} onZoom={() => setFull((value) => !value)} />
-            <div className="flex min-w-0 items-center gap-2.5 pl-2">{heading}</div>
+            {adapt ? (
+              <Link href={vh("/")} className="d-back">
+                <ChevronLeft aria-hidden="true" className="size-6" strokeWidth={2.3} />
+                Home
+              </Link>
+            ) : null}
+            <div className="flex min-w-0 items-center gap-2.5 md:pl-2">{heading}</div>
             {center ? <div className="d-toolbar-seg">{center}</div> : null}
             {right ? <div className="ml-auto flex shrink-0 items-center gap-2">{right}</div> : null}
           </div>

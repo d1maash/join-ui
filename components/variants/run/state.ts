@@ -9,7 +9,7 @@ import * as React from "react"
  * A tiny external store rather than context, because the reader that matters
  * most — the wordmark — lives in the layout, above the page that writes it.
  */
-export type RunTone = "idle" | "running" | "waiting" | "shipped" | "denied"
+export type RunTone = "idle" | "running" | "waiting" | "shipped" | "denied" | "failed"
 
 export const TONE_COLOR: Record<RunTone, string> = {
   idle: "rgb(255 255 255 / 0)",
@@ -17,6 +17,7 @@ export const TONE_COLOR: Record<RunTone, string> = {
   waiting: "#ffb340",
   shipped: "#30d158",
   denied: "#ff6961",
+  failed: "#ff6961",
 }
 
 export const TONE_LABEL: Record<RunTone, string> = {
@@ -25,6 +26,7 @@ export const TONE_LABEL: Record<RunTone, string> = {
   waiting: "Waiting on you",
   shipped: "Shipped",
   denied: "Denied",
+  failed: "Failed",
 }
 
 let tone: RunTone = "idle"

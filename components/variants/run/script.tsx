@@ -345,4 +345,3 @@ export const FEATURES: FocusStackItem[] = [
     accent: "oklch(0.66 0.17 152)",
   },
 ]
-

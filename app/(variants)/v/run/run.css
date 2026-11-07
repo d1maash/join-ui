@@ -572,7 +572,8 @@
     background: rgb(48 209 88 / 0.12);
   }
 
-  .v-run .run-chip[data-tone="denied"] {
+  .v-run .run-chip[data-tone="denied"],
+  .v-run .run-chip[data-tone="failed"] {
     color: var(--run-red);
     background: rgb(255 105 97 / 0.12);
   }

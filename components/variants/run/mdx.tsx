@@ -26,7 +26,9 @@ interface CodeElementProps {
   children?: React.ReactNode
 }
 
-function isCodeElement(node: React.ReactNode): node is React.ReactElement<CodeElementProps> {
+function isCodeElement(
+  node: React.ReactNode
+): node is React.ReactElement<CodeElementProps> {
   return React.isValidElement<CodeElementProps>(node)
 }
 
@@ -49,18 +51,38 @@ function Pre({ children }: React.ComponentPropsWithoutRef<"pre">) {
   )
 }
 
-function DocsLink({ href: to = "", className, ...props }: React.ComponentPropsWithoutRef<"a">) {
+function DocsLink({
+  href: to = "",
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"a">) {
   const style = cn(
     "font-medium text-[#f5f5f7] underline decoration-white/25 decoration-1 underline-offset-4 transition-[text-decoration-color] hover:decoration-white/80",
     className
   )
   if (to.startsWith("/") || to.startsWith("#")) {
-    return <Link href={to.startsWith("/") ? href(to) : to} className={style} {...props} />
+    return (
+      <Link href={to.startsWith("/") ? href(to) : to} className={style} {...props} />
+    )
   }
-  return <a href={to} target="_blank" rel="noreferrer noopener" className={style} {...props} />
+  return (
+    <a
+      href={to}
+      target="_blank"
+      rel="noreferrer noopener"
+      className={style}
+      {...props}
+    />
+  )
 }
 
-function CardGroup({ children, columns = 2 }: { children: React.ReactNode; columns?: 2 | 3 }) {
+function CardGroup({
+  children,
+  columns = 2,
+}: {
+  children: React.ReactNode
+  columns?: 2 | 3
+}) {
   return (
     <div
       className={cn(
@@ -73,7 +95,15 @@ function CardGroup({ children, columns = 2 }: { children: React.ReactNode; colum
   )
 }
 
-function Card({ title, href: to, children }: { title: string; href: string; children?: React.ReactNode }) {
+function Card({
+  title,
+  href: to,
+  children,
+}: {
+  title: string
+  href: string
+  children?: React.ReactNode
+}) {
   const external = to.startsWith("http")
   const body = (
     <>
@@ -109,7 +139,10 @@ function heading(level: 2 | 3 | 4) {
     4: "mt-8 mb-2 scroll-mt-28 text-[0.9375rem] font-medium text-[#f5f5f7]",
   }
   const Tag = `h${level}` as const
-  return function Heading({ className, ...props }: React.ComponentPropsWithoutRef<"h2">) {
+  return function Heading({
+    className,
+    ...props
+  }: React.ComponentPropsWithoutRef<"h2">) {
     return <Tag className={cn(styles[level], className)} {...props} />
   }
 }
@@ -121,7 +154,10 @@ export const runMdxComponents = {
   h4: heading(4),
   p: ({ className, ...props }: React.ComponentPropsWithoutRef<"p">) => (
     <p
-      className={cn("my-4 text-[1rem] leading-[1.7] tracking-[-0.006em] text-[#9d9da2]", className)}
+      className={cn(
+        "my-4 text-[1rem] leading-[1.7] tracking-[-0.006em] text-[#9d9da2]",
+        className
+      )}
       {...props}
     />
   ),
@@ -159,7 +195,10 @@ export const runMdxComponents = {
   strong: ({ className, ...props }: React.ComponentPropsWithoutRef<"strong">) => (
     <strong className={cn("font-medium text-[#f5f5f7]", className)} {...props} />
   ),
-  blockquote: ({ className, ...props }: React.ComponentPropsWithoutRef<"blockquote">) => (
+  blockquote: ({
+    className,
+    ...props
+  }: React.ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
       className={cn("my-6 border-l border-white/20 pl-5 text-[#8b8b90]", className)}
       {...props}
@@ -172,23 +211,40 @@ export const runMdxComponents = {
     </div>
   ),
   th: ({ className, ...props }: React.ComponentPropsWithoutRef<"th">) => (
-    <th scope="col" className={cn("!text-[12px] !font-medium !text-[#77777c]", className)} {...props} />
+    <th
+      scope="col"
+      className={cn("!text-[12px] !font-medium !text-[#77777c]", className)}
+      {...props}
+    />
   ),
   td: ({ className, ...props }: React.ComponentPropsWithoutRef<"td">) => (
     <td className={cn("text-[14px] text-[#9d9da2]", className)} {...props} />
   ),
   pre: Pre,
-  CodeBlock: ({ code, language, title }: { code: string; language?: string; title?: string }) => (
+  CodeBlock: ({
+    code,
+    language,
+    title,
+  }: {
+    code: string
+    language?: string
+    title?: string
+  }) => (
     <div className="my-6">
       <RunCode code={code} language={language} title={title ?? language} lights />
     </div>
   ),
-  Kbd: ({ children }: { children: React.ReactNode }) => <kbd className="run-key mx-0.5">{children}</kbd>,
+  Kbd: ({ children }: { children: React.ReactNode }) => (
+    <kbd className="run-key mx-0.5">{children}</kbd>
+  ),
   CardGroup,
   Card,
   InstallTabs: ({ target, label }: { target: string; label?: string }) => (
     <div className="my-6">
-      <CommandSwitch commands={shadcnCommands(target)} label={label ?? "Package manager"} />
+      <CommandSwitch
+        commands={shadcnCommands(target)}
+        label={label ?? "Package manager"}
+      />
     </div>
   ),
   DependencyTabs: ({ packages }: { packages: string }) => (

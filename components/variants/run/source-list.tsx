@@ -18,7 +18,10 @@ import { variantHref } from "@/lib/variants"
 
 const href = (path: string) => variantHref("run", path)
 
-export const COMPONENT_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+export const COMPONENT_ICONS: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   "agent-hive": Hexagon,
   "approval-gate": ShieldQuestion,
   "carbon-copy": Type,
@@ -34,7 +37,12 @@ function Group({
   current,
 }: {
   title: string
-  items: Array<{ key: string; title: string; to: string; icon: React.ComponentType<{ className?: string }> }>
+  items: Array<{
+    key: string
+    title: string
+    to: string
+    icon: React.ComponentType<{ className?: string }>
+  }>
   current: string
 }) {
   return (
@@ -103,7 +111,7 @@ export function SourceList({
 
   return (
     <aside className="hidden lg:block" aria-label="Components and guides">
-      <nav className="sticky top-14 flex max-h-[calc(100dvh-3.5rem)] flex-col gap-7 overflow-y-auto pt-20 pb-10 [scrollbar-width:none]">
+      <nav className="sticky top-14 flex max-h-[calc(100dvh-3.5rem)] [scrollbar-width:none] flex-col gap-7 overflow-y-auto pt-20 pb-10">
         {lead === "components" ? [components, ...docs] : [...docs, components]}
       </nav>
     </aside>

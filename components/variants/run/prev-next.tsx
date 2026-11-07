@@ -8,7 +8,13 @@ interface Target {
   href: string
 }
 
-function Tile({ direction, target }: { direction: "previous" | "next"; target: Target }) {
+function Tile({
+  direction,
+  target,
+}: {
+  direction: "previous" | "next"
+  target: Target
+}) {
   const isNext = direction === "next"
   return (
     <Link
@@ -65,7 +71,11 @@ export function PrevNext({
       ) : (
         <span className="hidden bg-black sm:block" />
       )}
-      {next ? <Tile direction="next" target={next} /> : <span className="hidden bg-black sm:block" />}
+      {next ? (
+        <Tile direction="next" target={next} />
+      ) : (
+        <span className="hidden bg-black sm:block" />
+      )}
     </nav>
   )
 }

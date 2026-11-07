@@ -36,9 +36,14 @@ export function MenuBar({ docs }: { docs: DocsSection[] }) {
   const slug = /\/components\/([^/?#]+)/.exec(pathname)?.[1]
   const pageComponent = slug && isComponentSlug(slug) ? os.component(slug) : undefined
 
+  const section = /\/v\/desktop\/(components|docs)(?:[/?#]|$)/.exec(pathname)?.[1]
   const appName = pageComponent
     ? pageComponent.title
-    : os.focused
+    : section === "components"
+      ? "Catalog"
+      : section === "docs"
+        ? "Docs"
+        : os.focused
       ? isComponentSlug(os.focused)
         ? (os.component(os.focused)?.title ?? "Join UI")
         : os.focused === "about"

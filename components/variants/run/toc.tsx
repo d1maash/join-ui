@@ -9,7 +9,11 @@ import { cn } from "@/lib/utils"
  * last heading that has passed the top quarter of the screen — the one whose
  * text is under the reader's eyes, not the next one waiting below.
  */
-export function Toc({ entries }: { entries: Array<{ id: string; title: string; level: number }> }) {
+export function Toc({
+  entries,
+}: {
+  entries: Array<{ id: string; title: string; level: number }>
+}) {
   const [active, setActive] = React.useState<string | null>(entries[0]?.id ?? null)
 
   React.useEffect(() => {
