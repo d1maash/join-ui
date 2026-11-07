@@ -535,6 +535,10 @@ function PinnedStory({ m }: { m: StoryModel }) {
     window.scrollTo({ top, behavior: "smooth" })
   }, [])
 
+  const onBrowserMeasure = React.useCallback((max: number) => {
+    browserMax.current = max
+  }, [])
+
   const model = modelFor(phase, m.userModel)
   const shipped = tone === "shipped"
   const runs = runsFor(phase, model, m.extra, shipped)
@@ -701,9 +705,7 @@ function PinnedStory({ m }: { m: StoryModel }) {
                   {chapter >= 4 ? (
                     <MeasuredOutput
                       browserY={browserY}
-                      onMeasure={(max) => {
-                        browserMax.current = max
-                      }}
+                      onMeasure={onBrowserMeasure}
                     />
                   ) : null}
                 </Layer>
