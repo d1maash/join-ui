@@ -92,78 +92,79 @@ function Tile({ from, to, paper = false, children, defs, className, title }: Til
 const RING = 2 * Math.PI * 26
 
 function ApprovalGateIcon(props: { className?: string }) {
+  /* Amber, one idea: the clock that drains while it waits, and the tick it ends on. */
   return (
-    <Tile
-      from="#3a3a40"
-      to="#121214"
-      {...props}
-      defs={(uid) => (
-        <linearGradient id={`${uid}arc`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ffd25e" />
-          <stop offset="1" stopColor="#ff8a00" />
-        </linearGradient>
+    <Tile from="#ffd35a" to="#ff8f00" {...props}>
+      {({ lift }) => (
+        <>
+          <circle cx="50" cy="50" r="26" fill="none" stroke="#8a3d00" strokeOpacity="0.22" strokeWidth="8" />
+          <circle
+            cx="50"
+            cy="50"
+            r="26"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={`${RING * 0.7} ${RING}`}
+            transform="rotate(-90 50 50)"
+            filter={lift}
+          />
+          <path
+            d="M38.5 50.5l8 8 15-16.5"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="7.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter={lift}
+          />
+        </>
       )}
-    >
-      {({ lift, uid }) => {
-        return (
-          <>
-            <circle cx="50" cy="50" r="26" fill="none" stroke="#fff" strokeOpacity="0.13" strokeWidth="8" />
-            <circle
-              cx="50"
-              cy="50"
-              r="26"
-              fill="none"
-              stroke={`url(#${uid}arc)`}
-              strokeWidth="8"
-              strokeLinecap="round"
-              strokeDasharray={`${RING * 0.7} ${RING}`}
-              transform="rotate(-90 50 50)"
-            />
-            <path
-              d="M38.5 50.5l8 8 15-16.5"
-              fill="none"
-              stroke="#fff"
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              filter={lift}
-            />
-          </>
-        )
-      }}
     </Tile>
   )
 }
 
 function ToolTraceIcon(props: { className?: string }) {
-  const rows = [
-    { y: 28, tile: "#30d158", bar: 36, ink: "#c7c7cc", done: true },
-    { y: 50, tile: "#30d158", bar: 27, ink: "#c7c7cc", done: true },
-    { y: 72, tile: "#0a84ff", bar: 33, ink: "#2c2c2e", done: false },
+  /* Teal, a staircase: each tool call steps down from the last, the newest still running. */
+  const steps = [
+    { x: 17, y: 17, done: true },
+    { x: 41, y: 41, done: true },
+    { x: 65, y: 65, done: false },
   ]
   return (
-    <Tile from="#ffffff" to="#e2e2e8" paper {...props}>
+    <Tile from="#5ce6d6" to="#078a92" {...props}>
       {({ lift }) => (
         <>
-          <path d="M29 30V70" stroke="#d1d1d6" strokeWidth="3" strokeLinecap="round" />
-          {rows.map((row) => (
-            <g key={row.y}>
-              <rect x="20.5" y={row.y - 8.5} width="17" height="17" rx="5.5" fill={row.tile} filter={lift} />
-              {row.done ? (
+          <path
+            d="M26 35V50H41M50 59V74H65"
+            fill="none"
+            stroke="#fff"
+            strokeOpacity="0.6"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          {steps.map((step) =>
+            step.done ? (
+              <g key={step.x} filter={lift}>
+                <rect x={step.x} y={step.y} width="18" height="18" rx="6" fill="#fff" />
                 <path
-                  d={`M24.6 ${row.y}l3.1 3.1 5.8-6.2`}
+                  d={`M${step.x + 4.6} ${step.y + 9.2}l3.2 3.2 5.8-6.4`}
                   fill="none"
-                  stroke="#fff"
-                  strokeWidth="2.6"
+                  stroke="#078a92"
+                  strokeWidth="2.8"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-              ) : (
-                <circle cx="29" cy={row.y} r="2.8" fill="#fff" />
-              )}
-              <rect x="44" y={row.y - 4} width={row.bar} height="8" rx="4" fill={row.ink} />
-            </g>
-          ))}
+              </g>
+            ) : (
+              <g key={step.x} filter={lift}>
+                <rect x={step.x + 1.5} y={step.y + 1.5} width="15" height="15" rx="5" fill="none" stroke="#fff" strokeWidth="3" />
+                <circle cx={step.x + 9} cy={step.y + 9} r="3" fill="#fff" />
+              </g>
+            )
+          )}
         </>
       )}
     </Tile>
@@ -240,20 +241,19 @@ function AgentHiveIcon(props: { className?: string }) {
 }
 
 function StatusTimelineIcon(props: { className?: string }) {
+  /* Green, a horizontal track: two stops behind you, the next one lit. */
   return (
-    <Tile from="#43de74" to="#15913c" {...props}>
+    <Tile from="#4fe07d" to="#138a39" {...props}>
       {({ lift }) => (
         <>
-          <path d="M32 28V72" stroke="#fff" strokeOpacity="0.5" strokeWidth="3.5" strokeLinecap="round" />
-          <circle cx="32" cy="28" r="8.5" fill="#fff" filter={lift} />
-          <path d="M28.2 28.2l2.6 2.6 5-5.4" fill="none" stroke="#1a9a43" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx="32" cy="50" r="13.5" fill="#fff" fillOpacity="0.22" />
-          <circle cx="32" cy="50" r="8.5" fill="#fff" filter={lift} />
-          <circle cx="32" cy="50" r="3.2" fill="#1a9a43" />
-          <circle cx="32" cy="72" r="7" fill="#178f3d" stroke="#fff" strokeOpacity="0.75" strokeWidth="2.6" />
-          <rect x="48" y="24.5" width="30" height="7" rx="3.5" fill="#fff" />
-          <rect x="48" y="46.5" width="24" height="7" rx="3.5" fill="#fff" />
-          <rect x="48" y="68.5" width="19" height="7" rx="3.5" fill="#fff" fillOpacity="0.55" />
+          <path d="M24 50H76" stroke="#fff" strokeOpacity="0.35" strokeWidth="5" strokeLinecap="round" />
+          <path d="M24 50H50" stroke="#fff" strokeWidth="5" strokeLinecap="round" />
+          <circle cx="24" cy="50" r="8.5" fill="#fff" filter={lift} />
+          <path d="M20.2 50.2l2.6 2.6 5-5.4" fill="none" stroke="#15913c" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="50" cy="50" r="16" fill="#fff" fillOpacity="0.24" />
+          <circle cx="50" cy="50" r="10.5" fill="#fff" filter={lift} />
+          <circle cx="50" cy="50" r="4" fill="#15913c" />
+          <circle cx="76" cy="50" r="7" fill="#17913d" stroke="#fff" strokeOpacity="0.8" strokeWidth="3" />
         </>
       )}
     </Tile>
@@ -261,34 +261,34 @@ function StatusTimelineIcon(props: { className?: string }) {
 }
 
 function FocusStackIcon(props: { className?: string }) {
+  /* Coral, a coil of pills twisting away from the one in focus. */
   const ranks = [
-    { y: 18, w: 36, h: 9, r: -16, o: 0.16, dot: "#5e5ce6" },
-    { y: 30, w: 46, h: 12, r: -8, o: 0.36, dot: "#ff9f0a" },
-    { y: 70, w: 46, h: 12, r: 8, o: 0.36, dot: "#bf5af2" },
-    { y: 82, w: 36, h: 9, r: 16, o: 0.16, dot: "#0a84ff" },
+    { y: 19, w: 34, h: 9, r: -16, o: 0.26 },
+    { y: 31, w: 46, h: 12, r: -8, o: 0.48 },
+    { y: 69, w: 46, h: 12, r: 8, o: 0.48 },
+    { y: 81, w: 34, h: 9, r: 16, o: 0.26 },
   ]
   return (
-    <Tile from="#34343a" to="#0e0e10" {...props}>
+    <Tile from="#ff8a7a" to="#e02656" {...props}>
       {({ deep }) => (
         <>
           {ranks.map((rank) => (
-            <g key={rank.y} transform={`rotate(${rank.r} 50 ${rank.y})`} opacity={rank.o * 2.2}>
-              <rect
-                x={50 - rank.w / 2}
-                y={rank.y - rank.h / 2}
-                width={rank.w}
-                height={rank.h}
-                rx={rank.h / 2}
-                fill="#fff"
-                fillOpacity={rank.o}
-              />
-              <circle cx={50 - rank.w / 2 + rank.h / 2} cy={rank.y} r={rank.h / 2 - 2} fill={rank.dot} />
-            </g>
+            <rect
+              key={rank.y}
+              x={50 - rank.w / 2}
+              y={rank.y - rank.h / 2}
+              width={rank.w}
+              height={rank.h}
+              rx={rank.h / 2}
+              fill="#fff"
+              fillOpacity={rank.o}
+              transform={`rotate(${rank.r} 50 ${rank.y})`}
+            />
           ))}
           <g filter={deep}>
-            <rect x="20" y="41" width="60" height="18" rx="9" fill="#fff" />
-            <circle cx="29" cy="50" r="6" fill="#ff375f" />
-            <rect x="39" y="47.8" width="30" height="4.4" rx="2.2" fill="#1c1c1e" />
+            <rect x="19" y="41" width="62" height="18" rx="9" fill="#fff" />
+            <circle cx="28.5" cy="50" r="5.5" fill="#e8345f" />
+            <rect x="38" y="47.8" width="32" height="4.4" rx="2.2" fill="#2c2c2e" />
           </g>
         </>
       )}
@@ -297,41 +297,39 @@ function FocusStackIcon(props: { className?: string }) {
 }
 
 function GlassCrestIcon(props: { className?: string }) {
+  /* Violet, one bow of frosted glass: three discs on an arc, the middle one lit. */
   const discs = [
-    { a: -46, c: "#ffd60a" },
-    { a: 46, c: "#40c8e0" },
-    { a: -23, c: "#ff375f" },
-    { a: 23, c: "#0a84ff" },
-    { a: 0, c: "#bf5af2" },
+    { x: 29, y: 58, r: 14, lit: false },
+    { x: 71, y: 58, r: 14, lit: false },
+    { x: 50, y: 45, r: 18, lit: true },
   ]
   return (
     <Tile
-      from="#22325f"
-      to="#0a1022"
+      from="#c77dff"
+      to="#5b1bc4"
       {...props}
       defs={(uid) => (
-        <radialGradient id={`${uid}spec`} cx="0.35" cy="0.25" r="0.75">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.75" />
-          <stop offset="0.45" stopColor="#fff" stopOpacity="0.08" />
-          <stop offset="1" stopColor="#000" stopOpacity="0.25" />
-        </radialGradient>
+        <linearGradient id={`${uid}disc`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" />
+          <stop offset="1" stopColor="#ead9ff" />
+        </linearGradient>
       )}
     >
       {({ deep, uid }) => (
         <>
-          {discs.map((disc) => {
-            const rad = (disc.a * Math.PI) / 180
-            const x = 50 + 46 * Math.sin(rad)
-            const y = 96 - 46 * Math.cos(rad)
-            return (
-              <g key={disc.a} filter={deep}>
-                <circle cx={x} cy={y} r="12.5" fill={disc.c} fillOpacity="0.92" />
-                <circle cx={x} cy={y} r="12.5" fill={`url(#${uid}spec)`} />
-                <circle cx={x - 3.6} cy={y - 4.4} r="4.2" fill="#fff" fillOpacity="0.55" />
-                <circle cx={x} cy={y} r="12" fill="none" stroke="#fff" strokeOpacity="0.55" strokeWidth="1" />
-              </g>
-            )
-          })}
+          {discs.map((disc) => (
+            <g key={disc.x} filter={disc.lit ? deep : undefined}>
+              <circle
+                cx={disc.x}
+                cy={disc.y}
+                r={disc.r}
+                fill={disc.lit ? `url(#${uid}disc)` : "#fff"}
+                fillOpacity={disc.lit ? 1 : 0.3}
+              />
+              <circle cx={disc.x} cy={disc.y} r={disc.r - 0.6} fill="none" stroke="#fff" strokeOpacity="0.75" strokeWidth="1.2" />
+            </g>
+          ))}
+          <ellipse cx="44" cy="37" rx="7" ry="4" fill="#fff" transform="rotate(-28 44 37)" />
         </>
       )}
     </Tile>

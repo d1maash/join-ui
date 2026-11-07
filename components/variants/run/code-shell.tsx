@@ -5,6 +5,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 import { RunCopy } from "./copy"
+import { TrafficLights } from "./window"
 
 export function RunCodeShell({
   html,
@@ -13,6 +14,7 @@ export function RunCodeShell({
   numbers,
   maxHeight,
   bare,
+  lights = false,
   className,
 }: {
   html: string
@@ -21,6 +23,8 @@ export function RunCodeShell({
   numbers: boolean
   maxHeight?: number
   bare: boolean
+  /** Draws the head as a window title bar — traffic lights, the file name centred. */
+  lights?: boolean
   className?: string
 }) {
   const [open, setOpen] = React.useState(false)
@@ -31,8 +35,16 @@ export function RunCodeShell({
   return (
     <figure className={cn("dark", bare ? "" : "run-code", className)}>
       {title || !bare ? (
-        <figcaption className="run-code-head">
-          <span className="min-w-0 flex-1 truncate font-mono text-[12px]">{title}</span>
+        <figcaption className="run-code-head relative">
+          {lights ? <TrafficLights small className="shrink-0" /> : null}
+          <span
+            className={cn(
+              "min-w-0 flex-1 truncate font-mono text-[12px]",
+              lights && "text-center"
+            )}
+          >
+            {title}
+          </span>
           <span className="hidden text-[12px] tabular-nums sm:inline">
             {lines} {lines === 1 ? "line" : "lines"}
           </span>

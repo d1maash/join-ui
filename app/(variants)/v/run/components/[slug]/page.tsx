@@ -2,21 +2,7 @@ import type * as React from "react"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
-import {
-  AppWindow,
-  ArrowLeft,
-  ArrowRight,
-  BookOpen,
-  ExternalLink,
-  Hexagon,
-  Layers,
-  ListTree,
-  Maximize2,
-  Milestone,
-  Rainbow,
-  ShieldQuestion,
-  Type,
-} from "lucide-react"
+import { ArrowLeft, ArrowRight, ExternalLink, Maximize2 } from "lucide-react"
 
 import {
   CommandSwitch,
@@ -35,7 +21,6 @@ import { dependencyCommands, shadcnCommands } from "@/lib/commands"
 import { buildComponentPrompt } from "@/lib/prompts/build-prompt"
 import {
   allComponents,
-  componentsByName,
   getComponent,
   getRelated,
   getSiblings,

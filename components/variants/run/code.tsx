@@ -14,6 +14,7 @@ export async function RunCode({
   numbers = false,
   maxHeight,
   bare = false,
+  lights = false,
   className,
 }: {
   code: string
@@ -24,6 +25,8 @@ export async function RunCode({
   maxHeight?: number
   /** No frame — for a listing that sits inside a window that already has one. */
   bare?: boolean
+  /** Window chrome on the head: traffic lights and a centred file name. */
+  lights?: boolean
   className?: string
 }) {
   const html = await highlightCode(code, { language })
@@ -35,6 +38,7 @@ export async function RunCode({
       numbers={numbers}
       maxHeight={maxHeight}
       bare={bare}
+      lights={lights}
       className={cn(className)}
     />
   )
