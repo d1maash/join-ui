@@ -143,6 +143,7 @@ export default function ApprovalGateScene() {
             <span className="sp-label hidden sm:inline">Click the card, then Y or N</span>
           )}
         </div>
+        <div data-legend-slot="" className="mt-12 hidden lg:block" />
       </div>
 
       <ol className="flex flex-col gap-7">

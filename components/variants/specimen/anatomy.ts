@@ -31,6 +31,8 @@ export interface Callout {
 export interface Anatomy {
   layout: "side" | "split" | "below"
   callouts: Callout[]
+  /** Where in the scene the legend is set on wide screens, if anywhere. */
+  legendSlot?: string
 }
 
 export const ANATOMY: Record<string, Anatomy> = {
@@ -82,6 +84,7 @@ export const ANATOMY: Record<string, Anatomy> = {
 
   "approval-gate": {
     layout: "below",
+    legendSlot: "[data-legend-slot]",
     callouts: [
       {
         key: "A",

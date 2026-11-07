@@ -34,7 +34,12 @@ export function SpecimenPlate({ slug, layout, ...props }: SpecimenPlateProps) {
   const anatomy = ANATOMY[slug]
   if (!Scene || !anatomy) return null
   return (
-    <PlateFigure callouts={anatomy.callouts} layout={layout ?? anatomy.layout} {...props}>
+    <PlateFigure
+      callouts={anatomy.callouts}
+      layout={layout ?? anatomy.layout}
+      legendSlot={anatomy.legendSlot}
+      {...props}
+    >
       <Scene />
     </PlateFigure>
   )
