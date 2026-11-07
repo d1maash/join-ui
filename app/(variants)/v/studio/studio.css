@@ -1,0 +1,320 @@
+/*
+ * Studio — a calm, documentation-first component library.
+ * ---------------------------------------------------------------------------
+ * Neutral greys with zero chroma, pure white and near-black, hairline rules
+ * and generous space. Colour appears in exactly one place in the chrome: the
+ * status badges (New, Updated, Experimental), where it is information. The
+ * components are the only thing on a page allowed to be loud.
+ *
+ * Two themes, chosen by the reader (light, dark or system) and written onto
+ * the variant root as a `.light` / `.dark` class before first paint. `<html>`
+ * carries `.dark` for the rest of the site, so every palette is declared
+ * three times:
+ *   - on `:root:has(.v-studio.<theme>)`, which out-ranks `.dark` on <html>,
+ *     so the page itself and the portals mounted on <body> (search, sheet,
+ *     menus, toasts) agree with the variant;
+ *   - on `.v-studio.<theme>`, which out-ranks the plain `.light` / `.dark`
+ *     island class the root also carries;
+ *   - on `.v-studio .<theme>`, so a preview's own theme island inside the
+ *     page uses the Studio palette rather than the global one.
+ *
+ * Every selector in this file is scoped under `.v-studio` or
+ * `:root:has(.v-studio)`. Blur lives in Tailwind classes, not here.
+ */
+
+:root:has(.v-studio.light),
+.v-studio.light,
+.v-studio .light {
+  --grey-0: #ffffff;
+  --grey-50: #fafafa;
+  --grey-100: #f5f5f5;
+  --grey-200: #efefef;
+  --grey-300: #e5e5e5;
+  --grey-400: #d4d4d4;
+  --grey-500: #a3a3a3;
+  --grey-600: #8a8a8a;
+  --grey-700: #6b6b6b;
+  --grey-800: #404040;
+  --grey-900: #262626;
+  --grey-1000: #0a0a0a;
+
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  --muted: #f4f4f4;
+  --muted-foreground: #6b6b6b;
+  --subtle: #fafafa;
+
+  --border: #e7e7e7;
+  --border-hover: #d4d4d4;
+  --border-strong: #a3a3a3;
+  --input: #e2e2e2;
+  --ring: #0a0a0a;
+
+  --primary: #171717;
+  --primary-hover: #333333;
+  --primary-foreground: #fafafa;
+  --primary-soft: #f4f4f4;
+  --accent: #171717;
+  --accent-foreground: #fafafa;
+  --accent-soft: #f4f4f4;
+  --accent-border: #d4d4d4;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #171717;
+
+  --destructive: var(--critical);
+  --destructive-foreground: var(--critical-foreground);
+  --destructive-soft: var(--critical-soft);
+  --success: var(--positive);
+  --success-soft: var(--positive-soft);
+  --warning: var(--caution);
+  --warning-soft: var(--caution-soft);
+
+  --code-bg: #fafafa;
+  --selection: rgb(10 10 10 / 0.12);
+
+  --info: #0068d1;
+  --info-soft: #e8f1fc;
+  --info-foreground: #ffffff;
+  --positive: #157a33;
+  --positive-soft: #e7f5eb;
+  --positive-foreground: #ffffff;
+  --caution: #a65400;
+  --caution-soft: #fdf1e1;
+  --caution-foreground: #ffffff;
+  --critical: #d70015;
+  --critical-soft: #fdeaea;
+  --critical-foreground: #ffffff;
+
+  --elevation-xs: 0 1px 2px rgb(0 0 0 / 0.04);
+  --elevation-sm: 0 1px 2px rgb(0 0 0 / 0.04), 0 2px 8px rgb(0 0 0 / 0.04);
+  --elevation-md: 0 1px 3px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.07);
+  --elevation-lg: 0 2px 6px rgb(0 0 0 / 0.04), 0 16px 48px rgb(0 0 0 / 0.12);
+
+  /* Studio-only surfaces. */
+  --st-stage: #fafafa;
+  --st-dot: rgb(10 10 10 / 0.07);
+  --st-art: rgb(10 10 10 / 0.09);
+  --st-art-strong: rgb(10 10 10 / 0.16);
+  --st-art-ink: #0a0a0a;
+
+  color-scheme: light;
+}
+
+:root:has(.v-studio.dark),
+.v-studio.dark,
+.v-studio .dark {
+  --grey-0: #0a0a0a;
+  --grey-50: #111111;
+  --grey-100: #171717;
+  --grey-200: #1c1c1c;
+  --grey-300: #262626;
+  --grey-400: #333333;
+  --grey-500: #525252;
+  --grey-600: #737373;
+  --grey-700: #a1a1a1;
+  --grey-800: #d4d4d4;
+  --grey-900: #e5e5e5;
+  --grey-1000: #fafafa;
+
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #141414;
+  --card-foreground: #fafafa;
+  --popover: #141414;
+  --popover-foreground: #fafafa;
+  --muted: #1d1d1d;
+  --muted-foreground: #a1a1a1;
+  --subtle: #0f0f0f;
+
+  --border: #242424;
+  --border-hover: #363636;
+  --border-strong: #5c5c5c;
+  --input: #2e2e2e;
+  --ring: #e5e5e5;
+
+  --primary: #fafafa;
+  --primary-hover: #e2e2e2;
+  --primary-foreground: #0a0a0a;
+  --primary-soft: #1d1d1d;
+  --accent: #fafafa;
+  --accent-foreground: #0a0a0a;
+  --accent-soft: #1d1d1d;
+  --accent-border: #363636;
+  --secondary: #171717;
+  --secondary-foreground: #e5e5e5;
+
+  --destructive: var(--critical);
+  --destructive-foreground: var(--critical-foreground);
+  --destructive-soft: var(--critical-soft);
+  --success: var(--positive);
+  --success-soft: var(--positive-soft);
+  --warning: var(--caution);
+  --warning-soft: var(--caution-soft);
+
+  --code-bg: #0f0f0f;
+  --selection: rgb(255 255 255 / 0.18);
+
+  --info: #4aa3ff;
+  --info-soft: #0c2341;
+  --info-foreground: #00152e;
+  --positive: #3ddc6c;
+  --positive-soft: #0d2a16;
+  --positive-foreground: #002910;
+  --caution: #ffb340;
+  --caution-soft: #2d2108;
+  --caution-foreground: #2b1700;
+  --critical: #ff6961;
+  --critical-soft: #33100f;
+  --critical-foreground: #330000;
+
+  --elevation-xs: 0 1px 2px rgb(0 0 0 / 0.5);
+  --elevation-sm: 0 1px 2px rgb(0 0 0 / 0.5), 0 4px 12px rgb(0 0 0 / 0.35);
+  --elevation-md: 0 2px 6px rgb(0 0 0 / 0.5), 0 12px 32px rgb(0 0 0 / 0.5);
+  --elevation-lg: 0 4px 12px rgb(0 0 0 / 0.5), 0 24px 64px rgb(0 0 0 / 0.65);
+
+  --st-stage: #0d0d0d;
+  --st-dot: rgb(255 255 255 / 0.07);
+  --st-art: rgb(255 255 255 / 0.08);
+  --st-art-strong: rgb(255 255 255 / 0.15);
+  --st-art-ink: #fafafa;
+
+  color-scheme: dark;
+}
+
+/*
+ * The root layout writes `color-scheme: dark` inline on <html>. Only an
+ * important declaration out-ranks an inline style, and scrollbars, the caret
+ * and native controls all take their cue from it.
+ */
+:root:has(.v-studio.light) {
+  color-scheme: light !important;
+}
+
+:root:has(.v-studio.dark) {
+  color-scheme: dark !important;
+}
+
+:root:has(.v-studio) {
+  scroll-padding-top: 5.5rem;
+}
+
+@media (max-width: 1279px) {
+  :root:has(.v-studio [data-st-toc-bar]) {
+    scroll-padding-top: 7.5rem;
+  }
+}
+
+/*
+ * Type. Inter, with the optical-size axis left on auto, everywhere — the
+ * root font stack puts the system face first, which would make the variant
+ * look different on every platform. Code is set in Geist Mono.
+ */
+:root:has(.v-studio) body,
+.v-studio {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv05" 1, "cv11" 1;
+}
+
+.v-studio :is(code, pre, samp, .font-mono) {
+  font-family: var(--font-studio-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+.v-studio kbd {
+  font-family: inherit;
+}
+
+/*
+ * Shiki emits both palettes; the global rule picks the dark one under any
+ * `.dark` ancestor, and <html> is always one. Inside a light Studio page the
+ * light palette has to be asked for explicitly.
+ */
+.v-studio.light .shiki,
+.v-studio.light .shiki span {
+  color: var(--shiki-light);
+  font-style: var(--shiki-light-font-style);
+  font-weight: var(--shiki-light-font-weight);
+  text-decoration: var(--shiki-light-text-decoration);
+}
+
+/* The theme menu's icon follows the resolved theme with no script. */
+.v-studio.light .st-if-dark,
+.v-studio.dark .st-if-light {
+  display: none;
+}
+
+/* A dotted stage, for preview frames and category art. */
+.v-studio .st-dots {
+  background-color: var(--st-stage);
+  background-image: radial-gradient(var(--st-dot) 1px, transparent 1px);
+  background-size: 14px 14px;
+  background-position: -7px -7px;
+}
+
+.v-studio .st-noscrollbar {
+  scrollbar-width: none;
+}
+
+.v-studio .st-noscrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Horizontal rails fade at whichever edge still has content past it. */
+.v-studio .st-rail-fade {
+  mask-image: linear-gradient(to right, transparent 0, #000 1.25rem, #000 calc(100% - 2.5rem), transparent 100%);
+}
+
+/* A lazily mounted miniature settles in rather than popping. */
+@keyframes st-settle {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.v-studio .st-settle {
+  animation: st-settle 260ms var(--ease-out-soft) both;
+}
+
+/* Prose. Documentation reads at 15px on a 1.75 line. */
+.v-studio .st-prose > :first-child {
+  margin-top: 0;
+}
+
+.v-studio .st-prose :is(h2, h3, h4) + :is(p, ul, ol) {
+  margin-top: 0.5rem;
+}
+
+/* The steps rail: a numbered circle per step on one continuous rule. */
+.v-studio .st-steps {
+  counter-reset: st-step;
+}
+
+.v-studio .st-step {
+  counter-increment: st-step;
+}
+
+.v-studio .st-step::before {
+  content: counter(st-step);
+}
+
+/* Sidebar groups open and close without a layout jump. */
+.v-studio .st-collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--duration-base) var(--ease-out-soft);
+}
+
+.v-studio .st-collapse[data-open="false"] {
+  grid-template-rows: 0fr;
+}
+
+.v-studio .st-collapse > * {
+  overflow: hidden;
+}
