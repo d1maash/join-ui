@@ -1568,13 +1568,19 @@ function Row({
             <motion.span
               className="ml-px inline-block h-[1.05em] w-px translate-y-[0.2em] align-baseline"
               style={{ backgroundColor: accent ?? "var(--foreground)" }}
-              animate={reduceMotion ? { opacity: 1 } : { opacity: [1, 1, 0, 0] }}
+              /*
+               * The blink ends where it starts, lit. Inside a presence that skips
+               * its first entrance the server draws the last keyframe, and a
+               * reduced-motion client draws a solid caret — so both must be on.
+               */
+              initial={{ opacity: 1 }}
+              animate={reduceMotion ? { opacity: 1 } : { opacity: [1, 1, 0, 0, 1] }}
               transition={
                 reduceMotion
                   ? { duration: 0 }
                   : {
                       duration: 1.05,
-                      times: [0, 0.49, 0.5, 1],
+                      times: [0, 0.49, 0.5, 0.995, 1],
                       repeat: Infinity,
                       ease: "linear",
                     }
