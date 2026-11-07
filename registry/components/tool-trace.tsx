@@ -812,7 +812,11 @@ function Marker({
             className="pointer-events-none absolute inset-0 rounded-soft-sm bg-info"
             initial={{ opacity: 0, scale: 1 }}
             animate={{ opacity: [0, 0.28, 0], scale: [1, 1.5, 1.6] }}
-            exit={{ opacity: 0 }}
+            /*
+             * Its own transition, or the exit would inherit the loop's
+             * `repeat: Infinity` and leave a halo hanging on the resolved tile.
+             */
+            exit={{ opacity: 0, transition: { duration: 0.16, ease: EASE } }}
             /*
              * A breath, then a rest, rather than a continuous throb. The halo
              * takes a tenth of the cycle to come up and the rest of it to
