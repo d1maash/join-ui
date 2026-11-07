@@ -7,26 +7,12 @@ import { toast } from "sonner"
 import { copyToClipboard } from "@/lib/clipboard"
 import { cn } from "@/lib/utils"
 
+import { pillClass, type PillTone } from "./styles"
+
 /*
  * Copy, as a pill. Three faces: the blue primary (one per screen), the grey
  * secondary, and a round icon button for the corner of a code panel.
  */
-export type PillTone = "primary" | "secondary" | "ghost"
-
-export const pillClass = (tone: PillTone, size: "sm" | "md" | "lg" = "md") =>
-  cn(
-    "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full font-normal whitespace-nowrap",
-    "transition-[background-color,color,transform] duration-200 ease-out active:scale-[0.97]",
-    "focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#2997ff]",
-    size === "sm" && "h-8 px-4 text-[14px] tracking-[-0.01em]",
-    size === "md" && "h-11 px-[22px] text-[17px] tracking-[-0.022em]",
-    size === "lg" && "h-[52px] px-7 text-[17px] tracking-[-0.022em]",
-    tone === "primary" && "bg-[#0071e3] text-white hover:bg-[#0077ed]",
-    tone === "secondary" && "bg-white/[0.1] text-[#f5f5f7] hover:bg-white/[0.16]",
-    tone === "ghost" &&
-      "text-[#2997ff] shadow-[inset_0_0_0_1px_#2997ff] hover:bg-[#2997ff] hover:text-white"
-  )
-
 function useCopy(timeoutMs = 1800) {
   const [copied, setCopied] = React.useState(false)
   const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
