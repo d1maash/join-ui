@@ -111,7 +111,7 @@ export function IxHeader({ nav }: { nav: IxNav }) {
         </nav>
 
         <div className="ml-auto flex items-center gap-1.5">
-          <IxSearchTrigger className="hidden w-60 md:flex" />
+          <IxSearchTrigger className="hidden w-[15.5rem] md:flex" />
           <IxSearchTrigger variant="icon" className="md:hidden" />
           <span aria-hidden="true" className="mx-1.5 hidden h-5 w-px bg-[var(--ix-line-2)] md:block" />
           <a

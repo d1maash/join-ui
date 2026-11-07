@@ -40,7 +40,7 @@ export function IxFooter() {
 
   return (
     <footer className="mt-auto pb-24">
-      <div className="ix-frame ix-cross border-y border-[var(--ix-line)] md:border-b-0">
+      <div className="ix-frame ix-cross border-b border-[var(--ix-line)] md:border-b-0">
         <div className="grid md:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div className="flex flex-col justify-between gap-6 border-b border-[var(--ix-line)] p-6 md:border-r md:border-b-0">
             <Link href={ixHref("/")} className="flex w-fit items-center gap-2 font-semibold tracking-[-0.02em]">

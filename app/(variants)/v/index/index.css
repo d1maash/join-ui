@@ -22,37 +22,39 @@
   background-color: #0a0a0a;
 }
 
+/* Unlayered, and doubled up, so it outranks the global .dark token block. */
+.v-index,
+.v-index.dark {
+  --ix-bg: #0a0a0a;
+  --ix-cell: #0d0d0d;
+  --ix-raise: #141414;
+  --ix-raise-2: #1a1a1a;
+  --ix-line: rgb(255 255 255 / 0.08);
+  --ix-line-2: rgb(255 255 255 / 0.15);
+  --ix-line-3: rgb(255 255 255 / 0.26);
+  --ix-fg: #ededed;
+  --ix-fg-2: #a3a3a3;
+  /* 5:1 on the page — the dimmest text that still passes AA at 12px. */
+  --ix-fg-3: #828282;
+  --ix-accent: #c2f25b;
+  --ix-accent-dim: rgb(194 242 91 / 0.14);
+  --ix-accent-line: rgb(194 242 91 / 0.38);
+  --ix-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* The shared tokens follow the frame, so previews sit on the same black. */
+  --background: #0a0a0a;
+  --ring: var(--ix-accent);
+  --selection: rgb(194 242 91 / 0.24);
+
+  font-family: var(--font-ix-sans), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--ix-bg);
+  color: var(--ix-fg);
+  letter-spacing: -0.006em;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
 @layer components {
-  .v-index {
-    --ix-bg: #0a0a0a;
-    --ix-cell: #0d0d0d;
-    --ix-raise: #141414;
-    --ix-raise-2: #1a1a1a;
-    --ix-line: rgb(255 255 255 / 0.08);
-    --ix-line-2: rgb(255 255 255 / 0.15);
-    --ix-line-3: rgb(255 255 255 / 0.26);
-    --ix-fg: #ededed;
-    --ix-fg-2: #a3a3a3;
-    /* 5:1 on the page — the dimmest text that still passes AA at 12px. */
-    --ix-fg-3: #828282;
-    --ix-accent: #c2f25b;
-    --ix-accent-dim: rgb(194 242 91 / 0.14);
-    --ix-accent-line: rgb(194 242 91 / 0.38);
-    --ix-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-
-    /* The shared tokens follow the frame, so previews sit on the same black. */
-    --background: #0a0a0a;
-    --ring: var(--ix-accent);
-    --selection: rgb(194 242 91 / 0.24);
-
-    font-family: var(--font-ix-sans), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-    background-color: var(--ix-bg);
-    color: var(--ix-fg);
-    letter-spacing: -0.006em;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-  }
 
   .v-index ::selection {
     background-color: var(--selection);
@@ -413,11 +415,6 @@
     }
     .v-index .ix-cells[data-cols="4"] {
       --ix-cols: 4;
-    }
-  }
-  @media (min-width: 640px) and (max-width: 1023px) {
-    .v-index .ix-cells[data-cols="3"][data-narrow] {
-      --ix-cols: 1;
     }
   }
   @media (min-width: 1024px) and (max-width: 1279px) {

@@ -55,7 +55,8 @@ export default async function IndexHome() {
   const featuredMeta = getFeaturedComponents(1)[0]
   const featured = (featuredMeta && getIxItem(featuredMeta.slug)) ?? items[0]
   const newest = items[0]
-  const latest = items.slice(0, LATEST)
+  /* Latest leaves out the hero cell, so a small registry shows each component once. */
+  const latest = items.filter((item) => item.id !== featured?.id).slice(0, LATEST)
 
   const featuredComponent = featured ? getComponent(featured.slug) : undefined
   const promptHead = featuredComponent
@@ -98,10 +99,10 @@ export default async function IndexHome() {
         </dl>
 
         <div className="grid lg:grid-cols-[minmax(0,1fr)_29rem] xl:grid-cols-[minmax(0,1fr)_33rem]">
-          <div className="flex flex-col justify-between gap-12 px-5 pt-10 pb-8 md:px-8 md:pt-14 lg:border-r lg:border-[var(--ix-line)] lg:px-10 lg:pb-10">
+          <div className="@container flex flex-col justify-between gap-12 px-5 pt-10 pb-8 md:px-8 md:pt-14 lg:border-r lg:border-[var(--ix-line)] lg:px-10 lg:pb-10">
             <h1
               id="ix-hero-title"
-              className="text-[clamp(2.625rem,6.4vw,4.875rem)] leading-[0.94] font-semibold tracking-[-0.052em]"
+              className="text-[length:max(2.375rem,min(4.75rem,9.7cqi))] leading-[0.95] font-semibold tracking-[-0.05em]"
             >
               Live on this page.
               <br />
