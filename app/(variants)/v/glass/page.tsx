@@ -178,7 +178,7 @@ export default async function GlassHome() {
       {/* ── Install ──────────────────────────────────────────────────── */}
       <section aria-labelledby="install-title" className="px-4 pt-32 sm:px-6 sm:pt-44">
         <div className="mx-auto grid max-w-[1180px] items-center gap-12 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
-          <div className="g-rise">
+          <div>
             <Head
               id="install-title"
               eyebrow="Install"
