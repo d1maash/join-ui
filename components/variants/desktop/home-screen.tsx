@@ -57,7 +57,7 @@ export function HomeScreen() {
     run.phase === "expired"
 
   return (
-    <div className="d-phone-only relative z-[1] mx-auto max-w-[480px] px-5 pb-28">
+    <div className="d-phone-only relative mx-auto max-w-[480px] px-5 pb-28">
       <header className="pt-5 pb-6 text-center">
         <p className="text-[15px] font-semibold tracking-[-0.01em] text-white/85">
           Seven components · MIT · source you own

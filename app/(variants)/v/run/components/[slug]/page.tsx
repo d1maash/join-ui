@@ -291,12 +291,22 @@ export default async function RunComponentPage({ params }: PageProps) {
                               label="Package manager"
                             />
                           ) : null}
-                          <RunCode
-                            code={primary.content}
-                            language={primary.language}
-                            title={primary.target}
-                            maxHeight={260}
-                          />
+                          <div className="run-code flex flex-wrap items-center gap-3 px-4 py-3">
+                            <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-[#f5f5f7]">
+                              {primary.target}
+                            </span>
+                            <span className="text-[13px] text-[#77777c] max-sm:hidden">
+                              {primary.content.trimEnd().split("\n").length} lines — the
+                              listing is under Code
+                            </span>
+                            <RunCopy
+                              value={primary.content}
+                              label="Copy source"
+                              size="sm"
+                              variant="quiet"
+                              toastMessage={`${primary.name} copied`}
+                            />
+                          </div>
                         </Step>
                       </div>
                     ),

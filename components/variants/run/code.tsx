@@ -1,7 +1,7 @@
-import { highlightCode } from "@/lib/highlight"
 import { cn } from "@/lib/utils"
 
 import { RunCodeShell } from "./code-shell"
+import { highlight } from "./highlight"
 
 /**
  * A highlighted listing, rendered on the server. The markup ships as static
@@ -26,7 +26,7 @@ export async function RunCode({
   bare?: boolean
   className?: string
 }) {
-  const html = await highlightCode(code, { language })
+  const html = await highlight(code, language)
   return (
     <RunCodeShell
       html={html}
