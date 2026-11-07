@@ -23,6 +23,9 @@ function installOutput(slug: string): Line[] {
   ]
 }
 
+const LOGIN: Line = { kind: "muted", text: "Last login: Sun 8 Nov 09:41 on ttys002" }
+const FINISHED: Line[] = [LOGIN, { kind: "prompt", text: INSTALL }, ...installOutput("approval-gate")]
+
 /* The script plays once per visit, not every time the desktop comes back. */
 let played = false
 
@@ -47,17 +50,10 @@ export function TerminalScene({
   className?: string
 }) {
   const still = useStill()
-  const [lines, setLines] = React.useState<Line[]>(() =>
-    played || !autoplay
-      ? [
-          { kind: "muted", text: "Last login: Sun 8 Nov 09:41 on ttys002" },
-          { kind: "prompt", text: INSTALL },
-          ...installOutput("approval-gate"),
-        ]
-      : [{ kind: "muted", text: "Last login: Sun 8 Nov 09:41 on ttys002" }]
-  )
+  const [scripted] = React.useState(() => played || !autoplay)
+  const [lines, setLines] = React.useState<Line[]>(() => (scripted ? FINISHED : [LOGIN]))
   const [typed, setTyped] = React.useState("")
-  const [ready, setReady] = React.useState(played || !autoplay)
+  const [ready, setReady] = React.useState(scripted)
   const [value, setValue] = React.useState("")
   const [history, setHistory] = React.useState<string[]>([])
   const [cursor, setCursor] = React.useState(-1)
@@ -71,17 +67,17 @@ export function TerminalScene({
 
   /* The scripted install. */
   React.useEffect(() => {
-    if (played || !autoplay) {
+    if (scripted) {
       installed.current?.()
       return
     }
-    played = true
     const timers: number[] = []
     const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms))
 
     if (still) {
-      setLines((current) => [...current, { kind: "prompt", text: INSTALL }, ...installOutput("approval-gate")])
+      setLines(FINISHED)
       setReady(true)
+      played = true
       installed.current?.()
       return () => timers.forEach(window.clearTimeout)
     }
@@ -105,10 +101,15 @@ export function TerminalScene({
     t += 200
     at(t, () => {
       setReady(true)
+      played = true
       installed.current?.()
     })
-    return () => timers.forEach(window.clearTimeout)
-  }, [autoplay, still])
+    return () => {
+      timers.forEach(window.clearTimeout)
+      setTyped("")
+      setLines([LOGIN])
+    }
+  }, [scripted, still])
 
   React.useEffect(() => {
     const node = scroller.current
@@ -256,7 +257,7 @@ function TermLine({ line }: { line: Line }) {
     <div
       className={cn(
         "break-words whitespace-pre-wrap",
-        line.kind === "ok" && "text-[#e6e6eb] [&]:first-letter:text-[#30d158]",
+        line.kind === "ok" && "text-[#e6e6eb]",
         line.kind === "path" && "text-[#64d2ff]",
         line.kind === "muted" && "text-[rgb(235_235_245/0.5)]",
         line.kind === "err" && "text-[#ff6961]"
