@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { AnimatePresence, LayoutGroup, motion } from "motion/react"
+import { AnimatePresence, motion } from "motion/react"
 import { Search, X } from "lucide-react"
 
 import { renderThumb } from "@/components/previews/thumbs/registry"
@@ -123,7 +123,7 @@ export function MissionControl({
   const tile = tiling(Math.max(1, shown.length), width)
 
   return (
-    <LayoutGroup>
+    <>
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div
           role="group"
@@ -255,6 +255,6 @@ export function MissionControl({
           </div>
         ) : null}
       </div>
-    </LayoutGroup>
+    </>
   )
 }

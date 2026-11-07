@@ -223,27 +223,33 @@ export default async function SpecimenLanding() {
         data-running={`PL. ${traceSheet.no} — ${trace.title}`}
         className="sp-wrap mt-36 lg:mt-52"
       >
+        <div className="mb-10 flex items-baseline justify-between border-t border-[var(--sp-ink)] pt-3">
+          <p className="sp-label !text-[var(--sp-ink)]">Plate {traceSheet.no}</p>
+          <p className="sp-label">Exploded view</p>
+        </div>
         <SpecimenPlate
           slug="tool-trace"
           fig={`FIG. ${traceSheet.no}.1`}
           note="Live · plays while on screen"
           stageClassName="min-h-[640px] py-16"
           caption="A run of four tools. Each opens as it starts, writes, then folds away."
-          labelsHeader={
-            <div className="mb-10 border-t border-[var(--sp-ink)] pt-3">
-              <p className="sp-label !text-[var(--sp-ink)]">Plate {traceSheet.no} — exploded view</p>
-              <h2 id="pl-trace" className="sp-display mt-5 text-[clamp(44px,4.4vw,64px)] leading-[0.92]">
-                {trace.title}
-              </h2>
-              <p className="mt-4 text-[15px] leading-[1.55] text-[var(--sp-ink-2)]">
-                The trace an agent leaves as it works. The step in flight opens itself,
-                writes, folds away — so a long run reads at a glance and a failure stays
-                open.
-              </p>
-              <PlateLink slug={trace.slug} no={traceSheet.no} />
-            </div>
-          }
         />
+        <div className="sp-grid mt-14 items-end gap-y-6">
+          <h2
+            id="pl-trace"
+            className="sp-display col-span-4 text-[clamp(52px,7.4vw,112px)] leading-[0.88] lg:col-span-7"
+          >
+            {trace.title}
+          </h2>
+          <div className="col-span-4 lg:col-span-5">
+            <p className="max-w-[46ch] text-[17px] leading-[1.55] text-pretty text-[var(--sp-ink-2)]">
+              The trace an agent leaves as it works. The step in flight opens itself,
+              writes its output a line at a time, then folds away — so a long run reads at
+              a glance and a failure stays open.
+            </p>
+            <PlateLink slug={trace.slug} no={traceSheet.no} />
+          </div>
+        </div>
         <DataStrip sheet={traceSheet} className="mt-12" />
       </section>
 
@@ -419,9 +425,9 @@ function CoverFact({
   className?: string
 }) {
   return (
-    <div className={`flex flex-wrap items-baseline gap-x-3 ${className ?? ""}`}>
+    <div className={className}>
       <dt className="sp-label">{term}</dt>
-      <dd className="text-[14px] font-medium">{value}</dd>
+      <dd className="text-[14px] leading-[1.35] font-medium">{value}</dd>
     </div>
   )
 }

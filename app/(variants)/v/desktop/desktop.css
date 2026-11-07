@@ -1132,8 +1132,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 30px;
-  padding: 0 8px;
+  min-height: 30px;
+  padding: 5px 8px;
+  line-height: 1.3;
   border-radius: 7px;
   color: var(--d-ink);
   text-decoration: none;
@@ -1613,5 +1614,215 @@
 @media (max-width: 767px) {
   .v-desktop .d-desk-only {
     display: none !important;
+  }
+}
+
+/* ── Docs reader ───────────────────────────────────────────────────────── */
+
+.v-desktop .d-reader {
+  min-height: 100%;
+  padding: clamp(20px, 3vw, 40px) clamp(16px, 3vw, 40px) 56px;
+  background: #121214;
+}
+
+@media (min-width: 1200px) {
+  .v-desktop .d-reader {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 32px;
+    align-items: start;
+  }
+}
+
+.v-desktop .d-page {
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: clamp(28px, 4.5vw, 64px) clamp(22px, 4.5vw, 68px) 40px;
+  border-radius: 14px;
+  background: #1c1c1f;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.06),
+    0 1px 0 rgb(255 255 255 / 0.04),
+    0 18px 50px rgb(0 0 0 / 0.45);
+}
+
+.v-desktop .d-page-kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ffb340;
+}
+
+.v-desktop .d-page-title {
+  margin-top: 8px;
+  font-size: clamp(32px, 3.6vw, 44px);
+  line-height: 1.06;
+  font-weight: 700;
+  letter-spacing: -0.026em;
+}
+
+.v-desktop .d-page-standfirst {
+  margin-top: 12px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--d-hair);
+  font-size: 19px;
+  line-height: 1.45;
+  color: var(--d-ink-2);
+  text-wrap: pretty;
+}
+
+.v-desktop .d-prose {
+  max-width: 68ch;
+  padding-top: 8px;
+  font-size: 16.5px;
+}
+
+.v-desktop .d-prose .d-prose-p,
+.v-desktop .d-prose li {
+  font-size: 16.5px;
+  line-height: 1.72;
+  color: rgb(235 235 245 / 0.78);
+}
+
+.v-desktop .d-prose .d-prose-h2 {
+  margin: 44px 0 12px;
+  padding: 0;
+  border: 0;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--d-ink);
+  scroll-margin-top: 24px;
+}
+
+.v-desktop .d-prose .d-prose-h3 {
+  margin: 30px 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.014em;
+  color: var(--d-ink);
+  scroll-margin-top: 24px;
+}
+
+.v-desktop .d-prose-link {
+  color: var(--d-blue-ink);
+  text-decoration: underline;
+  text-decoration-color: rgb(74 163 255 / 0.4);
+  text-underline-offset: 3px;
+  border-radius: 3px;
+}
+
+.v-desktop .d-prose-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.v-desktop .d-page-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--d-hair);
+}
+
+.v-desktop .d-toc {
+  position: sticky;
+  top: 0;
+  padding-top: 8px;
+  font-size: 13px;
+}
+
+.v-desktop .d-toc-link {
+  display: block;
+  padding: 4px 0 4px 10px;
+  border-left: 2px solid rgb(255 255 255 / 0.08);
+  color: var(--d-ink-3);
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.v-desktop .d-toc-link:hover {
+  color: var(--d-ink);
+}
+
+.v-desktop .d-toc-link[aria-current="location"] {
+  border-left-color: var(--d-blue);
+  color: var(--d-ink);
+}
+
+@media (max-width: 1199px) {
+  .v-desktop .d-toc {
+    display: none;
+  }
+}
+
+.v-desktop .d-chapters {
+  margin: -8px -8px 24px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.05);
+}
+
+.v-desktop .d-chapters summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-weight: 600;
+  list-style: none;
+  cursor: default;
+}
+
+.v-desktop .d-chapters summary::-webkit-details-marker {
+  display: none;
+}
+
+.v-desktop .d-chapters[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.v-desktop .d-chapters > div {
+  padding: 0 6px 10px;
+}
+
+@media (max-width: 767px) {
+  .v-desktop .d-reader {
+    padding: 0;
+    background: #0d0d10;
+  }
+  .v-desktop .d-page {
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 12px 20px 120px;
+  }
+}
+
+/* ── 404 alert ─────────────────────────────────────────────────────────── */
+
+.v-desktop .d-alert-scrim {
+  position: fixed;
+  inset: var(--d-menubar) 0 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px 120px;
+  background: rgb(0 0 0 / 0.28);
+}
+
+.v-desktop .d-alert {
+  width: min(300px, 100%);
+  padding: 22px 18px 16px;
+  border-radius: 26px;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .v-desktop .d-alert-scrim {
+    inset: 0;
   }
 }
