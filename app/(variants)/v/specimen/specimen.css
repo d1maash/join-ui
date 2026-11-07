@@ -757,3 +757,63 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+
+/* --------------------------------------------------------------------------
+ * The manual: numbered sections, listings, side notes, procedures
+ * ------------------------------------------------------------------------ */
+
+.v-specimen .sp-article {
+  counter-reset: sp-h2 sp-listing;
+  --sp-note: min(290px, 21vw);
+}
+
+.v-specimen .sp-article .sp-h2 {
+  counter-increment: sp-h2;
+}
+
+.v-specimen .sp-article .sp-h2::before {
+  content: "§ " var(--chapter) "." counter(sp-h2);
+  display: block;
+  margin-bottom: 14px;
+  font-family: var(--sp-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--sp-ink);
+}
+
+.v-specimen .sp-article .sp-listing {
+  counter-increment: sp-listing;
+}
+
+.v-specimen .sp-article .sp-listing-no::before {
+  content: "Listing " var(--chapter) "." counter(sp-listing);
+}
+
+.v-specimen .sp-article .sp-steps {
+  counter-reset: sp-step;
+}
+
+.v-specimen .sp-article .sp-step {
+  counter-increment: sp-step;
+}
+
+.v-specimen .sp-article .sp-step-no::before {
+  content: counter(sp-step);
+}
+
+.v-specimen .sp-prose > :first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 1280px) {
+  .v-specimen .sp-article .sp-sidenote {
+    float: right;
+    clear: right;
+    position: relative;
+    width: var(--sp-note);
+    margin-right: calc(-1 * var(--sp-note) - 56px);
+    margin-top: 0.4em;
+    margin-bottom: 1.5em;
+  }
+}

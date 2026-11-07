@@ -118,7 +118,7 @@ export function DeployWidget({ className, compact = false }: { className?: strin
   return (
     <div className={cn("flex flex-col px-4 pt-4 pb-3", className)}>
       <StatusTimeline
-        label="Deploy · acme-app"
+        label={compact ? "Deploy" : "Deploy · acme-app"}
         steps={
           compact
             ? steps.map((step) =>
