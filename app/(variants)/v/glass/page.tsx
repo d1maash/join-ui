@@ -17,7 +17,7 @@ import { siteConfig } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
-  title: "Made to move. Yours to keep.",
+  title: { absolute: "Join UI Glass — Made to move. Yours to keep." },
   description: siteConfig.description,
 }
 
