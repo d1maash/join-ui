@@ -35,40 +35,55 @@ export interface FocusStackItem {
 const ON_ACCENT = "var(--focus-stack-glyph, oklch(0.985 0.002 90))"
 
 /**
+ * Light, at a strength that suits the room: `onLight` on a white page,
+ * `onDark` on a black one, read off the page's own lightness so a theme island
+ * decides it rather than a `dark:` variant. Where relative colour is not
+ * supported the declaration drops out, and the pill is simply unlit.
+ */
+function light(onLight: number, onDark: number): string {
+  return `oklch(from var(--background) 1 0 0 / calc(${onDark} + l * ${Math.round((onLight - onDark) * 1000) / 1000}))`
+}
+
+/**
  * Geometry is carried in pixels, not in classes, because the stack positions
  * every item itself: the lane between two ranks and the height of the frame are
  * both arithmetic on `step`, and neither survives being expressed as a utility.
+ *
+ * The badge is a circle inset from the capsule's end by exactly the distance
+ * that makes the two concentric — `(height - badge) / 2` on every side — so the
+ * pill's round end and the badge share one centre, the way a control sits in
+ * a capsule on Apple's platforms.
  */
 const SIZES = {
   sm: {
     height: 56,
     step: 59,
     frame: "max-w-sm",
-    pill: "gap-3 pl-2.5 pr-5",
-    badge: "size-9 rounded-[0.6rem]",
-    glyph: "size-4",
-    label: "text-[0.9375rem]",
-    description: "text-[0.75rem]",
+    pill: "gap-3 pl-2.5 pr-6",
+    badge: "size-9",
+    glyph: "size-[1.0625rem]",
+    label: "text-[0.9375rem] tracking-[-0.016em]",
+    description: "text-[0.8125rem] tracking-[-0.006em]",
   },
   md: {
     height: 72,
     step: 76,
     frame: "max-w-md",
-    pill: "gap-3.5 pl-3 pr-7",
-    badge: "size-11 rounded-[0.8rem]",
-    glyph: "size-5",
-    label: "text-[1.125rem]",
-    description: "text-[0.8125rem]",
+    pill: "gap-3.5 pl-3.5 pr-7",
+    badge: "size-11",
+    glyph: "size-[1.3125rem]",
+    label: "text-[1.0625rem] tracking-[-0.022em]",
+    description: "text-[0.9375rem] tracking-[-0.012em]",
   },
   lg: {
     height: 88,
     step: 93,
     frame: "max-w-lg",
-    pill: "gap-4 pl-3.5 pr-8",
-    badge: "size-13 rounded-[0.95rem]",
-    glyph: "size-6",
-    label: "text-[1.375rem]",
-    description: "text-sm",
+    pill: "gap-4 pl-[1.125rem] pr-9",
+    badge: "size-13",
+    glyph: "size-[1.5625rem]",
+    label: "text-[1.375rem] tracking-[-0.026em]",
+    description: "text-[1.0625rem] tracking-[-0.022em]",
   },
 } as const
 
@@ -478,19 +493,37 @@ function Row({
   const stretchY = useTransform(urgency, (u) => 1 + u * LIQUID_STRETCH)
   const stretchX = useTransform(urgency, (u) => 1 - u * LIQUID_STRETCH * 0.7)
 
-  /* An accent with no glyph is a colour chip, which is a legitimate stack. */
+  /*
+   * An accent with no glyph is a colour chip, which is a legitimate stack.
+   *
+   * The badge is a lit disc rather than a flat chip: the colour runs a step
+   * lighter across the top, a hairline of light sits on its upper rim and a
+   * breath of shade on its lower one — the visionOS icon, at badge size.
+   * Without an accent it takes the system's gray fill and ink glyph, which is
+   * how a neutral control sits in a capsule.
+   */
   const badge = item.icon || item.accent ? (
     <span
       aria-hidden="true"
       className={cn(
-        "relative flex shrink-0 items-center justify-center",
+        "relative flex shrink-0 items-center justify-center rounded-full",
         scale.badge,
-        item.accent ? undefined : "bg-primary text-primary-foreground",
+        item.accent ? undefined : "bg-muted text-foreground",
         "[&_svg]:size-full [&_svg]:shrink-0"
       )}
-      style={
-        item.accent ? { backgroundColor: item.accent, color: ON_ACCENT } : undefined
-      }
+      style={{
+        ...(item.accent
+          ? {
+              backgroundColor: item.accent,
+              backgroundImage:
+                "linear-gradient(to bottom, rgb(255 255 255 / 0.26), rgb(255 255 255 / 0) 55%, rgb(0 0 0 / 0.08))",
+              color: ON_ACCENT,
+            }
+          : {}),
+        boxShadow: item.accent
+          ? "inset 0 1px 0 rgb(255 255 255 / 0.3), inset 0 -1px 0 rgb(0 0 0 / 0.08)"
+          : `inset 0 1px 0 ${light(0.7, 0.08)}`,
+      }}
     >
       <span className={cn("flex items-center justify-center", scale.glyph)}>
         {item.icon}
@@ -500,6 +533,10 @@ function Row({
 
   const body = (
     <>
+      {/*
+       * The lift: the theme's widest, softest shadow, faded in by focus, so
+       * only the pill in the middle is held off the page.
+       */}
       <motion.span
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 rounded-full shadow-lg"
@@ -508,17 +545,14 @@ function Row({
       {badge}
       <span className="relative flex min-w-0 flex-col justify-center">
         <span
-          className={cn(
-            scale.label,
-            "truncate font-semibold tracking-tight text-foreground"
-          )}
+          className={cn(scale.label, "truncate leading-snug font-semibold text-foreground")}
         >
           {item.label}
         </span>
         {item.description ? (
           <motion.span
             style={{ opacity: detail }}
-            className={cn(scale.description, "truncate text-muted-foreground")}
+            className={cn(scale.description, "truncate leading-snug text-muted-foreground")}
           >
             {item.description}
           </motion.span>
@@ -531,12 +565,17 @@ function Row({
    * Deliberately not `overflow-hidden`: the lift is a shadow on a transparent
    * child, and it is drawn outside the pill's border box. Clipping the pill
    * would clip the only cue that the focused item is off the page.
+   *
+   * The edge is a hairline held just strong enough to keep a white pill off a
+   * white page, with a line of light along the top that only shows on
+   * charcoal — where a raised surface is read by its lit edge, not its shade.
    */
   const pill = cn(
     "relative flex h-full w-full items-center rounded-full",
-    "border border-border/70 bg-card text-left",
+    "border border-border/55 bg-card text-left",
     scale.pill
   )
+  const edge = { boxShadow: `inset 0 1px 0 ${light(0, 0.07)}` }
 
   return (
     <motion.li
@@ -576,11 +615,14 @@ function Row({
              * back on the way down is the single loudest tell that a carousel
              * is a picture of a control rather than a control — and the hover
              * is what tells a reader which of nine overlapping shapes the
-             * cursor is actually on.
+             * cursor is actually on. Declared whatever the motion preference
+             * and flattened under it, because the preference is only known on
+             * the client and a gesture changes the server markup.
              */
-            whileHover={still ? undefined : { scale: 1.025 }}
-            whileTap={still ? undefined : { scale: 0.975 }}
+            whileHover={{ scale: still ? 1 : 1.025 }}
+            whileTap={{ scale: still ? 1 : 0.975 }}
             transition={PRESS}
+            style={edge}
             className={cn(
               pill,
               "cursor-pointer",
@@ -592,7 +634,7 @@ function Row({
             {body}
           </motion.button>
         ) : (
-          <div aria-current={active ? "true" : undefined} className={pill}>
+          <div aria-current={active ? "true" : undefined} className={pill} style={edge}>
             {body}
           </div>
         )}
