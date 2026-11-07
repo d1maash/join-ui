@@ -94,7 +94,7 @@ export default async function ComponentPage({ params }: PageProps) {
   const categories = [...new Set(componentsByName.map((item) => item.category))]
 
   const sidebar = (
-    <>
+    <div>
       <p className="d-source-head">Join UI</p>
       <ul>
         <li>
@@ -145,15 +145,15 @@ export default async function ComponentPage({ params }: PageProps) {
           </ul>
         </div>
       ))}
-    </>
+    </div>
   )
 
   const views = {
     preview: (
-      <>
+      <div>
         <h2 className="sr-only">Preview</h2>
         <LiveCanvas slug={component.slug} />
-      </>
+      </div>
     ),
     code: (
       <div className="d-code-host flex flex-col gap-4">
