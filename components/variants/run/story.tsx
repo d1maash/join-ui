@@ -539,6 +539,14 @@ function PinnedStory({ m }: { m: StoryModel }) {
     if (phase.chapter > 2 && decision === null) decide("expire")
   }, [phase.chapter, decision, decide])
 
+  const answer = decision === null ? null : m.attempt + ":" + decision
+  const [settledFor, setSettledFor] = React.useState<string | null>(null)
+  React.useEffect(() => {
+    if (answer === null) return
+    const timer = window.setTimeout(() => setSettledFor(answer), 1600)
+    return () => window.clearTimeout(timer)
+  }, [answer])
+
   const tone = toneFor(phase, decision)
   React.useEffect(() => setRunTone(tone), [tone])
   React.useEffect(() => () => setRunTone("idle"), [])
@@ -564,6 +572,8 @@ function PinnedStory({ m }: { m: StoryModel }) {
   const safePath = decision === "deny" || decision === "expire"
   const chapter = phase.chapter
   const asking = chapter === 2
+  /* Once answered, the sheet holds a beat for the outcome, then goes back up. */
+  const sheetOpen = asking && !(answer !== null && settledFor === answer)
   const size: PaneSize = geo?.compact ? "sm" : "md"
   const steps = traceSteps(phase.workBeat, decision, asking)
   const active = CHAPTERS[Math.max(0, Math.min(4, chapter))]!
@@ -705,11 +715,11 @@ function PinnedStory({ m }: { m: StoryModel }) {
                     }
                   />
                 </Layer>
-                <Layer show={chapter === 1 || chapter === 2} dim={asking}>
+                <Layer show={chapter === 1 || chapter === 2} dim={sheetOpen}>
                   <WorkPane steps={steps} size={size} />
                 </Layer>
                 <AnimatePresence>
-                  {asking ? (
+                  {sheetOpen ? (
                     <motion.div
                       key="sheet"
                       className="absolute top-0 left-1/2 z-10 w-[min(33rem,88%)]"

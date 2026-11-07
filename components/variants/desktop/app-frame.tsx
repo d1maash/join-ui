@@ -201,7 +201,7 @@ export function AppFrame({
                     {views[entry.id]}
                   </section>
                 ))}
-                {below}
+                <div>{below}</div>
               </div>
               <aside aria-label={`About ${title}`} className="d-inspector">
                 {inspector}
