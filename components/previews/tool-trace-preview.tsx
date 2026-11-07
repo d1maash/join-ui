@@ -6,7 +6,7 @@ import {
   GitPullRequest,
   PenLine,
   Play,
-  RefreshCw,
+  RotateCcw,
   Search,
   TestTube,
 } from "lucide-react"
@@ -70,9 +70,8 @@ const SCRIPT: Array<{
       meta: "1.1s",
       detail: (
         <>
-          Wrote the component and registered its preview. Anything you pass to{" "}
-          <Code>detail</Code> lands here, above the console — prose, a diff, a
-          link back to the file.
+          Wrote the component and registered its preview. Anything passed to{" "}
+          <Code>detail</Code> lands here, above the console.
         </>
       ),
       output: ["+ 612 insertions", "- 0 deletions", "→ formatted, 1 file changed"],
@@ -189,28 +188,27 @@ const RETRIEVAL: ToolTraceStep[] = [
     name: "compose_answer",
     meta: "1.4k tok",
     state: "done",
-    detail:
-      "One panel at a time: opening this one folded the last shut, because multiple is off.",
+    detail: "Opening this one folded the last shut, because multiple is off.",
   },
 ]
 
 /*
  * Two panels sharing one grid: the parent owns the rows, each panel spans both
  * of them through `subgrid`, and so the cards start on the same line however
- * many lines the caption above them happens to run to. `1fr` on the second row
- * then holds the two cards to a single height.
+ * many lines the caption above them happens to run to.
  */
-const PAIR = "grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-3"
+const PAIR = "grid gap-14 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-5"
 const ALIGNED = "lg:row-span-2 lg:grid lg:grid-rows-subgrid"
 
 export default function ToolTracePreview() {
   const { steps, running, start, reset } = useScriptedRun()
+  const done = steps.filter((step) => step.state === "done").length
 
   return (
-    <div className="flex w-full max-w-5xl flex-col gap-10">
+    <div className="flex w-full max-w-5xl flex-col gap-14 font-sans">
       <Panel
         caption="A run, as it happens"
-        description="Press play. Each tool opens itself as it starts, writes its output a line at a time, then folds away and hands the rail to the next one — until one of them fails and the rest are skipped."
+        description="Press Run. Each tool opens as it starts, writes its output line by line, then folds away and hands the rail on — until one fails and the rest are skipped."
       >
         <ToolTrace
           label="Agent run"
@@ -218,18 +216,18 @@ export default function ToolTracePreview() {
           className="max-w-2xl"
           footer={
             <div className="flex items-center justify-between gap-3">
-              <span className="text-xs font-medium text-muted-foreground tabular-nums">
-                {steps.filter((step) => step.state === "done").length} / {SCRIPT.length}
+              <span className="text-[0.8125rem] text-muted-foreground tabular-nums">
+                {done} of {SCRIPT.length} done
               </span>
-              <div className="flex items-center gap-1.5">
-                <Pill onClick={start} disabled={running}>
-                  <Play aria-hidden="true" className="size-3.5" />
-                  Run
-                </Pill>
-                <Pill tone="quiet" onClick={reset}>
-                  <RefreshCw aria-hidden="true" className="size-3.5" />
+              <div className="flex items-center gap-2">
+                <Button tone="gray" onClick={reset}>
+                  <RotateCcw aria-hidden="true" className="size-3.5" strokeWidth={2.5} />
                   Reset
-                </Pill>
+                </Button>
+                <Button onClick={start} disabled={running}>
+                  <Play aria-hidden="true" className="size-3.5 fill-current" strokeWidth={2.5} />
+                  Run
+                </Button>
               </div>
             </div>
           }
@@ -240,7 +238,7 @@ export default function ToolTracePreview() {
         <Panel
           className={ALIGNED}
           caption={<Code>icon</Code>}
-          description="At rest the trace is a still drawing. A glyph per tool replaces the state marker while the ring, the rail and the hidden label keep carrying the outcome — and the step that failed is the one left open."
+          description="A glyph per tool in place of the state mark. The tile, the rail and the spoken label still carry the outcome, and the step that failed stays open."
         >
           <ToolTrace
             label="Run 4812"
@@ -255,7 +253,7 @@ export default function ToolTracePreview() {
         <Panel
           className={ALIGNED}
           caption={<Code>{"multiple={false}"}</Code>}
-          description="Opening a step folds the last one shut, which keeps a long retrieval chain to one screen. detail takes markup, so a step with nothing to print still has somewhere to explain itself."
+          description="Opening a step folds the last one shut, so a long chain stays on one screen. A step with nothing to print explains itself through detail."
         >
           <ToolTrace
             label="Retrieval"
@@ -348,10 +346,14 @@ function Panel({
   children: React.ReactNode
 }) {
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
-      <div className="flex flex-col gap-1">
-        <span className="label-section text-foreground">{caption}</span>
-        <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
+    <div className={cn("flex flex-col gap-5", className)}>
+      <div className="flex max-w-xl flex-col gap-1.5 px-1">
+        <span className="text-[1.0625rem] leading-[1.375rem] font-semibold tracking-[-0.022em] text-foreground">
+          {caption}
+        </span>
+        <p className="text-[0.9375rem] leading-[1.35rem] tracking-[-0.009em] text-muted-foreground">
+          {description}
+        </p>
       </div>
       {children}
     </div>
@@ -360,33 +362,31 @@ function Panel({
 
 /** Mono is reserved for the captions that really are quoting the API. */
 function Code({ children }: { children: React.ReactNode }) {
-  return (
-    <code className="font-mono text-[0.75rem] font-medium text-foreground">
-      {children}
-    </code>
-  )
+  return <code className="font-mono text-[0.92em] font-medium text-foreground">{children}</code>
 }
 
-/** Pill-shaped, tinted control — a demo affordance, not the site's own button. */
-function Pill({
-  tone = "neutral",
+/**
+ * The two button styles the demo needs: tinted for the action, grey beside it
+ * — a demo affordance, not the site's own button.
+ */
+function Button({
+  tone = "tinted",
   className,
   children,
   ...props
 }: React.ComponentPropsWithoutRef<"button"> & {
-  tone?: "neutral" | "quiet"
+  tone?: "tinted" | "gray"
 }) {
   return (
     <button
       type="button"
       className={cn(
-        "inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium",
-        "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+        "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-[0.8125rem] font-semibold tracking-[-0.006em]",
+        "transition-[background-color,opacity,scale] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)] active:scale-[0.97]",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         "disabled:pointer-events-none disabled:opacity-40",
-        tone === "neutral" &&
-          "bg-info-soft text-info hover:bg-info hover:text-info-foreground",
-        tone === "quiet" && "text-muted-foreground hover:bg-muted hover:text-foreground",
+        tone === "tinted" && "bg-info-soft text-info hover:bg-info/20",
+        tone === "gray" && "bg-muted/70 text-foreground hover:bg-muted",
         className
       )}
       {...props}

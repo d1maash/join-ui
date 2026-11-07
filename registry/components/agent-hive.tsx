@@ -266,14 +266,15 @@ export interface AgentHiveProps extends Omit<
 /**
  * A honeycomb of models, one action, and the queue of runs it produces.
  *
- * The comb is glass. Every cell is a frosted hexagon with a lit top edge and a
- * shaded bottom one, and behind them sits a soft wash of the selected model's
- * own colour — so the light in the material belongs to the selection, and
- * moving the selection moves the light. The selected cell is a single tinted
- * tile that slides over the frosting rather than a state each cell paints for
- * itself, and while it travels it stretches along its own direction of travel
- * and settles out of it, with a plumb line swinging above. Nothing is stacked
- * or shadowed to fake depth; the depth is the material.
+ * The comb is glass. Every cell is a frosted hexagon — a pool of light under
+ * its top edge, a specular rim caught on its upper shoulder and again where the
+ * light leaves it — and behind them sits a soft wash of the selected model's
+ * own colour, so the light in the material belongs to the selection and moving
+ * the selection moves the light. The selected cell is a single tinted tile that
+ * slides over the frosting rather than a state each cell paints for itself; it
+ * is the one opaque piece, so it is the one that casts, and while it travels it
+ * stretches along its own direction of travel and settles out of it, with the
+ * marker on the rail above smearing after it.
  *
  * The queue is yours. `onGenerate` hands you the model that was picked and the
  * component renders whatever list you pass back, typing out the prompt of any
