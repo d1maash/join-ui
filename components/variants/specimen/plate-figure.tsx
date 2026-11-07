@@ -363,20 +363,25 @@ export function PlateFigure({
           </div>
         </div>
 
-        <div
-          className={cn(
-            "order-3 lg:order-none",
-            columns?.labels ??
-              (layout === "split"
-                ? "lg:col-span-3"
-                : layout === "side"
-                  ? "lg:col-span-3 lg:col-start-10"
-                  : "")
-          )}
-        >
-          {labelList(right, layout === "below" ? "below" : "right")}
-        </div>
+        {slotted ? null : (
+          <div
+            className={cn(
+              "order-3 lg:order-none",
+              columns?.labels ??
+                (layout === "split"
+                  ? "lg:col-span-3"
+                  : layout === "side"
+                    ? "lg:col-span-3 lg:col-start-10"
+                    : "")
+            )}
+          >
+            {labelsHeader}
+            {labelList(right, layout === "below" ? "below" : "right")}
+          </div>
+        )}
       </div>
+
+      {slotted && slot ? createPortal(labelList(right, "below"), slot) : null}
 
       {caption ? (
         <figcaption className="mt-5 flex items-baseline gap-4 border-t border-[var(--sp-rule)] pt-3">
