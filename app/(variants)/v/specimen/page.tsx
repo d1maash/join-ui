@@ -131,7 +131,7 @@ export default async function SpecimenLanding() {
                   />
                 </a>
                 <span className="sp-mono text-[12px] text-[var(--sp-ink-2)]">
-                  or <Keycap small>Ctrl</Keycap> <Keycap small>K</Keycap> to look a part up
+                  or <Keycap small>⌘</Keycap> <Keycap small>K</Keycap> to look a part up
                 </span>
               </div>
             }
@@ -203,16 +203,24 @@ export default async function SpecimenLanding() {
           slug="tool-trace"
           fig={`FIG. ${traceSheet.no}.1`}
           note="Live · plays while on screen"
-          stageClassName="min-h-[600px] py-16"
+          stageClassName="min-h-[640px] py-16"
           caption="A run of four tools. Each opens as it starts, writes, then folds away."
+          labelsHeader={
+            <div className="mb-10 border-t border-[var(--sp-ink)] pt-3">
+              <p className="sp-label !text-[var(--sp-ink)]">Plate {traceSheet.no} — exploded view</p>
+              <h2 id="pl-trace" className="sp-display mt-5 text-[clamp(44px,4.4vw,64px)] leading-[0.92]">
+                {trace.title}
+              </h2>
+              <p className="mt-4 text-[15px] leading-[1.55] text-[var(--sp-ink-2)]">
+                The trace an agent leaves as it works. The step in flight opens itself,
+                writes, folds away — so a long run reads at a glance and a failure stays
+                open.
+              </p>
+              <PlateLink slug={trace.slug} no={traceSheet.no} />
+            </div>
+          }
         />
-        <PlateHead
-          id="pl-trace"
-          sheet={traceSheet}
-          kicker="Exploded view"
-          className="mt-14"
-          lede="The trace an agent leaves as it works: the step in flight opens itself, writes its output a line at a time, then folds away and goes still — so a long run reads at a glance and a failure stays open."
-        />
+        <DataStrip sheet={traceSheet} className="mt-12" />
       </section>
 
       {/* ─── Plate: Agent Hive, centred, callouts either side ───────────── */}
@@ -221,11 +229,11 @@ export default async function SpecimenLanding() {
         data-running={`PL. ${hiveSheet.no} — ${hive.title}`}
         className="sp-wrap mt-36 lg:mt-52"
       >
-        <PlateHead
+        <NumeralHead
           id="pl-hive"
           sheet={hiveSheet}
           kicker="Plan view"
-          lede="Pick the model, dispatch the run, watch the queue. A comb of frosted glass with one tinted tile that travels to whatever you pick — arrow keys walk it, the action fires it."
+          lede="Pick the model, dispatch the run, watch the queue. A comb of frosted glass with one tinted tile that travels to whatever you pick — the arrow keys walk it, the action fires it."
         />
         <SpecimenPlate
           slug="agent-hive"
@@ -235,6 +243,7 @@ export default async function SpecimenLanding() {
           stageClassName="min-h-[620px] py-16"
           caption="The comb from above, with the queue it feeds."
         />
+        <DataStrip sheet={hiveSheet} className="mt-12" />
       </section>
 
       {/* ─── Principles ──────────────────────────────────────────────────── */}
@@ -449,6 +458,74 @@ function PlateHead({
             </div>
           ))}
         </dl>
+      </div>
+    </header>
+  )
+}
+
+function PlateLink({ slug, no }: { slug: string; no: string }) {
+  return (
+    <Link
+      href={href(`/components/${slug}`)}
+      className="group mt-5 inline-flex items-center gap-2 text-[15px] font-semibold underline decoration-[var(--sp-rule-strong)] underline-offset-[6px] hover:decoration-[var(--sp-ink)]"
+    >
+      Open plate {no}
+      <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-0.5" />
+    </Link>
+  )
+}
+
+/** The datasheet laid flat: one row of cells under a figure. */
+function DataStrip({ sheet, className }: { sheet: Sheet; className?: string }) {
+  return (
+    <div className={`overflow-hidden border-y border-[var(--sp-ink)] ${className ?? ""}`}>
+      <dl className="-mb-px -ml-px grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+        {sheet.rows.map(([term, value]) => (
+          <div key={term} className="min-w-0 border-b border-l border-[var(--sp-rule)] py-3 pr-3 pl-4">
+            <dt className="sp-label">{term}</dt>
+            <dd className="sp-mono mt-1 truncate text-[12.5px] text-[var(--sp-ink)]">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
+}
+
+/** A plate head led by its number, set at poster size. */
+function NumeralHead({
+  id,
+  sheet,
+  kicker,
+  lede,
+}: {
+  id: string
+  sheet: Sheet
+  kicker: string
+  lede: string
+}) {
+  const { component, no } = sheet
+  return (
+    <header>
+      <div className="flex items-baseline justify-between border-t border-[var(--sp-ink)] pt-3">
+        <p className="sp-label !text-[var(--sp-ink)]">Plate {no}</p>
+        <p className="sp-label">{kicker}</p>
+      </div>
+      <div className="sp-grid mt-6 items-end gap-y-6">
+        <p
+          aria-hidden="true"
+          className="sp-display col-span-4 text-[clamp(120px,19vw,280px)] leading-[0.74] tracking-[-0.05em] lg:col-span-5"
+        >
+          {no}
+        </p>
+        <div className="col-span-4 pb-2 lg:col-span-6 lg:col-start-7">
+          <h2 id={id} className="sp-display text-[clamp(48px,6vw,88px)] leading-[0.92]">
+            {component.title}
+          </h2>
+          <p className="mt-5 max-w-[50ch] text-[18px] leading-[1.55] text-pretty text-[var(--sp-ink-2)]">
+            {lede}
+          </p>
+          <PlateLink slug={component.slug} no={no} />
+        </div>
       </div>
     </header>
   )
