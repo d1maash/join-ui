@@ -264,6 +264,8 @@
 .v-pro .pro-code-wrap .shiki code {
   display: block;
   min-width: 0;
+  /* The newlines between line elements would otherwise print as blank lines. */
+  white-space: normal;
 }
 
 .v-pro .pro-code-wrap .shiki .line {
