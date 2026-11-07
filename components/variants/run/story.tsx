@@ -442,7 +442,7 @@ function PinnedStory({ m }: { m: StoryModel }) {
   })
   const tokens = useTransform(scrollYProgress, (p) => {
     const count = clamp01((p - RUN_FROM) / (RUN_TO - RUN_FROM)) * 48_200 + 1_240
-    return count >= 10_000 ? `${(count / 1000).toFixed(1)}k` : count.toLocaleString("en-US")
+    return count >= 10_000 ? `${(count / 1000).toFixed(1)}k` : Math.round(count).toLocaleString("en-US")
   })
 
   const update = React.useCallback(() => {

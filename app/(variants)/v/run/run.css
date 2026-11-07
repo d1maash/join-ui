@@ -660,7 +660,7 @@
 
   .v-run .run-meta {
     display: grid;
-    grid-template-columns: 5.5rem minmax(0, 1fr);
+    grid-template-columns: 4.5rem minmax(0, 1fr);
     align-items: center;
     gap: 0.75rem;
     min-height: 1.875rem;

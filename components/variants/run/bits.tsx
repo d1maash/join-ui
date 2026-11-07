@@ -92,3 +92,67 @@ export function CommandSwitch({
     </div>
   )
 }
+
+/** A paragraph that shows its first part and keeps the rest behind "Read more". */
+export function ReadMore({
+  shown,
+  rest,
+  className,
+}: {
+  shown: React.ReactNode
+  rest: React.ReactNode | null
+  className?: string
+}) {
+  const [open, setOpen] = React.useState(false)
+  const id = React.useId()
+  return (
+    <div className={className}>
+      <p>
+        {shown}
+        {rest && open ? <span id={id}> {rest}</span> : null}
+      </p>
+      {rest ? (
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={open ? id : undefined}
+          onClick={() => setOpen((value) => !value)}
+          className="run-btn run-btn--ghost run-btn--sm mt-3 -ml-2.5"
+        >
+          {open ? "Show less" : "Read more"}
+        </button>
+      ) : null}
+    </div>
+  )
+}
+
+/** A numbered list that shows its first few entries and the rest on request. */
+export function ExpandList({
+  items,
+  visible = 4,
+  className,
+  noun = "notes",
+}: {
+  items: React.ReactNode[]
+  visible?: number
+  className?: string
+  noun?: string
+}) {
+  const [open, setOpen] = React.useState(false)
+  const shown = open ? items : items.slice(0, visible)
+  return (
+    <div>
+      <ol className={className}>{shown}</ol>
+      {items.length > visible ? (
+        <button
+          type="button"
+          aria-expanded={open}
+          onClick={() => setOpen((value) => !value)}
+          className="run-btn run-btn--quiet run-btn--sm mt-5"
+        >
+          {open ? "Show fewer" : `Show all ${items.length} ${noun}`}
+        </button>
+      ) : null}
+    </div>
+  )
+}

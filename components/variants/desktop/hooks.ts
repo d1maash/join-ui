@@ -61,3 +61,43 @@ export function useNow(): Date | null {
   const stamp = React.useSyncExternalStore(subscribeMinute, minuteStamp, () => -1)
   return React.useMemo(() => (stamp === -1 ? null : new Date(stamp * 60000)), [stamp])
 }
+
+const FLAG_EVENT = "joinui-desktop-flag"
+const sessionFlags = new Set<string>()
+
+/**
+ * A per-viewer flag in localStorage, read as an external store: a
+ * convenience that survives blocked storage by simply being unset. `true` on
+ * the server, so nothing a flag would hide is ever rendered there.
+ */
+export function useStoredFlag(key: string): [boolean, () => void] {
+  const flag = React.useSyncExternalStore(
+    (callback) => {
+      window.addEventListener(FLAG_EVENT, callback)
+      window.addEventListener("storage", callback)
+      return () => {
+        window.removeEventListener(FLAG_EVENT, callback)
+        window.removeEventListener("storage", callback)
+      }
+    },
+    () => {
+      try {
+        return window.localStorage.getItem(key) === "1"
+      } catch {
+        return false
+      }
+    },
+    () => true
+  )
+  const set = React.useCallback(() => {
+    try {
+      window.localStorage.setItem(key, "1")
+    } catch {
+      /* storage blocked — the flag lasts as long as this page does */
+      sessionFlags.add(key)
+    }
+    window.dispatchEvent(new Event(FLAG_EVENT))
+  }, [key])
+  return [flag || sessionFlags.has(key), set]
+}
+

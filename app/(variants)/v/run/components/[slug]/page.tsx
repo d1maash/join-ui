@@ -93,6 +93,20 @@ function splitFirst(text: string): [string, string] {
   return match ? [match[1]!, match[2]!] : [text, ""]
 }
 
+/** The rest of the overview, cut at the sentence that takes it past the budget. */
+function splitAtWords(text: string, budget: number): [string, string] {
+  const sentences = text.split(/(?<=[.!?])\s+/)
+  const shown: string[] = []
+  let words = 0
+  for (const sentence of sentences) {
+    const count = sentence.split(/\s+/).length
+    if (shown.length > 0 && words + count > budget) break
+    shown.push(sentence)
+    words += count
+  }
+  return [shown.join(" "), sentences.slice(shown.length).join(" ")]
+}
+
 export default async function RunComponentPage({ params }: PageProps) {
   const { slug } = await params
   const component = getComponent(slug)
@@ -110,6 +124,7 @@ export default async function RunComponentPage({ params }: PageProps) {
   const registryUrl = `${siteConfig.url}/r/${component.slug}.json`
   const sourceUrl = `${siteConfig.links.repo}/blob/main/${primary.path}`
   const [lead, rest] = splitFirst(component.overview)
+  const [restShown, restHidden] = splitAtWords(rest, 120 - lead.split(/\s+/).length)
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -351,9 +366,11 @@ export default async function RunComponentPage({ params }: PageProps) {
                     {lead}
                   </p>
                   {rest ? (
-                    <p className="!text-[1.0625rem] !leading-[1.7] text-pretty">
-                      <Inline text={rest} />
-                    </p>
+                    <ReadMore
+                      className="max-w-[62ch] [&>p]:!text-[1.0625rem] [&>p]:!leading-[1.6] [&>p]:text-pretty"
+                      shown={<Inline text={restShown} />}
+                      rest={restHidden ? <Inline text={restHidden} /> : null}
+                    />
                   ) : null}
                 </section>
 
@@ -396,8 +413,10 @@ export default async function RunComponentPage({ params }: PageProps) {
                 </Section>
 
                 <Section id="accessibility" title="Accessibility">
-                  <ol className="flex flex-col">
-                    {component.accessibility.map((note, index) => (
+                  <ExpandList
+                    className="flex flex-col"
+                    noun="notes"
+                    items={component.accessibility.map((note, index) => (
                       <li
                         key={note}
                         className="grid grid-cols-[2.25rem_minmax(0,1fr)] border-t border-white/[0.08] py-4 first:border-t-0 first:pt-0"

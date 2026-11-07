@@ -523,16 +523,82 @@
 /* ── Desktop ───────────────────────────────────────────────────────────── */
 
 .v-desktop .d-desk {
+  /* The arrangement, as variables, so a breakpoint moves it as one. */
+  --d-dock-space: 150px;
+  --d-x: clamp(28px, 4vw, 72px);
+  --d-hello-top: clamp(26px, 6.5vh, 72px);
+  --d-title: clamp(76px, 8.4vw, 138px);
+  --d-trace-right: clamp(24px, 3.4vw, 64px);
+  --d-trace-w: clamp(420px, 32vw, 500px);
+  --d-trace-top: clamp(232px, 28vh, 300px);
+  --d-term-body: clamp(170px, 22vh, 220px);
+  --d-term-h: calc(44px + var(--d-term-body));
+  --d-term-w: clamp(460px, 38vw, 580px);
+  /* The Terminal's right edge laps the run's left edge by 24px. */
+  --d-term-right: calc(var(--d-trace-right) + var(--d-trace-w) - 24px);
+  --d-term-left: calc(100% - var(--d-term-right) - var(--d-term-w));
+  --d-term-bottom: calc(var(--d-dock-space) + 40px);
+
   position: fixed;
   inset: var(--d-menubar) 0 0;
   z-index: 1;
   overflow: hidden;
 }
 
+/*
+ * Below 1280px there is no room for the widget column: two windows, the run
+ * on the right and the Terminal low on the left, with clear wallpaper
+ * between them.
+ */
+@media (max-width: 1279px) {
+  .v-desktop .d-desk {
+    --d-trace-right: clamp(20px, 3vw, 40px);
+    --d-trace-w: clamp(350px, 40vw, 440px);
+    --d-trace-top: clamp(170px, 26vh, 240px);
+    --d-term-w: clamp(330px, 44vw, 500px);
+    --d-term-left: var(--d-x);
+    --d-term-right: calc(100% - var(--d-term-left) - var(--d-term-w));
+  }
+  .v-desktop .d-banner {
+    width: 360px;
+  }
+}
+
+.v-desktop .d-f-widget {
+  left: var(--d-x);
+  top: calc(var(--d-hello-top) + 30px + var(--d-title) * 0.96 + 34px);
+  width: 264px;
+}
+
+.v-desktop .d-f-trace {
+  right: var(--d-trace-right);
+  top: var(--d-trace-top);
+  width: var(--d-trace-w);
+}
+
+.v-desktop .d-f-trace-body {
+  max-height: calc(100dvh - var(--d-menubar) - var(--d-dock-space) - var(--d-trace-top) - 56px);
+}
+
+.v-desktop .d-f-terminal {
+  right: var(--d-term-right);
+  bottom: var(--d-term-bottom);
+  width: var(--d-term-w);
+}
+
+.v-desktop .d-f-terminal-body {
+  height: var(--d-term-body);
+}
+
+.v-desktop .d-f-file {
+  left: calc(var(--d-term-left) + 4px);
+  bottom: calc(var(--d-term-bottom) + var(--d-term-h) + 12px);
+}
+
 .v-desktop .d-hello {
   position: absolute;
-  left: clamp(28px, 4vw, 72px);
-  top: clamp(26px, 6.5vh, 72px);
+  left: var(--d-x);
+  top: var(--d-hello-top);
   max-width: 40rem;
   user-select: none;
 }
@@ -547,7 +613,7 @@
 
 .v-desktop .d-hello-title {
   margin-top: 2px;
-  font-size: clamp(76px, 8.4vw, 138px);
+  font-size: var(--d-title);
   line-height: 0.96;
   font-weight: 300;
   letter-spacing: -0.03em;
@@ -556,24 +622,67 @@
   font-variation-settings: "opsz" 32;
 }
 
-.v-desktop .d-hello-tip {
+/* The first-visit coach mark, pointing at the Dock. */
+.v-desktop .d-coach {
   position: absolute;
-  left: clamp(28px, 3.4vw, 64px);
-  bottom: calc(var(--d-dock-space) + 6px);
+  left: 0;
+  right: 0;
+  bottom: 146px;
+  z-index: 65;
   display: flex;
-  flex-wrap: wrap;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  margin: 0 auto;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
-  color: rgb(255 255 255 / 0.62);
-  text-shadow: 0 1px 8px rgb(0 0 0 / 0.5);
-  user-select: none;
+  padding: 5px 6px 5px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  color: var(--d-ink);
+  background: rgb(36 36 40 / 0.72);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(24px) saturate(170%);
+  box-shadow:
+    0 0 0 0.5px rgb(0 0 0 / 0.5),
+    inset 0 0 0 0.5px rgb(255 255 255 / 0.16),
+    0 10px 30px rgb(0 0 0 / 0.4);
 }
 
-@media (max-width: 1099px), (max-height: 699px) {
-  .v-desktop .d-hello-tip {
-    display: none;
-  }
+.v-desktop .d-coach::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  transform: rotate(45deg);
+  background: rgb(36 36 40 / 0.9);
+  box-shadow: inset -0.5px -0.5px 0 rgb(255 255 255 / 0.14);
+}
+
+.v-desktop .d-coach-sep {
+  width: 1px;
+  height: 14px;
+  margin: 0 4px;
+  background: rgb(255 255 255 / 0.18);
+}
+
+.v-desktop .d-coach-close {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--d-ink-2);
+  background: rgb(255 255 255 / 0.1);
+  cursor: default;
+}
+
+.v-desktop .d-coach-close:hover {
+  background: rgb(255 255 255 / 0.18);
 }
 
 .v-desktop .d-key {

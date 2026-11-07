@@ -112,13 +112,22 @@ export function ApprovalNotice({
   )
 }
 
-export function DeployWidget({ className }: { className?: string }) {
+export function DeployWidget({ className, compact = false }: { className?: string; compact?: boolean }) {
   const run = useRun()
+  const steps = deploySteps(run.phase)
   return (
     <div className={cn("flex flex-col px-4 pt-4 pb-3", className)}>
       <StatusTimeline
         label="Deploy · acme-app"
-        steps={deploySteps(run.phase)}
+        steps={
+          compact
+            ? steps.map((step) =>
+                step.state === "current" || step.state === "waiting" || step.state === "blocked"
+                  ? step
+                  : { ...step, description: undefined, timestamp: undefined }
+              )
+            : steps
+        }
         status={deployStatus(run.phase)}
         variant="plain"
         size="sm"

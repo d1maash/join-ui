@@ -3,12 +3,10 @@
 import * as React from "react"
 import Link from "next/link"
 import { AnimatePresence, motion } from "motion/react"
-import { ArrowUpRight, RotateCcw } from "lucide-react"
-
-import { cn } from "@/lib/utils"
+import { ArrowUpRight, RotateCcw, X } from "lucide-react"
 
 import { vh, type AppId, type ComponentSlug } from "./apps"
-import { useOsMode, useStill } from "./hooks"
+import { useOsMode, useStill, useStoredFlag } from "./hooks"
 import { useOs } from "./os"
 import { useRun } from "./run"
 import {
@@ -21,26 +19,26 @@ import {
   GlassCrestApp,
 } from "./scenes/app-scenes"
 import { AgentRunScene, ApprovalNotice, DeployWidget } from "./scenes/run-scenes"
-import { TerminalScene } from "./scenes/terminal"
+import { TerminalScene, terminalPlayed } from "./scenes/terminal"
 import { Window } from "./window"
 
 /*
  * The desktop — the landing page.
  *
- * On first load it boots: the wallpaper, menu bar and Dock are already in
- * the HTML, then the windows open one after another the way a session
- * restores — Terminal, the agent's run, the deploy widget — and the
- * Terminal installs Approval Gate. A moment later the agent asks to push,
- * and the request arrives as a notification. Answer it (Y or N work) and
- * the run and the widget move on together.
+ * Composed like a keynote desktop shot: the title owns the top-left corner
+ * and nothing ever covers it, the deploy widget sits in the column under it
+ * where macOS keeps widgets, the agent's run is the window on the right,
+ * the Terminal sits low in the middle, and the nebula runs clear across the
+ * screen between them.
+ *
+ * It boots as one sentence, a beat at a time: the Terminal types the
+ * install, the file it wrote drops onto the desktop, the agent's run opens
+ * and starts, and when it reaches the push it stops and asks — the
+ * notification slides in. Answer it (Y or N work) and the run and the widget
+ * move on together.
  */
 
-/* The Terminal opens last, so it is the key window — the story starts there. */
-const BOOT: Array<{ id: AppId; at: number }> = [
-  { id: "status-timeline", at: 200 },
-  { id: "tool-trace", at: 420 },
-  { id: "terminal", at: 700 },
-]
+const COACHED = "joinui-desktop-coached"
 
 export function Desktop() {
   const os = useOs()
@@ -53,7 +51,7 @@ export function Desktop() {
   const [settledTake, setSettledTake] = React.useState<number | null>(() =>
     run.decision !== null ? run.take : null
   )
-  const [installed, setInstalled] = React.useState(false)
+  const [installed, setInstalled] = React.useState(() => terminalPlayed())
   const [carbonTake, setCarbonTake] = React.useState(0)
   const live = mode === "desktop"
 
@@ -67,41 +65,72 @@ export function Desktop() {
     setBadge,
     setDockHandler,
   } = os
+  const { hold, start } = run
 
   React.useEffect(() => {
     setDesktopMounted(true)
     return () => setDesktopMounted(false)
   }, [setDesktopMounted])
 
-  /* Boot, once per visit. */
-  const { hold, start } = run
+  /*
+   * The second half of the boot is cued by the Terminal finishing, not by a
+   * clock, so the run cannot start before the install it depends on has
+   * been seen to land.
+   */
+  const latest = React.useRef({ booted, still, open, start, setBooted })
+  React.useEffect(() => {
+    latest.current = { booted, still, open, start, setBooted }
+  })
+  const chain = React.useRef<number[]>([])
+  const chained = React.useRef(false)
+
+  const continueBoot = React.useCallback(() => {
+    const { booted: done, still: calm } = latest.current
+    if (done || chained.current) return
+    chained.current = true
+    chain.current.push(
+      window.setTimeout(() => latest.current.open("tool-trace", "boot"), calm ? 0 : 450),
+      window.setTimeout(
+        () => {
+          latest.current.start()
+          latest.current.setBooted(true)
+        },
+        calm ? 50 : 950
+      )
+    )
+  }, [])
+
+  React.useEffect(() => () => chain.current.forEach(window.clearTimeout), [])
+
+  const onInstalled = React.useCallback(() => {
+    setInstalled(true)
+    continueBoot()
+  }, [continueBoot])
+
+  /* The first half: the widget is part of the desktop, then the Terminal opens. */
   React.useEffect(() => {
     if (!live || booted) return
     hold()
-    const wide = window.innerWidth >= 1180
-    const timers = BOOT.filter((entry) => wide || entry.id !== "status-timeline").map((entry) =>
-      window.setTimeout(() => open(entry.id, "boot"), still ? 0 : entry.at)
-    )
-    /* Marked booted only at the end, so the re-render it causes cannot cancel the sequence. */
-    timers.push(
-      window.setTimeout(
-        () => {
-          start()
-          setBooted(true)
-        },
-        still ? 400 : 1500
-      )
-    )
+    const wide = window.innerWidth >= 1280
+    const timers = [
+      ...(wide ? [window.setTimeout(() => open("status-timeline", "boot"), still ? 0 : 150)] : []),
+      window.setTimeout(() => open("terminal", "boot"), still ? 0 : 380),
+      /* If the Terminal is closed mid-install, the story still gets told. */
+      window.setTimeout(continueBoot, still ? 600 : 7000),
+    ]
     return () => timers.forEach(window.clearTimeout)
-  }, [live, booted, setBooted, hold, start, open, still])
+  }, [live, booted, hold, open, still, continueBoot])
 
   /* A window asked for from another page opens once the desktop is back. */
   React.useEffect(() => {
     if (!live || !pending) return
-    const timer = window.setTimeout(() => {
-      open(pending, "dock")
-      setPending(null)
-    }, booted ? 120 : 1300)
+    const timer = window.setTimeout(
+      () => {
+        open(pending, "dock")
+        setPending(null)
+      },
+      booted ? 120 : 1300
+    )
     return () => window.clearTimeout(timer)
   }, [live, pending, booted, open, setPending])
 
@@ -109,8 +138,7 @@ export function Desktop() {
   const phase = run.phase
   const take = run.take
   const decided = run.decision !== null
-  const banner =
-    phase === "awaiting" ? dismissedTake !== take : decided && settledTake !== take
+  const banner = phase === "awaiting" ? dismissedTake !== take : decided && settledTake !== take
   React.useEffect(() => {
     if (!decided || settledTake === take) return
     const timer = window.setTimeout(() => setSettledTake(take), 2400)
@@ -152,19 +180,17 @@ export function Desktop() {
   const openApp = React.useCallback((slug: ComponentSlug) => open(slug, "other"), [open])
 
   return (
-    <div ref={desk} className="d-desk" style={{ ["--d-dock-space" as string]: "150px" }}>
+    <div ref={desk} className="d-desk">
       <Hello />
-      <Tip />
 
       <AnimatePresence>
         {installed ? (
           <motion.div
             key="file"
-            className="absolute"
-            style={{ left: "clamp(28px, 4vw, 72px)", top: "clamp(250px, 33vh, 330px)" }}
-            initial={still ? { opacity: 0 } : { opacity: 0, scale: 0.6, y: -6 }}
+            className="d-f-file absolute"
+            initial={still ? { opacity: 0 } : { opacity: 0, scale: 0.5, y: -40 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 500, damping: 26 }}
+            transition={{ type: "spring", stiffness: 520, damping: 22, mass: 0.8 }}
           >
             <Link href={`${vh("/components/approval-gate")}#code`} className="d-file">
               <FileIcon />
@@ -177,18 +203,15 @@ export function Desktop() {
       {live ? (
         <>
           <Window
-            id="terminal"
-            title="Terminal"
-            subtitle="acme-app — zsh"
+            id="status-timeline"
+            kind="widget"
+            title="Deploy widget"
             desk={desk}
-            frame={{
-              left: "clamp(24px, 3.4vw, 64px)",
-              bottom: "calc(var(--d-dock-space) + 40px)",
-              width: "clamp(460px, 38vw, 580px)",
-            }}
-            bodyClassName="flex-none h-[clamp(176px,24vh,236px)] !bg-transparent"
+            frame={{}}
+            className="d-f-widget"
           >
-            <TerminalScene onInstalled={() => setInstalled(true)} onOpen={openApp} />
+            <DeployWidget compact />
+            <WidgetClose id="status-timeline" />
           </Window>
 
           <Window
@@ -196,29 +219,28 @@ export function Desktop() {
             title="Tool Trace"
             subtitle="agent · feat/approval-gate"
             desk={desk}
-            frame={{
-              left: "clamp(470px, 37vw, 780px)",
-              top: "clamp(36px, 8vh, 110px)",
-              width: "clamp(440px, 34vw, 540px)",
-            }}
-            footer={<AppFooter slug="tool-trace" />}
-            bodyClassName="max-h-[calc(100dvh-var(--d-menubar)-var(--d-dock-space)-130px)] overflow-y-auto"
+            frame={{}}
+            className="d-f-trace"
+            toolbar={<PageLink slug="tool-trace" />}
+            bodyClassName="d-f-trace-body overflow-y-auto"
           >
             <AgentRunScene
+              size="sm"
               requestHidden={!banner}
               onShowRequest={showRequest}
             />
           </Window>
 
           <Window
-            id="status-timeline"
-            kind="widget"
-            title="Deploy widget"
+            id="terminal"
+            title="Terminal"
+            subtitle="acme-app — zsh"
             desk={desk}
-            frame={{ right: "clamp(20px, 2.4vw, 44px)", top: "clamp(270px, 33vh, 320px)", width: 300 }}
+            frame={{}}
+            className="d-f-terminal"
+            bodyClassName="d-f-terminal-body flex-none !bg-transparent"
           >
-            <DeployWidget />
-            <WidgetClose id="status-timeline" />
+            <TerminalScene onInstalled={onInstalled} onOpen={openApp} />
           </Window>
 
           <AppWindow id="approval-gate" desk={desk} width={480}>
@@ -252,8 +274,8 @@ export function Desktop() {
             title="Catalog"
             subtitle={`${os.components.length} components`}
             desk={desk}
-            frame={{ left: "calc(50% - 380px)", top: "clamp(30px, 7vh, 90px)", width: 760 }}
-            bodyClassName="flex-none h-[440px]"
+            frame={{ left: "max(16px, calc(50% - 380px))", top: "clamp(30px, 7vh, 90px)", width: "min(760px, calc(100% - 32px))" }}
+            bodyClassName="flex-none h-[min(440px,calc(100dvh-var(--d-menubar)-var(--d-dock-space)-110px))]"
             toolbar={
               <Link href={vh("/components")} className="d-btn h-7 px-2.5">
                 Open full catalog
@@ -294,6 +316,8 @@ export function Desktop() {
               </motion.div>
             ) : null}
           </AnimatePresence>
+
+          <CoachMark ready={booted && phase !== "idle"} />
         </>
       ) : null}
     </div>
@@ -302,11 +326,11 @@ export function Desktop() {
 
 /* Positions for the apps that start closed: cascaded, so two never stack exactly. */
 const CASCADE: Partial<Record<AppId, { left: string; top: string }>> = {
-  "approval-gate": { left: "calc(50% - 300px)", top: "clamp(40px, 8vh, 100px)" },
-  "agent-hive": { left: "calc(50% - 220px)", top: "clamp(30px, 5vh, 70px)" },
-  "focus-stack": { left: "calc(50% - 170px)", top: "clamp(50px, 10vh, 120px)" },
-  "glass-crest": { left: "calc(50% - 330px)", top: "clamp(40px, 7vh, 90px)" },
-  "carbon-copy": { left: "calc(50% - 250px)", top: "clamp(60px, 14vh, 160px)" },
+  "approval-gate": { left: "max(16px, calc(50% - 300px))", top: "clamp(40px, 8vh, 100px)" },
+  "agent-hive": { left: "max(16px, calc(50% - 220px))", top: "clamp(30px, 5vh, 70px)" },
+  "focus-stack": { left: "max(16px, calc(50% - 170px))", top: "clamp(50px, 10vh, 120px)" },
+  "glass-crest": { left: "max(16px, calc(50% - 330px))", top: "clamp(40px, 7vh, 90px)" },
+  "carbon-copy": { left: "max(16px, calc(50% - 250px))", top: "clamp(60px, 14vh, 160px)" },
 }
 
 function AppWindow({
@@ -331,7 +355,7 @@ function AppWindow({
       title={info?.title ?? id}
       subtitle={info?.category}
       desk={desk}
-      frame={{ ...at, width }}
+      frame={{ ...at, width: `min(${width}px, calc(100% - 32px))` }}
       toolbar={toolbar}
       footer={<AppFooter slug={id} />}
       bodyClassName="max-h-[calc(100dvh-var(--d-menubar)-var(--d-dock-space)-120px)] overflow-y-auto"
@@ -341,14 +365,22 @@ function AppWindow({
   )
 }
 
+function PageLink({ slug }: { slug: ComponentSlug }) {
+  return (
+    <Link href={vh(`/components/${slug}`)} className="d-link text-[12px] font-medium">
+      Open page
+      <ArrowUpRight aria-hidden="true" className="size-3" strokeWidth={2.4} />
+    </Link>
+  )
+}
+
 function AppFooter({ slug }: { slug: ComponentSlug }) {
   return (
     <>
       <span className="truncate font-mono text-[11px]">components/joinui/{slug}.tsx</span>
-      <Link href={vh(`/components/${slug}`)} className="d-link ml-auto shrink-0 text-[12px] font-medium">
-        Open page
-        <ArrowUpRight aria-hidden="true" className="size-3" strokeWidth={2.4} />
-      </Link>
+      <span className="ml-auto shrink-0">
+        <PageLink slug={slug} />
+      </span>
     </>
   )
 }
@@ -373,6 +405,52 @@ function WidgetClose({ id }: { id: AppId }) {
   )
 }
 
+/*
+ * A coach mark for the first visit only: one line over the Dock, gone for
+ * good the first time anything is opened from it, or when dismissed.
+ */
+function CoachMark({ ready }: { ready: boolean }) {
+  const os = useOs()
+  const still = useStill()
+  const [coached, setCoached] = useStoredFlag(COACHED)
+  const [due, setDue] = React.useState(false)
+  const launched = Object.keys(os.launches).length > 0
+
+  React.useEffect(() => {
+    if (!ready || coached) return
+    const timer = window.setTimeout(() => setDue(true), 1600)
+    return () => window.clearTimeout(timer)
+  }, [ready, coached])
+
+  React.useEffect(() => {
+    if (launched && !coached) setCoached()
+  }, [launched, coached, setCoached])
+
+  return (
+    <AnimatePresence>
+      {due && !coached ? (
+        <motion.div
+          className="d-coach"
+          role="note"
+          initial={still ? { opacity: 0 } : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, transition: { duration: 0.18 } }}
+          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+        >
+          <span>Every icon is an app. Click one to open it.</span>
+          <span className="d-coach-sep" aria-hidden="true" />
+          <span className="d-key">⌘</span>
+          <span className="d-key">K</span>
+          <span>searches</span>
+          <button type="button" className="d-coach-close" aria-label="Dismiss tip" onClick={setCoached}>
+            <X aria-hidden="true" className="size-3" strokeWidth={2.6} />
+          </button>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  )
+}
+
 function Hello() {
   return (
     <div className="d-hello">
@@ -382,20 +460,9 @@ function Hello() {
   )
 }
 
-function Tip() {
-  return (
-    <p className="d-hello-tip">
-      Open a component from the Dock · drag a window by its title bar ·
-      <span className="d-key">⌘</span>
-      <span className="d-key">K</span>
-      to search
-    </p>
-  )
-}
-
 function FileIcon() {
   return (
-    <svg viewBox="0 0 64 80" className={cn("h-[60px] w-12 drop-shadow-[0_4px_8px_rgb(0_0_0/0.45)]")} aria-hidden="true">
+    <svg viewBox="0 0 64 80" className="h-[60px] w-12 drop-shadow-[0_4px_8px_rgb(0_0_0/0.45)]" aria-hidden="true">
       <path d="M6 2h36l16 16v54a6 6 0 0 1-6 6H6a6 6 0 0 1-6-6V8a6 6 0 0 1 6-6Z" fill="#f5f5f7" />
       <path d="M42 2v12a4 4 0 0 0 4 4h12" fill="#d8d8de" />
       <path d="M42 2l16 16" stroke="#c7c7cc" strokeWidth="0.8" />
