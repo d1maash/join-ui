@@ -46,6 +46,9 @@ export const metadata: Metadata = {
  */
 const NUMBERS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
 
+/** Hero pills drop to the tile size on a phone, so the pair stays on one line. */
+const COMPACT = "max-sm:h-10 max-sm:min-w-0 max-sm:px-5 max-sm:text-[15px]"
+
 function count(total: number) {
   return NUMBERS[total] ?? String(total)
 }
@@ -72,7 +75,7 @@ export default function AirHome() {
       />
 
       <section aria-label="More components" className="bg-white p-3">
-        <ul className="grid gap-3 lg:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           <GridTile
             slug="approval-gate"
             tagline="Nothing runs until you say so."
@@ -125,20 +128,20 @@ function Hero({ total }: { total: number }) {
         className="air-hero mx-auto mt-4 text-[#1d1d1f]"
       />
       <p
-        className="air-rise air-sub mx-auto mt-7 max-w-[32ch] text-balance text-[#6e6e73]"
+        className="air-rise air-sub mx-auto mt-7 max-w-[40ch] text-balance text-[#6e6e73]"
         style={{ ["--air-delay" as string]: "1150ms" }}
       >
         {count(total)} motion-first React components. One command to install. Every line
-        yours to change.
+        yours.
       </p>
       <div
         className="air-rise mt-9 flex flex-wrap justify-center gap-3.5"
         style={{ ["--air-delay" as string]: "1300ms" }}
       >
-        <PillLink href={air("/components")} size="lg">
+        <PillLink href={air("/components")} size="lg" className={COMPACT}>
           Browse components
         </PillLink>
-        <PillLink href={air("/docs")} variant="secondary" size="lg">
+        <PillLink href={air("/docs")} variant="secondary" size="lg" className={COMPACT}>
           Get started
         </PillLink>
       </div>
@@ -237,10 +240,10 @@ function GridTile({
   if (!component) return null
 
   return (
-    <li className="flex">
+    <li className="flex min-w-0">
       <section
         aria-labelledby={`${slug}-tile`}
-        className="flex min-h-[38rem] w-full flex-col items-center overflow-hidden rounded-[28px] bg-[#f5f5f7] px-6 pt-12 text-center sm:min-h-[42rem] sm:pt-14"
+        className="flex w-full min-w-0 flex-col items-center overflow-hidden rounded-[28px] bg-[#f5f5f7] px-5 pt-12 text-center sm:min-h-[42rem] sm:px-6 sm:pt-14"
       >
         <Reveal>
           <h2 id={`${slug}-tile`} className="air-h3">
@@ -253,7 +256,7 @@ function GridTile({
         </Reveal>
         <Reveal
           delay={120}
-          className="flex w-full flex-1 items-center justify-center pt-10 pb-12"
+          className="flex w-full min-w-0 flex-1 items-center justify-center pt-10 pb-12"
         >
           {scene}
         </Reveal>

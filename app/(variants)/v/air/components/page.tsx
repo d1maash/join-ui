@@ -18,6 +18,9 @@ export const metadata: Metadata = {
  * The catalog, laid out like the Apple Store's front page: a two-tone title
  * with help links beside it, the category icon row, then the shelf itself.
  */
+const NUMBERS = ["None", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
+const count = (total: number) => NUMBERS[total] ?? String(total)
+
 export default function AirComponentsPage() {
   const items = getCatalogItems()
   const stats = getRegistryStats()
@@ -29,7 +32,7 @@ export default function AirComponentsPage() {
           <h1 className="air-h1 max-w-[16ch] text-[#1d1d1f]">
             Components.{" "}
             <span className="text-[#6e6e73]">
-              {stats.total} of them, every one live.
+              {count(stats.total)} of them, every one live.
             </span>
           </h1>
           <ul className="flex shrink-0 flex-col gap-4 text-[14px] leading-[1.4] lg:pb-2">

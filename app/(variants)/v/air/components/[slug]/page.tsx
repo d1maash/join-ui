@@ -154,7 +154,7 @@ export default async function AirComponentPage({ params }: PageProps) {
         </div>
 
         <div
-          className="air-rise mx-auto mt-14 max-w-[80rem] px-3 sm:mt-16 sm:px-5"
+          className="air-rise mx-auto mt-14 max-w-[80rem] px-2 sm:mt-16 sm:px-5"
           style={{ ["--air-delay" as string]: "380ms" }}
         >
           <h2 className="sr-only">Live preview</h2>
@@ -280,17 +280,9 @@ export default async function AirComponentPage({ params }: PageProps) {
               title="By hand"
               description={
                 component.dependencies.length > 0 ? (
-                  <>
-                    Install the dependencies, then copy the source into{" "}
-                    <code className="font-mono text-[0.9em] text-[#1d1d1f]">{primary.target}</code>
-                    .
-                  </>
+                  "Install the dependencies, then copy the source to the same path in your project."
                 ) : (
-                  <>
-                    Nothing to install. Copy the source into{" "}
-                    <code className="font-mono text-[0.9em] text-[#1d1d1f]">{primary.target}</code>
-                    .
-                  </>
+                  "Nothing to install. Copy the source to the same path in your project."
                 )
               }
             >
