@@ -23,8 +23,9 @@ export default function RunHome() {
   return (
     <main id="main-content">
       <section className="run-hero run-container" aria-labelledby="run-title">
-        <h1 id="run-title" className="run-display max-w-[11.5ch]">
-          Interfaces for software that <span className="run-serif">acts.</span>
+        <h1 id="run-title" className="run-display">
+          Interfaces for software <br className="max-md:hidden" />
+          that <span className="run-serif">acts.</span>
         </h1>
 
         <div className="mt-8 flex flex-col gap-7 md:mt-10 md:flex-row md:items-end md:justify-between md:gap-12">

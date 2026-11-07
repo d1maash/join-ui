@@ -591,14 +591,13 @@ function PinnedStory({ m }: { m: StoryModel }) {
               </nav>
 
               <div className="relative mt-9 min-h-[15rem]">
-                <AnimatePresence mode="wait" initial={false}>
+                <AnimatePresence initial={false}>
                   <motion.div
                     key={active.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.38, ease: EASE }}
-                    className="flex flex-col gap-6"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0, transition: { duration: 0.45, delay: 0.08, ease: EASE } }}
+                    exit={{ opacity: 0, y: -8, transition: { duration: 0.2, ease: EASE } }}
+                    className="absolute inset-x-0 top-0 flex flex-col gap-6"
                   >
                     <p className="run-lede">
                       <strong>{active.lead}</strong> {active.body}

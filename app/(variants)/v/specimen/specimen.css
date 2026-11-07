@@ -750,3 +750,32 @@
     translate: 0 0;
   }
 }
+
+/* The cover's figure note: its leader is inked once the title has set. */
+.v-specimen .sp-cover-leader {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1000ms var(--sp-ease-ink);
+}
+
+.v-specimen [data-set] .sp-cover-leader {
+  stroke-dashoffset: 0;
+}
+
+.v-specimen .sp-cover-dot {
+  opacity: 0;
+  transition: opacity 240ms ease 900ms;
+}
+
+.v-specimen [data-set] .sp-cover-dot {
+  opacity: 1;
+}
+
+/* The shared code panels' small labels, set as manual labels. */
+.v-specimen .label-micro {
+  font-family: var(--sp-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}

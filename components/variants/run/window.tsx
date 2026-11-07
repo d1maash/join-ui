@@ -92,9 +92,8 @@ export function RunWindow({
                 key="browser"
                 className="flex min-w-0 flex-1 items-center gap-3"
                 initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.4, ease: EASE }}
+                animate={{ opacity: 1, y: 0, transition: { duration: 0.35, delay: 0.12, ease: EASE } }}
+                exit={{ opacity: 0, y: -4, transition: { duration: 0.16, ease: EASE } }}
               >
                 <span className="flex shrink-0 items-center gap-1 text-[#5c5c61]" aria-hidden="true">
                   <ChevronLeft className="size-4" />
@@ -111,9 +110,8 @@ export function RunWindow({
                 key="app"
                 className="flex min-w-0 flex-1 items-center gap-3"
                 initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.4, ease: EASE }}
+                animate={{ opacity: 1, y: 0, transition: { duration: 0.35, delay: 0.12, ease: EASE } }}
+                exit={{ opacity: 0, y: -4, transition: { duration: 0.16, ease: EASE } }}
               >
                 {toolbar}
               </motion.div>
