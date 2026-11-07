@@ -71,7 +71,8 @@ export function Sidebar({
     const scroller = list?.closest<HTMLElement>("[data-st-scroll]")
     const current = list?.querySelector<HTMLElement>('[aria-current="page"]')
     if (!scroller || !current) return
-    const top = current.offsetTop - scroller.offsetTop
+    const top =
+      current.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop
     if (top < scroller.scrollTop || top > scroller.scrollTop + scroller.clientHeight - 48) {
       scroller.scrollTop = top - scroller.clientHeight / 2
     }
