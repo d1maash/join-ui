@@ -44,7 +44,6 @@ import { MiniWindow, RunWindow } from "./window"
 const href = (path: string) => variantHref("run", path)
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value))
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
 const EASE = [0.32, 0.72, 0, 1] as const
 
 /* ─── The run's state, shared by both layouts ─────────────────────────────── */
@@ -465,18 +464,21 @@ function PinnedStory({ m }: { m: StoryModel }) {
     if (!g) return
     const sy = window.scrollY
     const p = scrollYProgress.get()
-    const e = easeOut(clamp01(sy / Math.max(1, g.storyTop)))
+    const raw = clamp01(sy / Math.max(1, g.storyTop))
+    /* The window flattens as it rises, and only steps aside once it has arrived. */
+    const flat = easeInOut(raw)
+    const e = easeInOut(clamp01((raw - 0.35) / 0.65))
     const c = clamp01((p - CAST_START) / (1 - CAST_START))
     const k = easeInOut(clamp01(c / 0.5))
     const target = g.cast.slots[4]!
 
     x.set((1 - e) * g.centerDx + k * (target.x - g.win.x))
-    y.set((1 - e) * g.liftY + k * (target.y - g.win.y))
-    rotateX.set((1 - e) * 20)
+    y.set((1 - flat) * g.liftY + k * (target.y - g.win.y))
+    rotateX.set((1 - flat) * 20)
     scale.set(1 + k * (target.w / g.win.w - 1))
     winOpacity.set(1 - clamp01((c - 0.44) / 0.12))
     castT.set(c)
-    captions.set(clamp01((e - 0.85) / 0.15) * (1 - clamp01(c / 0.14)))
+    captions.set(clamp01((raw - 0.88) / 0.12) * (1 - clamp01(c / 0.14)))
 
     const out = local(p, 4)
     browserY.set(-easeInOut(clamp01((out - 0.38) / 0.42)) * browserMax.current)
@@ -879,7 +881,8 @@ function Cast({
           y: headY,
         }}
       >
-        Seven components ran that.{" "}
+        Seven components ran that.
+        <br />
         <span className="text-[#8b8b90]">In order of appearance.</span>
       </motion.h2>
 
