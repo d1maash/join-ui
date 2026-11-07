@@ -29,6 +29,7 @@ import { RunCode } from "@/components/variants/run/code"
 import { ComponentWindow } from "@/components/variants/run/component-window"
 import { RunCopy } from "@/components/variants/run/copy"
 import { LocalBar } from "@/components/variants/run/local-bar"
+import { SourceList } from "@/components/variants/run/source-list"
 import { MiniWindow } from "@/components/variants/run/window"
 import { dependencyCommands, shadcnCommands } from "@/lib/commands"
 import { buildComponentPrompt } from "@/lib/prompts/build-prompt"
@@ -64,23 +65,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     robots: { index: false, follow: false },
   }
 }
-
-const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  "agent-hive": Hexagon,
-  "approval-gate": ShieldQuestion,
-  "carbon-copy": Type,
-  "focus-stack": Layers,
-  "glass-crest": Rainbow,
-  "status-timeline": Milestone,
-  "tool-trace": ListTree,
-}
-
-const DOCS = [
-  { title: "Introduction", path: "/docs/introduction" },
-  { title: "Installation", path: "/docs/installation" },
-  { title: "Registry setup", path: "/docs/registry-setup" },
-  { title: "Theming", path: "/docs/theming" },
-]
 
 const TOC = [
   { id: "overview", title: "Overview" },
@@ -161,7 +145,7 @@ export default async function RunComponentPage({ params }: PageProps) {
 
       <main id="main-content" className="run-container pt-14">
         <div className="lg:grid lg:grid-cols-[12.5rem_minmax(0,1fr)] lg:gap-12 xl:gap-16">
-          <SourceList current={component.slug} />
+          <SourceList current={`/components/${component.slug}`} />
 
           <div className="min-w-0">
             {/* ─── The head ─────────────────────────────────────────────── */}
@@ -550,44 +534,6 @@ export default async function RunComponentPage({ params }: PageProps) {
 }
 
 /* ─── Pieces ──────────────────────────────────────────────────────────────── */
-
-function SourceList({ current }: { current: string }) {
-  return (
-    <aside className="hidden lg:block" aria-label="All components">
-      <nav className="sticky top-14 flex max-h-[calc(100dvh-3.5rem)] flex-col overflow-y-auto pt-20 pb-10">
-        <p className="run-label px-2 pb-2">Components</p>
-        <ul className="flex flex-col gap-px">
-          {componentsByName.map((item) => {
-            const Icon = ICONS[item.slug] ?? AppWindow
-            return (
-              <li key={item.slug}>
-                <Link
-                  href={href(`/components/${item.slug}`)}
-                  className="run-source-item"
-                  aria-current={item.slug === current ? "page" : undefined}
-                >
-                  <Icon className="size-[15px] shrink-0 opacity-70" />
-                  {item.title}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-        <p className="run-label px-2 pt-7 pb-2">Docs</p>
-        <ul className="flex flex-col gap-px">
-          {DOCS.map((doc) => (
-            <li key={doc.path}>
-              <Link href={href(doc.path)} className="run-source-item">
-                <BookOpen className="size-[15px] shrink-0 opacity-70" />
-                {doc.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </aside>
-  )
-}
 
 function Section({
   id,
