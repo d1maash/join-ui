@@ -125,7 +125,7 @@
   --warning-soft: var(--caution-soft);
 
   --code-bg: var(--grey-0);
-  --selection: oklch(0.21 0.011 48 / 0.12);
+  --selection: rgb(0 113 227 / 0.18);
 
   /*
    * Component palette.
@@ -261,7 +261,7 @@
   --warning-soft: var(--caution-soft);
 
   --code-bg: var(--grey-50);
-  --selection: oklch(0.975 0.001 265 / 0.18);
+  --selection: rgb(64 156 255 / 0.3);
 
   /*
    * The hues invert their roles rather than their values: the ink lightens so
