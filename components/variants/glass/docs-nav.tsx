@@ -28,7 +28,7 @@ export function DocsSidebar({ sections }: { sections: SidebarSection[] }) {
       aria-label="Documentation"
       className="g-glass g-thick flex h-full flex-col overflow-hidden rounded-[30px]"
     >
-      <div className="overflow-y-auto overscroll-contain px-3 py-5 [scrollbar-width:thin]">
+      <div className="overflow-y-auto overscroll-contain px-3 pt-5 pb-8 [scrollbar-width:thin] [mask-image:linear-gradient(to_bottom,#000_calc(100%-40px),transparent)]">
         {sections.map((section, index) => (
           <div key={section.title} className={cn(index > 0 && "mt-6")}>
             <p className="px-3 pb-1.5 text-[12px] font-semibold text-[#56565b]">
