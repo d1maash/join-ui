@@ -279,17 +279,15 @@
   pointer-events: none;
   display: none;
   background-image:
-    linear-gradient(to right, rgb(17 17 17 / 0.34) 12px, transparent 12px),
-    linear-gradient(to right, rgb(17 17 17 / 0.2) 6px, transparent 6px);
+    linear-gradient(to bottom, rgb(17 17 17 / 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(17 17 17 / 0.22) 1px, transparent 1px);
   background-size:
-    100% 40px,
-    100% 8px;
+    14px 40px,
+    7px 8px;
   background-repeat: repeat-y;
   background-position:
     0 0,
     0 0;
-  -webkit-mask-image: linear-gradient(to right, #000 100%, transparent);
-  mask-image: linear-gradient(to right, #000 100%, transparent);
 }
 
 .v-specimen .sp-ruler-mark {

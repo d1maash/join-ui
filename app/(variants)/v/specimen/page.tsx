@@ -102,7 +102,7 @@ export default async function SpecimenLanding() {
           <CoverFact className="hidden lg:col-span-1 lg:block" term="Ed." value="11.26" />
         </dl>
 
-        <div className="pt-10 lg:pt-14">
+        <div className="pt-10 lg:pt-12">
           <CoverTitle
             note={
               <>
@@ -111,30 +111,31 @@ export default async function SpecimenLanding() {
                 words that changed.
               </>
             }
+            intro={
+              <p className="max-w-[44ch] text-[18px] leading-[1.5] text-pretty">
+                Seven React components for products where an agent does the work and a
+                person signs off. Each is drawn up here as a plate — parts lettered, keys
+                listed, source attached — and installs as files you keep.
+              </p>
+            }
+            action={
+              <div className="flex flex-col items-start gap-3">
+                <a
+                  href="#contents"
+                  className="group inline-flex h-12 items-center gap-3 bg-[var(--sp-ink)] pr-5 pl-6 text-[15px] font-semibold text-white transition-colors hover:bg-[#2a2a28]"
+                >
+                  Open the manual
+                  <ArrowDown
+                    aria-hidden="true"
+                    className="size-4 transition-transform duration-300 group-hover:translate-y-0.5"
+                  />
+                </a>
+                <span className="sp-mono text-[12px] text-[var(--sp-ink-2)]">
+                  or <Keycap small>Ctrl</Keycap> <Keycap small>K</Keycap> to look a part up
+                </span>
+              </div>
+            }
           />
-        </div>
-
-        <div className="sp-grid mt-12 items-end gap-y-8 border-t border-[var(--sp-rule)] pt-6 lg:mt-16">
-          <p className="col-span-4 max-w-[46ch] text-[19px] leading-[1.5] text-pretty lg:col-span-6">
-            Seven React components for products where an agent does the work and a person
-            signs off. Each is drawn up here as a plate — parts lettered, keys listed,
-            source attached — and installs through the shadcn CLI as files you keep.
-          </p>
-          <div className="col-span-4 flex flex-wrap items-center gap-x-6 gap-y-3 lg:col-span-5 lg:col-start-8 lg:justify-end">
-            <a
-              href="#contents"
-              className="group inline-flex h-12 items-center gap-3 bg-[var(--sp-ink)] pr-5 pl-6 text-[15px] font-semibold text-white transition-colors hover:bg-[#2a2a28]"
-            >
-              Open the manual
-              <ArrowDown
-                aria-hidden="true"
-                className="size-4 transition-transform duration-300 group-hover:translate-y-0.5"
-              />
-            </a>
-            <span className="sp-mono text-[12px] text-[var(--sp-ink-2)]">
-              or <Keycap small>⌘</Keycap> <Keycap small>K</Keycap> to look something up
-            </span>
-          </div>
         </div>
       </section>
 

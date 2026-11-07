@@ -10,7 +10,15 @@ import { CarbonCopy } from "@/registry/components/carbon-copy"
  * changed words turn over — and a leader line from the figure note finds the
  * word "source." wherever the type has wrapped to.
  */
-export function CoverTitle({ note }: { note: React.ReactNode }) {
+export function CoverTitle({
+  note,
+  intro,
+  action,
+}: {
+  note: React.ReactNode
+  intro: React.ReactNode
+  action: React.ReactNode
+}) {
   const root = React.useRef<HTMLDivElement>(null)
   const noteKey = React.useRef<HTMLSpanElement>(null)
   const path = React.useRef<SVGPathElement>(null)
@@ -67,11 +75,13 @@ export function CoverTitle({ note }: { note: React.ReactNode }) {
         lines={["Read the manual.", "Own the source."]}
         timing={{ delay: 250 }}
         onComplete={() => setDone(true)}
-        className="sp-display text-[clamp(56px,13.4vw,208px)] leading-[0.9] tracking-[-0.035em]"
+        className="sp-display text-[clamp(52px,12.4vw,182px)] leading-[0.9] tracking-[-0.035em] lg:whitespace-nowrap"
       />
 
-      <div className="sp-grid mt-10 lg:mt-14">
-        <p className="col-span-4 flex items-start gap-3 lg:col-span-4 lg:col-start-9">
+      <div className="sp-grid mt-12 items-start gap-y-8 border-t border-[var(--sp-rule)] pt-6 lg:mt-16">
+        <div className="col-span-4 lg:col-span-5">{intro}</div>
+        <div className="col-span-4 lg:col-span-3">{action}</div>
+        <p className="col-span-4 flex items-start gap-3 lg:col-span-4">
           <span ref={noteKey} className="sp-key mt-0.5" aria-hidden="true">
             0
           </span>

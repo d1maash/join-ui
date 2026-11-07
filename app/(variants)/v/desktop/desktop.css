@@ -1300,3 +1300,19 @@
     width: 196px;
   }
 }
+
+/*
+ * Visibility switches written here rather than as utilities: the classes
+ * they sit beside are unlayered, so a layered `md:hidden` would lose.
+ */
+@media (min-width: 768px) {
+  .v-desktop .d-back {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .v-desktop .d-toolbar .d-lights {
+    display: none;
+  }
+}
