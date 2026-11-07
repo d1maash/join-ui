@@ -606,7 +606,12 @@ export function AgentHive({
                 r={layout.cellW * 1.25}
                 fill={`url(#${glow})`}
                 style={{ filter: `blur(${Math.round(layout.cellW / 7)}px)` }}
-                /* The light swells a little while work is in flight, and only then. */
+                /*
+                 * The light swells a little while work is in flight, and only
+                 * then. The resting state is stated as the initial one, so the
+                 * server and a reduced-motion client draw the same first frame.
+                 */
+                initial={{ scale: 1, opacity: 1 }}
                 animate={
                   running && !reduceMotion
                     ? { scale: [1, 1.12, 1], opacity: [0.85, 1, 0.85] }
@@ -1402,7 +1407,12 @@ function Action({
 }) {
   return (
     <div className="relative mx-auto mt-5 flex">
-      {busy && !reduceMotion
+      {/*
+       * Rendered whenever the queue is busy, and put out at once under
+       * reduced motion rather than left out — the preference is only known in
+       * the browser, so leaving them out would change the server's markup.
+       */}
+      {busy
         ? [0, 1].map((rank) => (
             <motion.span
               key={rank}
@@ -1414,12 +1424,16 @@ function Action({
               style={accent ? { borderColor: accent } : undefined}
               initial={{ scale: 1, opacity: 0.35 }}
               animate={{ scale: 1.18, opacity: 0 }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                delay: rank * 1.1,
-                ease: "easeOut",
-              }}
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : {
+                      duration: 2.2,
+                      repeat: Infinity,
+                      delay: rank * 1.1,
+                      ease: "easeOut",
+                    }
+              }
             />
           ))
         : null}
@@ -1585,11 +1599,17 @@ function Row({
               tone.pip
             )}
           />
-          {state === "working" && !reduceMotion ? (
+          {/* Put out at once under reduced motion, not left out: see the action's rings. */}
+          {state === "working" ? (
             <motion.span
               className={cn("absolute inset-0 rounded-full", tone.pip)}
-              animate={{ scale: [1, 2.6], opacity: [0.5, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
+              initial={{ scale: 1, opacity: 0.5 }}
+              animate={{ scale: 2.6, opacity: 0 }}
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : { duration: 1.6, repeat: Infinity, ease: "easeOut" }
+              }
             />
           ) : null}
         </span>
