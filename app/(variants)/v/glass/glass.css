@@ -398,6 +398,20 @@
   }
 }
 
+/*
+ * Transform only, for anything that holds live glass. Fading an ancestor
+ * would make it the backdrop root for the length of the fade — the pane
+ * inside would lose its blur and then snap it back.
+ */
+@keyframes g-lift {
+  from {
+    transform: translate3d(0, 88px, 0) scale(0.96);
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 @keyframes g-rise-scale {
   from {
     opacity: 0.2;
@@ -472,6 +486,12 @@
       animation: g-rise linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 85%;
+    }
+
+    .v-glass .g-lift {
+      animation: g-lift linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
     }
 
     .v-glass .g-rise-scale {

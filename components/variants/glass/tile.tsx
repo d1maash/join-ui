@@ -34,11 +34,14 @@ export function ComponentTile({
   item,
   size = "md",
   headingLevel = 3,
+  well = "aspect-[4/3]",
   className,
 }: {
   item: Pick<CatalogItem, "slug" | "title" | "description" | "category" | "status">
   size?: "lg" | "md"
   headingLevel?: 2 | 3
+  /** Sizes the thumbnail well — an aspect ratio, or a fixed height in a bento row. */
+  well?: string
   className?: string
 }) {
   const Heading = `h${headingLevel}` as const
@@ -59,7 +62,7 @@ export function ComponentTile({
         aria-hidden="true"
         className={cn(
           "g-inset relative overflow-hidden rounded-[24px]",
-          size === "lg" ? "aspect-[16/10]" : "aspect-[4/3]"
+          well
         )}
       >
         <div className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.02]">
