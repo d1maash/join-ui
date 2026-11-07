@@ -145,22 +145,25 @@ const SIZES = {
   sm: {
     crest: "max-w-sm",
     copy: "max-w-md",
-    headline: "text-[1.75rem] leading-[1.12] sm:text-4xl",
-    description: "text-sm",
+    eyebrow: "text-[0.9375rem] tracking-[-0.012em]",
+    headline: "text-[1.75rem] leading-[1.12] sm:text-4xl sm:leading-[1.1]",
+    description: "text-[0.9375rem] leading-[1.47] tracking-[-0.012em]",
     gap: "gap-4",
   },
   md: {
     crest: "max-w-xl",
     copy: "max-w-2xl",
-    headline: "text-4xl leading-[1.08] sm:text-5xl lg:text-[3.5rem]",
-    description: "text-base",
+    eyebrow: "text-[1.0625rem] tracking-[-0.022em]",
+    headline: "text-4xl leading-[1.1] sm:text-5xl sm:leading-[1.08] lg:text-[3.5rem] lg:leading-[1.07]",
+    description: "text-[1.0625rem] leading-[1.47] tracking-[-0.022em]",
     gap: "gap-5",
   },
   lg: {
     crest: "max-w-3xl",
     copy: "max-w-4xl",
-    headline: "text-5xl leading-[1.05] sm:text-6xl lg:text-7xl",
-    description: "text-lg",
+    eyebrow: "text-[1.3125rem] tracking-[-0.02em]",
+    headline: "text-5xl leading-[1.08] sm:text-6xl sm:leading-[1.05] lg:text-7xl",
+    description: "text-[1.3125rem] leading-[1.38] tracking-[-0.02em]",
     gap: "gap-6",
   },
 } as const
@@ -502,7 +505,7 @@ export function GlassCrest({
         <p
           aria-hidden="true"
           className={cn(
-            "min-h-[1.45em] text-xs leading-[1.45] font-medium text-muted-foreground",
+            "min-h-[1.45em] text-[0.8125rem] leading-[1.45] font-medium tracking-[-0.006em] text-muted-foreground",
             "transition-opacity duration-[var(--duration-base)] ease-[var(--ease-out-soft)]",
             caption ? "opacity-100" : "opacity-0"
           )}
@@ -512,12 +515,22 @@ export function GlassCrest({
       ) : null}
 
       <div className={cn("flex w-full flex-col items-center", scale.gap, scale.copy)}>
+        {/*
+         * The eyebrow is set the way Apple sets the line above a product
+         * name: sentence case, semibold, in the secondary ink — a name for
+         * the section rather than a tracked-out label.
+         */}
         {eyebrow ? (
-          <p className="flex items-center gap-1.5 text-[0.6875rem] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase">
+          <p
+            className={cn(
+              "-mb-1 flex items-center gap-1.5 leading-tight font-semibold text-muted-foreground",
+              scale.eyebrow
+            )}
+          >
             {eyebrowIcon ? (
               <span
                 aria-hidden="true"
-                className="flex size-3 items-center justify-center [&_svg]:size-full [&_svg]:shrink-0"
+                className="flex size-[0.9em] items-center justify-center [&_svg]:size-full [&_svg]:shrink-0"
               >
                 {eyebrowIcon}
               </span>
@@ -537,18 +550,13 @@ export function GlassCrest({
         </Heading>
 
         {description ? (
-          <p
-            className={cn(
-              "max-w-[46ch] leading-relaxed text-pretty text-muted-foreground",
-              scale.description
-            )}
-          >
+          <p className={cn("max-w-[46ch] text-pretty text-muted-foreground", scale.description)}>
             {description}
           </p>
         ) : null}
 
         {actions ? (
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 pt-1">
             {actions}
           </div>
         ) : null}
@@ -560,10 +568,11 @@ export function GlassCrest({
 /**
  * The second voice in a headline.
  *
- * The reference for this section sets half its sentence in a serif, and a
- * registry component cannot ship a typeface — so the difference is carried by
- * weight and ink, which works in any project, and the family is left as a
- * custom property for one that does have a second face to give it.
+ * Apple sets a two-voice headline in one weight and lets the ink do the work —
+ * the second phrase simply steps back into the secondary colour. That carries
+ * in any project, so it is the default; the step down to medium is only there
+ * so a second face given through the custom property, which may well ship a
+ * single regular cut, is never asked for a bold it would have to fake.
  */
 export function CrestQuiet({
   className,
@@ -572,7 +581,7 @@ export function CrestQuiet({
 }: React.ComponentPropsWithoutRef<"span">) {
   return (
     <span
-      className={cn("font-normal tracking-[-0.02em] text-muted-foreground", className)}
+      className={cn("font-medium tracking-[-0.03em] text-muted-foreground", className)}
       style={{ fontFamily: QUIET_FONT }}
       {...props}
     >
@@ -581,13 +590,11 @@ export function CrestQuiet({
   )
 }
 
-const ARROW_LAYER =
-  "absolute inset-0 grid place-items-center transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-soft)]"
-
 /**
- * The pill the section was drawn with: solid ink, and a badge on the end that
- * rolls its arrow away and brings a second one in behind it. Renders as an
- * anchor when given an `href`, so the call to action is a real link.
+ * The call to action, as Apple draws one: a filled capsule in the page's ink,
+ * 17pt on a 44pt bar, with a chevron that leans forward under the pointer and
+ * a press that gives. Renders as an anchor when given an `href`, so the call to
+ * action is a real link.
  */
 export function CrestAction({
   href,
@@ -597,39 +604,17 @@ export function CrestAction({
 }: Omit<React.ComponentPropsWithoutRef<"button">, "href"> & { href?: string }) {
   const body = (
     <>
-      <span className="px-1">{children}</span>
-      <span
-        aria-hidden="true"
-        className={cn(
-          "relative size-7 shrink-0 overflow-hidden rounded-full",
-          "bg-primary-foreground text-primary"
-        )}
-      >
-        {/*
-         * Each arrow rides a layer the size of the disc, not its own 14px box,
-         * so a full-width slide clears the disc entirely. On the glyph itself
-         * `translate-x-full` was half a disc, and both arrows showed at once.
-         */}
-        <span className={cn(ARROW_LAYER, "group-hover/action:translate-x-full")}>
-          <Arrow />
-        </span>
-        <span
-          className={cn(
-            ARROW_LAYER,
-            "-translate-x-full group-hover/action:translate-x-0"
-          )}
-        >
-          <Arrow />
-        </span>
-      </span>
+      <span>{children}</span>
+      <Arrow className="-mr-1 transition-transform duration-[var(--duration-slow)] ease-[var(--ease-out-soft)] group-hover/action:translate-x-0.5" />
     </>
   )
 
   const shell = cn(
-    "group/action inline-flex cursor-pointer items-center gap-2 rounded-full py-1.5 pr-1.5 pl-4",
-    "bg-primary text-sm font-medium text-primary-foreground",
-    "transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
-    "hover:bg-primary-hover",
+    "group/action inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-full px-[1.375rem]",
+    "bg-primary text-[1.0625rem] font-medium tracking-[-0.022em] text-primary-foreground",
+    "shadow-[inset_0_1px_0_rgb(255_255_255/0.12)]",
+    "transition-[background-color,scale] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+    "hover:bg-primary-hover active:scale-[0.97]",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
     "disabled:pointer-events-none disabled:opacity-40",
     className
@@ -650,19 +635,20 @@ export function CrestAction({
   )
 }
 
+/** A chevron at the weight of the label beside it, the way Apple ends a link. */
 function Arrow({ className }: { className?: string }) {
   return (
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2.25}
+      strokeWidth={2.4}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={cn("size-3.5", className)}
+      className={cn("size-[0.9em] shrink-0", className)}
     >
-      <path d="M5 12h14" />
-      <path d="m12 5 7 7-7 7" />
+      <path d="m9 5 7 7-7 7" />
     </svg>
   )
 }
@@ -739,8 +725,12 @@ function Mark({
   const aloftThis = aloft && puller === index
   const over = React.useRef(false)
   const wasAloft = React.useRef(false)
-  const onLeaveRef = React.useRef(onLeave)
-  onLeaveRef.current = onLeave
+  /*
+   * The latest `onLeave`, read when the disc is set down rather than captured
+   * when it was lifted — and without making the landing re-run every time the
+   * parent hands over a new closure.
+   */
+  const leave = React.useEffectEvent(onLeave)
 
   React.useEffect(() => {
     if (aloftThis) {
@@ -749,7 +739,7 @@ function Mark({
     }
     if (!wasAloft.current) return
     wasAloft.current = false
-    if (!over.current) onLeaveRef.current()
+    if (!over.current) leave()
   }, [aloftThis])
 
   /*
@@ -924,14 +914,40 @@ function Mark({
         />
 
         {/*
-         * The specular. Off-centre at rest, because a highlight in the middle
-         * reads as a hole — and it lives in the same space as the shoulder,
-         * sliding against a pull so the room's light does not ride the glyph.
+         * The light on the glass, in two parts — and neither is a blob.
+         *
+         * The first is a broad, faint pool under the upper-left shoulder: the
+         * room lighting the body of the disc, off-centre because a highlight in
+         * the middle reads as a hole. It lives in the same space as the
+         * shoulder, sliding against a pull so the room's light does not ride
+         * the glyph.
+         *
+         * The second is the specular rim: a hairline of light caught hard on
+         * the upper-left edge and once more, fainter, on the lower-right where
+         * it leaves the glass, with nothing across the sides. That edge is what
+         * makes a tinted circle read as a lens rather than as a bubble, and it
+         * is drawn as a gradient on a ring rather than as an inset shadow
+         * because a shadow cannot fade along its own length.
          */}
         <motion.span
           aria-hidden="true"
-          className="absolute top-[9%] left-[15%] h-[28%] w-[44%] rounded-[50%] blur-[5px]"
-          style={{ background: SHEEN, x: sheenX, y: sheenY }}
+          className="absolute inset-0 rounded-full"
+          style={{
+            backgroundImage: `radial-gradient(58% 42% at 36% 16%, color-mix(in oklab, ${SHEEN} 70%, transparent) 0%, transparent 72%)`,
+            x: sheenX,
+            y: sheenY,
+          }}
+        />
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 rounded-full p-[1.25px]"
+          style={{
+            backgroundImage: `linear-gradient(152deg, ${SHEEN} 0%, color-mix(in oklab, ${SHEEN} 35%, transparent) 22%, transparent 40%, transparent 64%, color-mix(in oklab, ${SHEEN} 60%, transparent) 100%)`,
+            WebkitMask:
+              "linear-gradient(black 0 0) content-box, linear-gradient(black 0 0)",
+            WebkitMaskComposite: "xor",
+            mask: "linear-gradient(black 0 0) content-box exclude, linear-gradient(black 0 0)",
+          }}
         />
 
         {mark.icon ? (
@@ -1089,9 +1105,11 @@ function Mark({
                  * of a control rather than a control — and on glass this size, a
                  * few percent is all it takes to read as the thing being pushed
                  * into the page and let go. Held off while the disc is being
-                 * pulled, so a drag does not also read as a press.
+                 * pulled, so a drag does not also read as a press; flattened
+                 * rather than removed under reduced motion, because that is
+                 * only known on the client and the gesture is in the markup.
                  */
-                whileTap={animate && !heldThis ? { scale: 0.94 } : undefined}
+                whileTap={heldThis ? undefined : { scale: animate ? 0.94 : 1 }}
                 transition={LIFT}
                 className={cn(
                   "block size-full rounded-full select-none",
