@@ -133,7 +133,7 @@ export function HeroScene() {
       ref={stage}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
-      className="relative mx-auto h-[540px] w-full max-w-[1180px] sm:h-[600px] lg:h-[640px]"
+      className="relative mx-auto h-[520px] w-full max-w-[1180px] sm:h-[560px] lg:h-[580px]"
     >
       <p className="sr-only">
         Four Join UI components running live on panes of glass: Tool Trace playing an

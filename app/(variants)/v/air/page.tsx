@@ -221,7 +221,7 @@ function BigTile({
         <TileActions slug={slug} title={component.title} tone={dark ? "dark" : "light"} size="md" />
       </Reveal>
       <Reveal delay={120} className="mx-auto mt-12 max-w-[64rem] sm:mt-16">
-        <div className="air-zoom flex justify-center">{scene}</div>
+        <div className="air-zoom flex justify-center text-left">{scene}</div>
       </Reveal>
     </section>
   )
@@ -256,7 +256,7 @@ function GridTile({
         </Reveal>
         <Reveal
           delay={120}
-          className="flex w-full min-w-0 flex-1 items-center justify-center pt-10 pb-12"
+          className="flex w-full min-w-0 flex-1 items-center justify-center pt-10 pb-12 text-left"
         >
           {scene}
         </Reveal>

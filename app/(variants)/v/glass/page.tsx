@@ -129,7 +129,7 @@ export default async function GlassHome() {
       </section>
 
       {/* ── The lineup ───────────────────────────────────────────────── */}
-      <section aria-labelledby="lineup-title" className="px-4 pt-28 sm:px-6 sm:pt-36">
+      <section aria-labelledby="lineup-title" className="px-4 pt-20 sm:px-6 sm:pt-24">
         <div className="mx-auto max-w-[1180px]">
           <Head
             id="lineup-title"
