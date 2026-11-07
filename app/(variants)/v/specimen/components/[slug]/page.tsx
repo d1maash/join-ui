@@ -148,7 +148,8 @@ export default async function PlatePage({ params }: PageProps) {
           </div>
         </div>
 
-        <dl className="mt-10 grid grid-cols-2 border-y border-[var(--sp-ink)] sm:grid-cols-4 lg:grid-cols-6">
+        <div className="mt-10 overflow-hidden border-y border-[var(--sp-ink)]">
+        <dl className="-mb-px -ml-px grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
           <Spec term="Category" value={component.category} />
           <Spec term="Status" value={STATUS[component.status] ?? component.status} />
           <Spec term="Entered" value={formatDate(component.since)} />
@@ -159,6 +160,7 @@ export default async function PlatePage({ params }: PageProps) {
             value={component.dependencies.length ? component.dependencies.join(", ") : "none"}
           />
         </dl>
+        </div>
 
         <div className="sp-grid mt-8 gap-y-8">
           <p className="col-span-4 text-[clamp(20px,1.9vw,24px)] leading-[1.35] tracking-[-0.012em] text-pretty lg:col-span-7">
@@ -708,7 +710,7 @@ export default async function PlatePage({ params }: PageProps) {
 
 function Spec({ term, value }: { term: string; value: string }) {
   return (
-    <div className="border-[var(--sp-rule)] py-3 pr-4 not-first:border-l not-first:pl-4 max-sm:[&:nth-child(odd)]:border-l-0 max-sm:[&:nth-child(odd)]:pl-0 max-sm:[&:nth-child(n+3)]:border-t sm:max-lg:[&:nth-child(4n+1)]:border-l-0 sm:max-lg:[&:nth-child(4n+1)]:pl-0 sm:max-lg:[&:nth-child(n+5)]:border-t">
+    <div className="min-w-0 border-b border-l border-[var(--sp-rule)] py-3 pr-3 pl-4">
       <dt className="sp-label">{term}</dt>
       <dd className="mt-1 truncate text-[15px] font-medium">{value}</dd>
     </div>
