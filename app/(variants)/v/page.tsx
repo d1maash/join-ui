@@ -16,17 +16,12 @@ export const metadata: Metadata = {
  * every page it has. Painted in fixed colours rather than tokens, because it
  * belongs to none of the variants it introduces.
  */
-const BACKDROP: Record<string, React.CSSProperties | undefined> = {
-  desktop: {
-    background:
-      "linear-gradient(180deg, rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.55)), url(/hero-colour-1280.webp) center / cover",
-  },
-}
+const BACKDROP: Record<string, React.CSSProperties | undefined> = {}
 
 const SWATCH: Record<string, string> = {
-  run: "bg-[radial-gradient(120%_90%_at_50%_0%,#2a2a2c_0%,#0b0b0c_55%,#000_100%)] text-white",
-  specimen: "bg-[#ecebe6] text-[#111] shadow-[inset_0_0_0_1px_rgb(0_0_0/0.08)]",
-  desktop: "text-white",
+  index: "bg-[#0a0a0a] text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08)]",
+  studio: "bg-white text-[#0a0a0a] shadow-[inset_0_0_0_1px_rgb(0_0_0/0.08)]",
+  gallery: "bg-[linear-gradient(160deg,#0b1020_0%,#0a0a0f_55%,#000_100%)] text-white",
 }
 
 export default function VariantsPage() {

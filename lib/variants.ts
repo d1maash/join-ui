@@ -12,7 +12,7 @@
  * whole layer is deleted.
  */
 
-export type VariantId = "run" | "specimen" | "desktop"
+export type VariantId = "index" | "studio" | "gallery"
 
 export interface Variant {
   id: VariantId
@@ -21,30 +21,30 @@ export interface Variant {
   tagline: string
   /** What it borrows from. */
   reference: string
-  /** The colour scheme the variant renders in. */
+  /** The colour scheme the variant renders in by default. */
   scheme: "light" | "dark"
 }
 
 export const VARIANTS: Variant[] = [
   {
-    id: "run",
-    name: "Run",
-    tagline: "The whole page is one agent run. Scroll, and you watch it ship a feature.",
-    reference: "Linear, Apple keynotes, Resend",
+    id: "index",
+    name: "Index",
+    tagline: "A precise hairline grid of live components, each one a coded cell you can copy or hand to an agent.",
+    reference: "Kokonut UI, Origin UI, Linear",
     scheme: "dark",
   },
   {
-    id: "specimen",
-    name: "Specimen",
-    tagline: "Every component drawn up as a numbered plate in a field manual.",
-    reference: "Dieter Rams, Teenage Engineering, Devouring Details",
+    id: "studio",
+    name: "Studio",
+    tagline: "A calm, neutral documentation-first library with a wall of live primitives and light and dark themes.",
+    reference: "shadcn/ui, Animate UI, Magic UI",
     scheme: "light",
   },
   {
-    id: "desktop",
-    name: "Desktop",
-    tagline: "The site is a tiny operating system. Components open as windows.",
-    reference: "macOS, Raycast, visionOS",
+    id: "gallery",
+    name: "Gallery",
+    tagline: "A browsable showroom: rails of live cards, and a split-view workbench for every component.",
+    reference: "21st.dev, Aceternity UI, Vercel",
     scheme: "dark",
   },
 ]
