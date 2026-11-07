@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, Hourglass, X } from "lucide-react"
+import { Check, Hourglass, TriangleAlert, X } from "lucide-react"
 import {
   AnimatePresence,
   motion,
@@ -102,44 +102,70 @@ const WAITING_LABEL: Record<ApprovalGateRisk, string> = {
 
 /**
  * Hue is spent only where there is risk. A request that cannot break anything
- * waits in the page's own ink — a monochrome clock, a muted word — and the
+ * waits in the page's own ink — a monochrome clock, a grey capsule — and the
  * two warmer families are reserved for one that might, or will. Everything
  * reads the component palette rather than a literal colour, so a consumer can
  * retint the whole family in `globals.css`.
+ *
+ * `stroke` is the clock's arc and `track` the circle it drains from; `disc`
+ * fills the marker while the gate waits without a clock. A destructive request
+ * also sets its answer in the destructive style — red, as the system sets any
+ * button that does something that cannot be taken back.
  */
 const RISK_TONES: Record<
   ApprovalGateRisk,
-  { ink: string; stroke: string; word: string; pip: string }
+  { ink: string; stroke: string; track: string; disc: string; chip: string; allow: string }
 > = {
   low: {
     ink: "text-foreground",
     stroke: "stroke-foreground",
-    word: "text-muted-foreground",
-    pip: "bg-muted-foreground",
+    track: "stroke-foreground/12",
+    disc: "bg-muted",
+    chip: "bg-muted text-muted-foreground",
+    allow: "bg-primary text-primary-foreground hover:bg-primary/85",
   },
   medium: {
     ink: "text-caution",
     stroke: "stroke-caution",
-    word: "text-caution",
-    pip: "bg-caution",
+    track: "stroke-caution/18",
+    disc: "bg-caution-soft",
+    chip: "bg-caution-soft text-caution",
+    allow: "bg-primary text-primary-foreground hover:bg-primary/85",
   },
   high: {
     ink: "text-critical",
     stroke: "stroke-critical",
-    word: "text-critical",
-    pip: "bg-critical",
+    track: "stroke-critical/16",
+    disc: "bg-critical-soft",
+    chip: "bg-critical-soft text-critical",
+    allow: "bg-critical text-critical-foreground hover:bg-critical/85",
   },
 }
 
-/** And one per outcome. `ring` is the marker's outline and tint together. */
-const DECISION_TONES: Record<ApprovalGateDecision, { ink: string; ring: string }> = {
-  allow: { ring: "border-positive/35 bg-positive-soft", ink: "text-positive" },
-  deny: { ring: "border-critical/40 bg-critical-soft", ink: "text-critical" },
-  expire: { ring: "border-dashed border-border bg-muted/40", ink: "text-muted-foreground" },
+/** And one per outcome: the marker's fill, its ink, and the capsule's. */
+const DECISION_TONES: Record<
+  ApprovalGateDecision,
+  { disc: string; ink: string; chip: string }
+> = {
+  allow: {
+    disc: "bg-positive-soft",
+    ink: "text-positive",
+    chip: "bg-positive-soft text-positive",
+  },
+  deny: {
+    disc: "bg-critical-soft",
+    ink: "text-critical",
+    chip: "bg-critical-soft text-critical",
+  },
+  expire: {
+    disc: "bg-muted",
+    ink: "text-muted-foreground",
+    chip: "bg-muted text-muted-foreground",
+  },
 }
 
-/** The track the clock runs on: a hairline, so the arc over it is the only mark. */
-const WAITING_RING = "border-border"
+/** The clock's marker has no fill of its own: the track is the shape. */
+const CLOCK_DISC = "bg-transparent"
 
 /**
  * The command's surface: a wash of the theme's own ink over whatever is
@@ -148,23 +174,20 @@ const WAITING_RING = "border-border"
 const SURFACE =
   "var(--approval-gate-command, color-mix(in oklab, var(--foreground) 4%, transparent))"
 
-/* The status word, set in the host's interface face — a status is read, not decoded. */
-const MICRO_LABEL = "leading-none font-medium tracking-[-0.005em]"
-
 const DEFAULT_ALLOW = ["y"]
 const DEFAULT_DENY = ["n", "Escape"]
 
 /*
  * The vocabulary, shared with the rest of the family. A move that nothing can
  * countermand half way through — a strike drawing, a row folding — is a tween
- * on a decisive curve. A ring blooming or a glyph landing can be overtaken by
- * the next state a fraction of a second later, so those ride springs, which
- * carry the velocity they already had into the new target.
+ * on the system's own deceleration curve. A disc blooming or a glyph landing
+ * can be overtaken by the next state a fraction of a second later, so those
+ * ride springs, which carry the velocity they already had into the new target.
  */
-const EASE = [0.22, 1, 0.36, 1] as const
-const RING = { type: "spring", stiffness: 420, damping: 34, mass: 0.8 } as const
-const GLYPH = { type: "spring", stiffness: 620, damping: 26, mass: 0.6 } as const
-const PRESS = { type: "spring", stiffness: 700, damping: 30, mass: 0.5 } as const
+const EASE = [0.32, 0.72, 0, 1] as const
+const DISC = { type: "spring", visualDuration: 0.4, bounce: 0.18 } as const
+const GLYPH = { type: "spring", visualDuration: 0.3, bounce: 0.3 } as const
+const PRESS = { type: "spring", visualDuration: 0.18, bounce: 0.25 } as const
 
 /**
  * The most the clock is allowed to lose in one frame. The countdown rides the
@@ -174,42 +197,56 @@ const PRESS = { type: "spring", stiffness: 700, damping: 30, mass: 0.5 } as cons
  */
 const MAX_STEP = 120
 
+/*
+ * The two scales. `dial` is the marker's size in pixels and `weight` the
+ * clock's stroke, so the ring can be drawn to the pixel rather than scaled.
+ * `offset` is (marker - title line) / 2, which sets a one-line title on the
+ * marker's centre, and the capsule beside it is exactly one line tall.
+ */
 const SIZES = {
   sm: {
-    marker: "size-6",
-    glyph: "size-3",
-    pip: "size-1.5",
-    count: "text-[0.5625rem]",
-    row: "min-h-6",
-    title: "text-[0.8125rem]",
-    word: "text-[0.625rem]",
-    reason: "text-xs",
-    command: "px-2.5 py-1.5 text-[0.6875rem]",
-    caption: "text-[0.625rem]",
-    button: "h-6 gap-1.5 px-2 text-[0.6875rem]",
-    hint: "text-[0.625rem]",
-    gap: "gap-2.5",
-    stack: "gap-2",
-    padding: "p-3.5",
-    footer: "mt-3 pt-3",
-  },
-  md: {
-    marker: "size-7",
+    marker: "size-8",
+    dial: 32,
+    weight: 2.5,
     glyph: "size-3.5",
-    pip: "size-1.5",
-    count: "text-[0.625rem]",
-    row: "min-h-7",
-    title: "text-sm",
-    word: "text-[0.6875rem]",
-    reason: "text-[0.8125rem]",
+    pip: "size-2",
+    count: "text-[0.6875rem]",
+    row: "min-h-8",
+    offset: "pt-1.5",
+    title: "text-[0.9375rem] leading-5 tracking-[-0.016em]",
+    chip: "h-5 gap-1 px-2 text-[0.6875rem]",
+    chipGlyph: "size-3",
+    reason: "text-[0.8125rem] leading-[1.125rem]",
     command: "px-3 py-2 text-xs",
     caption: "text-[0.6875rem]",
-    button: "h-7 gap-2 px-2.5 text-xs",
+    button: "h-8 gap-1.5 px-3.5 text-[0.8125rem]",
     hint: "text-[0.6875rem]",
     gap: "gap-3",
     stack: "gap-2.5",
+    padding: "p-3.5",
+    footer: "mt-3.5 pt-3",
+  },
+  md: {
+    marker: "size-9",
+    dial: 36,
+    weight: 3,
+    glyph: "size-4",
+    pip: "size-2",
+    count: "text-xs",
+    row: "min-h-9",
+    offset: "pt-[0.4375rem]",
+    title: "text-[1.0625rem] leading-[1.375rem] tracking-[-0.022em]",
+    chip: "h-[1.375rem] gap-1 px-2.5 text-xs",
+    chipGlyph: "size-3",
+    reason: "text-[0.9375rem] leading-5 tracking-[-0.009em]",
+    command: "px-3.5 py-2.5 text-[0.8125rem]",
+    caption: "text-xs",
+    button: "h-9 gap-2 px-4 text-[0.9375rem]",
+    hint: "text-[0.8125rem]",
+    gap: "gap-3.5",
+    stack: "gap-3",
     padding: "p-4",
-    footer: "mt-3.5 pt-3.5",
+    footer: "mt-4 pt-3.5",
   },
 } as const
 
@@ -221,17 +258,18 @@ type Scale = (typeof SIZES)[keyof typeof SIZES]
  * a person: the tool it wants, the command it would give, and two ways to
  * answer.
  *
- * At rest it is a still card, and a quiet one — a title, a word beside it, the
- * command on a wash of the page's own ink, and the two answers. The one thing
- * that moves while it waits is the clock: a hairline ring around the marker,
- * draining clockwise from twelve with the seconds left set inside it. It
- * holds whenever the reader is plainly reading — pointer over the card, focus
- * inside it, the card scrolled out of view — because a timeout is a safety
- * net for a gate nobody is looking at, not a race against the person in front
- * of it. A decision is one move each way: allowing lets the buttons go and
- * sets a tick in the ring; denying draws a strike through the command, left
- * to right, and takes the ink out of it as it goes; letting the clock run out
- * does neither — the ring goes dashed, the command dims, and the word says so.
+ * At rest it is a still card, and a quiet one — a title, a capsule beside it,
+ * the command in a recessed well, and the two answers. The one thing that
+ * moves while it waits is the clock: a ring around the marker, draining
+ * clockwise from twelve with the seconds left set inside it. It holds whenever
+ * the reader is plainly reading — pointer over the card, focus inside it, the
+ * card scrolled out of view — because a timeout is a safety net for a gate
+ * nobody is looking at, not a race against the person in front of it. A
+ * decision is one move each way: allowing lets the buttons go and sets a tick
+ * in the marker; denying draws a strike through the command, left to right,
+ * and takes the ink out of it as it goes; letting the clock run out does
+ * neither — the marker greys to an hourglass, the command dims, and the word
+ * says so.
  *
  * The keys are declared on the buttons through `aria-keyshortcuts` and shown
  * beside the labels only while they would actually work, every outcome
@@ -387,6 +425,8 @@ export function ApprovalGate({
   const lines = command === undefined ? [] : Array.isArray(command) ? command : [command]
   const riskTone = RISK_TONES[risk]
   const caption = Boolean(tool || meta)
+  /* A warning sign rides in the capsule only while there is a risk to warn of. */
+  const warn = pending && risk !== "low"
 
   /*
    * The last row holds the caption on the left and the answers on the right,
@@ -426,9 +466,15 @@ export function ApprovalGate({
         if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false)
       }}
       className={cn(
-        "relative flex w-full flex-col text-foreground outline-none",
+        "relative flex w-full flex-col font-sans text-foreground outline-none",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-        chrome && "rounded-soft-lg border border-border bg-card",
+        /*
+         * A request arrives over the conversation rather than in it, so the
+         * card is a material — the page shows faintly through — lifted on a
+         * shadow wide and weak enough never to read as an edge.
+         */
+        chrome &&
+          "rounded-soft-lg border border-border/60 bg-card/85 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_10px_30px_-8px_rgb(0_0_0/0.1)] backdrop-blur-xl backdrop-saturate-150",
         chrome && scale.padding,
         className
       )}
@@ -444,51 +490,54 @@ export function ApprovalGate({
           wholeSeconds={wholeSeconds}
           icon={icon}
           ink={pending ? riskTone.ink : DECISION_TONES[phase].ink}
-          ring={pending ? WAITING_RING : DECISION_TONES[phase].ring}
+          disc={
+            pending ? (counting ? CLOCK_DISC : riskTone.disc) : DECISION_TONES[phase].disc
+          }
           stroke={riskTone.stroke}
-          pip={riskTone.pip}
+          track={riskTone.track}
           animate={animate}
           scale={scale}
         />
 
-        <div className={cn("flex min-w-0 flex-1 flex-col", scale.stack)}>
-          <div className={cn("flex items-center gap-3", scale.row)}>
-            <p
-              id={titleId}
-              className={cn(
-                "min-w-0 flex-1 leading-5 font-medium tracking-[-0.006em]",
-                scale.title
-              )}
-            >
-              <span className="sr-only">{label}: </span>
-              {title}
-            </p>
+        {/* `offset` sets the title's first line on the marker's centre line. */}
+        <div className={cn("flex min-w-0 flex-1 flex-col", scale.stack, scale.offset)}>
+          <div className="flex flex-col gap-0.5">
+            <div className="flex items-start gap-3">
+              <p id={titleId} className={cn("min-w-0 flex-1 font-semibold", scale.title)}>
+                <span className="sr-only">{label}: </span>
+                {title}
+              </p>
 
-            {/*
-              Stacked in a single grid cell so the outgoing and incoming words
-              overlap instead of shunting the row mid-cross-fade.
-            */}
-            <span className="grid shrink-0">
-              <Swap
-                token={word}
-                animate={animate}
-                className={cn(
-                  MICRO_LABEL,
-                  "col-start-1 row-start-1 whitespace-nowrap",
-                  scale.word,
-                  pending ? riskTone.word : DECISION_TONES[phase].ink
-                )}
-              >
-                {word}
-              </Swap>
-            </span>
-          </div>
-
-          {reason ? (
-            <div className={cn("leading-relaxed text-muted-foreground", scale.reason)}>
-              {reason}
+              {/*
+                Stacked in a single grid cell so the outgoing and incoming
+                capsules overlap instead of shunting the row mid-cross-fade.
+              */}
+              <span className="grid shrink-0">
+                <Swap
+                  token={word}
+                  animate={animate}
+                  className={cn(
+                    "col-start-1 row-start-1 inline-flex items-center justify-self-end rounded-full leading-none font-medium tracking-[-0.004em] whitespace-nowrap",
+                    scale.chip,
+                    pending ? riskTone.chip : DECISION_TONES[phase].chip
+                  )}
+                >
+                  {warn ? (
+                    <TriangleAlert
+                      aria-hidden="true"
+                      strokeWidth={2.5}
+                      className={cn("shrink-0", scale.chipGlyph)}
+                    />
+                  ) : null}
+                  {word}
+                </Swap>
+              </span>
             </div>
-          ) : null}
+
+            {reason ? (
+              <div className={cn("text-muted-foreground", scale.reason)}>{reason}</div>
+            ) : null}
+          </div>
 
           {lines.length > 0 ? (
             <Command
@@ -512,7 +561,7 @@ export function ApprovalGate({
                   opacity: 0,
                   transition: animate
                     ? {
-                        height: { duration: 0.24, ease: EASE, delay: 0.12 },
+                        height: { duration: 0.28, ease: EASE, delay: 0.12 },
                         opacity: { duration: 0.12, ease: "linear", delay: 0.08 },
                       }
                     : { duration: 0 },
@@ -542,17 +591,19 @@ export function ApprovalGate({
                     {pending ? (
                       <motion.div
                         key="actions"
-                        className="flex shrink-0 items-center gap-1"
+                        className="flex shrink-0 items-center gap-2"
                         initial={false}
                         /*
-                         * The answers leave the way the gate opens: a step to
-                         * the right and gone. Nothing else on the card moves.
+                         * The answers leave the way a sheet's buttons do: a
+                         * slight shrink and a soft fade, in place. Nothing
+                         * else on the card moves.
                          */
                         exit={{
                           opacity: 0,
-                          x: 6,
+                          scale: 0.94,
+                          filter: "blur(2px)",
                           transition: animate
-                            ? { duration: 0.16, ease: EASE }
+                            ? { duration: 0.18, ease: EASE }
                             : { duration: 0 },
                         }}
                       >
@@ -563,7 +614,7 @@ export function ApprovalGate({
                           pressed={pressed === "deny"}
                           animate={animate}
                           className={cn(
-                            "text-muted-foreground hover:bg-muted hover:text-foreground",
+                            "bg-muted/70 text-foreground hover:bg-muted",
                             scale.button
                           )}
                           hintClassName={scale.hint}
@@ -577,10 +628,7 @@ export function ApprovalGate({
                           hint={hints}
                           pressed={pressed === "allow"}
                           animate={animate}
-                          className={cn(
-                            "bg-primary text-primary-foreground hover:bg-primary/90",
-                            scale.button
-                          )}
+                          className={cn(riskTone.allow, scale.button)}
                           hintClassName={scale.hint}
                         >
                           {allowLabel}
@@ -596,7 +644,15 @@ export function ApprovalGate({
       </div>
 
       {footer ? (
-        <div className={cn(chrome && "border-t border-border", scale.footer)}>{footer}</div>
+        <div className={cn("relative", scale.footer)}>
+          {chrome ? (
+            <span
+              aria-hidden="true"
+              className="absolute inset-x-0 top-0 h-px bg-border/70"
+            />
+          ) : null}
+          {footer}
+        </div>
       ) : null}
 
       {announce ? (
@@ -609,11 +665,12 @@ export function ApprovalGate({
 }
 
 /**
- * The circle. Its ring is a separate layer keyed on the phase, so an outcome
- * cross-fades one whole marker into the next — the hairline track expands
- * away as the tinted ring blooms up from the centre — rather than snapping a
- * border colour. While the gate waits with a clock, the arc runs on top of
- * the track and the seconds sit inside; without one, a pip does.
+ * The circle. Its fill is a separate layer keyed on the phase, so an outcome
+ * cross-fades one whole marker into the next — the clock's face swells away
+ * as the tinted disc blooms up from the centre — rather than snapping a
+ * colour. While the gate waits with a clock, a ring runs round the edge, its
+ * arc draining over a faint track of the same hue, and the seconds sit
+ * inside; without one, a pip or your icon does, on a tint of the risk.
  */
 function Marker({
   phase,
@@ -624,9 +681,9 @@ function Marker({
   wholeSeconds,
   icon,
   ink,
-  ring,
+  disc,
   stroke,
-  pip,
+  track,
   animate,
   scale,
 }: {
@@ -638,13 +695,14 @@ function Marker({
   wholeSeconds: number
   icon?: React.ReactNode
   ink: string
-  ring: string
+  disc: string
   stroke: string
-  pip: string
+  track: string
   animate: boolean
   scale: Scale
 }) {
   const token = counting ? "clock" : phase === "pending" ? "pip" : phase
+  const radius = scale.dial / 2 - scale.weight / 2
 
   return (
     <span
@@ -657,58 +715,73 @@ function Marker({
     >
       <AnimatePresence initial={false}>
         <motion.span
-          key={phase}
+          key={counting ? "clock" : phase}
           aria-hidden="true"
-          className={cn("pointer-events-none absolute inset-0 rounded-full border", ring)}
-          initial={{ opacity: 0, scale: 0.62 }}
+          className={cn("pointer-events-none absolute inset-0 rounded-full", disc)}
+          initial={{ opacity: 0, scale: 0.6 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.18 }}
+          exit={{ opacity: 0, scale: 1.12 }}
           /*
            * Split, because the two properties are doing different jobs. The
            * scale is the move and wants the spring's carry; the opacity is
-           * only the handover between rings, and a spring settling towards
+           * only the handover between discs, and a spring settling towards
            * zero would hold the old one on screen at 2% for as long again.
            */
           transition={
             animate
-              ? { scale: RING, opacity: { duration: 0.24, ease: EASE } }
+              ? { scale: DISC, opacity: { duration: 0.22, ease: EASE } }
               : { duration: 0 }
           }
         />
       </AnimatePresence>
 
-      {counting ? (
-        /*
-         * Flipped and quartered so the circle's path — which starts at three
-         * o'clock and runs clockwise — starts at twelve and runs the other
-         * way. The drawn arc is then the time left, measured from twelve, and
-         * the gap grows clockwise from twelve the way a clock is read. The
-         * length rides a motion value the frame loop writes to, so the ring
-         * never re-renders the card.
-         */
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 28 28"
-          className={cn(
-            "pointer-events-none absolute inset-0 size-full",
-            "transition-opacity duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
-            held && "opacity-50"
-          )}
-          style={{ transform: "rotate(90deg) scaleX(-1)" }}
-        >
-          <motion.circle
-            cx={14}
-            cy={14}
-            r={13.25}
-            fill="none"
-            strokeWidth={1.5}
-            strokeLinecap="round"
-            vectorEffect="non-scaling-stroke"
-            className={stroke}
-            style={{ pathLength: progress }}
-          />
-        </svg>
-      ) : null}
+      <AnimatePresence initial={false}>
+        {counting ? (
+          /*
+           * Flipped and quartered so the circle's path — which starts at three
+           * o'clock and runs clockwise — starts at twelve and runs the other
+           * way. The drawn arc is then the time left, measured from twelve, and
+           * the gap grows clockwise from twelve the way a clock is read. The
+           * length rides a motion value the frame loop writes to, so the ring
+           * never re-renders the card.
+           */
+          <motion.span
+            key="dial"
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            initial={false}
+            animate={{ opacity: held ? 0.55 : 1 }}
+            exit={{ opacity: 0, scale: 1.12 }}
+            transition={animate ? { duration: 0.2, ease: EASE } : { duration: 0 }}
+          >
+            {/* A literal transform: Motion would compose the two the other way round. */}
+            <svg
+              viewBox={`0 0 ${scale.dial} ${scale.dial}`}
+              className="size-full"
+              style={{ transform: "rotate(90deg) scaleX(-1)" }}
+            >
+              <circle
+                cx={scale.dial / 2}
+                cy={scale.dial / 2}
+                r={radius}
+                fill="none"
+                strokeWidth={scale.weight}
+                className={track}
+              />
+              <motion.circle
+                cx={scale.dial / 2}
+                cy={scale.dial / 2}
+                r={radius}
+                fill="none"
+                strokeWidth={scale.weight}
+                strokeLinecap="round"
+                className={stroke}
+                style={{ pathLength: progress }}
+              />
+            </svg>
+          </motion.span>
+        ) : null}
+      </AnimatePresence>
 
       <Swap
         token={token}
@@ -718,7 +791,7 @@ function Marker({
         {counting ? (
           <span
             role="timer"
-            className={cn("font-mono leading-none font-medium tabular-nums", scale.count)}
+            className={cn("leading-none font-semibold tabular-nums", scale.count)}
           >
             <motion.span>{count}</motion.span>
             <span className="sr-only"> of {wholeSeconds} seconds left</span>
@@ -735,7 +808,7 @@ function Marker({
               {icon}
             </span>
           ) : (
-            <span aria-hidden="true" className={cn("rounded-full", scale.pip, pip)} />
+            <span aria-hidden="true" className={cn("rounded-full bg-current", scale.pip)} />
           )
         ) : (
           <OutcomeGlyph decision={phase} className={scale.glyph} />
@@ -771,7 +844,7 @@ function Command({
   const body = cn("font-mono leading-relaxed break-words whitespace-pre-wrap", scale.command)
 
   return (
-    <div className="relative overflow-hidden rounded-soft-sm" style={{ background: SURFACE }}>
+    <div className="relative overflow-hidden rounded-soft" style={{ background: SURFACE }}>
       <div
         className={cn(
           body,
@@ -797,7 +870,7 @@ function Command({
             transition={
               animate
                 ? {
-                    clipPath: { duration: 0.46, ease: EASE, delay: 0.1 },
+                    clipPath: { duration: 0.5, ease: EASE, delay: 0.1 },
                     opacity: { duration: 0.12, ease: EASE },
                   }
                 : { duration: 0 }
@@ -820,7 +893,7 @@ function Lines({ lines, prefix }: { lines: string[]; prefix?: string }) {
   return lines.map((line, index) => (
     <span key={index} className="block">
       {prefix ? (
-        <span aria-hidden="true" className="mr-2 inline-block opacity-50 select-none">
+        <span aria-hidden="true" className="mr-2 inline-block opacity-40 select-none">
           {prefix}
         </span>
       ) : null}
@@ -830,10 +903,10 @@ function Lines({ lines, prefix }: { lines: string[]; prefix?: string }) {
 }
 
 /**
- * One of the two answers. `whileTap` answers the pointer; `pressed` is the
- * same dip when the key did it, so the button is seen to go down either way.
- * The key is set after the label in mono, and takes its width whether or not
- * it is shown, so the button never changes size when the hints come on.
+ * One of the two answers, a capsule. `whileTap` answers the pointer;
+ * `pressed` is the same dip when the key did it, so the button is seen to go
+ * down either way. The key is set after the label, and takes its width whether
+ * or not it is shown, so the button never changes size when the hints come on.
  */
 function Action({
   onClick,
@@ -862,12 +935,12 @@ function Action({
       onClick={onClick}
       aria-keyshortcuts={keys.length > 0 ? keys.join(" ") : undefined}
       className={cn(
-        "inline-flex cursor-pointer items-center rounded-soft font-medium whitespace-nowrap",
+        "inline-flex cursor-pointer items-center rounded-full font-semibold tracking-[-0.01em] whitespace-nowrap",
         "transition-colors duration-[var(--duration-fast,140ms)] ease-[var(--ease-out-soft,ease-out)]",
-        "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className
       )}
-      animate={{ scale: animate && pressed ? 0.96 : 1 }}
+      animate={{ scale: animate && pressed ? 0.95 : 1 }}
       /*
        * Always declared, because Motion marks anything with a tap gesture as
        * focusable in the markup it renders on the server; a prop that came and
@@ -875,7 +948,7 @@ function Action({
        * buttons and fail to hydrate. Under the preference the dip is simply
        * nothing.
        */
-      whileTap={{ scale: animate ? 0.96 : 1 }}
+      whileTap={{ scale: animate ? 0.95 : 1 }}
       transition={animate ? PRESS : { duration: 0 }}
     >
       {children}
@@ -883,7 +956,7 @@ function Action({
         <span
           aria-hidden="true"
           className={cn(
-            "font-mono leading-none font-normal",
+            "leading-none font-medium tabular-nums",
             "transition-opacity duration-[var(--duration-base,200ms)] ease-[var(--ease-out-soft,ease-out)]",
             hint ? "opacity-55" : "opacity-0",
             hintClassName
@@ -899,10 +972,11 @@ function Action({
 /**
  * Swaps whatever it wraps whenever `token` changes, and stays perfectly still
  * otherwise — including on mount, which is what keeps a freshly rendered gate
- * from performing. The outgoing glyph leaves upward and the incoming one
- * arrives from below on a loose spring, so a tick landing has a fraction of
- * overshoot on it: the difference between a mark being placed and two images
- * being dissolved into each other.
+ * from performing. The way a symbol replaces another: the outgoing glyph
+ * shrinks and softens out of focus, the incoming one arrives from below on a
+ * loose spring, so a tick landing has a fraction of overshoot on it — the
+ * difference between a mark being placed and two images being dissolved into
+ * each other.
  */
 function Swap({
   token,
@@ -920,17 +994,23 @@ function Swap({
       <motion.span
         key={token}
         className={className}
-        initial={{ opacity: 0, scale: 0.5, y: 4 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.6, y: 3, filter: "blur(2px)" }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
         exit={{
           opacity: 0,
-          scale: 0.5,
-          y: -4,
+          scale: 0.6,
+          y: -3,
+          filter: "blur(2px)",
           transition: animate ? { duration: 0.12, ease: EASE } : { duration: 0 },
         }}
         transition={
           animate
-            ? { scale: GLYPH, y: GLYPH, opacity: { duration: 0.14, ease: EASE } }
+            ? {
+                scale: GLYPH,
+                y: GLYPH,
+                opacity: { duration: 0.16, ease: EASE },
+                filter: { duration: 0.2, ease: EASE },
+              }
             : { duration: 0 }
         }
       >
@@ -948,7 +1028,13 @@ function OutcomeGlyph({
   className?: string
 }) {
   const Icon = decision === "allow" ? Check : decision === "deny" ? X : Hourglass
-  return <Icon aria-hidden="true" className={cn("shrink-0", className)} />
+  return (
+    <Icon
+      aria-hidden="true"
+      strokeWidth={decision === "expire" ? 2.25 : 3}
+      className={cn("shrink-0", className)}
+    />
+  )
 }
 
 /**
@@ -1020,7 +1106,7 @@ function useCountdown(
   return { progress, count }
 }
 
-/** Seconds inside a 28px circle: whole seconds, or minutes past the point two digits fit. */
+/** Seconds inside the dial: whole seconds, or minutes past the point two digits fit. */
 function formatCount(seconds: number): string {
   const whole = Math.ceil(seconds)
   return whole >= 100 ? `${Math.ceil(whole / 60)}m` : String(whole)
@@ -1028,7 +1114,7 @@ function formatCount(seconds: number): string {
 
 /** What the hint beside a button shows for a key name. */
 function keyLabel(key: string): string {
-  if (key === "Escape") return "Esc"
+  if (key === "Escape") return "esc"
   if (key === "Enter") return "↵"
   if (key === " ") return "Space"
   if (key === "ArrowUp") return "↑"
