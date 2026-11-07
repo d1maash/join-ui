@@ -203,7 +203,7 @@ export default async function RunComponentPage({ params }: PageProps) {
             {/* ─── The window ───────────────────────────────────────────── */}
             <section aria-label={`${component.title}, live`}>
               <ComponentWindow
-                title={primary.target}
+                title={primary.name}
                 fullPreview={`/preview/${component.slug}`}
                 tabs={[
                   {
@@ -336,10 +336,15 @@ export default async function RunComponentPage({ params }: PageProps) {
             {/* ─── The reading column ───────────────────────────────────── */}
             <div className="mt-20 grid gap-16 md:mt-28 xl:grid-cols-[minmax(0,44rem)_minmax(0,1fr)]">
               <article className="run-doc flex min-w-0 flex-col gap-20 md:gap-24">
-                <section id="overview" aria-label="Overview" className="scroll-mt-32">
-                  <p className="text-[clamp(1.25rem,1.9vw,1.5rem)] leading-[1.45] tracking-[-0.016em] text-[#8b8b90] text-pretty">
-                    <span className="text-[#f5f5f7]">{lead}</span> {rest}
+                <section id="overview" aria-label="Overview" className="flex scroll-mt-32 flex-col gap-6">
+                  <p className="!text-[clamp(1.5rem,2.3vw,1.875rem)] !leading-[1.3] !tracking-[-0.02em] !text-[#f5f5f7] text-pretty">
+                    {lead}
                   </p>
+                  {rest ? (
+                    <p className="!text-[1.0625rem] !leading-[1.7] text-pretty">
+                      <Inline text={rest} />
+                    </p>
+                  ) : null}
                 </section>
 
                 <Section id="usage" title="Usage">
@@ -414,7 +419,7 @@ export default async function RunComponentPage({ params }: PageProps) {
                             ))}
                           </span>
                           <span className="text-[15px] leading-[1.6] text-[#8b8b90]">
-                            {entry.description}
+                            <Inline text={entry.description} />
                           </span>
                         </li>
                       ))}

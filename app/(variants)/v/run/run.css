@@ -762,6 +762,30 @@
   word-break: break-word;
 }
 
+/* The terminal's caret, waiting for you to press return. */
+.v-run .run-caret {
+  display: inline-block;
+  width: 0.52em;
+  height: 0.98em;
+  margin-left: 0.28em;
+  vertical-align: -0.14em;
+  border-radius: 1px;
+  background: var(--run-ink);
+  animation: run-blink 1.15s steps(1, end) infinite;
+}
+
+@keyframes run-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v-run .run-caret {
+    animation: none;
+  }
+}
+
 .v-run .run-seg {
   display: inline-flex;
   gap: 2px;

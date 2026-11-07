@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 
 import { cn } from "@/lib/utils"
 
@@ -43,6 +44,13 @@ export interface PlateFigureProps {
   /** Grid classes for the board and the label columns, by layout. */
   columns?: { board?: string; labels?: string; left?: string }
   autoplay?: boolean
+  /** Set above the right-hand labels — a plate title, for instance. */
+  labelsHeader?: React.ReactNode
+  /**
+   * A selector inside the stage to set the legend into on wide screens, when
+   * the scene leaves room for it beside the part it annotates.
+   */
+  legendSlot?: string
 }
 
 const reduceQuery = "(prefers-reduced-motion: reduce)"
@@ -51,6 +59,22 @@ function subscribeReduce(onChange: () => void) {
   const media = window.matchMedia(reduceQuery)
   media.addEventListener("change", onChange)
   return () => media.removeEventListener("change", onChange)
+}
+
+const wideQuery = "(min-width: 1024px)"
+
+function subscribeWide(onChange: () => void) {
+  const media = window.matchMedia(wideQuery)
+  media.addEventListener("change", onChange)
+  return () => media.removeEventListener("change", onChange)
+}
+
+function useWide() {
+  return React.useSyncExternalStore(
+    subscribeWide,
+    () => window.matchMedia(wideQuery).matches,
+    () => false
+  )
 }
 
 export function useReducedMotionPref() {
@@ -73,6 +97,8 @@ export function PlateFigure({
   stageClassName,
   columns,
   autoplay = true,
+  labelsHeader,
+  legendSlot,
 }: PlateFigureProps) {
   const figRef = React.useRef<HTMLElement>(null)
   const stageRef = React.useRef<HTMLDivElement>(null)
@@ -89,14 +115,17 @@ export function PlateFigure({
   const [walk, setWalk] = React.useState<number | null>(null)
   const [hover, setHover] = React.useState<number | null>(null)
   const active = hover ?? walk
+  const wide = useWide()
+  const [slot, setSlot] = React.useState<HTMLElement | null>(null)
+  const slotted = wide && slot !== null
 
   const sideOf = React.useCallback(
     (index: number) => {
-      if (layout === "below") return "below" as const
+      if (layout === "below" || slotted) return "below" as const
       if (layout === "split") return callouts[index]?.side ?? (index % 2 ? "right" : "left")
       return "right" as const
     },
-    [callouts, layout]
+    [callouts, layout, slotted]
   )
 
   const left = callouts
@@ -129,6 +158,10 @@ export function PlateFigure({
     if (!figure || !stage) return
 
     const measure = () => {
+      if (legendSlot && !slot) {
+        const found = stage.querySelector<HTMLElement>(legendSlot)
+        if (found) setSlot(found)
+      }
       const f = figure.getBoundingClientRect()
       const s = stage.getBoundingClientRect()
       callouts.forEach((callout, index) => {
@@ -221,7 +254,7 @@ export function PlateFigure({
       cancelAnimationFrame(frame)
       resize.disconnect()
     }
-  }, [callouts, inView, sideOf])
+  }, [callouts, inView, sideOf, legendSlot, slot])
 
   /* The walk: once inked, the orange steps through the parts in turn. */
   React.useEffect(() => {
@@ -238,7 +271,8 @@ export function PlateFigure({
     <ol
       className={cn(
         "flex flex-col gap-5",
-        side === "below" && "lg:grid lg:auto-cols-fr lg:grid-flow-col lg:gap-6",
+        side === "below" && !slotted && "lg:grid lg:auto-cols-fr lg:grid-flow-col lg:gap-6",
+        side === "below" && slotted && "lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-7",
         side === "left" && "lg:items-end lg:text-right"
       )}
     >

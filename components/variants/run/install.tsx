@@ -105,6 +105,7 @@ export function InstallLine({ items }: { items: Item[] }) {
             ))}
           </select>
         </label>
+        <span className="run-caret" aria-hidden="true" />
       </p>
 
       <div className="flex flex-wrap items-center gap-3">

@@ -86,7 +86,7 @@ export default function ToolTraceScene() {
   const open = at < 0 ? [] : [SCRIPT[Math.min(at, SCRIPT.length - 1)]?.step.id ?? ""]
 
   return (
-    <div ref={ref} className="w-full max-w-[520px]">
+    <div ref={ref} className="w-full max-w-[600px]">
       <ToolTrace
         label="Agent run"
         status={at >= SCRIPT.length ? "Done" : at < 0 ? "Queued" : "Running"}
@@ -96,7 +96,7 @@ export default function ToolTraceScene() {
         lineSpeed={150}
         announce={false}
         maxConsoleHeight="5.5rem"
-        className="h-[452px]"
+        className="h-[500px]"
         footer={
           <div className="flex items-center justify-between gap-3">
             <span className="text-[13px] text-muted-foreground tabular-nums">

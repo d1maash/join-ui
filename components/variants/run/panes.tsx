@@ -28,15 +28,26 @@ export function PickPane({
   runs,
   onGenerate,
   size,
+  cursor,
 }: {
   model: string
   onModel: (id: string) => void
   runs: AgentHiveRun[]
   onGenerate: (model: AgentHiveModel) => void
   size: PaneSize
+  /** A scripted pointer: which cell it rests on, or the action it presses. */
+  cursor?: { target: string; pressed: boolean } | null
 }) {
+  const host = React.useRef<HTMLDivElement>(null)
+  const [hand, setHand] = React.useState(false)
   return (
-    <div className="flex h-full w-full items-center justify-center px-6 py-5">
+    <div
+      ref={host}
+      className="relative flex h-full w-full items-center justify-center px-6 py-5"
+      onPointerEnter={() => setHand(true)}
+      onPointerLeave={() => setHand(false)}
+    >
+      {cursor && !hand ? <ScriptedCursor host={host} target={cursor.target} pressed={cursor.pressed} /> : null}
       <AgentHive
         label="Model"
         models={MODELS}
@@ -50,6 +61,86 @@ export function PickPane({
         className={cn("w-full", size === "sm" ? "max-w-[20rem]" : "max-w-[23rem]")}
       />
     </div>
+  )
+}
+
+/**
+ * The pointer a demo video would have. It goes to whatever the story is doing
+ * — the cell the selection lands on, then the action — so the reader sees the
+ * press instead of being told about it. It steps aside the moment a real
+ * pointer comes into the pane.
+ */
+function ScriptedCursor({
+  host,
+  target,
+  pressed,
+}: {
+  host: React.RefObject<HTMLDivElement | null>
+  target: string
+  pressed: boolean
+}) {
+  const [at, setAt] = React.useState<{ x: number; y: number } | null>(null)
+
+  React.useLayoutEffect(() => {
+    const root = host.current
+    if (!root) return
+    const measure = () => {
+      const node =
+        target === "generate"
+          ? Array.from(root.querySelectorAll<HTMLElement>("button:not([role=radio])")).find(
+              (button) => button.textContent?.trim() === "Generate"
+            )
+          : root.querySelector<HTMLElement>(`[role=radio][aria-label="${target}"]`)
+      if (!node) return
+      const box = root.getBoundingClientRect()
+      const rect = node.getBoundingClientRect()
+      const k = box.width / Math.max(1, root.offsetWidth)
+      setAt({
+        x: (rect.left + rect.width * 0.58 - box.left) / k,
+        y: (rect.top + rect.height * 0.62 - box.top) / k,
+      })
+    }
+    measure()
+    const timer = window.setTimeout(measure, 420)
+    return () => window.clearTimeout(timer)
+  }, [host, target])
+
+  if (!at) return null
+  return (
+    <motion.div
+      aria-hidden="true"
+      className="pointer-events-none absolute top-0 left-0 z-20"
+      initial={{ x: at.x + 40, y: at.y + 60, opacity: 0 }}
+      animate={{ x: at.x, y: at.y, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 140, damping: 22, mass: 0.9 }}
+    >
+      <motion.svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        className="drop-shadow-[0_2px_4px_rgb(0_0_0/0.5)]"
+        animate={pressed ? { scale: [1, 0.82, 1] } : { scale: 1 }}
+        transition={{ duration: 0.32, ease: "easeOut" }}
+        style={{ originX: 0.2, originY: 0.15 }}
+      >
+        <path
+          d="M5.5 3.2v15.9l4.1-3.9 2.6 6 2.6-1.1-2.6-5.9h5.7z"
+          fill="#fff"
+          stroke="#000"
+          strokeWidth="1.2"
+          strokeLinejoin="round"
+        />
+      </motion.svg>
+      {pressed ? (
+        <motion.span
+          key="ring"
+          className="absolute -top-3 -left-3 size-8 rounded-full border border-white/70"
+          initial={{ scale: 0.3, opacity: 0.9 }}
+          animate={{ scale: 1.6, opacity: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        />
+      ) : null}
+    </motion.div>
   )
 }
 

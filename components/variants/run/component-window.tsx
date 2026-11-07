@@ -96,11 +96,11 @@ export function ComponentWindow({
         <div className="flex items-center justify-end sm:w-[12rem]">
           <Link
             href={fullPreview}
-            className="run-btn run-btn--ghost run-btn--sm"
+            className="run-btn run-btn--ghost run-btn--sm run-btn--icon"
             aria-label="Open the full-page preview"
+            title="Full preview"
           >
             <Maximize2 aria-hidden="true" />
-            <span className="max-md:hidden">Full preview</span>
           </Link>
         </div>
       </div>

@@ -34,7 +34,7 @@ const OUTCOMES: Array<{
 }> = [
   { decision: "allow", keys: ["Y"], trigger: "allow" },
   { decision: "deny", keys: ["N", "Esc"], trigger: "deny" },
-  { decision: "expire", keys: ["0:00"], trigger: "nobody answered" },
+  { decision: "expire", keys: ["0:00"], trigger: "expire" },
 ]
 
 export default function ApprovalGateScene() {
@@ -76,7 +76,7 @@ export default function ApprovalGateScene() {
         const t = target.getBoundingClientRect()
         const tx = t.left - c.left - 10
         const ty = t.top - c.top + 34
-        const mid = sx + Math.max(28, (tx - sx) * 0.34)
+        const mid = sx + Math.min(28, (tx - sx) * 0.25)
         const r = Math.min(10, Math.abs(ty - sy) / 2)
         const dir = ty > sy ? 1 : -1
         const d =
@@ -86,8 +86,8 @@ export default function ApprovalGateScene() {
         path.setAttribute("d", d)
         head.setAttribute("d", `M${tx - 7} ${ty - 4.5} L${tx} ${ty} L${tx - 7} ${ty + 4.5}`)
         if (tag) {
-          tag.style.left = `${mid + 14}px`
-          tag.style.top = `${ty - 30}px`
+          tag.style.left = `${mid + 16}px`
+          tag.style.top = `${ty - 32}px`
           tag.style.width = `${Math.max(0, tx - mid - 20)}px`
         }
       })

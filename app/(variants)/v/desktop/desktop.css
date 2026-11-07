@@ -907,3 +907,396 @@
     display: none !important;
   }
 }
+
+/* ── A component app, maximised ────────────────────────────────────────── */
+
+.v-desktop .d-stage {
+  position: relative;
+  z-index: 2;
+}
+
+.v-desktop .d-appwin {
+  display: flex;
+  flex-direction: column;
+  transition: border-radius 420ms var(--d-ease);
+}
+
+@media (min-width: 768px) {
+  .v-desktop .d-stage {
+    position: fixed;
+    inset: calc(var(--d-menubar) + 12px) clamp(12px, 1.6vw, 28px) 64px;
+    transition: inset 420ms var(--d-ease);
+  }
+
+  .v-desktop .d-stage-full {
+    inset: var(--d-menubar) 0 0;
+  }
+
+  .v-desktop .d-stage-full .d-appwin {
+    border-radius: 0;
+  }
+
+  .v-desktop .d-appwin {
+    height: 100%;
+    max-width: 1640px;
+    margin: 0 auto;
+    border-radius: 20px;
+  }
+}
+
+.v-desktop .d-toolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  flex: none;
+  padding: 0 14px 0 12px;
+  border-bottom: 1px solid rgb(0 0 0 / 0.5);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.05);
+}
+
+.v-desktop .d-toolbar-seg {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 1099px) {
+  .v-desktop .d-toolbar-seg {
+    position: static;
+    transform: none;
+    margin-left: auto;
+  }
+  .v-desktop .d-toolbar .d-tb-prompt {
+    margin-left: 0;
+  }
+}
+
+.v-desktop .d-tb-prompt > button {
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--d-blue);
+  color: #fff;
+  box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.3);
+  font-weight: 500;
+}
+
+.v-desktop .d-tb-prompt > button:hover {
+  background: #2491ff;
+}
+
+.v-desktop .d-appbody {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* The source list: the one pane that stays glass. */
+.v-desktop .d-source {
+  width: 228px;
+  flex: none;
+  overflow-y: auto;
+  padding: 10px 10px 24px;
+  font-size: 13px;
+  background: rgb(255 255 255 / 0.035);
+  border-right: 1px solid rgb(0 0 0 / 0.45);
+  box-shadow: 1px 0 0 rgb(255 255 255 / 0.04);
+}
+
+.v-desktop .d-source-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 14px 8px 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--d-ink-3);
+}
+
+.v-desktop .d-source-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 7px;
+  color: var(--d-ink);
+  text-decoration: none;
+  cursor: default;
+}
+
+.v-desktop .d-source-row:hover {
+  background: rgb(255 255 255 / 0.07);
+}
+
+.v-desktop .d-source-row[aria-current="page"] {
+  background: var(--d-blue);
+  color: #fff;
+}
+
+.v-desktop .d-source-row:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Content and inspector share one scroller; the inspector rides along. */
+.v-desktop .d-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  outline: none;
+  background: var(--d-pane-solid);
+  scroll-padding-top: 16px;
+}
+
+@media (min-width: 1200px) {
+  .v-desktop .d-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 312px;
+    align-items: start;
+  }
+  .v-desktop .d-inspector {
+    position: sticky;
+    top: 0;
+    max-height: 100%;
+    min-height: 100%;
+    overflow-y: auto;
+    border-left: 1px solid var(--d-hair);
+  }
+}
+
+.v-desktop .d-content {
+  min-width: 0;
+  padding: 24px clamp(20px, 2.4vw, 36px) 40px;
+}
+
+.v-desktop .d-inspector {
+  padding: 22px 22px 32px;
+  background: #1e1e21;
+}
+
+.v-desktop .d-ins-head {
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--d-ink-3);
+}
+
+.v-desktop .d-info {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 7px 12px;
+  font-size: 13px;
+}
+
+.v-desktop .d-info dt {
+  color: var(--d-ink-3);
+  text-align: right;
+}
+
+.v-desktop .d-info dd {
+  min-width: 0;
+  color: var(--d-ink);
+}
+
+.v-desktop .d-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--d-ink-2);
+  background: rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.08);
+}
+
+/* The live demo's stage: neutral, a step below the pane, with room. */
+.v-desktop .d-canvas {
+  display: flex;
+  justify-content: center;
+  padding: clamp(24px, 3vw, 48px) clamp(16px, 3vw, 44px);
+  border-radius: 14px;
+  background: #0f0f11;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.06),
+    inset 0 1px 12px rgb(0 0 0 / 0.4);
+}
+
+.v-desktop .d-group {
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.035);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+.v-desktop .d-group-row {
+  display: flex;
+  gap: 14px;
+  padding: 18px 18px 20px;
+}
+
+.v-desktop .d-group-row + .d-group-row {
+  border-top: 1px solid var(--d-hair);
+}
+
+.v-desktop .d-step {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  margin-top: 1px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--d-ink);
+  background: rgb(255 255 255 / 0.1);
+}
+
+/* A Mac list view. */
+.v-desktop .d-list {
+  border-radius: 12px;
+  background: #19191c;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
+}
+
+.v-desktop .d-list thead th {
+  position: relative;
+  padding: 7px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--d-ink-3);
+  border-bottom: 1px solid var(--d-hair);
+}
+
+.v-desktop .d-list thead th + th::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 1px;
+  background: var(--d-hair);
+}
+
+.v-desktop .d-list tbody th,
+.v-desktop .d-list tbody td {
+  padding: 9px 12px;
+  vertical-align: top;
+}
+
+.v-desktop .d-list tbody tr:nth-child(even) {
+  background: rgb(255 255 255 / 0.03);
+}
+
+.v-desktop .d-related {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  color: var(--d-ink);
+  text-decoration: none;
+  background: rgb(255 255 255 / 0.035);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
+  transition: background-color 120ms;
+}
+
+.v-desktop .d-related:hover {
+  background: rgb(255 255 255 / 0.07);
+}
+
+.v-desktop .d-pn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--d-ink);
+  text-decoration: none;
+}
+
+.v-desktop .d-pn:hover {
+  background: rgb(255 255 255 / 0.06);
+}
+
+.v-desktop .d-back {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding-right: 6px;
+  font-size: 17px;
+  color: var(--d-blue-ink);
+  text-decoration: none;
+}
+
+.v-desktop .d-large-title {
+  padding: 4px 20px 0;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* The phone: the app is a page, not a window. */
+@media (max-width: 767px) {
+  .v-desktop .d-appwin {
+    background: #0d0d10;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .v-desktop .d-appwin::before {
+    display: none;
+  }
+  .v-desktop .d-appwin .d-win-clip {
+    overflow: visible;
+  }
+  .v-desktop .d-toolbar {
+    position: sticky;
+    top: 0;
+    flex-wrap: wrap;
+    height: auto;
+    gap: 6px;
+    padding: 6px 12px 10px 4px;
+    background: rgb(13 13 16 / 0.86);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+  .v-desktop .d-toolbar-seg {
+    order: 3;
+    width: calc(100% - 8px);
+    margin: 0 0 0 8px;
+    overflow-x: auto;
+  }
+  .v-desktop .d-toolbar-seg .d-seg-btn {
+    flex: 1;
+    padding: 0 8px;
+  }
+  .v-desktop .d-source {
+    display: none;
+  }
+  .v-desktop .d-content {
+    padding: 16px 16px 32px;
+  }
+  .v-desktop .d-canvas {
+    padding: 20px 12px;
+  }
+  .v-desktop .d-inspector {
+    border-top: 1px solid var(--d-hair);
+    padding-bottom: 96px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .v-desktop .d-source {
+    width: 196px;
+  }
+}

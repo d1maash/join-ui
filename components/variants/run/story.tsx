@@ -115,6 +115,10 @@ interface Phase {
   shipActive: number
 }
 
+/** Where the run's clock starts (Generate) and stops (production), on the story's scroll. */
+const RUN_FROM = 0.122
+const RUN_TO = 0.621
+
 const IDLE: Phase = { chapter: -1, pickBeat: 0, workBeat: 0, shipActive: 0 }
 
 function local(p: number, index: number) {
@@ -260,17 +264,25 @@ function WindowToolbar({
   tone,
   model,
   compact = false,
+  elapsed,
 }: {
   title: string
   tone: RunTone
   model: string
   compact?: boolean
+  /** The run's clock, as text — a motion value, so it ticks without a render. */
+  elapsed?: MotionValue<string>
 }) {
   const current = MODELS.find((entry) => entry.id === model)
   return (
     <>
       <div className="flex min-w-0 flex-1 items-baseline gap-2.5">
         <span className="truncate text-[13px] font-medium text-[#f5f5f7]">{title}</span>
+        {elapsed ? (
+          <motion.span className="shrink-0 font-mono text-[11px] text-[#8b8b90] tabular-nums">
+            {elapsed}
+          </motion.span>
+        ) : null}
         {compact ? null : (
           <span className="hidden truncate font-mono text-[11px] text-[#77777c] xl:inline">
             {BRANCH}
@@ -458,6 +470,10 @@ function PinnedStory({ m }: { m: StoryModel }) {
   const captions = useMotionValue(0)
   const castT = useMotionValue(0)
   const browserY = useMotionValue(0)
+  const elapsed = useTransform(scrollYProgress, (p) => {
+    const seconds = Math.round(clamp01((p - RUN_FROM) / (RUN_TO - RUN_FROM)) * 123)
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`
+  })
 
   const update = React.useCallback(() => {
     const g = geoRef.current
@@ -664,6 +680,7 @@ function PinnedStory({ m }: { m: StoryModel }) {
                     title={phase.pickBeat >= 3 ? TASK : "New run"}
                     tone={tone}
                     model={model}
+                    elapsed={phase.pickBeat >= 3 ? elapsed : undefined}
                   />
                 }
               >
@@ -674,6 +691,17 @@ function PinnedStory({ m }: { m: StoryModel }) {
                     runs={runs}
                     onGenerate={m.generate}
                     size={size}
+                    cursor={
+                      chapter === 0 && m.userModel === null
+                        ? {
+                            target:
+                              phase.pickBeat >= 3
+                                ? "generate"
+                                : (MODELS.find((entry) => entry.id === model)?.label ?? ""),
+                            pressed: phase.pickBeat >= 3,
+                          }
+                        : null
+                    }
                   />
                 </Layer>
                 <Layer show={chapter === 1 || chapter === 2} dim={asking}>
