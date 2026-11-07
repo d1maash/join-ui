@@ -190,6 +190,11 @@ export const previews: Record<string, () => ReactNode> = {
 }
 ```
 
+The catalog card gets a thumbnail too — a small configuration of the component
+at `components/previews/thumbnails/<slug>.tsx`, registered in
+`components/previews/thumbnails/registry.tsx`. It is still at rest and plays
+while the card is hovered, driven by `useBeats` from `./clock`.
+
 ### 3. Describe it
 
 One entry in `lib/registry/components.ts` — the single source of truth:

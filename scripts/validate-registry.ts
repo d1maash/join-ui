@@ -3,8 +3,9 @@
  *
  * Checks the metadata against a schema *and* the things a schema cannot see:
  * that every declared file exists on disk, that `related` points at real
- * components, that every component has a registered preview, and that the
- * generated registry items still parse as valid shadcn registry items.
+ * components, that every component has a registered preview and catalog
+ * thumbnail, and that the generated registry items still parse as valid shadcn
+ * registry items.
  *
  * Run with `pnpm registry:validate`. `pnpm registry:build` runs it first and
  * refuses to emit anything when it fails.
@@ -18,6 +19,9 @@ import { toRegistryItem } from "@/lib/registry/build"
 import { COMPONENT_CATEGORIES, COMPONENT_STATUSES } from "@/types/registry"
 
 const projectRoot = process.cwd()
+
+const PREVIEWS = "components/previews/registry.tsx"
+const THUMBNAILS = "components/previews/thumbnails/registry.tsx"
 
 const fileTypeSchema = z.enum([
   "registry:ui",
@@ -120,18 +124,15 @@ async function exists(relativePath: string): Promise<boolean> {
 }
 
 /**
- * The preview map is a Client Component module, so it cannot be imported here.
- * Reading the registered slugs out of its source keeps the check honest without
- * dragging React into the script.
+ * The preview and thumbnail maps are Client Component modules, so they cannot
+ * be imported here. Reading the registered slugs out of their source keeps the
+ * check honest without dragging React into the script.
  *
  * Entries are `"<slug>": () => <Demo />`, so the arrow is part of the pattern —
  * matching the key alone would also pick up slugs mentioned in comments.
  */
-async function getRegisteredPreviews(): Promise<Set<string>> {
-  const source = await fs.readFile(
-    path.join(projectRoot, "components", "previews", "registry.tsx"),
-    "utf8"
-  )
+async function getRegisteredSlugs(relativePath: string): Promise<Set<string>> {
+  const source = await fs.readFile(path.join(projectRoot, relativePath), "utf8")
   const slugs = new Set<string>()
   for (const match of source.matchAll(/"([a-z0-9-]+)":\s*\(\)\s*=>/g)) {
     const slug = match[1]
@@ -144,7 +145,8 @@ export async function validateRegistry(): Promise<string[]> {
   const issues: string[] = []
 
   const slugs = new Set<string>()
-  const previews = await getRegisteredPreviews()
+  const previews = await getRegisteredSlugs(PREVIEWS)
+  const thumbnails = await getRegisteredSlugs(THUMBNAILS)
 
   for (const component of components) {
     const label = component.slug || component.name || "<unnamed>"
@@ -168,7 +170,11 @@ export async function validateRegistry(): Promise<string[]> {
     }
 
     if (!previews.has(component.slug)) {
-      issues.push(`${label}: no preview registered in components/previews/registry.tsx`)
+      issues.push(`${label}: no preview registered in ${PREVIEWS}`)
+    }
+
+    if (!thumbnails.has(component.slug)) {
+      issues.push(`${label}: no thumbnail registered in ${THUMBNAILS}`)
     }
 
     if (component.installCommand.includes("undefined")) {
@@ -215,7 +221,7 @@ async function main(): Promise<void> {
   }
 
   console.log(
-    `✓ Registry valid — ${components.length} components, all files present, all previews registered`
+    `✓ Registry valid — ${components.length} components, all files present, all previews and thumbnails registered`
   )
 }
 
