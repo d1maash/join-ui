@@ -436,7 +436,7 @@ export default async function IndexComponentPage({ params }: PageProps) {
 
         {/* -------------------------------------------------- dependencies */}
         <IxSection id="dependencies" index={number("dependencies")} title="Dependencies">
-          <div className="grid border border-[var(--ix-line)] sm:grid-cols-2">
+          <div className="grid grid-cols-1 border border-[var(--ix-line)] sm:grid-cols-2">
             {[
               { title: "npm packages", items: component.dependencies, empty: "None — React and Tailwind only." },
               {

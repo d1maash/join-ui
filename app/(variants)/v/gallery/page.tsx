@@ -64,7 +64,7 @@ export default async function GalleryLanding() {
                 <StatusPill item={newest} className="h-6 px-2" />
                 <span>
                   {newest.title}
-                  <span className="hidden text-[var(--g-ink-4)] sm:inline">
+                  <span className="hidden text-white/45 sm:inline">
                     {" "}
                     · {formatDate(newest.touched)}
                   </span>

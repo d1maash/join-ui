@@ -101,7 +101,7 @@ export function HeroPreview({ nav, items }: { nav: GalleryNav; items: GalleryIte
         </div>
 
         <div className="g-fade-bottom flex min-w-0 flex-col gap-4 overflow-hidden p-4 sm:p-6">
-          <div className="flex items-end justify-between gap-4">
+          <div className="flex shrink-0 items-end justify-between gap-4">
             <div>
               <p className="text-[1.0625rem] font-semibold tracking-[-0.02em] text-[var(--g-ink)] sm:text-[1.25rem]">
                 Components
@@ -116,7 +116,7 @@ export function HeroPreview({ nav, items }: { nav: GalleryNav; items: GalleryIte
               <span className="px-2 py-1 text-[var(--g-ink-3)]">Updated</span>
             </div>
           </div>
-          <div className="flex gap-1.5 overflow-hidden">
+          <div className="flex shrink-0 gap-1.5 overflow-hidden">
             <span className="flex h-6 shrink-0 items-center gap-1 rounded-full bg-[var(--g-ink)] px-2.5 text-[0.6875rem] font-medium text-[var(--g-bg)]">
               All <span className="opacity-55">{nav.total}</span>
             </span>
@@ -129,7 +129,7 @@ export function HeroPreview({ nav, items }: { nav: GalleryNav; items: GalleryIte
               </span>
             ))}
           </div>
-          <ul className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4 lg:grid-cols-3">
+          <ul className="grid shrink-0 grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4 lg:grid-cols-3">
             {shown.map((item) => (
               <li key={item.slug} className="flex min-w-0 flex-col gap-2">
                 <div className="g-card-thumb aspect-[4/3] rounded-[0.7rem]">

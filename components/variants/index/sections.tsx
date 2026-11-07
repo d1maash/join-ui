@@ -27,7 +27,7 @@ export function IxSectionHead({
   action?: React.ReactNode
 }) {
   return (
-    <div className="ix-frame ix-cross ix-rule-b grid gap-6 px-5 py-8 md:grid-cols-[minmax(0,1fr)_minmax(0,25rem)] md:px-8 md:py-11 lg:px-10">
+    <div className="ix-frame ix-cross ix-rule-b grid grid-cols-1 gap-6 px-5 py-8 md:grid-cols-[minmax(0,1fr)_minmax(0,25rem)] md:px-8 md:py-11 lg:px-10">
       <div>
         <p className="ix-mono ix-fg-3">{index}</p>
         <h2

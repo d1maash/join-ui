@@ -20,7 +20,7 @@ export default function IndexCatalogPage() {
 
   return (
     <main id="main-content" className="flex-1">
-      <header className="ix-frame ix-rule-b grid gap-6 px-5 pt-8 pb-8 md:grid-cols-[minmax(0,1fr)_auto] md:px-8 md:pt-10 lg:px-10">
+      <header className="ix-frame ix-rule-b grid grid-cols-1 gap-6 px-5 pt-8 pb-8 md:grid-cols-[minmax(0,1fr)_auto] md:px-8 md:pt-10 lg:px-10">
         <div>
           <nav aria-label="Breadcrumb" className="ix-mono ix-fg-3 flex items-center gap-2">
             <Link href={ixHref("/")} className="hover:text-[var(--ix-fg)]">

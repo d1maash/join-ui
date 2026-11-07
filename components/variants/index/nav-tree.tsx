@@ -75,8 +75,11 @@ export function IxNavTree({
     const active = listRef.current?.querySelector<HTMLElement>('[aria-current="page"]')
     const scroller = listRef.current?.closest<HTMLElement>("[data-ix-scroller]")
     if (!active || !scroller) return
-    const top = active.offsetTop - scroller.clientHeight / 2
-    if (top > 0) scroller.scrollTop = top
+    // Only when the current page would otherwise be out of sight.
+    const box = active.getBoundingClientRect()
+    const frame = scroller.getBoundingClientRect()
+    if (box.bottom <= frame.bottom - 24 && box.top >= frame.top) return
+    scroller.scrollTop += box.top - frame.top - frame.height / 2
   }, [pathname, scrollActiveIntoView])
 
   const empty = docs.length === 0 && groups.length === 0

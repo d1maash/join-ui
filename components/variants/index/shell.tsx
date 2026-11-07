@@ -18,7 +18,7 @@ export function IxDocsShell({
   children: React.ReactNode
 }) {
   return (
-    <div className="ix-frame ix-rule-b grid flex-1 lg:grid-cols-[16rem_minmax(0,1fr)] xl:grid-cols-[16rem_minmax(0,1fr)_13.5rem]">
+    <div className="ix-frame ix-rule-b grid grid-cols-1 flex-1 lg:grid-cols-[16rem_minmax(0,1fr)] xl:grid-cols-[16rem_minmax(0,1fr)_13.5rem]">
       <aside className="hidden border-r border-[var(--ix-line)] lg:block">
         <nav
           aria-label="Library"

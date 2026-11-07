@@ -98,7 +98,7 @@ export default async function IndexHome() {
           ))}
         </dl>
 
-        <div className="grid lg:grid-cols-[minmax(0,1fr)_29rem] xl:grid-cols-[minmax(0,1fr)_33rem]">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_29rem] xl:grid-cols-[minmax(0,1fr)_33rem]">
           <div className="@container flex flex-col justify-between gap-12 px-5 pt-10 pb-8 md:px-8 md:pt-14 lg:border-r lg:border-[var(--ix-line)] lg:px-10 lg:pb-10">
             <h1
               id="ix-hero-title"
@@ -134,7 +134,7 @@ export default async function IndexHome() {
           ) : null}
         </div>
 
-        <div className="grid border-t border-[var(--ix-line)] lg:grid-cols-[minmax(0,1fr)_29rem] xl:grid-cols-[minmax(0,1fr)_33rem]">
+        <div className="grid grid-cols-1 border-t border-[var(--ix-line)] lg:grid-cols-[minmax(0,1fr)_29rem] xl:grid-cols-[minmax(0,1fr)_33rem]">
           <div className="flex items-center gap-4 px-5 py-4 md:px-8 lg:border-r lg:border-[var(--ix-line)] lg:px-10">
             <div className="min-w-0 flex-1">
               <p className="ix-mono ix-fg-3">Ask your agent</p>
@@ -238,7 +238,7 @@ export default async function IndexHome() {
           title="Install"
           description="Components install through the shadcn CLI from the @joinui registry, as source files you own — or as a brief your coding agent follows."
         />
-        <div className="ix-frame ix-rule-b grid lg:grid-cols-2">
+        <div className="ix-frame ix-rule-b grid grid-cols-1 lg:grid-cols-2">
           <div className="flex flex-col gap-8 px-5 py-8 md:px-8 lg:border-r lg:border-[var(--ix-line)] lg:px-10 lg:py-10">
             <Step n="01" title="Point the CLI at the registry" note="Once per project.">
               <IxCode

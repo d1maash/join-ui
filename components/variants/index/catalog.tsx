@@ -205,7 +205,7 @@ export function IxCatalog({
   )
 
   return (
-    <div className="ix-frame ix-rule-b grid lg:grid-cols-[15rem_minmax(0,1fr)]">
+    <div className="ix-frame ix-rule-b grid grid-cols-1 lg:grid-cols-[15rem_minmax(0,1fr)]">
       {/* Facet column — desktop */}
       <aside aria-label="Filters" className="hidden border-r border-[var(--ix-line)] lg:block">
         <div className="ix-scroll sticky top-14 max-h-[calc(100dvh-3.5rem)] overflow-y-auto pb-24">
@@ -312,7 +312,7 @@ export function IxCatalog({
 
           {sheet ? (
             <div id="ix-filter-sheet" className="border-t border-[var(--ix-line)] lg:hidden">
-              <div className="grid sm:grid-cols-2">{facets}</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2">{facets}</div>
             </div>
           ) : null}
         </div>

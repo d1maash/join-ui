@@ -19,9 +19,10 @@ import { cn } from "@/lib/utils"
 
 interface SearchContextValue {
   open: () => void
+  index: SearchEntry[]
 }
 
-const SearchContext = React.createContext<SearchContextValue>({ open: () => {} })
+const SearchContext = React.createContext<SearchContextValue>({ open: () => {}, index: [] })
 
 export function useSearch() {
   return React.useContext(SearchContext)
@@ -82,7 +83,7 @@ export function SearchProvider({
     }))
   }, [index, query])
 
-  const value = React.useMemo(() => ({ open: () => setOpen(true) }), [])
+  const value = React.useMemo(() => ({ open: () => setOpen(true), index }), [index])
 
   function onSelect(href: string) {
     setOpen(false)

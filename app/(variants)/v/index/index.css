@@ -980,7 +980,7 @@
   .v-index .ix-prose a:hover {
     text-decoration-color: var(--ix-accent);
   }
-  .v-index .ix-prose :not(pre) > code {
+  .v-index .ix-prose :not(pre) > code:not(.ix-cmd) {
     padding: 0.1em 0.35em;
     border: 1px solid var(--ix-line);
     border-radius: 3px;

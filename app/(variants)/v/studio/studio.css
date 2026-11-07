@@ -100,6 +100,7 @@
   --st-art: rgb(10 10 10 / 0.09);
   --st-art-strong: rgb(10 10 10 / 0.16);
   --st-art-ink: #0a0a0a;
+  --st-prose: #2f2f2f;
 
   color-scheme: light;
 }
@@ -181,6 +182,7 @@
   --st-art: rgb(255 255 255 / 0.08);
   --st-art-strong: rgb(255 255 255 / 0.15);
   --st-art-ink: #fafafa;
+  --st-prose: #d0d0d0;
 
   color-scheme: dark;
 }

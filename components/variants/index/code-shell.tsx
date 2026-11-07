@@ -41,7 +41,7 @@ export function IxCodeShell({
           {title ?? language ?? "code"}
         </span>
         <span className="ix-mono ix-fg-3 hidden sm:inline">
-          {language ? `${language} · ` : ""}
+          {title && language ? `${language} · ` : ""}
           {lines} {lines === 1 ? "line" : "lines"}
         </span>
         <IxCopyButton value={code} label="Copy code" copiedLabel="Copied" hideLabel />

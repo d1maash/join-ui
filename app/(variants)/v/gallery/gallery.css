@@ -484,33 +484,38 @@
    */
   .g-hero-band {
     position: absolute;
-    top: -38%;
-    left: -20%;
-    width: 140%;
-    height: 78%;
+    top: 0;
+    left: -22%;
+    width: 144%;
+    height: 40%;
     background: linear-gradient(
-      100deg,
-      transparent 8%,
-      rgb(28 66 210 / 0.0) 18%,
-      rgb(34 78 235 / 0.55) 38%,
-      rgb(70 110 255 / 0.32) 48%,
-      rgb(20 46 160 / 0.5) 60%,
-      transparent 82%
+      180deg,
+      transparent 0%,
+      rgb(30 66 214 / 0.38) 28%,
+      rgb(47 100 255 / 0.62) 50%,
+      rgb(30 66 214 / 0.34) 72%,
+      transparent 100%
     );
-    filter: blur(70px);
-    transform: rotate(-9deg);
-    opacity: 0.85;
-    animation: g-drift 28s ease-in-out infinite alternate;
+    mask-image: linear-gradient(90deg, transparent 4%, #000 30%, #000 66%, transparent 96%);
+    filter: blur(34px);
+    transform: rotate(-12deg);
+    transform-origin: 50% 50%;
+    animation: g-drift 30s ease-in-out infinite alternate;
   }
 
+  /* A thinner, brighter streak along the band: the sheen on the silk. */
   .g-hero-band-2 {
-    top: -8%;
-    left: 10%;
-    width: 110%;
-    height: 34%;
-    opacity: 0.35;
-    transform: rotate(-14deg);
-    animation-duration: 36s;
+    top: 9%;
+    height: 9%;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgb(150 180 255 / 0.4) 50%,
+      transparent
+    );
+    mask-image: linear-gradient(90deg, transparent 18%, #000 42%, #000 58%, transparent 84%);
+    filter: blur(18px);
+    animation-duration: 38s;
     animation-direction: alternate-reverse;
   }
 

@@ -73,7 +73,7 @@ export function IxPager({
 }) {
   if (!previous && !next) return null
   return (
-    <nav aria-label={label} className="grid sm:grid-cols-2">
+    <nav aria-label={label} className="grid grid-cols-1 sm:grid-cols-2">
       {previous ? (
         <Link
           href={previous.href}
