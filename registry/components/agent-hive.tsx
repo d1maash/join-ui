@@ -850,8 +850,7 @@ function useTravel(
 function useWake(
   centre: { cx: number; cy: number },
   travel: Travel,
-  reach: number,
-  still: boolean
+  reach: number
 ) {
   const raw = { x: travel.x, y: travel.y, speed: travel.speed }
 
@@ -890,7 +889,6 @@ function useWake(
    * them instead would render a different `style` on the client than the
    * server sent, since the preference is only known in the browser.
    */
-  void still
   return { x, y, scale }
 }
 
@@ -961,7 +959,7 @@ function Cell({
   onHover: (id: string | null) => void
   onFocusRing: (id: string | null) => void
 }) {
-  const wake = useWake(slot, travel, width * WAKE_REACH, still)
+  const wake = useWake(slot, travel, width * WAKE_REACH)
   const box = { left: slot.x, top: slot.y, width, height }
 
   /*
@@ -1088,7 +1086,7 @@ function CellGlyph({
   ringed: boolean
   delay: number
 }) {
-  const wake = useWake(slot, travel, width * WAKE_REACH, still)
+  const wake = useWake(slot, travel, width * WAKE_REACH)
 
   return (
     <motion.span
