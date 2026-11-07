@@ -66,6 +66,25 @@ const GLASS_LIT =
 /** Opacity of the wash of colour the comb is lit by. */
 const GLOW = "var(--agent-hive-glow, 0.45)"
 
+/**
+ * Light, at a strength that suits the room.
+ *
+ * Glass is lit from above in both themes, so the specular edge and the sheen
+ * are white in both — but the white that reads as a crisp rim on charcoal is
+ * lost on paper, and the white that reads on paper is a glare on charcoal. The
+ * alpha is therefore read off the page's own lightness: `onLight` on a white
+ * page, `onDark` on a black one, and in proportion between. A relative colour
+ * rather than a `dark:` variant, so a theme island still decides it; where the
+ * syntax is unsupported the declaration drops out and the glass is simply
+ * unlit.
+ */
+function light(onLight: number, onDark: number): string {
+  return `oklch(from var(--background) 1 0 0 / calc(${onDark} + l * ${round(onLight - onDark)}))`
+}
+
+/** The hairline that gives a cell its shape on a white card, where light cannot. */
+const RIM = "color-mix(in oklab, var(--foreground) 9%, transparent)"
+
 /** Spelled out beside the pip, so the state never rests on hue alone. */
 const RUN_LABEL: Record<AgentHiveRunState, string> = {
   queued: "Queued",
@@ -119,7 +138,7 @@ const HEX_ROUND = 0.12
 const SIZES = {
   sm: {
     frame: "max-w-xs",
-    pad: "p-4",
+    pad: "p-5",
     cell: 50,
     gapX: 7,
     gapY: 2.5,
@@ -128,15 +147,18 @@ const SIZES = {
     pip: 11,
     blur: 4,
     glyph: "size-[1.125rem]",
-    action: "h-9 px-6 text-[0.8125rem]",
-    name: "text-[0.8125rem]",
-    row: "gap-2.5 py-2.5",
-    prompt: "text-[0.75rem]",
-    status: "text-[0.6875rem]",
+    /* Apple's small capsule: 13pt semibold on a 36pt bar. */
+    action: "h-9 px-5 text-[0.8125rem]",
+    /* Subhead over caption. */
+    name: "text-[0.9375rem]",
+    description: "text-[0.75rem]",
+    row: "gap-3 py-2.5",
+    prompt: "text-[0.8125rem]",
+    status: "text-[0.75rem]",
   },
   md: {
     frame: "max-w-sm",
-    pad: "p-5",
+    pad: "p-6",
     cell: 62,
     gapX: 8,
     gapY: 3,
@@ -145,13 +167,20 @@ const SIZES = {
     pip: 13,
     blur: 6,
     glyph: "size-6",
-    action: "h-10 px-7 text-sm",
-    name: "text-sm",
+    /* A 44pt capsule — the touch target, at 15pt semibold. */
+    action: "h-11 px-7 text-[0.9375rem]",
+    /* Body over footnote. */
+    name: "text-[1.0625rem]",
+    description: "text-[0.8125rem]",
     row: "gap-3 py-3",
-    prompt: "text-[0.8125rem]",
-    status: "text-xs",
+    /* Subhead for the prompt, footnote for where it got to. */
+    prompt: "text-[0.9375rem]",
+    status: "text-[0.8125rem]",
   },
 } as const
+
+/** The gap between a run's pip and its prompt, in pixels — `gap-3`. */
+const ROW_GAP = 12
 
 /** Widths of the comb's rows. Three, four, three: a hexagon of hexagons. */
 const DEFAULT_COMB = [3, 4, 3]
@@ -168,7 +197,8 @@ const SPRING = { type: "spring", stiffness: 380, damping: 30, mass: 0.7 } as con
 const TRAVEL = { type: "spring", stiffness: 190, damping: 22, mass: 1 } as const
 /** The wake settling back. Slower than the tile, so the comb closes behind it. */
 const WAKE = { type: "spring", stiffness: 160, damping: 20, mass: 1 } as const
-const EASE = [0.22, 1, 0.36, 1] as const
+/** Apple's own curve: almost all of the travel early, then a long settle. */
+const EASE = [0.32, 0.72, 0, 1] as const
 
 /** Velocity, in px/s, at which the tile reaches its full stretch. */
 const LIQUID_AT = 1500
@@ -439,10 +469,12 @@ export function AgentHive({
         scale.frame,
         variant === "card" &&
           cn(
-            "overflow-hidden rounded-3xl border border-border bg-card",
-            /* The light catching the top edge of the panel. */
-            "before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px",
-            "before:bg-linear-to-r before:from-transparent before:via-foreground/15 before:to-transparent",
+            /*
+             * A sheet, not a box: a large continuous corner, a hairline only
+             * strong enough to hold the edge on a white page, and a wide, soft
+             * shadow rather than a rule to lift it off the one behind.
+             */
+            "overflow-hidden rounded-[2rem] border border-border/60 bg-card shadow-md",
             scale.pad
           ),
         className
@@ -450,23 +482,37 @@ export function AgentHive({
       aria-busy={running || undefined}
       {...props}
     >
+      {variant === "card" ? (
+        /* The light catching the top edge of the sheet — on charcoal, where it shows. */
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-10 top-0 h-px"
+          style={{
+            background: `linear-gradient(to right, transparent, ${light(0, 0.18)}, transparent)`,
+          }}
+        />
+      ) : null}
+
       {/*
        * The two paint servers the material is made of, declared once. `edge` is
-       * the lens: a lit top rim and a shaded bottom one, taken from the theme's
-       * own surface colours so it reads in both. `gloss` is the reflection on
-       * the tinted tile, which is white in every theme because it is light.
+       * the specular rim: light caught hard on the upper-left shoulder of each
+       * cell and faintly again on the lower-right, where it leaves the glass,
+       * with nothing across the middle — which is the difference between a lens
+       * and an outline. `gloss` is the same on the tinted tile, where it is
+       * white in every theme because the tile is lit, not frosted.
        */}
       <svg aria-hidden="true" className="pointer-events-none absolute size-0">
         <defs>
-          <linearGradient id={edge} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#fff" stopOpacity="0.55" />
-            <stop offset="42%" stopColor="#fff" stopOpacity="0.05" />
-            <stop offset="100%" stopColor="var(--background)" stopOpacity="0.55" />
+          <linearGradient id={edge} x1="0.1" y1="0" x2="0.9" y2="1">
+            <stop offset="0%" style={{ stopColor: light(1, 0.62) }} />
+            <stop offset="34%" style={{ stopColor: light(0.35, 0.1) }} />
+            <stop offset="62%" style={{ stopColor: light(0, 0) }} />
+            <stop offset="100%" style={{ stopColor: light(0.7, 0.26) }} />
           </linearGradient>
-          <linearGradient id={gloss} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#fff" stopOpacity="0.5" />
-            <stop offset="45%" stopColor="#fff" stopOpacity="0.04" />
-            <stop offset="100%" stopColor="#fff" stopOpacity="0.22" />
+          <linearGradient id={gloss} x1="0.1" y1="0" x2="0.9" y2="1">
+            <stop offset="0%" stopColor="oklch(1 0 0)" stopOpacity="0.7" />
+            <stop offset="45%" stopColor="oklch(1 0 0)" stopOpacity="0.06" />
+            <stop offset="100%" stopColor="oklch(1 0 0)" stopOpacity="0.3" />
           </linearGradient>
         </defs>
       </svg>
@@ -536,7 +582,7 @@ export function AgentHive({
                   key={index}
                   d={hexPath(layout.cellW, layout.cellH)}
                   transform={`translate(${slot.x} ${slot.y})`}
-                  fill="#fff"
+                  fill="white"
                 />
               ))}
             </mask>
