@@ -409,7 +409,45 @@
   }
 }
 
+/*
+ * The hero's panes settle in on load, one after another. On the glass element
+ * itself rather than a wrapper: an ancestor fading through opacity would
+ * become the backdrop's root for the length of the fade, and the pane would
+ * lose its blur until it finished.
+ */
+@keyframes g-float-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 56px, 0) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes g-type-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.35em, 0);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  .v-glass .g-float-in {
+    animation: g-float-in 1200ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+
+  .v-glass .g-type-in {
+    animation: g-type-in 1000ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+
   @supports (animation-timeline: view()) {
     .v-glass .g-rise {
       animation: g-rise linear both;
