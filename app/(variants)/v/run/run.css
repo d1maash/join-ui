@@ -595,7 +595,21 @@
 
   .v-run .run-hero {
     position: relative;
-    padding-top: clamp(7.5rem, 17vh, 10.5rem);
+    padding-top: clamp(6rem, 12.5vh, 7.5rem);
+  }
+
+  /* The chapter captions: 21–24px, the first clause in ink. */
+  .v-run .run-caption-text {
+    color: var(--run-ink-2);
+    font-size: clamp(1.3125rem, 1.6vw, 1.5rem);
+    line-height: 1.38;
+    letter-spacing: -0.018em;
+    text-wrap: pretty;
+  }
+
+  .v-run .run-caption-text strong {
+    color: var(--run-ink);
+    font-weight: 500;
   }
 
   .v-run .run-story {
@@ -691,8 +705,9 @@
   }
 
   .v-run .run-chapters {
-    display: flex;
-    gap: 1.125rem;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.75rem;
   }
 
   .v-run .run-chapter-tab {
@@ -700,10 +715,12 @@
     display: flex;
     cursor: pointer;
     flex-direction: column;
-    gap: 0.375rem;
-    padding-bottom: 0.625rem;
-    font-size: 0.8125rem;
-    color: var(--run-ink-4);
+    gap: 0.25rem;
+    padding-bottom: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: #5c5c61;
     transition: color 300ms var(--run-ease);
   }
 

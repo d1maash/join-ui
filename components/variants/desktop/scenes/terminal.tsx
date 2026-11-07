@@ -29,6 +29,11 @@ const FINISHED: Line[] = [LOGIN, { kind: "prompt", text: INSTALL }, ...installOu
 /* The script plays once per visit, not every time the desktop comes back. */
 let played = false
 
+/** Whether the install has already played this visit — the desktop puts its file back. */
+export function terminalPlayed() {
+  return played
+}
+
 /*
  * Terminal.
  *
@@ -84,20 +89,20 @@ export function TerminalScene({
       return () => timers.forEach(window.clearTimeout)
     }
 
-    let t = 700
+    let t = 450
     for (let i = 1; i <= INSTALL.length; i++) {
       /* A little unevenness, so it reads as typed rather than printed. */
-      t += INSTALL[i - 1] === " " ? 70 : 24 + ((i * 37) % 23)
+      t += INSTALL[i - 1] === " " ? 60 : 16 + ((i * 37) % 19)
       at(t, () => setTyped(INSTALL.slice(0, i)))
     }
-    t += 380
+    t += 300
     at(t, () => {
       setTyped("")
       setLines((current) => [...current, { kind: "prompt", text: INSTALL }])
     })
     const output = installOutput("approval-gate")
     output.forEach((line, index) => {
-      t += index === 2 ? 520 : 300
+      t += index === 2 ? 420 : 240
       at(t, () => setLines((current) => [...current, line]))
     })
     t += 200

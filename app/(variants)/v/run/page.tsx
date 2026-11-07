@@ -49,7 +49,7 @@ export default function RunHome() {
 
       <section
         aria-labelledby="run-install"
-        className="run-container pt-28 pb-12 md:pt-40 lg:pt-48"
+        className="run-container pt-14 pb-12 md:pt-20 lg:pt-24"
       >
         <h2 id="run-install" className="run-lede mb-10 max-w-[36rem] md:mb-14">
           <strong>Every part of that run is one command away.</strong> The CLI writes

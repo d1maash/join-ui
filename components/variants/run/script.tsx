@@ -1,4 +1,3 @@
-import type * as React from "react"
 import {
   BellRing,
   CandlestickChart,
@@ -51,7 +50,7 @@ export const CHAPTERS: Chapter[] = [
     slug: "agent-hive",
     component: "Agent Hive",
     lead: "Pick a model, press Generate.",
-    body: "The selection is one tinted tile that glides across a comb of glass, and lights the glass as it goes. The run types itself into the queue.",
+    body: "One tinted tile glides across a comb of glass, and the run types itself into the queue.",
   },
   {
     id: "work",
@@ -62,7 +61,7 @@ export const CHAPTERS: Chapter[] = [
     slug: "tool-trace",
     component: "Tool Trace",
     lead: "Watch the work, not a spinner.",
-    body: "Each tool call opens as it starts, writes what came back a line at a time, and folds away when it lands. Only the step in flight moves.",
+    body: "Each tool call opens as it starts, streams what came back, and folds away when it lands.",
   },
   {
     id: "ask",
@@ -73,7 +72,7 @@ export const CHAPTERS: Chapter[] = [
     slug: "approval-gate",
     component: "Approval Gate",
     lead: "It stops before anything it can’t take back.",
-    body: "A force-push rewrites history, so the agent asks first. This one is yours to answer.",
+    body: "A force-push rewrites history, so the agent asks first. This one is yours.",
   },
   {
     id: "ship",
@@ -84,7 +83,7 @@ export const CHAPTERS: Chapter[] = [
     slug: "status-timeline",
     component: "Status Timeline",
     lead: "Four steps to production, one at a time.",
-    body: "A step clears, the rail runs down to the next, and only then does it announce itself. Every colour comes with a glyph and a word.",
+    body: "The rail runs on only when a step clears, and every colour comes with a word.",
   },
   {
     id: "output",
@@ -95,7 +94,7 @@ export const CHAPTERS: Chapter[] = [
     slug: "glass-crest",
     component: "Glass Crest",
     lead: "And this is what it shipped.",
-    body: "A launch page set with Glass Crest, Carbon Copy and Focus Stack — the same files the CLI writes into your project.",
+    body: "Glass Crest, Carbon Copy and Focus Stack — the same files the CLI writes into your project.",
   },
 ]
 
@@ -347,4 +346,3 @@ export const FEATURES: FocusStackItem[] = [
   },
 ]
 
-export type Node = React.ReactNode

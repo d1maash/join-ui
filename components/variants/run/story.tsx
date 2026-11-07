@@ -5,22 +5,14 @@ import Link from "next/link"
 import {
   AnimatePresence,
   motion,
+  useInView,
   useMotionValue,
   useMotionValueEvent,
-  useInView,
   useScroll,
   useTransform,
   type MotionValue,
 } from "motion/react"
-import {
-  AppWindow,
-  ArrowRight,
-  Hexagon,
-  ListTree,
-  Rocket,
-  RotateCcw,
-  ShieldQuestion,
-} from "lucide-react"
+import { ArrowRight, RotateCcw } from "lucide-react"
 
 import { PROMPTS } from "@/components/previews/fixtures/agent-hive"
 import { renderThumb } from "@/components/previews/thumbs/registry"
@@ -29,6 +21,13 @@ import { variantHref } from "@/lib/variants"
 import type { AgentHiveModel, AgentHiveRun } from "@/registry/components/agent-hive"
 import type { ApprovalGateDecision } from "@/registry/components/approval-gate"
 
+import {
+  Composer,
+  Inspector,
+  WindowSidebar,
+  WindowToolbar,
+  type InspectorData,
+} from "./furniture"
 import {
   AskGate,
   MODELS,
@@ -58,7 +57,6 @@ import {
 import {
   setRunTone,
   TONE_COLOR,
-  TONE_LABEL,
   useMedia,
   useReducedMotionSafe,
   type RunTone,
@@ -67,6 +65,8 @@ import { MiniWindow, RunWindow } from "./window"
 
 const href = (path: string) => variantHref("run", path)
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value))
+const clamp = (min: number, value: number, max: number) =>
+  Math.min(max, Math.max(min, value))
 const easeInOut = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 const EASE = [0.32, 0.72, 0, 1] as const
@@ -109,17 +109,12 @@ function useStoryModel(): StoryModel {
     const id = `yours-${counter.current}`
     const prompt = PROMPTS[(counter.current - 1) % PROMPTS.length] ?? TASK
     setExtra((current) =>
-      [{ id, prompt, modelId: model.id, state: "working" as const }, ...current].slice(
-        0,
-        2
-      )
+      [{ id, prompt, modelId: model.id, state: "working" as const }, ...current].slice(0, 1)
     )
     timers.current.push(
       window.setTimeout(() => {
         setExtra((current) =>
-          current.map((run) =>
-            run.id === id ? { ...run, state: "done" as const } : run
-          )
+          current.map((run) => (run.id === id ? { ...run, state: "done" as const } : run))
         )
       }, 3200)
     )
@@ -134,16 +129,7 @@ function useStoryModel(): StoryModel {
     setAttempt((value) => value + 1)
   }, [])
 
-  return {
-    decision,
-    decide,
-    attempt,
-    askAgain,
-    userModel,
-    setUserModel,
-    extra,
-    generate,
-  }
+  return { decision, decide, attempt, askAgain, userModel, setUserModel, extra, generate }
 }
 
 /** Where the run stands. `chapter` is -1 before it starts and 5 for the cast. */
@@ -194,8 +180,7 @@ function samePhase(a: Phase, b: Phase) {
 }
 
 function toneFor(phase: Phase, decision: Decision): RunTone {
-  if (phase.chapter >= 4 || (phase.chapter === 3 && phase.shipActive >= 4))
-    return "shipped"
+  if (phase.chapter >= 4 || (phase.chapter === 3 && phase.shipActive >= 4)) return "shipped"
   if (phase.chapter === 2) {
     if (decision === null) return "waiting"
     if (decision === "deny") return "denied"
@@ -206,162 +191,46 @@ function toneFor(phase: Phase, decision: Decision): RunTone {
 }
 
 function modelFor(phase: Phase, userModel: string | null) {
-  return (
-    userModel ??
-    PICK_PATH[Math.min(phase.pickBeat, PICK_PATH.length - 1)] ??
-    CHOSEN_MODEL
-  )
+  return userModel ?? PICK_PATH[Math.min(phase.pickBeat, PICK_PATH.length - 1)] ?? CHOSEN_MODEL
 }
 
 function runsFor(phase: Phase, model: string, extra: AgentHiveRun[], shipped: boolean) {
   const runs: AgentHiveRun[] = [...extra]
   if (phase.pickBeat >= 3) {
-    runs.push({
-      id: "run-148",
-      prompt: TASK,
-      modelId: model,
-      state: shipped ? "done" : "working",
-    })
+    runs.push({ id: "run-148", prompt: TASK, modelId: model, state: shipped ? "done" : "working" })
   }
   runs.push(SEED)
   return runs
 }
 
-/* ─── Shared window furniture ─────────────────────────────────────────────── */
-
-const SIDEBAR: Array<{
-  id: ChapterId
-  label: string
-  icon: React.ComponentType<{ className?: string }>
-}> = [
-  { id: "pick", label: "Models", icon: Hexagon },
-  { id: "work", label: "Trace", icon: ListTree },
-  { id: "ask", label: "Approvals", icon: ShieldQuestion },
-  { id: "ship", label: "Deploys", icon: Rocket },
-  { id: "output", label: "Preview", icon: AppWindow },
-]
-
-const EARLIER = [
-  { title: "Fix the flaky checkout test", tone: "shipped" as const },
-  { title: "Move auth to the app router", tone: "shipped" as const },
-  { title: "Rename the Button variants", tone: "denied" as const },
-]
-
-function WindowSidebar({
-  active,
-  waiting,
-  onJump,
-}: {
-  active: number
-  waiting: boolean
-  onJump: (index: number) => void
-}) {
-  return (
-    <div className="flex min-h-0 flex-1 flex-col px-2.5 pb-3">
-      <div className="mb-4 flex items-center gap-2 px-2">
-        <span className="flex size-[18px] items-center justify-center rounded-[5px] bg-white/[0.1] text-[10px] font-semibold text-[#f5f5f7]">
-          L
-        </span>
-        <span className="text-[13px] font-medium text-[#f5f5f7]">lumen/web</span>
-      </div>
-
-      <p className="px-2 pb-1 text-[11px] font-medium text-[#77777c]">{RUN_NO}</p>
-      <ul className="flex flex-col gap-px">
-        {SIDEBAR.map((item, index) => {
-          const Icon = item.icon
-          return (
-            <li key={item.id}>
-              <button
-                type="button"
-                className="run-side-item"
-                aria-current={active === index ? "step" : undefined}
-                onClick={() => onJump(index)}
-                aria-label={`${item.label} — go to chapter ${index + 1}`}
-              >
-                <Icon />
-                <span className="flex-1">{item.label}</span>
-                {item.id === "ask" && waiting ? (
-                  <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ffb340]/15 px-1 text-[10px] font-semibold text-[#ffb340]">
-                    1
-                  </span>
-                ) : null}
-              </button>
-            </li>
-          )
-        })}
-      </ul>
-
-      <p className="mt-5 px-2 pb-1 text-[11px] font-medium text-[#77777c]">Earlier</p>
-      <ul className="flex flex-col gap-px" aria-label="Earlier runs">
-        {EARLIER.map((run) => (
-          <li
-            key={run.title}
-            className="flex h-[1.75rem] items-center gap-2 px-2 text-[12px] text-[#77777c]"
-          >
-            <span
-              aria-hidden="true"
-              className="size-1.5 shrink-0 rounded-full"
-              style={{ background: TONE_COLOR[run.tone] }}
-            />
-            <span className="truncate">{run.title}</span>
-            <span className="sr-only">
-              {run.tone === "shipped" ? "Shipped" : "Denied"}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
+/** What the composer holds: the task as it is typed, then as it runs. */
+function composerFor(phase: Phase) {
+  if (phase.chapter < 0) return { text: "", typing: false, running: false }
+  if (phase.pickBeat === 0) return { text: "Build the launch page", typing: true, running: false }
+  if (phase.pickBeat < 3) return { text: TASK, typing: phase.pickBeat === 1, running: false }
+  return { text: TASK, typing: false, running: phase.chapter < 4 }
 }
 
-function WindowToolbar({
-  title,
-  tone,
-  model,
-  compact = false,
-  elapsed,
-}: {
-  title: string
-  tone: RunTone
-  model: string
-  compact?: boolean
-  /** The run's clock, as text — a motion value, so it ticks without a render. */
-  elapsed?: MotionValue<string>
-}) {
-  const current = MODELS.find((entry) => entry.id === model)
-  return (
-    <>
-      <div className="flex min-w-0 flex-1 items-baseline gap-2.5">
-        <span className="truncate text-[13px] font-medium text-[#f5f5f7]">{title}</span>
-        {elapsed ? (
-          <motion.span className="shrink-0 font-mono text-[11px] text-[#8b8b90] tabular-nums">
-            {elapsed}
-          </motion.span>
-        ) : null}
-        {compact ? null : (
-          <span className="hidden truncate font-mono text-[11px] text-[#77777c] xl:inline">
-            {BRANCH}
-          </span>
-        )}
-      </div>
-      <span className="run-chip" data-tone={tone}>
-        <i aria-hidden="true" />
-        {TONE_LABEL[tone]}
-      </span>
-      {compact || !current ? null : (
-        <span className="flex h-[1.375rem] shrink-0 items-center gap-1.5 rounded-full bg-white/[0.06] pr-2.5 pl-1.5 text-[12px] text-[#c7c7cc]">
-          <span
-            className="size-3.5 text-[#c7c7cc] [&_svg]:size-full"
-            aria-hidden="true"
-          >
-            {current.icon}
-          </span>
-          {current.label}
-        </span>
-      )}
-    </>
-  )
+function inspectorFor(phase: Phase, decision: Decision, tone: RunTone, model: string): InspectorData {
+  const landed = Math.floor(phase.workBeat / 2)
+  const pushed = phase.chapter >= 3 || (phase.chapter === 2 && decision !== null)
+  const calls = landed + (pushed ? (decision === "allow" ? 1 : 2) : 0)
+  const safe = decision === "deny" || decision === "expire"
+  return {
+    tone,
+    model,
+    started: phase.pickBeat >= 3,
+    toolCalls: phase.pickBeat >= 3 ? String(calls) : "—",
+    files: phase.workBeat >= 6 ? "4 changed" : phase.workBeat >= 2 ? "1 read" : "—",
+    branch: safe && pushed ? `${BRANCH}-2` : BRANCH,
+    decision,
+    asking: phase.chapter === 2,
+    edited: phase.workBeat >= 6,
+    shipped: tone === "shipped",
+  }
 }
+
+/* ─── Captions ────────────────────────────────────────────────────────────── */
 
 /** The caption's links: the component that performed the chapter. */
 function CaptionLinks({ chapter }: { chapter: ChapterId }) {
@@ -380,10 +249,7 @@ function CaptionLinks({ chapter }: { chapter: ChapterId }) {
     <ul className="flex flex-wrap gap-x-5 gap-y-2">
       {links.map((link) => (
         <li key={link.slug}>
-          <Link
-            href={href(`/components/${link.slug}`)}
-            className="run-link text-[15px]"
-          >
+          <Link href={href(`/components/${link.slug}`)} className="run-link text-[15px]">
             {link.title}
             <ArrowRight aria-hidden="true" />
           </Link>
@@ -450,47 +316,63 @@ function AskControls({
 
 /* ─── The pinned stage (wide screens) ─────────────────────────────────────── */
 
+interface Rect {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
 interface Geometry {
   vw: number
   vh: number
   storyTop: number
   storyHeight: number
-  win: { x: number; y: number; w: number; h: number }
-  caption: { x: number; w: number }
-  centerDx: number
-  liftY: number
-  cast: {
-    headY: number
-    slots: Array<{ x: number; y: number; w: number; h: number }>
-    recap: { x: number; y: number; w: number; h: number }
-  }
-  compact: boolean
+  /** The window in the chapters, on the right. */
+  win: Rect
+  /** Where its left edge goes when the window swaps to the left. */
+  swapX: number
+  caption: { x: number; w: number; swapX: number }
+  /** The entry pose, relative to `win`: offset, and scale about the top centre. */
+  hero: { dx: number; dy: number; s: number }
+  cast: { headY: number; slots: Rect[]; recap: Rect; areaX: number }
+  size: PaneSize
+  inspector: boolean
 }
 
 const TOP = 56
 
-function measure(
-  vw: number,
-  vh: number,
-  storyTop: number,
-  storyHeight: number
-): Geometry {
-  const pad = Math.min(80, Math.max(16, vw * 0.055))
-  const areaW = Math.min(1280, vw - pad * 2)
-  const areaX = (vw - areaW) / 2
-  const capW = Math.min(352, areaW * 0.28)
-  const gap = Math.max(40, areaW * 0.045)
+function measure(vw: number, vh: number, storyTop: number, storyHeight: number): Geometry {
+  const left = clamp(24, vw * 0.045, 72)
+  const right = clamp(20, vw * 0.028, 40)
+  const capW = clamp(280, vw * 0.225, 340)
+  const gap = clamp(40, vw * 0.035, 56)
 
-  const maxH = Math.min(640, vh - TOP - 80)
-  let w = Math.min(980, areaW - capW - gap)
+  const maxH = Math.min(720, vh - TOP - 60)
+  let w = Math.min(1060, vw - left - capW - gap - right)
   let h = w / 1.5
   if (h > maxH) {
     h = maxH
     w = h * 1.5
   }
-  const x = areaX + areaW - w
-  const y = TOP + (vh - TOP - h) / 2 - 6
+  const x = vw - right - w
+  const y = TOP + (vh - TOP - h) / 2 - 4
 
+  /*
+   * The hero pose: about four-fifths of the screen wide, its top edge a little
+   * past the middle of the first screen and never above the end of the
+   * statement, tilted back. It is the same window, scaled about its top edge.
+   */
+  const heroW = Math.min(vw * 0.8, 1200)
+  const heroTop = Math.max(vh * 0.57, storyTop + 36)
+  const hero = {
+    dx: vw / 2 - (x + w / 2),
+    dy: heroTop - storyTop - y,
+    s: heroW / w,
+  }
+
+  const areaW = Math.min(1280, vw - left * 2)
+  const areaX = (vw - areaW) / 2
   const colGap = 20
   const colW = (areaW - colGap * 3) / 4
   const slotH = colW / 1.5
@@ -500,15 +382,12 @@ function measure(
   const total = headH + (slotH + labelH) * 2 + rowGap
   const headY = TOP + Math.max(20, (vh - TOP - 56 - total) / 2)
   const slotsTop = headY + headH
-  const rect = (col: number, row: number) => ({
+  const rect = (col: number, row: number): Rect => ({
     x: areaX + col * (colW + colGap),
     y: slotsTop + row * (slotH + labelH + rowGap),
     w: colW,
     h: slotH,
   })
-  const slots = CAST.map((_, index) =>
-    index < 4 ? rect(index, 0) : rect(index - 4, 1)
-  )
 
   return {
     vw,
@@ -516,13 +395,22 @@ function measure(
     storyTop,
     storyHeight,
     win: { x, y, w, h },
-    caption: { x: areaX, w: capW },
-    centerDx: vw / 2 - (x + w / 2),
-    liftY: -(y - TOP - 40),
-    cast: { headY, slots, recap: rect(3, 1) },
-    compact: h < 560,
+    swapX: right,
+    caption: { x: left, w: capW, swapX: vw - left - capW },
+    hero,
+    cast: {
+      headY,
+      slots: CAST.map((_, index) => (index < 4 ? rect(index, 0) : rect(index - 4, 1))),
+      recap: rect(3, 1),
+      areaX,
+    },
+    size: h < 620 ? "sm" : "md",
+    inspector: w >= 820,
   }
 }
+
+/** Order the cells arrive in after the window lands: nearest to it first. */
+const ARRIVAL = [0, 1, 2, 3, 0, 0, 2]
 
 function PinnedStory({ m }: { m: StoryModel }) {
   const sectionRef = React.useRef<HTMLElement>(null)
@@ -542,12 +430,19 @@ function PinnedStory({ m }: { m: StoryModel }) {
   const scale = useMotionValue(1)
   const rotateX = useMotionValue(0)
   const winOpacity = useMotionValue(1)
+  const bloom = useMotionValue(1)
   const captions = useMotionValue(0)
+  const captionX = useMotionValue(0)
   const castT = useMotionValue(0)
   const browserY = useMotionValue(0)
+
   const elapsed = useTransform(scrollYProgress, (p) => {
     const seconds = Math.round(clamp01((p - RUN_FROM) / (RUN_TO - RUN_FROM)) * 123)
     return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`
+  })
+  const tokens = useTransform(scrollYProgress, (p) => {
+    const count = clamp01((p - RUN_FROM) / (RUN_TO - RUN_FROM)) * 48_200 + 1_240
+    return count >= 10_000 ? `${(count / 1000).toFixed(1)}k` : count.toLocaleString("en-US")
   })
 
   const update = React.useCallback(() => {
@@ -556,30 +451,42 @@ function PinnedStory({ m }: { m: StoryModel }) {
     const sy = window.scrollY
     const p = scrollYProgress.get()
     const raw = clamp01(sy / Math.max(1, g.storyTop))
-    /* The window flattens as it rises, and only steps aside once it has arrived. */
-    const flat = easeInOut(raw)
-    const e = easeInOut(clamp01((raw - 0.35) / 0.65))
-    const c = clamp01((p - CAST_START) / (1 - CAST_START))
-    const k = easeInOut(clamp01(c / 0.5))
-    const target = g.cast.slots[4]!
+    /* It flattens and settles as it rises, and only steps aside once it has arrived. */
+    const settle = easeInOut(raw)
+    const aside = easeInOut(clamp01((raw - 0.35) / 0.65))
 
-    /* Scaled about its top centre, so the centres line up and the tops meet. */
+    /* Ship is told from the other side: the window crosses over and back. */
+    const ship = CHAPTERS[3]!
+    const side =
+      easeInOut(clamp01((p - (ship.start - 0.03)) / 0.05)) -
+      easeInOut(clamp01((p - (ship.end - 0.025)) / 0.05))
+
+    /* The pull-back: into its own cell, exactly, then the rest of the cast. */
+    const c = clamp01((p - CAST_START) / (1 - CAST_START))
+    const k = easeInOut(clamp01((c - 0.04) / 0.42))
+    const cell = g.cast.slots[4]!
+
+    const heroScale = 1 + (1 - settle) * (g.hero.s - 1)
     x.set(
-      (1 - e) * g.centerDx + k * (target.x + target.w / 2 - (g.win.x + g.win.w / 2))
+      (1 - aside) * g.hero.dx +
+        side * (g.swapX - g.win.x) +
+        k * (cell.x + cell.w / 2 - (g.win.x + g.win.w / 2))
     )
-    y.set((1 - flat) * g.liftY + k * (target.y - g.win.y))
-    rotateX.set((1 - flat) * 20)
-    scale.set(1 + k * (target.w / g.win.w - 1))
-    winOpacity.set(1 - clamp01((c - 0.44) / 0.12))
+    y.set((1 - settle) * g.hero.dy + k * (cell.y - g.win.y))
+    rotateX.set((1 - settle) * 18)
+    scale.set(heroScale * (1 + k * (cell.w / g.win.w - 1)))
+    winOpacity.set(1 - clamp01((c - 0.46) / 0.08))
+    bloom.set(1 - k)
     castT.set(c)
-    captions.set(clamp01((raw - 0.88) / 0.12) * (1 - clamp01(c / 0.14)))
+    captions.set(clamp01((raw - 0.88) / 0.12) * (1 - clamp01(c / 0.08)))
+    captionX.set(side * (g.caption.swapX - g.caption.x))
 
     const out = local(p, 4)
     browserY.set(-easeInOut(clamp01((out - 0.38) / 0.42)) * browserMax.current)
 
     const next = phaseAt(p)
     setPhase((current) => (samePhase(current, next) ? current : next))
-  }, [browserY, captions, castT, rotateX, scale, scrollYProgress, winOpacity, x, y])
+  }, [bloom, browserY, captionX, captions, castT, rotateX, scale, scrollYProgress, winOpacity, x, y])
 
   React.useLayoutEffect(() => {
     const stage = stageRef.current
@@ -616,7 +523,7 @@ function PinnedStory({ m }: { m: StoryModel }) {
     if (phase.chapter > 2 && decision === null) decide("expire")
   }, [phase.chapter, decision, decide])
 
-  const answer = decision === null ? null : m.attempt + ":" + decision
+  const answer = decision === null ? null : `${m.attempt}:${decision}`
   const [settledFor, setSettledFor] = React.useState<string | null>(null)
   React.useEffect(() => {
     if (answer === null) return
@@ -633,11 +540,9 @@ function PinnedStory({ m }: { m: StoryModel }) {
     if (!g) return
     const chapter = index >= 5 ? null : CHAPTERS[index]
     const at = chapter
-      ? chapter.start +
-        (chapter.end - chapter.start) * (chapter.id === "ask" ? 0.25 : 0.62)
-      : CAST_START + (1 - CAST_START) * 0.8
-    const top = g.storyTop + at * (g.storyHeight - g.vh)
-    window.scrollTo({ top, behavior: "smooth" })
+      ? chapter.start + (chapter.end - chapter.start) * (chapter.id === "ask" ? 0.25 : 0.62)
+      : CAST_START + (1 - CAST_START) * 0.85
+    window.scrollTo({ top: g.storyTop + at * (g.storyHeight - g.vh), behavior: "smooth" })
   }, [])
 
   const onBrowserMeasure = React.useCallback((max: number) => {
@@ -652,21 +557,21 @@ function PinnedStory({ m }: { m: StoryModel }) {
   const asking = chapter === 2
   /* Once answered, the sheet holds a beat for the outcome, then goes back up. */
   const sheetOpen = asking && !(answer !== null && settledFor === answer)
-  const size: PaneSize = geo?.compact ? "sm" : "md"
+  const size: PaneSize = geo?.size ?? "md"
   const steps = traceSteps(phase.workBeat, decision, asking)
   const active = CHAPTERS[Math.max(0, Math.min(4, chapter))]!
+  const composer = composerFor(phase)
 
   return (
     <section
       ref={sectionRef}
       aria-label="One agent run, start to finish"
       className="run-story"
-      style={{ height: "780vh" }}
+      style={{ height: "800vh" }}
     >
       <div ref={stageRef} className="run-stage">
         {geo ? (
           <>
-            {/* The captions — the left column of the stage. */}
             <motion.div
               className="run-captions flex flex-col justify-center"
               style={{
@@ -675,6 +580,7 @@ function PinnedStory({ m }: { m: StoryModel }) {
                 top: geo.win.y,
                 height: geo.win.h,
                 opacity: captions,
+                x: captionX,
               }}
               onFocus={() => {
                 if (chapter < 0) jump(0)
@@ -697,7 +603,7 @@ function PinnedStory({ m }: { m: StoryModel }) {
                 </ol>
               </nav>
 
-              <div className="relative mt-9 min-h-[15rem]">
+              <div className="relative mt-10 min-h-[17rem]">
                 <AnimatePresence initial={false}>
                   <motion.div
                     key={active.id}
@@ -707,22 +613,14 @@ function PinnedStory({ m }: { m: StoryModel }) {
                       y: 0,
                       transition: { duration: 0.45, delay: 0.08, ease: EASE },
                     }}
-                    exit={{
-                      opacity: 0,
-                      y: -8,
-                      transition: { duration: 0.2, ease: EASE },
-                    }}
-                    className="absolute inset-x-0 top-0 flex flex-col gap-6"
+                    exit={{ opacity: 0, y: -8, transition: { duration: 0.2, ease: EASE } }}
+                    className="absolute inset-x-0 top-0 flex flex-col gap-7"
                   >
-                    <p className="run-lede">
+                    <p className="run-caption-text">
                       <strong>{active.lead}</strong> {active.body}
                     </p>
                     {active.id === "ask" ? (
-                      <AskControls
-                        decision={decision}
-                        onDecide={decide}
-                        onAgain={m.askAgain}
-                      />
+                      <AskControls decision={decision} onDecide={decide} onAgain={m.askAgain} />
                     ) : null}
                     <CaptionLinks chapter={active.id} />
                   </motion.div>
@@ -730,7 +628,6 @@ function PinnedStory({ m }: { m: StoryModel }) {
               </div>
             </motion.div>
 
-            {/* The cast — revealed when the camera pulls back. */}
             <Cast
               geo={geo}
               castT={castT}
@@ -746,7 +643,7 @@ function PinnedStory({ m }: { m: StoryModel }) {
 
         {/*
           The window. Until the stage has been measured it is placed by CSS
-          alone, in the pose it enters in — centred, lifted, tilted back — so
+          alone, in the pose it enters in — wide, centred, tilted back — so
           the first paint already has it, and the measured layout takes over
           from the same place.
         */}
@@ -764,25 +661,29 @@ function PinnedStory({ m }: { m: StoryModel }) {
                   scale,
                   rotateX,
                   opacity: winOpacity,
-                  transformPerspective: 1800,
+                  transformPerspective: 2000,
                   transformOrigin: "50% 0%",
                 }
               : {
                   left: "50%",
-                  top: TOP + 40,
-                  width:
-                    "min(980px, calc(min(1280px, 100vw - 2 * var(--run-pad)) * 0.675), calc((100svh - 136px) * 1.5))",
+                  top: "calc(57svh - 26rem)",
+                  width: "min(80vw, 1200px)",
                   aspectRatio: "3 / 2",
-                  transform: "translateX(-50%) perspective(1800px) rotateX(20deg)",
+                  transform: "translateX(-50%) perspective(2000px) rotateX(18deg)",
                   transformOrigin: "50% 0%",
                 }
           }
         >
-          <div
+          <motion.div
             aria-hidden="true"
-            className="run-bloom"
-            style={{ "--run-state": TONE_COLOR[tone] } as React.CSSProperties}
-          />
+            className="pointer-events-none absolute inset-0"
+            style={{ opacity: bloom }}
+          >
+            <div
+              className="run-bloom"
+              style={{ "--run-state": TONE_COLOR[tone] } as React.CSSProperties}
+            />
+          </motion.div>
           <RunWindow
             label="Agent run"
             mode={chapter >= 4 ? "browser" : "app"}
@@ -795,13 +696,25 @@ function PinnedStory({ m }: { m: StoryModel }) {
                 onJump={jump}
               />
             }
-            toolbar={
-              <WindowToolbar
-                title={phase.pickBeat >= 3 ? TASK : "New run"}
-                tone={tone}
+            inspector={
+              geo === null || geo.inspector ? (
+                <Inspector
+                  data={inspectorFor(phase, decision, tone, model)}
+                  elapsed={elapsed}
+                  tokens={tokens}
+                />
+              ) : undefined
+            }
+            footer={
+              <Composer
+                text={composer.text}
+                typing={composer.typing}
+                running={composer.running}
                 model={model}
-                elapsed={phase.pickBeat >= 3 ? elapsed : undefined}
               />
+            }
+            toolbar={
+              <WindowToolbar title={phase.pickBeat >= 3 ? TASK : "New run"} tone={tone} />
             }
           >
             <Layer show={chapter <= 0}>
@@ -831,7 +744,7 @@ function PinnedStory({ m }: { m: StoryModel }) {
               {sheetOpen ? (
                 <motion.div
                   key="sheet"
-                  className="absolute top-0 left-1/2 z-10 w-[min(33rem,88%)]"
+                  className="absolute top-0 left-1/2 z-10 w-[min(32rem,92%)]"
                   initial={{ y: "-105%", x: "-50%" }}
                   animate={{ y: 0, x: "-50%" }}
                   exit={{ y: "-105%", x: "-50%" }}
@@ -904,8 +817,7 @@ function MeasuredOutput({
     const node = ref.current
     if (!node) return
     const inner = node.firstElementChild?.firstElementChild as HTMLElement | null
-    const read = () =>
-      onMeasure(Math.max(0, (inner?.scrollHeight ?? 0) - node.clientHeight))
+    const read = () => onMeasure(Math.max(0, (inner?.scrollHeight ?? 0) - node.clientHeight))
     read()
     const observer = new ResizeObserver(read)
     observer.observe(node)
@@ -941,9 +853,7 @@ function ChapterTab({
   onSelect: () => void
 }) {
   const chapter = CHAPTERS[index]!
-  const fill = useTransform(progress, [chapter.start, chapter.end], [0, 1], {
-    clamp: true,
-  })
+  const fill = useTransform(progress, [chapter.start, chapter.end], [0, 1], { clamp: true })
   return (
     <button
       type="button"
@@ -951,7 +861,7 @@ function ChapterTab({
       aria-current={current ? "step" : undefined}
       onClick={onSelect}
     >
-      <span className="run-index text-current opacity-80">{no}</span>
+      <span className="font-mono text-[12px] tabular-nums">{no}</span>
       <span>{name}</span>
       <i aria-hidden="true">
         <motion.b style={{ scaleX: fill }} />
@@ -1011,25 +921,16 @@ function Cast({
   model: string
   onFocus: () => void
 }) {
-  const head = useTransform(castT, [0.1, 0.32], [0, 1])
-  const headY = useTransform(castT, [0.1, 0.32], [12, 0])
-  const recap = useTransform(castT, [0.55, 0.75], [0, 1])
+  const head = useTransform(castT, [0.58, 0.74], [0, 1])
+  const headY = useTransform(castT, [0.58, 0.74], [10, 0])
+  const recap = useTransform(castT, [0.68, 0.84], [0, 1])
   const live = useTransform(castT, (value) => (value > 0.02 ? "auto" : "none"))
 
   return (
-    <motion.div
-      className="absolute inset-0"
-      style={{ pointerEvents: live }}
-      onFocus={onFocus}
-    >
+    <motion.div className="absolute inset-0" style={{ pointerEvents: live }} onFocus={onFocus}>
       <motion.h2
         className="absolute max-w-[40rem] text-[clamp(1.75rem,2.6vw,2.5rem)] leading-[1.12] font-semibold tracking-[-0.022em] text-balance"
-        style={{
-          left: geo.caption.x,
-          top: geo.cast.headY,
-          opacity: head,
-          y: headY,
-        }}
+        style={{ left: geo.cast.areaX, top: geo.cast.headY, opacity: head, y: headY }}
       >
         Seven components ran that.
         <br />
@@ -1074,39 +975,37 @@ function CastSlot({
 }: {
   index: number
   item: (typeof CAST)[number]
-  rect: { x: number; y: number; w: number; h: number }
+  rect: Rect
   castT: MotionValue<number>
   mounted: boolean
 }) {
-  /* The one the window lands in is there first, under it; the rest arrive around it. */
-  const isLanding = index === 4
-  const order = [0.2, 0.25, 0.3, 0.35, 0.3, 0.4, 0.45][index] ?? 0.3
-  const opacity = useTransform(
-    castT,
-    isLanding ? [0.38, 0.46] : [order, order + 0.16],
-    [0, 1]
-  )
-  const y = useTransform(castT, [order, order + 0.2], [isLanding ? 0 : 18, 0])
-  const label = useTransform(castT, [0.5, 0.66], [0, 1])
+  /*
+   * The cell the window lands in is lit underneath it a moment before it
+   * arrives, so the window fades into a frame that is already there. The rest
+   * only arrive once it has landed, nearest first, each from its own cell.
+   */
+  const landing = index === 4
+  const start = landing ? 0.4 : 0.52 + (ARRIVAL[index] ?? 0) * 0.035
+  const end = landing ? 0.48 : start + 0.14
+  const opacity = useTransform(castT, [start, end], [0, 1])
+  const scale = useTransform(castT, [start, end], [landing ? 1 : 0.94, 1])
+  const label = useTransform(castT, [0.6, 0.76], [0, 1])
   const barH = 28
-  const scale = Math.min(rect.w / 480, (rect.h - barH) / 320)
+  const thumbScale = Math.min(rect.w / 480, (rect.h - barH) / 320)
 
   return (
     <motion.li
       className="absolute"
-      style={{ left: rect.x, top: rect.y, width: rect.w, opacity, y }}
+      style={{ left: rect.x, top: rect.y, width: rect.w, opacity, scale }}
     >
-      <Link
-        href={href(`/components/${item.slug}`)}
-        className="group block rounded-[12px]"
-      >
+      <Link href={href(`/components/${item.slug}`)} className="group block rounded-[12px]">
         <MiniWindow title={item.title} className="w-full">
           <div
             className="run-thumb-frame dark bg-background"
             style={
               {
                 height: rect.h - barH,
-                "--run-thumb-scale": scale,
+                "--run-thumb-scale": thumbScale,
               } as React.CSSProperties
             }
             inert
@@ -1134,6 +1033,7 @@ function CastSlot({
 function StackedStory({ m, still }: { m: StoryModel; still: boolean }) {
   const [shipSeen, setShipSeen] = React.useState(false)
   const { decision, decide } = m
+  const onShip = React.useCallback(() => setShipSeen(true), [])
 
   React.useEffect(() => {
     if (shipSeen && decision === null) decide("expire")
@@ -1142,19 +1042,10 @@ function StackedStory({ m, still }: { m: StoryModel; still: boolean }) {
   React.useEffect(() => () => setRunTone("idle"), [])
 
   return (
-    <section
-      aria-label="One agent run, start to finish"
-      className="run-container pt-6 pb-8"
-    >
+    <section aria-label="One agent run, start to finish" className="run-container pt-6 pb-8">
       <div className="flex flex-col gap-20 md:gap-28">
         {CHAPTERS.map((chapter) => (
-          <StackedChapter
-            key={chapter.id}
-            id={chapter.id}
-            m={m}
-            still={still}
-            onShip={() => setShipSeen(true)}
-          />
+          <StackedChapter key={chapter.id} id={chapter.id} m={m} still={still} onShip={onShip} />
         ))}
       </div>
       <StackedCast decision={decision} />
@@ -1175,10 +1066,7 @@ function StackedChapter({
 }) {
   const chapter = CHAPTERS.find((entry) => entry.id === id)!
   const ref = React.useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 0.85", "end 0.55"],
-  })
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "end 0.55"] })
   const [t, setT] = React.useState(still ? 1 : 0)
   const wide = useMedia("(min-width: 768px)", false)
   const size: PaneSize = wide ? "md" : "sm"
@@ -1207,6 +1095,7 @@ function StackedChapter({
   const tone = toneFor(phase, decision)
   const model = modelFor(phase, m.userModel)
   const runs = runsFor(phase, model, m.extra, false)
+  const composer = composerFor(phase)
 
   React.useEffect(() => {
     if (!still && t > 0 && t < 1) setRunTone(tone)
@@ -1215,10 +1104,11 @@ function StackedChapter({
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-7 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-14">
       <div className="flex flex-col gap-5">
-        <p className="run-index">
-          {chapter.no} <span className="ml-1.5 text-[#f5f5f7]">{chapter.name}</span>
+        <p className="flex items-baseline gap-2 font-mono text-[12px] text-[#77777c]">
+          {chapter.no}
+          <span className="font-sans text-[15px] font-medium text-[#f5f5f7]">{chapter.name}</span>
         </p>
-        <p className="run-lede">
+        <p className="run-caption-text">
           <strong>{chapter.lead}</strong> {chapter.body}
         </p>
         {id === "ask" ? (
@@ -1231,12 +1121,7 @@ function StackedChapter({
         <div
           aria-hidden="true"
           className="run-bloom"
-          style={
-            {
-              "--run-state": TONE_COLOR[tone],
-              inset: "-15% -10%",
-            } as React.CSSProperties
-          }
+          style={{ "--run-state": TONE_COLOR[tone], inset: "-15% -10%" } as React.CSSProperties}
         />
         <RunWindow
           label={`${chapter.name}: ${chapter.component}`}
@@ -1247,14 +1132,23 @@ function StackedChapter({
             <WindowToolbar
               title={pickBeat >= 3 ? TASK : "New run"}
               tone={tone}
-              model={model}
               compact={!wide}
             />
           }
+          footer={
+            id === "pick" ? (
+              <Composer
+                text={composer.text}
+                typing={composer.typing}
+                running={composer.running}
+                model={model}
+              />
+            ) : undefined
+          }
           className={cn(
             "w-full",
-            id === "pick" && (wide ? "h-[34rem]" : "h-[30rem]"),
-            id === "ship" && (wide ? "h-[30rem]" : "")
+            id === "pick" && (wide ? "h-[36rem]" : "h-[34rem]"),
+            id === "ship" && (wide ? "h-[32rem]" : "")
           )}
         >
           {id === "pick" ? (
@@ -1270,12 +1164,7 @@ function StackedChapter({
             <WorkPane steps={traceSteps(phase.workBeat, decision, false)} size={size} />
           ) : null}
           {id === "ask" ? (
-            <div
-              className={cn(
-                "flex justify-center",
-                wide ? "px-8 pt-0 pb-8" : "px-3 pb-4"
-              )}
-            >
+            <div className={cn("flex justify-center", wide ? "px-8 pt-0 pb-8" : "px-3 pb-4")}>
               <div className="w-full max-w-[33rem]">
                 <AskGate
                   key={m.attempt}
@@ -1308,19 +1197,14 @@ function StackedCast({ decision }: { decision: Decision }) {
         Seven components ran that.{" "}
         <span className="text-[#8b8b90]">In order of appearance.</span>
       </h2>
-      <ul className="-mx-[var(--run-pad)] mt-8 flex snap-x snap-mandatory [scrollbar-width:none] gap-4 overflow-x-auto px-[var(--run-pad)] pb-4 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-0">
+      <ul className="-mx-[var(--run-pad)] mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[var(--run-pad)] pb-4 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-0">
         {CAST.map((item) => (
           <li key={item.slug} className="w-[17rem] shrink-0 snap-start lg:w-auto">
-            <Link
-              href={href(`/components/${item.slug}`)}
-              className="group block rounded-[12px]"
-            >
+            <Link href={href(`/components/${item.slug}`)} className="group block rounded-[12px]">
               <MiniWindow title={item.title}>
                 <div
                   className="run-thumb-frame dark bg-background"
-                  style={
-                    { height: 172, "--run-thumb-scale": 0.54 } as React.CSSProperties
-                  }
+                  style={{ height: 172, "--run-thumb-scale": 0.54 } as React.CSSProperties}
                   inert
                   aria-hidden="true"
                 >
@@ -1328,9 +1212,7 @@ function StackedCast({ decision }: { decision: Decision }) {
                 </div>
               </MiniWindow>
               <span className="mt-3 flex items-baseline justify-between gap-3">
-                <span className="text-[15px] font-medium text-[#f5f5f7]">
-                  {item.title}
-                </span>
+                <span className="text-[15px] font-medium text-[#f5f5f7]">{item.title}</span>
                 <span className="run-index">{item.chapter}</span>
               </span>
             </Link>
