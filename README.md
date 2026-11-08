@@ -241,8 +241,8 @@ pnpm registry:validate
 pnpm check
 ```
 
-Validation fails loudly if a declared file is missing, the preview is not
-registered, `related` points at an unknown slug, the slug is not kebab-case, or
+Validation fails loudly if a declared file is missing, the preview or thumbnail
+is not registered, `related` points at an unknown slug, the slug is not kebab-case, or
 the description exceeds 160 characters.
 
 ---
