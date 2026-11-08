@@ -437,6 +437,22 @@
     flex-direction: column;
     background-color: var(--ix-cell);
     isolation: isolate;
+    container-type: inline-size;
+  }
+
+  /* In a narrow cell the foot keeps the name and drops the button words — still read out, no longer drawn. */
+  @container (max-width: 21.5rem) {
+    .v-index .ix-cell .ix-btn-sm {
+      padding-inline: 0.4375rem;
+    }
+    .v-index .ix-cell .ix-btn-sm > span:not(.sr-only) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
   }
 
   /* The hover rule sits over the shared edges, so all four sides brighten. */

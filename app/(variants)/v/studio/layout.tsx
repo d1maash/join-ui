@@ -25,7 +25,7 @@ const mono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: `Studio — ${siteConfig.name}`,
+    default: "Studio",
     template: `%s — ${siteConfig.name}`,
   },
   description: siteConfig.description,

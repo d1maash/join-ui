@@ -36,7 +36,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const component = getComponent(slug)
-  if (!component) return { title: "Component not found", robots: { index: false } }
+  if (!component) return { title: "Page not found", robots: { index: false } }
   return {
     title: component.title,
     description: component.description,

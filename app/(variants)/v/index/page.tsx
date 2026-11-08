@@ -193,7 +193,7 @@ export default async function IndexHome() {
           index="01"
           id="ix-latest"
           title="Latest"
-          description="The newest components in the registry, running live. Hover for the cell, click for the page; Prompt and Copy work from right here."
+          description="The newest additions to the registry, running live. Open a cell for its page, or take its prompt or install command without leaving this one."
           action={
             <Link
               href={ixHref("/components")}
