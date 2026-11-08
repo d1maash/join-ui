@@ -64,66 +64,71 @@ carrying a single `dark:` utility.
   <Step title="Declare the dark tokens">
 
     Dark mode substitutes a second neutral ramp running the same direction:
-    `--grey-0` is the page in both themes and `--grey-1000` is the ink in both.
-    Because the semantic tokens are aliases onto that ramp, most of them need
-    no restating at all.
+    `--grey-0` is the end furthest from the ink in both themes and `--grey-1000`
+    is the ink in both. Because the semantic tokens are aliases onto that ramp,
+    most of them need no restating at all.
 
     ```css title="app/globals.css"
     .dark {
-      --grey-0: oklch(0.116 0.003 265); /* #050506 — the page */
-      --grey-50: oklch(0.181 0.003 265); /* #111213 — cards */
-      --grey-100: oklch(0.222 0.003 265); /* #1a1b1c — popovers */
-      --grey-200: oklch(0.262 0.003 265);
-      --grey-300: oklch(0.318 0.003 265); /* the hairline */
-      --grey-400: oklch(0.408 0.003 265);
-      --grey-500: oklch(0.525 0.003 265);
-      --grey-600: oklch(0.642 0.003 265);
-      --grey-700: oklch(0.755 0.003 265); /* #aeafb1 — secondary text */
-      --grey-800: oklch(0.852 0.002 265);
-      --grey-900: oklch(0.922 0.002 265);
-      --grey-1000: oklch(0.975 0.001 265); /* #f6f7f7 — the ink */
+      --grey-0: #000000; /* the page */
+      --grey-50: #1c1c1e; /* cards */
+      --grey-100: #2c2c2e; /* popovers */
+      --grey-200: #333336;
+      --grey-300: #3a3a3c; /* the hairline */
+      --grey-400: #48484a;
+      --grey-500: #636366;
+      --grey-600: #8e8e93;
+      --grey-700: #a1a1a6; /* secondary text */
+      --grey-800: #c7c7cc;
+      --grey-900: #e5e5ea;
+      --grey-1000: #f5f5f7; /* the ink */
 
       /* The aliases that genuinely differ between themes. */
+      --background: var(--grey-0);
       --card: var(--grey-50);
       --popover: var(--grey-100);
-      --subtle: var(--grey-50);
-      --selection: oklch(0.975 0.001 265 / 0.18);
+      --border-strong: var(--grey-500);
+      --secondary: var(--grey-100);
+      --code-bg: var(--grey-50);
+      --selection: rgb(64 156 255 / 0.3);
     }
     ```
 
-    Three things about this ramp are worth copying if you build your own.
+    These are Apple's dark system greys: true black for the page, the secondary
+    and tertiary system backgrounds — `#1c1c1e` and `#2c2c2e` — for cards and
+    popovers, `#3a3a3c` for the hairline, `#a1a1a6` for secondary text, and
+    `#f5f5f7` rather than white for the ink. Three things about the ramp are
+    worth copying if you build your own.
 
     It is not a mirror image of the light one. Dark surfaces need their low
     steps spaced further apart than a straight inversion would give, or the
     first three collapse into one flat block. Note how far the first three steps
-    are pushed here in particular: the page is nearly black, and a card that
-    only just clears it disappears.
+    are pushed here in particular: the page is black, and a card that only just
+    cleared it would disappear. `#1c1c1e` is a deliberate step up, not a nudge.
 
-    It goes to the picture, not to a colour. `--grey-0` resolves to `#050506`,
-    which is the exact black the masthead's one-bit plate is printed on. That is
-    the reason this ramp is neutral rather than the warm charcoal it used to be:
-    a photograph or a dither arrives on true black, and a page built on a
-    browner black turns every full-bleed image into a visible panel sitting on
-    top of the site instead of part of it. Pick the surface your imagery already
-    lives on, then build the scale up from there.
+    The floor is true black, and the spacing answers for it. The usual warning
+    about pure black — that a large surface of it reads as a hole and a hairline
+    on it reads as a scratch — is met by never leaving anything that has to read
+    as a surface on the floor itself: cards sit on `#1c1c1e`, and the hairline
+    at `#3a3a3c` sits clear of both the page and a card. The ink end stops short of
+    white, at `#f5f5f7`, because white text on black glows; that keeps the
+    headline pair at 19.3:1 rather than 21:1.
 
-    The usual warning about pure black — that a large surface of it reads as a
-    hole and a hairline on it reads as a scratch — is answered by the spacing
-    rather than by lifting the floor. The hairline sits at `#313234`, three full
-    steps clear of the page. The ink end still stops short of white, at
-    `#f6f7f7`, because that part of the problem is real in both directions.
+    It is one family across both themes. `#f5f5f7` is the page in the light
+    theme and the ink in the dark one, and both ramps carry the same faint cool
+    cast. The light theme is apple.com's band grey and the dark theme is Apple's
+    dark interface; those are two rooms in one building, not two products.
 
-    It carries a trace of chroma, not a hue. `0.003` across the whole scale, at
-    a blue angle — far too little to read as a tint, just enough that the greys
-    are not clinically dead. The light theme stays warm paper and the dark theme
-    is neutral; those are two rooms, not two products.
+    The surface aliases move because the rule they encode is directional, not
+    absolute: *a raised surface sits one step above the page*. In the light
+    theme the page is `--grey-100` and that step is upward into white; here the
+    page is `--grey-0` and the step is upward out of black, onto `--grey-50`. It
+    is the same cue in both, and with no accent colour in the shared tokens it
+    is what marks an active sidebar row, a selected tab and a card as raised.
 
-    The `--card` and `--popover` aliases flip because the rule they encode is
-    directional, not absolute: *a raised surface sits one step above the page*.
-    In the light theme that step is upward into white; here it is upward out of
-    the deepest charcoal. It is the same cue in both, and with no accent colour
-    in the system it is what marks an active sidebar row, a selected tab and a
-    card as raised.
+    The four hue families are restated in `.dark` as well — lighter inks, darker
+    tints, and dark-ink foregrounds on the solid fills. See
+    [the component palette](/docs/theming#the-component-palette).
 
   </Step>
 </Steps>
@@ -180,10 +185,12 @@ theme.
 Nothing re-renders and no stylesheet is swapped — the only thing that changed is
 which ancestor declares the variables, and every utility inside follows.
 
-This site used to put a sun/moon switch on each component preview to show it off.
-That is gone along with the light theme, but the mechanism is the reason the
-constraint above is worth keeping: a component that themes purely through tokens
-drops into your light project and works, with no `dark:` branch to get wrong.
+This is how the workbench on a component page flips its preview to the light
+theme while the rest of the site stays dark: the canvas becomes a `.light`
+island, and the component re-themes through its tokens. It is the same
+mechanism your light project relies on, and the reason the constraint above is
+worth keeping — a component that themes purely through tokens drops into a light
+page and works, with no `dark:` branch to get wrong.
 
 ## Building a theme toggle
 
@@ -229,5 +236,7 @@ level expect an app to follow it.
 - Check the low end of the ramp on a real screen. `--background`,
   `--subtle` and `--muted` sit within a few percent of each other in dark mode,
   and a panel that is legible on a laptop can vanish on a dim display.
-- Remember that separation is drawn, not lit. With no shadow tokens in the
-  system, a surface that needs to read as distinct needs a rule around it.
+- Remember that separation on black is drawn as much as it is lit. The dark
+  `--elevation-*` steps run far deeper than the light ones and still cannot
+  darken a black page much, so a surface that needs to read as distinct needs a
+  hairline around it as well as a shadow.

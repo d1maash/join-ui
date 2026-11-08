@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Inter, JetBrains_Mono } from "next/font/google"
+import { Geist, Geist_Mono } from "next/font/google"
 
 import { Toaster } from "@/components/ui/toaster"
 import { siteConfig } from "@/lib/site"
@@ -7,40 +7,22 @@ import { siteConfig } from "@/lib/site"
 import "./globals.css"
 
 /*
- * Inter for everything the reader reads.
+ * Geist for everything the reader reads, Geist Mono for anything a machine
+ * would also read — a listing, a prop name, a package command.
  *
- * Documentation is not a place for a typeface with a point of view. A reader
- * arrives mid-task, scans for the one paragraph they need and leaves; anything
- * the face does on its own — flared stems, a narrow cap height, an unusual `g`
- * — is friction spent on a page nobody is admiring. Inter was drawn for screen
- * UI at small sizes and disappears, which is the entire job.
- *
- * Both families are variable fonts, so the whole weight axis costs one file
- * per family. The scale is still used sparingly — 400 for prose, 500 for
- * interface labels, 600 for headings — but the restraint now lives in the
- * components rather than in what was downloaded.
+ * Both are variable fonts, so the whole weight axis costs one file per family.
+ * They are declared here rather than in the site layout so the full-screen
+ * preview and the root 404, which sit outside it, set in the same faces.
  */
-const sans = Inter({
+const sans = Geist({
   subsets: ["latin", "cyrillic"],
-  variable: "--font-inter",
+  variable: "--font-geist-sans",
   display: "swap",
-  /*
-   * The optical-size axis is what makes Inter stand in for San Francisco off
-   * Apple hardware: at display sizes it draws the tighter, higher-contrast
-   * "Display" cut, at body sizes the open "Text" cut, the same split SF makes.
-   */
-  axes: ["opsz"],
 })
 
-/*
- * JetBrains Mono for code, and for code only.
- *
- * It is a taller-x-height mono than most, which matters because the listings
- * on this site sit at 13px inside a card and have to stay readable there.
- */
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
+const mono = Geist_Mono({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-geist-mono",
   display: "swap",
 })
 
@@ -87,7 +69,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   // The site renders dark only, so there is one answer here rather than a pair.
-  themeColor: "#050506",
+  themeColor: "#09090b",
   colorScheme: "dark",
 }
 
@@ -98,13 +80,10 @@ export default function RootLayout({
     <html
       lang="en"
       /*
-       * The theme is a static class rather than something next-themes resolves
-       * on the client. There is nothing to switch to, so the dependency bought
-       * only a hydration mismatch and a blocking inline script — this renders
-       * correctly with JavaScript disabled and cannot flash.
-       *
-       * `colorScheme` is what tells the browser to draw form controls,
-       * scrollbars and the caret dark.
+       * The theme is a static class rather than something resolved on the
+       * client: there is nothing to switch to, so this renders correctly with
+       * JavaScript disabled and cannot flash. `colorScheme` tells the browser
+       * to draw form controls, scrollbars and the caret dark.
        */
       className={`dark ${sans.variable} ${mono.variable}`}
       style={{ colorScheme: "dark" }}

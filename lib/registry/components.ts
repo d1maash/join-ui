@@ -660,7 +660,6 @@ export function Example() {
       "Empty comb, the travelling tile and the rail are all `aria-hidden` and non-interactive; they are scenery, and they are not announced or focusable.",
       "The focus ring is drawn as a hexagon rather than left as the default outline, which would trace the cell's bounding box instead of the cell.",
       "The selected cell is the only filled one, so the selection survives a monochrome rendering, a forced-colours mode and any accent a consumer picks — fill and position carry it, not hue and not translucency.",
-      "The material is decoration and degrades to a flat tint: a browser without `backdrop-filter` still gets a frosted wash, a lit edge and the tinted tile, because none of the three depends on the blur.",
       "Run states never rest on hue alone — every row prints its status in words next to the pip, and `status` overrides that word rather than removing it.",
       'The queue is an ordered list with `aria-live="polite"`, so a run arriving or landing is announced without stealing focus.',
       "A typing row renders its prompt twice: the full text, invisible but in the accessibility tree, under the prefix typed so far, which is `aria-hidden`. Assistive technology reads the whole line at once instead of a character at a time, and the row reserves its final height so nothing below it reflows while it types.",

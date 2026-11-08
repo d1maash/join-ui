@@ -49,8 +49,8 @@ Requirements:
   `bg-info-soft text-info`). Round corners with the `rounded-soft-sm` /
   `rounded-soft` / `rounded-soft-lg` scale. Do not introduce new hard-coded
   colours, and do not reach for Tailwind's built-in palette (`gray-500`,
-  `red-600`) — the tokens are warm neutrals and low-chroma hues, so those land
-  next to but not on the system.
+  `red-600`) — the tokens are Apple's system greys and contrast-tuned system
+  hues, so those land next to but not on the system.
 - Preserve dark mode support. The component must theme through CSS variables
   only — do not add `dark:` variants, so it keeps working inside a forced-theme
   preview.
@@ -94,12 +94,15 @@ File: components/joinui/<component>.tsx
 ````
 
 That line is doing more work than it looks. The design system is token-driven:
-the neutrals carry a deliberate trace of warmth, emphasis in the chrome is ink
-rather than an accent, and the colour a component is allowed lives in four named
-families at low chroma. An agent reaching for `gray-500` — a pure neutral — or
-`red-600` — a saturated one — lands next to but not on those values, which is
-the single most common way an edit ends up visibly off. Naming the tokens
-explicitly is what keeps it on-system.
+the neutrals are Apple's system greys, with only the faintest cool cast,
+emphasis in the shared tokens is ink rather than an accent, and the colour a
+component is allowed lives in four named families, each a system colour tuned
+for contrast in both themes. An agent reaching for `gray-500` — a bluer grey,
+with roughly three times the chroma of any step on the ramp — or `red-600` — a
+different red from `--critical`, and the same one in both themes — lands next to
+but not on those values, which is the single
+most common way an edit ends up visibly off. Naming the tokens explicitly is
+what keeps it on-system.
 
 ## How it is generated
 

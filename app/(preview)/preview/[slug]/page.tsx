@@ -3,11 +3,11 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
-import { ComponentPreview } from "@/components/site/component-preview"
-import { LogoMark } from "@/components/site/logo"
-import { Button } from "@/components/ui/button"
+import { PreviewStage } from "@/components/site/preview-stage"
 import { allComponents, getComponent } from "@/lib/registry"
 import { siteConfig } from "@/lib/site"
+
+import "../../../(site)/site.css"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -34,8 +34,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 /**
  * Standalone preview.
  *
- * Rendered outside the site shell so the component gets the whole viewport —
- * useful for checking responsive behaviour and for embedding in an iframe.
+ * Rendered outside the site shell so the component gets the whole viewport.
+ * The component page's workbench loads this route in a frame for its tablet
+ * and phone widths, so the component's own responsive layout really engages —
+ * which is why the bar is slim and the stage is the site's own dark surface.
  */
 export default async function FullPreviewPage({ params }: PageProps) {
   const { slug } = await params
@@ -43,42 +45,23 @@ export default async function FullPreviewPage({ params }: PageProps) {
   if (!component) notFound()
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
-      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4">
-        <Button asChild variant="ghost" size="sm">
-          <Link href={`/components/${component.slug}`}>
-            <ArrowLeft aria-hidden="true" />
-            Back to docs
-          </Link>
-        </Button>
-
-        <div className="ml-auto flex items-center gap-3">
-          <span className="label-micro hidden text-muted-foreground sm:inline">
-            {component.title}
-          </span>
-          <Link
-            href="/"
-            aria-label={`${siteConfig.name} home`}
-            className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-          >
-            <LogoMark className="size-6" />
-          </Link>
-        </div>
+    <div className="join-site dark flex min-h-dvh flex-col">
+      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-[var(--g-line)] px-3 sm:px-4">
+        <Link href={`/components/${component.slug}`} className="g-btn g-btn-ghost">
+          <ArrowLeft aria-hidden="true" />
+          {component.title}
+        </Link>
+        <Link
+          href="/"
+          className="ml-auto text-[0.8125rem] font-medium text-[var(--g-ink-3)] transition-colors hover:text-[var(--g-ink)]"
+        >
+          {siteConfig.name}
+        </Link>
       </header>
 
-      <main id="main-content" className="flex flex-1 flex-col p-4 sm:p-6">
+      <main id="main-content" className="flex flex-1 flex-col">
         <h1 className="sr-only">{component.title} preview</h1>
-        {/*
-          A fade, not a rise: the demo inside the frame has an entrance of its
-          own, and this page exists to show it on a still stage.
-        */}
-        <ComponentPreview
-          slug={component.slug}
-          title={component.title}
-          fullPreviewLink={false}
-          minHeight="calc(100dvh - 8rem)"
-          className="reveal flex-1 [--reveal-y:0px]"
-        />
+        <PreviewStage slug={component.slug} />
       </main>
     </div>
   )

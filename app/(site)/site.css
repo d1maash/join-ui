@@ -1,0 +1,724 @@
+/*
+ * The Join UI site — a browsable showroom.
+ * ---------------------------------------------------------------------------
+ * Near-black zinc, one electric blue, hairlines instead of shadows. The chrome
+ * stays quiet so the live components are the brightest thing on any screen;
+ * the blue is spent on the one action that matters per view and on "you are
+ * here" in the rail, nowhere else.
+ *
+ * The tokens are declared on `:root:has(.join-site)` as well as on the variant
+ * root, so the search dialog, sheets and toasts (portalled to <body>) wear the
+ * same palette. Both declarations stay outside any layer: the global `.dark`
+ * rule is unlayered, and a layered rule can never beat it.
+ */
+
+:root:has(.join-site),
+.dark.join-site {
+  --g-bg: #09090b;
+  --g-bg-2: #0c0c0f;
+  --g-panel: #111114;
+  --g-panel-2: #161619;
+  --g-panel-3: #1c1c21;
+  --g-line: #1e1e23;
+  --g-line-2: #2a2a31;
+  --g-line-3: #3b3b44;
+  --g-ink: #fafafa;
+  --g-ink-2: #a1a1aa;
+  --g-ink-3: #77777f;
+  --g-ink-4: #56565e;
+  --g-accent: #2f6bff;
+  --g-accent-hover: #4b80ff;
+  --g-accent-ink: #8aaeff;
+  --g-accent-soft: rgb(47 107 255 / 0.13);
+  --g-accent-line: rgb(47 107 255 / 0.5);
+  --g-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --g-top: 3.5rem;
+  --g-rail: 15.5rem;
+
+  /* The shared tokens, so every imported block (code, tabs, props) matches. */
+  --background: var(--g-bg);
+  --foreground: var(--g-ink);
+  --card: var(--g-panel);
+  --card-foreground: var(--g-ink);
+  --popover: #121215;
+  --popover-foreground: var(--g-ink);
+  --muted: var(--g-panel-3);
+  --muted-foreground: var(--g-ink-2);
+  --subtle: var(--g-bg-2);
+  --border: var(--g-line);
+  --border-hover: var(--g-line-2);
+  --border-strong: var(--g-line-3);
+  --input: var(--g-line-2);
+  --ring: var(--g-accent-ink);
+  --secondary: var(--g-panel-2);
+  --code-bg: #0c0c0f;
+  --selection: rgb(47 107 255 / 0.38);
+  --grey-300: #2a2a31;
+}
+
+:root:has(.join-site) {
+  background: var(--g-bg);
+  color-scheme: dark;
+}
+
+:root:has(.join-site) body {
+  background: var(--g-bg);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.006em;
+}
+
+/*
+ * One sans and one mono everywhere, including the shared blocks that ask for
+ * `font-mono` and would otherwise get the platform's own monospace.
+ */
+.join-site,
+.join-site .font-sans,
+:root:has(.join-site) [cmdk-root] {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.join-site .font-mono,
+.join-site code,
+.join-site kbd,
+.join-site pre {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+.join-site {
+  min-height: 100dvh;
+  background: var(--g-bg);
+  color: var(--g-ink);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .join-site ::selection {
+    background: var(--selection);
+    color: #fff;
+  }
+
+  .join-site :focus-visible {
+    outline: 2px solid var(--g-accent-ink);
+    outline-offset: 2px;
+  }
+
+  .g-skip {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    transform: translateY(-200%);
+    border-radius: 0.5rem;
+    background: var(--g-ink);
+    color: var(--g-bg);
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .g-skip:focus-visible {
+    transform: none;
+  }
+
+  /* ---------------------------------------------------------------- type */
+
+  .g-display {
+    font-weight: 600;
+    letter-spacing: -0.048em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .g-title {
+    font-weight: 600;
+    letter-spacing: -0.028em;
+    line-height: 1.15;
+  }
+
+  .g-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: -0.004em;
+    color: var(--g-ink-3);
+  }
+
+  .g-num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ------------------------------------------------------------- buttons */
+
+  .g-btn {
+    display: inline-flex;
+    height: 2.25rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.625rem;
+    padding-inline: 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid var(--g-line-2);
+    background: var(--g-panel-2);
+    color: var(--g-ink);
+    transition:
+      background-color 140ms var(--g-ease),
+      border-color 140ms var(--g-ease),
+      color 140ms var(--g-ease),
+      transform 140ms var(--g-ease);
+  }
+
+  .g-btn:hover {
+    background: var(--g-panel-3);
+    border-color: var(--g-line-3);
+  }
+
+  .g-btn:active {
+    transform: translateY(1px);
+  }
+
+  .g-btn svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  .g-btn-lg {
+    height: 2.75rem;
+    border-radius: 0.75rem;
+    padding-inline: 1.125rem;
+    font-size: 0.9375rem;
+  }
+
+  .g-btn-accent {
+    border-color: transparent;
+    background: var(--g-accent);
+    color: #fff;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      0 1px 2px rgb(0 0 0 / 0.4);
+  }
+
+  .g-btn-accent:hover {
+    background: var(--g-accent-hover);
+    border-color: transparent;
+  }
+
+  .g-btn-ghost {
+    border-color: transparent;
+    background: transparent;
+    color: var(--g-ink-2);
+  }
+
+  .g-btn-ghost:hover {
+    background: var(--g-panel-3);
+    border-color: transparent;
+    color: var(--g-ink);
+  }
+
+  .g-icon-btn {
+    display: inline-flex;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    color: var(--g-ink-2);
+    transition:
+      background-color 140ms var(--g-ease),
+      color 140ms var(--g-ease);
+  }
+
+  .g-icon-btn:hover {
+    background: var(--g-panel-3);
+    color: var(--g-ink);
+  }
+
+  .g-icon-btn svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .g-icon-btn:disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /*
+   * The shared CopyPromptButton / CopyButton read `--primary` for a filled
+   * button. Inside `.g-accent-scope` that resolves to the blue, so the one
+   * primary action on a page can be the shared component, untouched.
+   */
+  .g-accent-scope {
+    --primary: var(--g-accent);
+    --primary-hover: var(--g-accent-hover);
+    --primary-foreground: #fff;
+    display: contents;
+  }
+
+  /* ---------------------------------------------------------------- bits */
+
+  .g-kbd {
+    display: inline-flex;
+    height: 1.25rem;
+    min-width: 1.25rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.3125rem;
+    border: 1px solid var(--g-line-2);
+    background: var(--g-panel-2);
+    padding-inline: 0.3125rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--g-ink-3);
+  }
+
+  /* A keycap you could press: a lit top edge and a deeper base. */
+  .g-keycap {
+    display: inline-flex;
+    height: 1.75rem;
+    min-width: 1.75rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.4375rem;
+    border: 1px solid var(--g-line-3);
+    border-bottom-width: 3px;
+    background: linear-gradient(to bottom, #232329, #18181c);
+    padding-inline: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--g-ink);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
+    white-space: nowrap;
+  }
+
+  .g-pill {
+    display: inline-flex;
+    height: 1.25rem;
+    align-items: center;
+    gap: 0.3125rem;
+    border-radius: 999px;
+    padding-inline: 0.4375rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid var(--g-line-2);
+    color: var(--g-ink-2);
+  }
+
+  .g-pill-new {
+    border-color: var(--g-accent-line);
+    background: var(--g-accent-soft);
+    color: var(--g-accent-ink);
+  }
+
+  .g-pill-updated::before {
+    content: "";
+    width: 0.3125rem;
+    height: 0.3125rem;
+    border-radius: 999px;
+    background: var(--g-ink-2);
+  }
+
+  .g-chip {
+    display: inline-flex;
+    height: 2rem;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 999px;
+    border: 1px solid var(--g-line-2);
+    padding-inline: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--g-ink-2);
+    white-space: nowrap;
+    transition:
+      background-color 140ms var(--g-ease),
+      border-color 140ms var(--g-ease),
+      color 140ms var(--g-ease);
+  }
+
+  .g-chip:hover {
+    border-color: var(--g-line-3);
+    color: var(--g-ink);
+  }
+
+  .g-chip[aria-pressed="true"],
+  .g-chip[aria-current="true"] {
+    border-color: var(--g-ink);
+    background: var(--g-ink);
+    color: var(--g-bg);
+  }
+
+  .g-chip .g-chip-count {
+    font-variant-numeric: tabular-nums;
+    color: var(--g-ink-4);
+  }
+
+  .g-chip[aria-pressed="true"] .g-chip-count,
+  .g-chip[aria-current="true"] .g-chip-count {
+    color: rgb(9 9 11 / 0.55);
+  }
+
+  /* --------------------------------------------------------------- cards */
+
+  .g-card-thumb {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.875rem;
+    border: 1px solid var(--g-line);
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgb(255 255 255 / 0.035), transparent 70%),
+      var(--g-panel);
+    transition: border-color 200ms var(--g-ease);
+  }
+
+  .g-card:hover .g-card-thumb,
+  .g-card:focus-within .g-card-thumb {
+    border-color: var(--g-line-3);
+  }
+
+  .g-card-actions {
+    opacity: 0;
+    transform: translateY(-2px);
+    transition:
+      opacity 160ms var(--g-ease),
+      transform 160ms var(--g-ease);
+  }
+
+  .g-card:hover .g-card-actions,
+  .g-card:focus-within .g-card-actions {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (hover: none) {
+    .g-card-actions {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .g-card-title {
+    transition: color 140ms var(--g-ease);
+  }
+
+  /* The link is stretched over the whole card, so the card wears its ring. */
+  .g-card:has(.g-card-link:focus-visible) .g-card-thumb {
+    outline: 2px solid var(--g-accent-ink);
+    outline-offset: 3px;
+  }
+
+  .g-card:hover .g-card-title {
+    color: #fff;
+  }
+
+  /* The placeholder a lazy thumbnail shows until it mounts. */
+  .g-thumb-wait {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .g-thumb-wait::before {
+    content: "";
+    width: 38%;
+    height: 34%;
+    border-radius: 0.75rem;
+    border: 1px dashed var(--g-line-2);
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgb(255 255 255 / 0.035) 50%,
+      transparent 80%
+    );
+    background-size: 220% 100%;
+    animation: g-shimmer 1.6s linear infinite;
+  }
+
+  @keyframes g-shimmer {
+    from {
+      background-position: 120% 0;
+    }
+    to {
+      background-position: -120% 0;
+    }
+  }
+
+  /* ---------------------------------------------------------------- rows */
+
+  .g-scroller {
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+  }
+
+  .g-scroller::-webkit-scrollbar {
+    display: none;
+  }
+
+  .g-scroller > * {
+    scroll-snap-align: start;
+  }
+
+  .g-fade-x {
+    mask-image: linear-gradient(to right, #000 calc(100% - 3rem), transparent);
+  }
+
+  /* ---------------------------------------------------------------- hero */
+
+  .g-hero-backdrop {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /*
+   * The one band of light — the only colour on the landing that is not a
+   * component. It is drawn as cloth by <HeroLight>, on a canvas that covers
+   * the top of the hero and fades to the page colour on its own before its
+   * bottom edge.
+   */
+  .g-hero-light {
+    position: absolute;
+    inset: 0 0 auto;
+    width: 100%;
+    height: min(100%, 64rem);
+  }
+
+  /*
+   * Its stand-in where WebGL is not available: a long, soft diagonal of the
+   * accent, drifting a few percent over half a minute.
+   */
+  .g-hero-band {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: -22%;
+    width: 144%;
+    height: 40%;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgb(30 66 214 / 0.38) 28%,
+      rgb(47 100 255 / 0.62) 50%,
+      rgb(30 66 214 / 0.34) 72%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 4%,
+      #000 30%,
+      #000 66%,
+      transparent 96%
+    );
+    filter: blur(34px);
+    transform: rotate(-12deg);
+    transform-origin: 50% 50%;
+    animation: g-drift 30s ease-in-out infinite alternate;
+  }
+
+  /* A thinner, brighter streak along the band: the sheen on the silk. */
+  .g-hero-band-2 {
+    top: 9%;
+    height: 9%;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgb(150 180 255 / 0.4) 50%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 18%,
+      #000 42%,
+      #000 58%,
+      transparent 84%
+    );
+    filter: blur(18px);
+    animation-duration: 38s;
+    animation-direction: alternate-reverse;
+  }
+
+  .g-hero-backdrop:has(> .g-hero-light[data-fallback]) .g-hero-band {
+    display: block;
+  }
+
+  @keyframes g-drift {
+    from {
+      translate: -3% 0;
+    }
+    to {
+      translate: 3% 2%;
+    }
+  }
+
+  .g-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.22;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .g-hero-fade {
+    position: absolute;
+    inset: auto 0 0;
+    height: 55%;
+    background: linear-gradient(to bottom, transparent, var(--g-bg) 85%);
+  }
+
+  /* The bezel around the framed app preview. */
+  .g-bezel {
+    border-radius: 1.75rem;
+    padding: 0.625rem;
+    background: linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 0.07),
+      rgb(255 255 255 / 0.015)
+    );
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.08),
+      0 40px 120px -40px rgb(0 0 0 / 0.9);
+  }
+
+  .g-bezel-window {
+    overflow: hidden;
+    border-radius: 1.25rem;
+    border: 1px solid var(--g-line-2);
+    background: var(--g-bg);
+  }
+
+  .g-fade-bottom {
+    mask-image: linear-gradient(to bottom, #000 62%, transparent 98%);
+  }
+
+  /* ------------------------------------------------------------ workbench */
+
+  .g-stage {
+    background-color: var(--background);
+    background-image: radial-gradient(
+      color-mix(in oklab, var(--foreground) 13%, transparent) 1px,
+      transparent 1.2px
+    );
+    background-size: 18px 18px;
+    background-position: center;
+  }
+
+  .g-frame {
+    transition: width 360ms var(--g-ease);
+  }
+
+  .g-resizer {
+    touch-action: none;
+  }
+
+  .g-resizer::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 50%;
+    width: 1px;
+    translate: -50% 0;
+    background: var(--g-line);
+    transition:
+      background-color 140ms var(--g-ease),
+      width 140ms var(--g-ease);
+  }
+
+  .g-resizer:hover::after,
+  .g-resizer:focus-visible::after,
+  .g-resizer[data-dragging="true"]::after {
+    width: 2px;
+    background: var(--g-accent);
+  }
+
+  /* --------------------------------------------------------------- prose */
+
+  .g-prose {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: var(--g-ink-2);
+  }
+
+  .g-prose > :first-child {
+    margin-top: 0;
+  }
+
+  .g-prose h2 {
+    margin-top: 3rem;
+    margin-bottom: 0.875rem;
+    border-top: 0;
+    padding-top: 0;
+    font-size: 1.375rem;
+    font-weight: 600;
+    letter-spacing: -0.026em;
+    line-height: 1.25;
+    color: var(--g-ink);
+    scroll-margin-top: calc(var(--g-top) + 1.5rem);
+  }
+
+  .g-prose h3 {
+    margin-top: 2rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.018em;
+    color: var(--g-ink);
+    scroll-margin-top: calc(var(--g-top) + 1.5rem);
+  }
+
+  .g-prose h2 > a,
+  .g-prose h3 > a {
+    text-decoration: none;
+  }
+
+  .g-prose p,
+  .g-prose li {
+    color: var(--g-ink-2);
+  }
+
+  .g-prose strong {
+    color: var(--g-ink);
+  }
+
+  .g-prose :not(pre) > code {
+    border-color: var(--g-line-2);
+    background: var(--g-panel-2);
+    color: #e4e4e7;
+  }
+
+  .g-prose table th {
+    background: var(--g-panel-2);
+  }
+
+  .g-prose aside {
+    border-radius: 0.75rem;
+  }
+
+  /* ---------------------------------------------------------- scrollbars */
+
+  .g-thin-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--g-line-2) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .g-hero-band,
+    .g-thumb-wait::before {
+      animation: none;
+    }
+
+    .g-frame {
+      transition: none;
+    }
+  }
+}
