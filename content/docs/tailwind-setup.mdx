@@ -70,15 +70,20 @@ that distinction matters.
   --color-warning: var(--warning);
   --color-code-bg: var(--code-bg);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-sans:
+    var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", ui-sans-serif,
+    sans-serif;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 }
 ```
 
-The two font variables come from `next/font` in `app/layout.tsx` — Inter for
-everything a person reads, JetBrains Mono for anything a machine would also have
-to read. Substitute your own families there and every utility follows; nothing in
-`registry/components/` names a typeface directly.
+The two font variables, `--font-geist-sans` and `--font-geist-mono`, come from
+`next/font` in `app/layout.tsx` — Geist for everything a person reads, Geist
+Mono for anything a machine would also have to read. Both are variable fonts, so
+the whole weight axis costs one file per family, and the stacks fall back to the
+platform's own faces. Substitute your own families there and every utility
+follows; nothing in `registry/components/` names a typeface directly.
 
 The ramp is mapped the same way, which is what gives you `bg-grey-100` and
 `text-grey-800` for the rare case where a semantic name would be a lie:
@@ -101,17 +106,18 @@ The ramp is mapped the same way, which is what gives you `bg-grey-100` and
 ## Radius
 
 The scale is redeclared rather than pinned, so every step resolves to a real
-value and each one has a job:
+value. `--radius-lg` matches the base `--radius` of `0.75rem`:
 
 ```css title="app/globals.css"
 @theme inline {
-  --radius-xs: 0.25rem; /* a tag */
-  --radius-sm: 0.375rem; /* an inline code span, a chip */
-  --radius-md: 0.5rem; /* a menu item */
-  --radius-lg: 0.625rem; /* a control — buttons, inputs */
-  --radius-xl: 0.875rem; /* a card, a code block */
-  --radius-2xl: 1.125rem; /* a dialog */
-  --radius-3xl: 1.5rem;
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem; /* a tag, a chip */
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem; /* a control */
+  --radius-xl: 1.125rem; /* a card, a panel */
+  --radius-2xl: 1.375rem;
+  --radius-3xl: 1.75rem;
+  --radius-4xl: 2.25rem;
 
   /* The component scale, kept as aliases so installed components are stable. */
   --radius-soft-sm: var(--radius-sm);
@@ -126,8 +132,8 @@ rounded rectangle.
 ## Elevation
 
 The shadow scale is mapped through the same mechanism, so `shadow-sm` and
-`shadow-md` pick up the theme's own tinted shadow instead of Tailwind's black
-default:
+`shadow-md` pick up the theme's own elevation steps — faint in the light theme,
+far deeper in the dark one — instead of Tailwind's defaults:
 
 ```css title="app/globals.css"
 @theme inline {
@@ -135,8 +141,12 @@ default:
   --shadow-sm: var(--elevation-sm);
   --shadow-md: var(--elevation-md);
   --shadow-lg: var(--elevation-lg);
+  --shadow-xl: var(--elevation-lg);
 }
 ```
+
+`shadow-xl` resolves to the same step as `shadow-lg`; four steps is the whole
+scale.
 
 ## Motion tokens
 
@@ -149,9 +159,12 @@ components:
   --duration-fast: 140ms;
   --duration-base: 200ms;
   --duration-slow: 320ms;
+  --duration-enter: 640ms;
+  --duration-display: 1100ms;
 
-  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-soft: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 ```
 

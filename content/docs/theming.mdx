@@ -456,40 +456,58 @@ The headline pairs, measured against the resolved values above:
 
 | Pair | Light | Dark |
 | --- | --- | --- |
-| `--foreground` on `--background` | 15.5:1 | 17.0:1 |
-| `--foreground` on `--card` | 17.7:1 | 15.4:1 |
-| `--muted-foreground` on `--background` | 5.9:1 | 8.8:1 |
-| `--muted-foreground` on `--card` | 6.8:1 | 8.0:1 |
-| `--muted-foreground` on `--muted` | 5.5:1 | 6.3:1 |
-| `--primary-foreground` on `--primary` | 17.7:1 | 17.0:1 |
-| `--border-strong` on `--background` | 3.5:1 | 3.8:1 |
+| `--foreground` on `--background` | 15.5:1 | 19.3:1 |
+| `--foreground` on `--card` | 16.8:1 | 15.6:1 |
+| `--muted-foreground` on `--background` | 4.7:1 | 8.2:1 |
+| `--muted-foreground` on `--card` | 5.1:1 | 6.6:1 |
+| `--muted-foreground` on `--muted` | 4.3:1 | 4.9:1 |
+| `--primary-foreground` on `--primary` | 16.8:1 | 19.3:1 |
+| `--border-strong` on `--background` | 3.3:1 | 3.5:1 |
 
-The headline pair tops out around 17:1 rather than the 21:1 a black-on-white
-system gets, and that is the point — it is the deliberate cost of surfaces that
-stop short of both extremes.
+The two themes are not symmetrical, and the table shows why. The dark headline
+pair reaches 19.3:1 — close to the 21:1 maximum — because the page is true
+black; only the ink stops short, at `#f5f5f7`. The light pair is 15.5:1 because
+both ends stop short: the page is `#f5f5f7` and the ink `#1d1d1f`. Neither
+theme draws `#000` on `#fff`.
 
-`--muted-foreground` is the token to watch. It carries most of the body copy and
-it is the one people lighten first when a page feels heavy; in the light theme
-it has roughly two steps of headroom above 4.5:1 and no more. The dark theme has
+`--muted-foreground` is the token to watch. It carries most of the secondary
+copy and it is the one people lighten first when a page feels heavy, and in the
+light theme it has almost no headroom: 4.7:1 on the page, 5.1:1 on a card, and
+4.3:1 on a `--muted` fill — which is under 4.5:1. Secondary text at body size
+does not belong on `--muted` in the light theme; set it on the page or a card,
+or step it up to `--grey-800`, which measures 8.5:1 there. The dark theme has
 more room, which is a trap rather than a licence — light text on a dark surface
 looks heavier than it measures, so the temptation there runs the other way.
 
-The four component families are tuned so their ink clears 4.5:1 against their
-own tint, which is the pairing that actually ships:
+The pairing that actually ships in a component is each family's ink against its
+own tint, and the label against the solid fill:
 
 | Pair | Light | Dark |
 | --- | --- | --- |
-| `--info` on `--info-soft` | 5.3:1 | 6.3:1 |
-| `--positive` on `--positive-soft` | 5.3:1 | 6.9:1 |
-| `--caution` on `--caution-soft` | 4.9:1 | 7.2:1 |
-| `--critical` on `--critical-soft` | 5.1:1 | 5.5:1 |
+| `--info` on `--info-soft` | 4.72:1 | 5.47:1 |
+| `--positive` on `--positive-soft` | 4.47:1 | 7.56:1 |
+| `--caution` on `--caution-soft` | 4.37:1 | 8.70:1 |
+| `--critical` on `--critical-soft` | 4.65:1 | 6.04:1 |
+| `--info-foreground` on `--info` | 5.38:1 | 6.47:1 |
+| `--positive-foreground` on `--positive` | 5.08:1 | 7.84:1 |
+| `--caution-foreground` on `--caution` | 4.87:1 | 9.61:1 |
+| `--critical-foreground` on `--critical` | 5.38:1 | 6.53:1 |
 
-`--caution` has the least margin of the four. If you deepen a `-soft` tint,
+Every solid fill clears 4.5:1 with its own foreground in both themes, and in
+the dark theme every ink clears it on its tint with room to spare. The light
+tints are tighter. `--info` and `--critical` clear 4.5:1 narrowly, and
+`--positive` and `--caution` fall just short of it — comfortably past the 3:1
+that a glyph, a rule or large text needs, but not enough for a small label.
+Where a light-theme chip sets its label in the family's own ink, deepen that ink
+— `--caution` first, then `--positive` — or set the label in `--foreground` and
+let the tint and the glyph carry the state. If you deepen a `-soft` tint,
 deepen its ink in the same commit.
 
 Two ratios in this system are deliberately low and are not failures. `--card`
-over `--background` is about 1.1:1 and `--border` on `--card` about 1.4:1 —
-neither is text, and both are doing the job a shadow and a hairline are supposed
-to do at a glance rather than under measurement. Where a boundary is the only
-thing identifying an interactive control, pair it with a fill or reach for
-`--border-strong`, which clears 3:1.
+over `--background` is about 1.1:1 in light and 1.2:1 in dark, and `--border`
+on `--card` about 1.4:1 and 1.5:1 — neither is text, and both are doing the job
+a shadow and a hairline are supposed to do at a glance rather than under
+measurement. Where a boundary is the only thing identifying an interactive
+control, pair it with a fill or reach for `--border-strong`, which clears 3:1
+against the page in both themes — though not on a dark card, where it measures
+2.8:1.

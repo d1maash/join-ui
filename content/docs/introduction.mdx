@@ -44,33 +44,38 @@ usually the trade you want.
 
 ### Colour is a token, never a literal
 
-The palette splits in two. The chrome — navigation, type, rules, buttons, the
-documentation itself — is neutral and has no brand hue in it at all. The ramp is
-not quite greyscale either: it carries a trace of chroma, warm in the light
-theme and a whisper of blue in the dark one, held far below the level at which
-it would read as a tint. This page resolves to `#050506` — the same black the
-masthead's one-bit plate is printed on, so that the picture is the top of the
-site rather than a panel dropped onto it — and its ink to `#f6f7f7` rather than
-to white, because a surface that reaches a pure value at the light end glows.
+The palette splits in two. The neutral layer of the shared tokens — surfaces,
+type, rules, buttons — has no brand hue in it at all. Its greys are Apple's: in
+the light theme the page is `#f5f5f7`, a card is white one step above it, and
+the ink is `#1d1d1f`; in the dark theme the page is true black, cards and
+popovers sit on `#1c1c1e` and `#2c2c2e`, and the ink is `#f5f5f7` rather than
+white, because white text on black glows. Both ramps carry the same faint cool
+cast, far below the level at which it would read as a tint.
 
-This site renders the dark theme and only the dark theme. The token system still
-ships both, because registry components get installed into other people's
-projects and plenty of those are light.
+This site renders the dark theme and only the dark theme. Its own chrome —
+near-black zinc at `#09090b` and a single electric-blue accent — is a separate
+layer that never ships. The token system ships both themes, because registry
+components get installed into other people's projects and plenty of those are
+light.
 
-Emphasis is carried by ink, by material and by space rather than by an accent.
-The primary action is the one filled high-contrast shape in a view; a card, an
-active sidebar row and a selected tab are all the same move — a surface lifted
-one step off the page by a hairline and the faintest shadow. An accent was tried
-here and removed: pick one and it ends up on the link, the active row, the
-inline code span, the chip, the step number and the focus ring, at which point
-it has stopped meaning anything.
+In the shared tokens, emphasis is carried by ink, by material and by space
+rather than by an accent. The primary action is the one filled high-contrast
+shape in a view; a card, an active sidebar row and a selected tab are all the
+same move — a surface lifted one step off the page by a hairline and the
+faintest shadow. There is no accent hue, and that is deliberate: pick one and it
+ends up on the link, the active row, the inline code span, the chip, the step
+number and the focus ring, at which point it has stopped meaning anything. The
+one blue this site spends on its own chrome is held back for the primary action
+in a view and for marking where you are; your project brings its own.
 
 Components are allowed hue of their own, because they are the product rather
 than the frame. They take it from four semantic families — `--info`,
 `--positive`, `--caution` and `--critical` — rather than from a literal colour
 or Tailwind's built-in palette, which is what keeps a component retintable in
-one place. It is held at low chroma, because next to a chrome with no hue in it
-a saturated chip reads as a different website rather than as emphasis.
+one place. Each family is an Apple system colour taken at a contrast-safe value
+— darkened in the light theme, the lighter accessible variant in the dark one —
+so a status reads the way it does on the platform, and it is kept quiet by area
+rather than by chroma: a chip, a marker, a rule, over its own soft tint.
 
 No component leans on red-versus-green: every state it draws in colour is also
 drawn as a glyph and spelled out in words. See [theming](/docs/theming).
@@ -125,14 +130,18 @@ real.
 | Primitives | Radix UI |
 | Animation | Motion for React |
 | Icons | Lucide |
-| Highlighting | Shiki at build time, with themes built from these tokens |
+| Typography | Geist and Geist Mono, through `next/font` |
+| Highlighting | Shiki at build time, with Xcode-derived themes |
 | Content | MDX |
 
-Syntax highlighting is worth a note. Off-the-shelf Shiki themes are tuned for an
-editor at full saturation, which on a documentation page reads as noise sitting
-inside otherwise quiet type. The site ships its own pair — `joinui-light` and
-`joinui-dark` — holding the same six grammar roles at roughly half that chroma,
-over the same neutral base as everything else.
+Syntax highlighting is worth a note. The site ships its own pair of Shiki themes
+— `joinui-light` and `joinui-dark` — built from Xcode's Default (Light) and
+Default (Dark) colours, so a listing here reads the way the same code would in
+Apple's editor: keywords in bold magenta, strings in red, numbers in blue in the
+light theme and gold in the dark, types in teal-blue, comments in an italic cool
+grey. Six roles carry the whole grammar, and every one clears 4.5:1 against its
+theme's code background. The highlighter runs on Shiki's JavaScript regex
+engine rather than the Oniguruma WebAssembly build.
 
 ## Where to go next
 
