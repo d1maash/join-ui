@@ -111,8 +111,8 @@ void main() {
   vec3 azure = vec3(0.08, 0.46, 1.0);
   vec3 ice = vec3(0.78, 0.89, 1.0);
   vec3 mid = mix(indigo, azure, smoothstep(-0.8, 0.8, q.x));
-  vec3 cloth = mix(shadow, mid, lit) + ice * sheen * 0.9;
-  float amount = body * (0.25 + 0.75 * lit + 0.6 * sheen);
+  vec3 cloth = mix(shadow, mid, lit) + ice * sheen * 0.75;
+  float amount = body * (0.25 + 0.75 * lit + 0.5 * sheen);
 
   // The bar sits on dark, and nothing may reach the canvas edge at the
   // bottom: it hands off to the page.
@@ -121,7 +121,7 @@ void main() {
   amount *= smoothstep(0.0, 0.35, uReveal);
 
   vec3 base = vec3(0.035, 0.035, 0.043);
-  vec3 color = base + cloth * clamp(amount, 0.0, 1.4);
+  vec3 color = base + cloth * clamp(amount, 0.0, 1.1);
   color += (hash(gl_FragCoord.xy + fract(t) * 91.0) - 0.5) / 255.0 * 2.0;
   gl_FragColor = vec4(color, 1.0);
 }

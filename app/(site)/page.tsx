@@ -55,11 +55,11 @@ export default async function HomePage() {
             <div className="g-hero-fade" />
           </div>
 
-          <div className="relative mx-auto flex max-w-[80rem] flex-col items-center px-4 text-center sm:px-6 lg:px-8">
+          <div className="g-hero-copy relative mx-auto flex max-w-[80rem] flex-col items-center px-4 text-center sm:px-6 lg:px-8">
             {newest ? (
               <Link
                 href={`/components/${newest.slug}`}
-                className="group mb-7 inline-flex h-8 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] pr-2.5 pl-1 text-[0.8125rem] text-[var(--g-ink-2)] backdrop-blur-md transition-colors hover:border-white/20 hover:text-[var(--g-ink)]"
+                className="g-rise group mb-7 inline-flex h-8 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] pr-2.5 pl-1 text-[0.8125rem] text-[var(--g-ink-2)] backdrop-blur-md transition-colors hover:border-white/20 hover:text-[var(--g-ink)]"
               >
                 <StatusPill item={newest} className="h-6 px-2" />
                 <span>
@@ -77,15 +77,15 @@ export default async function HomePage() {
             ) : null}
 
             <h1 className="g-display text-[clamp(2.25rem,7.2vw,5.75rem)] text-[var(--g-ink)]">
-              <span className="block">The motion is done.</span>
-              <span className="block">The source is yours.</span>
+              <span className="g-rise block [--d:1]">The motion is done.</span>
+              <span className="g-rise block [--d:2]">The source is yours.</span>
             </h1>
-            <p className="mt-6 max-w-[38rem] text-[1.0625rem] leading-relaxed text-pretty text-[var(--g-ink-2)] sm:text-[1.1875rem]">
+            <p className="g-rise mt-6 max-w-[38rem] [--d:3] text-[1.0625rem] leading-relaxed text-pretty text-[var(--g-ink-2)] sm:text-[1.1875rem]">
               Animated, accessible React components that land in your repo as plain
               files through the shadcn CLI — each with a ready-made brief for Claude
               Code, Cursor or Codex.
             </p>
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+            <div className="g-rise mt-9 flex flex-wrap items-center justify-center gap-3 [--d:4]">
               <Link href={"/components"} className="g-btn g-btn-accent g-btn-lg">
                 Browse components
                 <ArrowRight aria-hidden="true" />
@@ -99,7 +99,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="relative mx-auto mt-14 max-w-[76rem] px-3 sm:mt-20 sm:px-6 lg:px-8">
+          <div className="g-rise g-rise-slow relative mx-auto mt-14 max-w-[76rem] px-3 [--d:5] sm:mt-20 sm:px-6 lg:px-8">
             <HeroPreview nav={nav} items={items} />
           </div>
         </section>

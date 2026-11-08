@@ -578,8 +578,58 @@
     background: linear-gradient(to bottom, transparent, var(--g-bg) 85%);
   }
 
+  /*
+   * A hush behind the copy. The cloth drifts, and sooner or later a fold
+   * catches the light right behind the subline; this keeps the words on
+   * dark whatever the drape is doing. It hangs off the copy block itself, so
+   * it follows the text at every width.
+   */
+  .g-hero-copy {
+    isolation: isolate;
+  }
+
+  .g-hero-copy::before {
+    content: "";
+    position: absolute;
+    inset: -12% 4% -6%;
+    z-index: -1;
+    background: radial-gradient(
+      closest-side,
+      rgb(9 9 11 / 0.62),
+      rgb(9 9 11 / 0.4) 55%,
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  .g-hero-copy p {
+    text-shadow: 0 1px 14px rgb(9 9 11 / 0.7);
+  }
+
+  /*
+   * The page arrives in reading order while the light unfurls behind it:
+   * badge, the two lines, the subline, the actions, then the library.
+   */
+  .g-rise {
+    animation: g-rise 900ms var(--g-ease) both;
+    animation-delay: calc(140ms + var(--d, 0) * 90ms);
+  }
+
+  .g-rise-slow {
+    animation-duration: 1400ms;
+  }
+
+  @keyframes g-rise {
+    from {
+      opacity: 0;
+      translate: 0 0.875rem;
+      filter: blur(8px);
+    }
+  }
+
   /* The bezel around the framed app preview. */
   .g-bezel {
+    position: relative;
     border-radius: 1.75rem;
     padding: 0.625rem;
     background: linear-gradient(
@@ -590,6 +640,21 @@
     box-shadow:
       inset 0 0 0 1px rgb(255 255 255 / 0.08),
       0 40px 120px -40px rgb(0 0 0 / 0.9);
+  }
+
+  /* Its top edge catches the light falling from above. */
+  .g-bezel::before {
+    content: "";
+    position: absolute;
+    inset: 0 12% auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(138 174 255 / 0.7) 50%,
+      transparent
+    );
+    pointer-events: none;
   }
 
   .g-bezel-window {
@@ -712,6 +777,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .g-rise,
     .g-hero-band,
     .g-thumb-wait::before {
       animation: none;
