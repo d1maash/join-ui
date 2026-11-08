@@ -63,7 +63,7 @@
 
 :root:has(.join-site) body {
   background: var(--g-bg);
-  font-family: var(--g-font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   letter-spacing: -0.006em;
 }
 
@@ -74,14 +74,14 @@
 .join-site,
 .join-site .font-sans,
 :root:has(.join-site) [cmdk-root] {
-  font-family: var(--g-font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 .join-site .font-mono,
 .join-site code,
 .join-site kbd,
 .join-site pre {
-  font-family: var(--g-font-mono), ui-monospace, monospace;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 .join-site {

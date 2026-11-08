@@ -7,7 +7,6 @@ import { CopyPromptIcon } from "@/components/site/copy-prompt-icon"
 import { LazyThumb } from "@/components/site/lazy-thumb"
 import { formatDate } from "@/components/site/links"
 import { cn } from "@/lib/utils"
-import { variantHref } from "@/lib/variants"
 
 import type { GalleryItem } from "@/components/site/data"
 

@@ -14,7 +14,6 @@ import { GalleryCard, StatusPill } from "@/components/site/card"
 import {
   categoryHref,
   formatDate,
-  g,
   toGalleryItem,
 } from "@/components/site/data"
 import { RailRow } from "@/components/site/rail-row"

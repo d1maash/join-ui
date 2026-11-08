@@ -5,7 +5,7 @@ import type { ComponentMetadata } from "@/types/registry"
 
 import { categoryHref } from "./links"
 
-export { categoryHref, formatDate, g, VARIANT } from "./links"
+export { categoryHref, formatDate } from "./links"
 
 /*
  * Gallery — the data layer (server only: it reads the full registry).

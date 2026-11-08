@@ -1,27 +1,11 @@
 import type * as React from "react"
 import type { Metadata, Viewport } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
 
 import { SearchProvider } from "@/components/site/search"
-import { VariantSwitcherDock } from "@/components/variants/variant-switcher"
 import { buildSearchIndex } from "@/lib/search"
 import { siteConfig } from "@/lib/site"
-import { variantHref } from "@/lib/variants"
 
 import "./site.css"
-
-/*
- * Geist for the interface and the display type, Geist Mono for anything a
- * machine would also read. Both are handed to the stylesheet as custom
- * properties on the root, so the search dialog and the toasts — portalled
- * outside this tree — set in the same faces.
- */
-const sans = Geist({ subsets: ["latin"], display: "swap", variable: "--g-font-sans" })
-const mono = Geist_Mono({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--g-font-mono",
-})
 
 export const metadata: Metadata = {
   title: {
@@ -29,7 +13,6 @@ export const metadata: Metadata = {
     template: `%s — ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  robots: { index: false, follow: false },
 }
 
 export const viewport: Viewport = {
@@ -37,22 +20,15 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 }
 
-export default function GalleryLayout({ children }: { children: React.ReactNode }) {
-  const index = buildSearchIndex().map((entry) => ({
-    ...entry,
-    href: entry.href,
-  }))
-
-  const fonts = `:root:has(.join-site){--g-font-sans:${sans.style.fontFamily};--g-font-mono:${mono.style.fontFamily}}`
+export default function SiteLayout({ children }: { children: React.ReactNode }) {
+  const index = buildSearchIndex()
 
   return (
-    <div className={`join-site dark ${sans.variable} ${mono.variable}`}>
-      <style dangerouslySetInnerHTML={{ __html: fonts }} />
+    <div className="join-site dark">
       <a href="#main-content" className="g-skip">
         Skip to content
       </a>
       <SearchProvider index={index}>{children}</SearchProvider>
-      <VariantSwitcherDock current="gallery" />
     </div>
   )
 }

@@ -5,7 +5,6 @@ import { ArrowRight, ChevronRight } from "lucide-react"
 import { GalleryCard, StatusPill } from "@/components/site/card"
 import {
   formatDate,
-  g,
   getCategoryTiles,
   getFeatured,
   getGalleryItems,
