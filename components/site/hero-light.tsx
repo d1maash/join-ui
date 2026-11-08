@@ -61,7 +61,7 @@ float noise(vec2 p) {
 // Ribbon space: x runs along the ribbon, y across it.
 vec2 ribbonSpace(vec2 p, float t) {
   p += uPointer * vec2(0.012, 0.008);
-  float a = -0.24;
+  float a = -0.2;
   vec2 q = mat2(cos(a), -sin(a), sin(a), cos(a)) * p;
   q.y -= 0.07 * q.x * q.x;
   q.y += 0.05 * sin(q.x * 1.3 + t * 0.07);
@@ -106,15 +106,17 @@ void main() {
   float span = smoothstep(-1.35 + unfurl, -0.25 + unfurl, q.x) * smoothstep(1.6, 0.7, q.x);
   body *= span;
 
-  vec3 shadow = vec3(0.025, 0.055, 0.25);
-  vec3 indigo = vec3(0.17, 0.22, 0.96);
-  vec3 azure = vec3(0.14, 0.45, 1.0);
-  vec3 ice = vec3(0.84, 0.91, 1.0);
+  vec3 shadow = vec3(0.02, 0.05, 0.24);
+  vec3 indigo = vec3(0.13, 0.24, 1.0);
+  vec3 azure = vec3(0.08, 0.46, 1.0);
+  vec3 ice = vec3(0.78, 0.89, 1.0);
   vec3 mid = mix(indigo, azure, smoothstep(-0.8, 0.8, q.x));
   vec3 cloth = mix(shadow, mid, lit) + ice * sheen * 0.9;
   float amount = body * (0.25 + 0.75 * lit + 0.6 * sheen);
 
-  // Nothing may reach the canvas edge at the bottom: it hands off to the page.
+  // The bar sits on dark, and nothing may reach the canvas edge at the
+  // bottom: it hands off to the page.
+  amount *= smoothstep(0.0, 0.2, px.y / uUnit);
   amount *= smoothstep(uResolution.y, uResolution.y * 0.55, px.y);
   amount *= smoothstep(0.0, 0.35, uReveal);
 
@@ -186,6 +188,7 @@ export function HeroLight({ className }: { className?: string }) {
     const uReveal = uniform("uReveal")
     const uPointer = uniform("uPointer")
 
+    const DEBUG_T = Number(new URLSearchParams(location.search).get("heroT") ?? NaN) // TEMP
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     const pointer = { x: 0, y: 0, tx: 0, ty: 0 }
     let started = 0
@@ -204,7 +207,7 @@ export function HeroLight({ className }: { className?: string }) {
       // close-up of the same drape rather than a squeezed one.
       const unit = Math.min(Math.max(width * 0.7, 560), 1100)
       gl.uniform2f(uResolution, canvas.width, canvas.height)
-      gl.uniform2f(uOrigin, canvas.width * 0.5, Math.min(height * 0.3, unit * 0.32) * scale)
+      gl.uniform2f(uOrigin, canvas.width * 0.5, Math.min(height * 0.3, unit * 0.31) * scale)
       gl.uniform1f(uUnit, unit * scale)
     }
 
@@ -215,7 +218,7 @@ export function HeroLight({ className }: { className?: string }) {
       const eased = 1 - Math.pow(1 - reveal, 3)
       pointer.x += (pointer.tx - pointer.x) * 0.04
       pointer.y += (pointer.ty - pointer.y) * 0.04
-      gl.uniform1f(uTime, TIME_OFFSET + (still ? 0 : elapsed / 1000))
+      gl.uniform1f(uTime, Number.isNaN(DEBUG_T) ? TIME_OFFSET + (still ? 0 : elapsed / 1000) : DEBUG_T)
       gl.uniform1f(uReveal, eased)
       gl.uniform2f(uPointer, pointer.x, pointer.y)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
