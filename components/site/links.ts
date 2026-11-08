@@ -9,12 +9,12 @@ import { variantHref } from "@/lib/variants"
 export const VARIANT = "gallery" as const
 
 /** Every internal link goes through here so it stays inside the variant. */
-export function g(href: string): string {
+export function href: string: string {
   return variantHref(VARIANT, href)
 }
 
 export function categoryHref(category: string): string {
-  return g(`/components?category=${encodeURIComponent(category)}`)
+  return `/components?category=${encodeURIComponent(category)}`
 }
 
 const MONTHS = [

@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ArrowRight, Search } from "lucide-react"
 
-import { useSearch } from "@/components/variants/gallery/search"
+import { useSearch } from "@/components/site/search"
 import { searchIndex } from "@/lib/search"
 
 /*

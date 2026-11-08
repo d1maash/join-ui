@@ -7,9 +7,8 @@ import rehypeSlug from "rehype-slug"
 import remarkGfm from "remark-gfm"
 
 import { CopyButton } from "@/components/site/copy-button"
-import { g } from "@/components/variants/gallery/links"
-import { galleryMdx } from "@/components/variants/gallery/mdx"
-import { Toc } from "@/components/variants/gallery/toc"
+import { galleryMdx } from "@/components/site/mdx"
+import { Toc } from "@/components/site/toc"
 import {
   DOCS_INDEX_SLUG,
   docsSlugs,
@@ -118,7 +117,7 @@ export default async function GalleryDocsPage({ params }: PageProps) {
           <nav aria-label="Documentation" className="mt-16 grid gap-3 sm:grid-cols-2">
             {previous ? (
               <Link
-                href={g(previous.href)}
+                href={previous.href}
                 className="group flex flex-col gap-1 rounded-2xl border border-[var(--g-line)] bg-[var(--g-panel)] px-5 py-4 transition-colors hover:border-[var(--g-line-3)]"
               >
                 <span className="flex items-center gap-1.5 text-[0.75rem] text-[var(--g-ink-4)]">
@@ -134,7 +133,7 @@ export default async function GalleryDocsPage({ params }: PageProps) {
             )}
             {next ? (
               <Link
-                href={g(next.href)}
+                href={next.href}
                 className="group flex flex-col items-end gap-1 rounded-2xl border border-[var(--g-line)] bg-[var(--g-panel)] px-5 py-4 text-right transition-colors hover:border-[var(--g-line-3)]"
               >
                 <span className="flex items-center gap-1.5 text-[0.75rem] text-[var(--g-ink-4)]">
@@ -170,7 +169,7 @@ export default async function GalleryDocsPage({ params }: PageProps) {
                 Report an issue
               </a>
               <Link
-                href={g("/components")}
+                href={"/components"}
                 className="text-[var(--g-ink-3)] transition-colors hover:text-[var(--g-ink)]"
               >
                 Browse components

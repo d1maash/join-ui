@@ -2,13 +2,13 @@ import type * as React from "react"
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 
-import { SearchProvider } from "@/components/variants/gallery/search"
+import { SearchProvider } from "@/components/site/search"
 import { VariantSwitcherDock } from "@/components/variants/variant-switcher"
 import { buildSearchIndex } from "@/lib/search"
 import { siteConfig } from "@/lib/site"
 import { variantHref } from "@/lib/variants"
 
-import "./gallery.css"
+import "./site.css"
 
 /*
  * Geist for the interface and the display type, Geist Mono for anything a
@@ -40,13 +40,13 @@ export const viewport: Viewport = {
 export default function GalleryLayout({ children }: { children: React.ReactNode }) {
   const index = buildSearchIndex().map((entry) => ({
     ...entry,
-    href: variantHref("gallery", entry.href),
+    href: entry.href,
   }))
 
-  const fonts = `:root:has(.v-gallery){--g-font-sans:${sans.style.fontFamily};--g-font-mono:${mono.style.fontFamily}}`
+  const fonts = `:root:has(.join-site){--g-font-sans:${sans.style.fontFamily};--g-font-mono:${mono.style.fontFamily}}`
 
   return (
-    <div className={`v-gallery dark ${sans.variable} ${mono.variable}`}>
+    <div className={`join-site dark ${sans.variable} ${mono.variable}`}>
       <style dangerouslySetInnerHTML={{ __html: fonts }} />
       <a href="#main-content" className="g-skip">
         Skip to content

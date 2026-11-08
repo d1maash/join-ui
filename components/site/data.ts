@@ -3,7 +3,7 @@ import { allComponents, componentsByName, getCategorySummaries } from "@/lib/reg
 import { toCatalogItem, type CatalogItem } from "@/lib/registry/catalog"
 import type { ComponentMetadata } from "@/types/registry"
 
-import { categoryHref, g } from "./links"
+import { categoryHref } from "./links"
 
 export { categoryHref, formatDate, g, VARIANT } from "./links"
 
@@ -111,7 +111,7 @@ export function getGalleryNav(): GalleryNav {
       items: section.items.map((page) => ({
         slug: page.slug,
         title: page.title,
-        href: g(page.href),
+        href: page.href,
         label: page.label,
       })),
     })),

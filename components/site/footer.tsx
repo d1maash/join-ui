@@ -1,11 +1,10 @@
 import Link from "next/link"
 
 import { CopyButton } from "@/components/site/copy-button"
-import { GalleryLogo } from "@/components/variants/gallery/rail"
+import { GalleryLogo } from "@/components/site/rail"
 import { siteConfig } from "@/lib/site"
 
-import type { GalleryNav } from "@/components/variants/gallery/data"
-import { g } from "@/components/variants/gallery/links"
+import type { GalleryNav } from "@/components/site/data"
 
 export function GalleryFooter({
   nav,
@@ -18,8 +17,8 @@ export function GalleryFooter({
     {
       title: "Library",
       links: [
-        { label: `All components (${nav.total})`, href: g("/components") },
-        { label: "New", href: g("/components?status=new") },
+        { label: `All components (${nav.total})`, href: "/components" },
+        { label: "New", href: "/components?status=new" },
         ...nav.categories
           .slice(0, 6)
           .map((category) => ({ label: category.name, href: category.href })),
@@ -46,7 +45,7 @@ export function GalleryFooter({
       links: [
         { label: "GitHub", href: siteConfig.links.github, external: true },
         { label: "Issues", href: siteConfig.links.issues, external: true },
-        { label: "Contributing", href: g("/docs/contributing") },
+        { label: "Contributing", href: "/docs/contributing" },
         {
           label: "MIT licence",
           href: `${siteConfig.links.repo}/blob/main/LICENSE`,

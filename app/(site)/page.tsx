@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowRight, ChevronRight } from "lucide-react"
 
-import { GalleryCard, StatusPill } from "@/components/variants/gallery/card"
+import { GalleryCard, StatusPill } from "@/components/site/card"
 import {
   formatDate,
   g,
@@ -11,13 +11,13 @@ import {
   getGalleryItems,
   getGalleryNav,
   getNoteworthy,
-} from "@/components/variants/gallery/data"
-import { GalleryFooter } from "@/components/variants/gallery/footer"
-import { HeroPreview } from "@/components/variants/gallery/hero-preview"
-import { LandingNav } from "@/components/variants/gallery/landing-nav"
-import { LazyThumb } from "@/components/variants/gallery/lazy-thumb"
-import { RailRow } from "@/components/variants/gallery/rail-row"
-import { ShipSection } from "@/components/variants/gallery/ship"
+} from "@/components/site/data"
+import { GalleryFooter } from "@/components/site/footer"
+import { HeroPreview } from "@/components/site/hero-preview"
+import { LandingNav } from "@/components/site/landing-nav"
+import { LazyThumb } from "@/components/site/lazy-thumb"
+import { RailRow } from "@/components/site/rail-row"
+import { ShipSection } from "@/components/site/ship"
 import { buildComponentPrompt } from "@/lib/prompts/build-prompt"
 import { getComponent } from "@/lib/registry"
 import { getComponentSources } from "@/lib/registry/source"
@@ -57,7 +57,7 @@ export default async function GalleryLanding() {
           <div className="relative mx-auto flex max-w-[80rem] flex-col items-center px-4 text-center sm:px-6 lg:px-8">
             {newest ? (
               <Link
-                href={g(`/components/${newest.slug}`)}
+                href={`/components/${newest.slug}`}
                 className="group mb-7 inline-flex h-8 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] pr-2.5 pl-1 text-[0.8125rem] text-[var(--g-ink-2)] backdrop-blur-md transition-colors hover:border-white/20 hover:text-[var(--g-ink)]"
               >
                 <StatusPill item={newest} className="h-6 px-2" />
@@ -85,12 +85,12 @@ export default async function GalleryLanding() {
               Code, Cursor or Codex.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <Link href={g("/components")} className="g-btn g-btn-accent g-btn-lg">
+              <Link href={"/components"} className="g-btn g-btn-accent g-btn-lg">
                 Browse components
                 <ArrowRight aria-hidden="true" />
               </Link>
               <Link
-                href={g("/docs/installation")}
+                href={"/docs/installation"}
                 className="g-btn g-btn-lg border-white/10 bg-white/[0.06] backdrop-blur-md hover:bg-white/[0.1]"
               >
                 Install
@@ -110,7 +110,7 @@ export default async function GalleryLanding() {
               id="noteworthy"
               title="New & noteworthy"
               description="Newest first, by the later of the day it landed and its last rework."
-              href={g("/components")}
+              href={"/components"}
             >
               {noteworthy.map((item) => (
                 <GalleryCard key={item.slug} item={item} dated />
@@ -121,7 +121,7 @@ export default async function GalleryLanding() {
               id="featured"
               title="Featured"
               description="Picked by the registry — the components that show the most of what the library does."
-              href={g("/components")}
+              href={"/components"}
               itemClassName="w-[min(84vw,26rem)] sm:w-[27rem]"
             >
               {featured.map((item) => (
@@ -149,7 +149,7 @@ export default async function GalleryLanding() {
                 </p>
               </div>
               <Link
-                href={g("/components")}
+                href={"/components"}
                 className="inline-flex shrink-0 items-center gap-0.5 text-[0.8125rem] font-medium text-[var(--g-ink-2)] transition-colors hover:text-[var(--g-ink)]"
               >
                 All components
@@ -179,7 +179,7 @@ export default async function GalleryLanding() {
                     {tile.members.slice(0, TILE_LIST).map((member) => (
                       <li key={member.slug}>
                         <Link
-                          href={g(`/components/${member.slug}`)}
+                          href={`/components/${member.slug}`}
                           className="flex h-8 items-center gap-2 rounded-lg px-2 text-[0.8125rem] text-[var(--g-ink-3)] transition-colors hover:bg-[var(--g-panel-3)] hover:text-[var(--g-ink)]"
                         >
                           <span className="flex-1 truncate">{member.title}</span>

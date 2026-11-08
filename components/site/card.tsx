@@ -3,13 +3,13 @@
 import Link from "next/link"
 import { Maximize2 } from "lucide-react"
 
-import { CopyPromptIcon } from "@/components/variants/gallery/copy-prompt-icon"
-import { LazyThumb } from "@/components/variants/gallery/lazy-thumb"
-import { formatDate } from "@/components/variants/gallery/links"
+import { CopyPromptIcon } from "@/components/site/copy-prompt-icon"
+import { LazyThumb } from "@/components/site/lazy-thumb"
+import { formatDate } from "@/components/site/links"
 import { cn } from "@/lib/utils"
 import { variantHref } from "@/lib/variants"
 
-import type { GalleryItem } from "@/components/variants/gallery/data"
+import type { GalleryItem } from "@/components/site/data"
 
 /*
  * The one card. Rails, the catalog grid, related rows and the 404 all render
@@ -50,7 +50,7 @@ export function GalleryCard({
   className?: string
 }) {
   const slug = item.slug
-  const href = variantHref("gallery", `/components/${slug}`)
+  const href = `/components/${slug}`
 
   return (
     <article

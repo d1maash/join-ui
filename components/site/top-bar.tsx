@@ -13,13 +13,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { GalleryLogo, Rail } from "@/components/variants/gallery/rail"
-import { SearchField, SearchIconButton } from "@/components/variants/gallery/search"
+import { GalleryLogo, Rail } from "@/components/site/rail"
+import { SearchField, SearchIconButton } from "@/components/site/search"
 import { siteConfig } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
-import type { GalleryNav } from "@/components/variants/gallery/data"
-import { g } from "@/components/variants/gallery/links"
+import type { GalleryNav } from "@/components/site/data"
 
 /** The rail, as a sheet, for anything narrower than a laptop. */
 export function MobileMenu({
@@ -58,8 +57,8 @@ export function MobileMenu({
 function useCrumbs(nav: GalleryNav) {
   const pathname = usePathname()
   return React.useMemo(() => {
-    const components = g("/components")
-    const docs = g("/docs")
+    const components = "/components"
+    const docs = "/docs"
     const crumbs: Array<{ label: string; href?: string }> = []
 
     if (pathname === components) {
@@ -78,7 +77,7 @@ function useCrumbs(nav: GalleryNav) {
         crumbs.push({ label: "Not found" })
       }
     } else if (pathname === docs || pathname.startsWith(`${docs}/`)) {
-      const href = pathname === docs ? g("/docs/introduction") : pathname
+      const href = pathname === docs ? "/docs/introduction" : pathname
       const section = nav.docs.find((entry) =>
         entry.items.some((item) => item.href === href)
       )
@@ -167,14 +166,14 @@ export function LibraryTopBar({ nav }: { nav: GalleryNav }) {
         <SearchField label="Search" className="hidden h-8 w-56 md:flex lg:hidden" />
         <SearchIconButton className="md:hidden" />
         <Link
-          href={g("/docs")}
+          href={"/docs"}
           className="g-btn g-btn-ghost hidden h-8 px-2.5 sm:inline-flex"
         >
           Docs
         </Link>
         <GitHubLink />
         <Link
-          href={g("/docs/installation")}
+          href={"/docs/installation"}
           className="g-btn g-btn-accent ml-1.5 h-8 px-3"
         >
           Install

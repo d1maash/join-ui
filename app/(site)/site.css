@@ -6,14 +6,14 @@
  * the blue is spent on the one action that matters per view and on "you are
  * here" in the rail, nowhere else.
  *
- * The tokens are declared on `:root:has(.v-gallery)` as well as on the variant
+ * The tokens are declared on `:root:has(.join-site)` as well as on the variant
  * root, so the search dialog, sheets and toasts (portalled to <body>) wear the
  * same palette. Both declarations stay outside any layer: the global `.dark`
  * rule is unlayered, and a layered rule can never beat it.
  */
 
-:root:has(.v-gallery),
-.dark.v-gallery {
+:root:has(.join-site),
+.dark.join-site {
   --g-bg: #09090b;
   --g-bg-2: #0c0c0f;
   --g-panel: #111114;
@@ -56,12 +56,12 @@
   --grey-300: #2a2a31;
 }
 
-:root:has(.v-gallery) {
+:root:has(.join-site) {
   background: var(--g-bg);
   color-scheme: dark;
 }
 
-:root:has(.v-gallery) body {
+:root:has(.join-site) body {
   background: var(--g-bg);
   font-family: var(--g-font-sans), ui-sans-serif, system-ui, sans-serif;
   letter-spacing: -0.006em;
@@ -71,20 +71,20 @@
  * One sans and one mono everywhere, including the shared blocks that ask for
  * `font-mono` and would otherwise get the platform's own monospace.
  */
-.v-gallery,
-.v-gallery .font-sans,
-:root:has(.v-gallery) [cmdk-root] {
+.join-site,
+.join-site .font-sans,
+:root:has(.join-site) [cmdk-root] {
   font-family: var(--g-font-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-.v-gallery .font-mono,
-.v-gallery code,
-.v-gallery kbd,
-.v-gallery pre {
+.join-site .font-mono,
+.join-site code,
+.join-site kbd,
+.join-site pre {
   font-family: var(--g-font-mono), ui-monospace, monospace;
 }
 
-.v-gallery {
+.join-site {
   min-height: 100dvh;
   background: var(--g-bg);
   color: var(--g-ink);
@@ -93,12 +93,12 @@
 }
 
 @layer components {
-  .v-gallery ::selection {
+  .join-site ::selection {
     background: var(--selection);
     color: #fff;
   }
 
-  .v-gallery :focus-visible {
+  .join-site :focus-visible {
     outline: 2px solid var(--g-accent-ink);
     outline-offset: 2px;
   }

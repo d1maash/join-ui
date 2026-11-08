@@ -1,10 +1,9 @@
 import type * as React from "react"
 import Link from "next/link"
 
-import { getGalleryNav } from "@/components/variants/gallery/data"
-import { g } from "@/components/variants/gallery/links"
-import { Rail } from "@/components/variants/gallery/rail"
-import { LibraryTopBar } from "@/components/variants/gallery/top-bar"
+import { getGalleryNav } from "@/components/site/data"
+import { Rail } from "@/components/site/rail"
+import { LibraryTopBar } from "@/components/site/top-bar"
 import { siteConfig } from "@/lib/site"
 
 /*
@@ -37,19 +36,19 @@ function SlimFooter() {
         </span>
         <span className="flex flex-wrap gap-x-5 gap-y-2 sm:ml-auto">
           <Link
-            href={g("/docs/installation")}
+            href={"/docs/installation"}
             className="transition-colors hover:text-[var(--g-ink)]"
           >
             Installation
           </Link>
           <Link
-            href={g("/docs/ai")}
+            href={"/docs/ai"}
             className="transition-colors hover:text-[var(--g-ink)]"
           >
             Prompts for agents
           </Link>
           <Link
-            href={g("/docs/contributing")}
+            href={"/docs/contributing"}
             className="transition-colors hover:text-[var(--g-ink)]"
           >
             Contributing

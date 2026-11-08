@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import * as Menu from "@radix-ui/react-dropdown-menu"
 import { Check, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react"
 
-import { GalleryCard } from "@/components/variants/gallery/card"
+import { GalleryCard } from "@/components/site/card"
 import { cn } from "@/lib/utils"
 import {
   COMPONENT_CATEGORIES,
@@ -15,7 +15,7 @@ import {
   type ComponentTrait,
 } from "@/types/registry"
 
-import type { GalleryItem } from "@/components/variants/gallery/data"
+import type { GalleryItem } from "@/components/site/data"
 
 /*
  * The catalog.

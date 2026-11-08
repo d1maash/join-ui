@@ -1,8 +1,8 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 
-import { Catalog, CatalogFallback } from "@/components/variants/gallery/catalog"
-import { getGalleryItems } from "@/components/variants/gallery/data"
+import { Catalog, CatalogFallback } from "@/components/site/catalog"
+import { getGalleryItems } from "@/components/site/data"
 
 export const metadata: Metadata = {
   title: "Components",

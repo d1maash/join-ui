@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { LibraryShell } from "@/components/variants/gallery/shell"
+import { LibraryShell } from "@/components/site/shell"
 
 /*
  * Catalog, component pages and docs share one rail that is never remounted

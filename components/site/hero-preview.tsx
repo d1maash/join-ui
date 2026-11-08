@@ -8,11 +8,11 @@ import {
 } from "lucide-react"
 
 import { LogoMark } from "@/components/site/logo"
-import { StatusPill } from "@/components/variants/gallery/card"
-import { LazyThumb } from "@/components/variants/gallery/lazy-thumb"
+import { StatusPill } from "@/components/site/card"
+import { LazyThumb } from "@/components/site/lazy-thumb"
 import { cn } from "@/lib/utils"
 
-import type { GalleryItem, GalleryNav } from "@/components/variants/gallery/data"
+import type { GalleryItem, GalleryNav } from "@/components/site/data"
 
 /*
  * The library, framed. Not a screenshot: the rail is the real category list

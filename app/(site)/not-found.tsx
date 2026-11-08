@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { GalleryCard } from "@/components/variants/gallery/card"
-import { g, getNoteworthy } from "@/components/variants/gallery/data"
-import { NotFoundSearch } from "@/components/variants/gallery/not-found-search"
-import { RailRow } from "@/components/variants/gallery/rail-row"
-import { LibraryShell } from "@/components/variants/gallery/shell"
+import { GalleryCard } from "@/components/site/card"
+import { getNoteworthy } from "@/components/site/data"
+import { NotFoundSearch } from "@/components/site/not-found-search"
+import { RailRow } from "@/components/site/rail-row"
+import { LibraryShell } from "@/components/site/shell"
 
 export const metadata: Metadata = {
   title: "Page not found",
@@ -39,10 +39,10 @@ export default function GalleryNotFound() {
           </p>
           <NotFoundSearch />
           <div className="flex flex-wrap gap-2">
-            <Link href={g("/components")} className="g-btn g-btn-accent">
+            <Link href={"/components"} className="g-btn g-btn-accent">
               Browse components
             </Link>
-            <Link href={g("/docs")} className="g-btn">
+            <Link href={"/docs"} className="g-btn">
               Read the docs
             </Link>
           </div>
@@ -52,7 +52,7 @@ export default function GalleryNotFound() {
           id="not-found-new"
           title="New & noteworthy"
           description="The most recently added and reworked components."
-          href={g("/components")}
+          href={"/components"}
         >
           {noteworthy.map((item) => (
             <GalleryCard key={item.slug} item={item} />

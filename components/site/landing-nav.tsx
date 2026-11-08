@@ -3,13 +3,12 @@
 import * as React from "react"
 import Link from "next/link"
 
-import { GalleryLogo } from "@/components/variants/gallery/rail"
-import { SearchField, SearchIconButton } from "@/components/variants/gallery/search"
-import { GitHubLink, MobileMenu } from "@/components/variants/gallery/top-bar"
+import { GalleryLogo } from "@/components/site/rail"
+import { SearchField, SearchIconButton } from "@/components/site/search"
+import { GitHubLink, MobileMenu } from "@/components/site/top-bar"
 import { cn } from "@/lib/utils"
 
-import type { GalleryNav } from "@/components/variants/gallery/data"
-import { g } from "@/components/variants/gallery/links"
+import type { GalleryNav } from "@/components/site/data"
 
 /*
  * The landing page's bar: transparent over the hero, a blurred hairline
@@ -26,10 +25,10 @@ export function LandingNav({ nav }: { nav: GalleryNav }) {
   }, [])
 
   const links = [
-    { label: "Components", href: g("/components") },
+    { label: "Components", href: "/components" },
     { label: "Categories", href: "#categories" },
-    { label: "New", href: g("/components?status=new") },
-    { label: "Docs", href: g("/docs") },
+    { label: "New", href: "/components?status=new" },
+    { label: "Docs", href: "/docs" },
   ]
 
   return (
@@ -59,7 +58,7 @@ export function LandingNav({ nav }: { nav: GalleryNav }) {
           <SearchIconButton className="md:hidden" />
           <GitHubLink />
           <Link
-            href={g("/docs/installation")}
+            href={"/docs/installation"}
             className="g-btn g-btn-accent ml-1 h-8 px-3"
           >
             Install

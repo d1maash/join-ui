@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
  *
  * A catalog of hundreds of cards cannot carry hundreds of prompts — each one
  * embeds the full component source. The brief is served as a static text file
- * per component instead (`/v/gallery/prompts/<slug>`, prerendered from the
+ * per component instead (`/prompts/<slug>`, prerendered from the
  * same `buildComponentPrompt` the component page uses), fetched the moment a
  * pointer or focus reaches the button and cached for the session, so by the
  * time the click lands it is usually already here.
@@ -23,7 +23,7 @@ const cache = new Map<string, Promise<string>>()
 export function loadPrompt(slug: string): Promise<string> {
   let pending = cache.get(slug)
   if (!pending) {
-    pending = fetch(`/v/gallery/prompts/${slug}`).then((response) => {
+    pending = fetch(`/prompts/${slug}`).then((response) => {
       if (!response.ok) throw new Error(`Prompt for ${slug} is unavailable`)
       return response.text()
     })

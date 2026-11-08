@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { renderThumb } from "@/components/previews/thumbs/registry"
+import { renderThumbnail } from "@/components/previews/thumbnails/registry"
 import { cn } from "@/lib/utils"
 
 /*
@@ -76,7 +76,7 @@ export function LazyThumb({
 }) {
   const ref = React.useRef<HTMLDivElement>(null)
   const mounted = useNearViewport(ref, eager)
-  const thumb = mounted ? renderThumb(slug) : null
+  const thumb = mounted ? renderThumbnail(slug) : null
 
   return (
     <div

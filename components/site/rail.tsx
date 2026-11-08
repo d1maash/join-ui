@@ -7,12 +7,11 @@ import { BookOpen, ChevronRight, Home, LayoutGrid, Sparkles } from "lucide-react
 
 import { GitHubIcon } from "@/components/site/icons"
 import { LogoMark } from "@/components/site/logo"
-import { SearchField } from "@/components/variants/gallery/search"
+import { SearchField } from "@/components/site/search"
 import { siteConfig } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
-import type { GalleryNav } from "@/components/variants/gallery/data"
-import { g } from "@/components/variants/gallery/links"
+import type { GalleryNav } from "@/components/site/data"
 
 /*
  * The library rail.
@@ -27,7 +26,7 @@ import { g } from "@/components/variants/gallery/links"
 export function GalleryLogo({ className }: { className?: string }) {
   return (
     <Link
-      href={g("/")}
+      href={"/"}
       className={cn("flex shrink-0 items-center gap-2 rounded-md", className)}
     >
       <span className="flex size-7 items-center justify-center rounded-lg bg-[var(--g-ink)] text-[var(--g-bg)]">
@@ -83,12 +82,12 @@ function RailBody({
   className?: string
 }) {
   const pathname = location?.pathname ?? ""
-  const base = g("/components")
+  const base = "/components"
   const currentSlug = pathname.startsWith(`${base}/`)
     ? pathname.slice(base.length + 1)
     : null
   const onCatalog = pathname === base
-  const onDocs = pathname.startsWith(g("/docs"))
+  const onDocs = pathname.startsWith("/docs")
 
   const currentCategory = React.useMemo(() => {
     if (onCatalog && location?.category) return location.category
@@ -104,7 +103,7 @@ function RailBody({
     setToggled((previous) => ({ ...previous, [key]: !(previous[key] ?? fallback) }))
 
   const primary = [
-    { label: "Home", href: g("/"), icon: Home, active: pathname === g("/") },
+    { label: "Home", href: "/", icon: Home, active: pathname === "/" },
     {
       label: "Components",
       href: base,
@@ -119,7 +118,7 @@ function RailBody({
       count: nav.newCount,
       active: onCatalog && location?.status === "new",
     },
-    { label: "Docs", href: g("/docs"), icon: BookOpen, active: onDocs },
+    { label: "Docs", href: "/docs", icon: BookOpen, active: onDocs },
   ]
 
   return (
@@ -222,7 +221,7 @@ function RailBody({
                       return (
                         <li key={item.slug}>
                           <Link
-                            href={g(`/components/${item.slug}`)}
+                            href={`/components/${item.slug}`}
                             onClick={onNavigate}
                             aria-current={active ? "page" : undefined}
                             className={cn(
@@ -298,7 +297,7 @@ function RailBody({
                     {section.items.map((item) => {
                       const active =
                         pathname === item.href ||
-                        (pathname === g("/docs") && item.slug === "introduction")
+                        (pathname === "/docs" && item.slug === "introduction")
                       return (
                         <li key={item.href}>
                           <Link

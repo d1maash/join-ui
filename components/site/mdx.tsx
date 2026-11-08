@@ -3,7 +3,6 @@ import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
 import { mdxComponents } from "@/components/site/mdx-components"
-import { g } from "@/components/variants/gallery/links"
 import { cn } from "@/lib/utils"
 
 /*
@@ -48,7 +47,7 @@ function Anchor({
   )
   if (href.startsWith("/") || href.startsWith("#")) {
     return (
-      <Link href={href.startsWith("/") ? g(href) : href} className={style} {...props} />
+      <Link href={href.startsWith("/") ? href : href} className={style} {...props} />
     )
   }
   return (
@@ -98,7 +97,7 @@ function Card({
     )
   }
   return (
-    <Link href={href.startsWith("/") ? g(href) : href} className={style}>
+    <Link href={href.startsWith("/") ? href : href} className={style}>
       {body}
     </Link>
   )

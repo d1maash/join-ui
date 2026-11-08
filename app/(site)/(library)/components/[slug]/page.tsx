@@ -10,16 +10,16 @@ import { CopyButton } from "@/components/site/copy-button"
 import { CopyPromptButton } from "@/components/site/copy-prompt-button"
 import { GitHubIcon } from "@/components/site/icons"
 import { PackageManagerTabs } from "@/components/site/package-manager-tabs"
-import { GalleryCard, StatusPill } from "@/components/variants/gallery/card"
+import { GalleryCard, StatusPill } from "@/components/site/card"
 import {
   categoryHref,
   formatDate,
   g,
   toGalleryItem,
-} from "@/components/variants/gallery/data"
-import { RailRow } from "@/components/variants/gallery/rail-row"
-import { Toc } from "@/components/variants/gallery/toc"
-import { Workbench } from "@/components/variants/gallery/workbench"
+} from "@/components/site/data"
+import { RailRow } from "@/components/site/rail-row"
+import { Toc } from "@/components/site/toc"
+import { Workbench } from "@/components/site/workbench"
 import { dependencyCommands, shadcnCommands } from "@/lib/commands"
 import { buildComponentPrompt } from "@/lib/prompts/build-prompt"
 import {
@@ -441,7 +441,7 @@ function SiblingLink({
   }
   return (
     <Link
-      href={g(`/components/${component.slug}`)}
+      href={`/components/${component.slug}`}
       className="g-icon-btn border border-[var(--g-line)]"
       aria-label={`${direction === "previous" ? "Previous" : "Next"}: ${component.title}`}
       title={component.title}
@@ -461,7 +461,7 @@ function PrevNextCard({
   const next = direction === "next"
   return (
     <Link
-      href={g(`/components/${component.slug}`)}
+      href={`/components/${component.slug}`}
       className={`group flex flex-col gap-1 rounded-2xl border border-[var(--g-line)] bg-[var(--g-panel)] px-5 py-4 transition-colors hover:border-[var(--g-line-3)] ${next ? "items-end text-right sm:col-start-2" : ""}`}
     >
       <span className="flex items-center gap-1.5 text-[0.75rem] text-[var(--g-ink-4)]">
@@ -544,7 +544,7 @@ function InstallPanel({
             Needs the <Mono>{siteConfig.namespace}</Mono> namespace in{" "}
             <Mono>components.json</Mono> —{" "}
             <Link
-              href={g("/docs/registry-setup")}
+              href={"/docs/registry-setup"}
               className="text-[var(--g-ink-2)] underline decoration-[var(--g-line-3)] underline-offset-4 hover:text-[var(--g-ink)]"
             >
               registry setup
@@ -705,7 +705,7 @@ function PromptPanel({
         path, the dependencies, every prop and every accessibility rule — and cannot
         describe a prop that does not exist.{" "}
         <Link
-          href={g("/docs/ai")}
+          href={"/docs/ai"}
           className="text-[var(--g-ink-2)] underline decoration-[var(--g-line-3)] underline-offset-4 hover:text-[var(--g-ink)]"
         >
           How it is built
