@@ -8,7 +8,7 @@ import { categoryHref } from "./links"
 export { categoryHref, formatDate } from "./links"
 
 /*
- * Gallery — the data layer (server only: it reads the full registry).
+ * The site's data layer (server only: it reads the full registry).
  * ---------------------------------------------------------------------------
  * Every surface in this variant is projected from the registry through the
  * helpers below: the rail, the rails of cards, the category tiles, the
@@ -17,22 +17,22 @@ export { categoryHref, formatDate } from "./links"
  */
 
 /** The card a rail, a grid or a related row renders. */
-export interface GalleryItem extends CatalogItem {
+export interface CardItem extends CatalogItem {
   /** The more recent of `since` and `updated` — what "new" sorts by. */
   touched: string
 }
 
-export function toGalleryItem(component: ComponentMetadata): GalleryItem {
+export function toCardItem(component: ComponentMetadata): CardItem {
   return { ...toCatalogItem(component), touched: component.updated ?? component.since }
 }
 
-export function getGalleryItems(): GalleryItem[] {
-  return allComponents.map(toGalleryItem)
+export function getCardItems(): CardItem[] {
+  return allComponents.map(toCardItem)
 }
 
 /** "New & noteworthy": newest first by the later of entry and rework. */
-export function getNoteworthy(limit = 12): GalleryItem[] {
-  return [...getGalleryItems()]
+export function getNoteworthy(limit = 12): CardItem[] {
+  return [...getCardItems()]
     .sort(
       (a, b) => b.touched.localeCompare(a.touched) || a.title.localeCompare(b.title)
     )
@@ -40,8 +40,8 @@ export function getNoteworthy(limit = 12): GalleryItem[] {
 }
 
 /** "Featured": the registry's own flag, in catalog order. */
-export function getFeatured(limit = 12): GalleryItem[] {
-  return getGalleryItems()
+export function getFeatured(limit = 12): CardItem[] {
+  return getCardItems()
     .filter((item) => item.featured)
     .slice(0, limit)
 }
@@ -64,7 +64,7 @@ export interface NavDocsSection {
   items: Array<{ slug: string; title: string; href: string; label?: string }>
 }
 
-export interface GalleryNav {
+export interface LibraryNav {
   total: number
   newCount: number
   updatedCount: number
@@ -79,7 +79,7 @@ function navBadge(component: ComponentMetadata): NavComponent["badge"] {
 }
 
 /** The rail: categories that have something in them, then the guides. */
-export function getGalleryNav(): GalleryNav {
+export function getLibraryNav(): LibraryNav {
   const named = componentsByName.map((component) => ({
     slug: component.slug,
     title: component.title,
@@ -120,7 +120,7 @@ export function getGalleryNav(): GalleryNav {
 
 /** Category tiles on the landing page — only categories with members. */
 export function getCategoryTiles() {
-  const items = getGalleryItems()
+  const items = getCardItems()
   return getCategorySummaries()
     .filter((summary) => summary.count > 0)
     .map((summary) => {

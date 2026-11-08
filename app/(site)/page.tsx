@@ -2,16 +2,16 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowRight, ChevronRight } from "lucide-react"
 
-import { GalleryCard, StatusPill } from "@/components/site/card"
+import { ComponentCard, StatusPill } from "@/components/site/card"
 import {
   formatDate,
   getCategoryTiles,
   getFeatured,
-  getGalleryItems,
-  getGalleryNav,
+  getCardItems,
+  getLibraryNav,
   getNoteworthy,
 } from "@/components/site/data"
-import { GalleryFooter } from "@/components/site/footer"
+import { SiteFooter } from "@/components/site/footer"
 import { HeroPreview } from "@/components/site/hero-preview"
 import { LandingNav } from "@/components/site/landing-nav"
 import { LazyThumb } from "@/components/site/lazy-thumb"
@@ -23,14 +23,14 @@ import { getComponentSources } from "@/lib/registry/source"
 
 export const metadata: Metadata = {
   title: { absolute: "Join UI — Motion-first React components" },
-  robots: { index: false, follow: false },
+  alternates: { canonical: "/" },
 }
 
 const TILE_LIST = 5
 
-export default async function GalleryLanding() {
-  const nav = getGalleryNav()
-  const items = getGalleryItems()
+export default async function HomePage() {
+  const nav = getLibraryNav()
+  const items = getCardItems()
   const noteworthy = getNoteworthy()
   const featured = getFeatured()
   const tiles = getCategoryTiles()
@@ -112,7 +112,7 @@ export default async function GalleryLanding() {
               href={"/components"}
             >
               {noteworthy.map((item) => (
-                <GalleryCard key={item.slug} item={item} dated />
+                <ComponentCard key={item.slug} item={item} dated />
               ))}
             </RailRow>
 
@@ -124,7 +124,7 @@ export default async function GalleryLanding() {
               itemClassName="w-[min(84vw,26rem)] sm:w-[27rem]"
             >
               {featured.map((item) => (
-                <GalleryCard key={item.slug} item={item} aspect="16/10" description />
+                <ComponentCard key={item.slug} item={item} aspect="16/10" description />
               ))}
             </RailRow>
           </div>
@@ -216,7 +216,7 @@ export default async function GalleryLanding() {
           ) : null}
         </div>
       </main>
-      <GalleryFooter
+      <SiteFooter
         nav={nav}
         installCommand={
           subject?.installCommand ?? "pnpm dlx shadcn@latest add @joinui/…"

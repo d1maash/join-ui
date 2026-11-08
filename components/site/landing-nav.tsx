@@ -3,18 +3,18 @@
 import * as React from "react"
 import Link from "next/link"
 
-import { GalleryLogo } from "@/components/site/rail"
+import { SiteLogo } from "@/components/site/rail"
 import { SearchField, SearchIconButton } from "@/components/site/search"
 import { GitHubLink, MobileMenu } from "@/components/site/top-bar"
 import { cn } from "@/lib/utils"
 
-import type { GalleryNav } from "@/components/site/data"
+import type { LibraryNav } from "@/components/site/data"
 
 /*
  * The landing page's bar: transparent over the hero, a blurred hairline
  * strip once the page has moved.
  */
-export function LandingNav({ nav }: { nav: GalleryNav }) {
+export function LandingNav({ nav }: { nav: LibraryNav }) {
   const [scrolled, setScrolled] = React.useState(false)
 
   React.useEffect(() => {
@@ -41,7 +41,7 @@ export function LandingNav({ nav }: { nav: GalleryNav }) {
       )}
     >
       <div className="mx-auto flex h-[var(--g-top)] max-w-[80rem] items-center gap-6 px-4 sm:px-6 lg:px-8">
-        <GalleryLogo />
+        <SiteLogo />
         <nav aria-label="Primary" className="hidden items-center gap-0.5 md:flex">
           {links.map((link) => (
             <Link

@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import * as Menu from "@radix-ui/react-dropdown-menu"
 import { Check, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react"
 
-import { GalleryCard } from "@/components/site/card"
+import { ComponentCard } from "@/components/site/card"
 import { cn } from "@/lib/utils"
 import {
   COMPONENT_CATEGORIES,
@@ -15,7 +15,7 @@ import {
   type ComponentTrait,
 } from "@/types/registry"
 
-import type { GalleryItem } from "@/components/site/data"
+import type { CardItem } from "@/components/site/data"
 
 /*
  * The catalog.
@@ -55,7 +55,7 @@ function isStatus(value: string | null): value is ComponentStatus {
   return value !== null && (COMPONENT_STATUSES as readonly string[]).includes(value)
 }
 
-export function Catalog({ items }: { items: GalleryItem[] }) {
+export function Catalog({ items }: { items: CardItem[] }) {
   const router = useRouter()
   const pathname = usePathname()
   const params = useSearchParams()
@@ -282,7 +282,7 @@ export function Catalog({ items }: { items: GalleryItem[] }) {
         <ul className="grid [grid-template-columns:repeat(auto-fill,minmax(min(100%,17.5rem),1fr))] gap-x-5 gap-y-9">
           {filtered.map((item) => (
             <li key={item.slug} className="flex">
-              <GalleryCard item={item} description className="w-full" />
+              <ComponentCard item={item} description className="w-full" />
             </li>
           ))}
         </ul>
@@ -334,7 +334,7 @@ function FilterMenu({
   onStatus,
   onTrait,
 }: {
-  items: GalleryItem[]
+  items: CardItem[]
   statuses: ComponentStatus[]
   status: ComponentStatus | null
   traits: ComponentTrait[]

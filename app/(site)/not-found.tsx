@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { GalleryCard } from "@/components/site/card"
+import { ComponentCard } from "@/components/site/card"
 import { getNoteworthy } from "@/components/site/data"
 import { NotFoundSearch } from "@/components/site/not-found-search"
 import { RailRow } from "@/components/site/rail-row"
@@ -9,7 +9,7 @@ import { LibraryShell } from "@/components/site/shell"
 
 export const metadata: Metadata = {
   title: "Page not found",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
 }
 
 /*
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
  * everywhere you look: the rail, a search field that already tried the words
  * in the broken address, and the newest components underneath.
  */
-export default function GalleryNotFound() {
+export default function SiteNotFound() {
   const noteworthy = getNoteworthy()
 
   return (
@@ -55,7 +55,7 @@ export default function GalleryNotFound() {
           href={"/components"}
         >
           {noteworthy.map((item) => (
-            <GalleryCard key={item.slug} item={item} />
+            <ComponentCard key={item.slug} item={item} />
           ))}
         </RailRow>
       </main>

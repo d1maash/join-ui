@@ -1,16 +1,16 @@
 import Link from "next/link"
 
 import { CopyButton } from "@/components/site/copy-button"
-import { GalleryLogo } from "@/components/site/rail"
+import { SiteLogo } from "@/components/site/rail"
 import { siteConfig } from "@/lib/site"
 
-import type { GalleryNav } from "@/components/site/data"
+import type { LibraryNav } from "@/components/site/data"
 
-export function GalleryFooter({
+export function SiteFooter({
   nav,
   installCommand,
 }: {
-  nav: GalleryNav
+  nav: LibraryNav
   installCommand: string
 }) {
   const columns = [
@@ -59,7 +59,7 @@ export function GalleryFooter({
     <footer className="border-t border-[var(--g-line)]">
       <div className="mx-auto grid max-w-[80rem] grid-cols-2 gap-x-6 gap-y-10 px-4 py-14 sm:px-6 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] lg:px-8">
         <div className="col-span-2 flex flex-col gap-4 md:col-span-1">
-          <GalleryLogo />
+          <SiteLogo />
           <p className="max-w-xs text-[0.875rem] leading-relaxed text-[var(--g-ink-3)]">
             {siteConfig.tagline} Accessible, animated with motion, installed through the
             shadcn CLI.

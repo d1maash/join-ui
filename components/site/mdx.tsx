@@ -6,7 +6,7 @@ import { mdxComponents } from "@/components/site/mdx-components"
 import { cn } from "@/lib/utils"
 
 /*
- * The shared MDX map, re-set for the gallery's dark reading column. Code
+ * The shared MDX map, re-set for the site's dark reading column. Code
  * blocks, callouts, steps and install tabs are the shared components — they
  * pick the palette up from the tokens, so a listing in the docs is the same
  * object as a listing in the workbench. Links are rewritten into the variant.
@@ -103,7 +103,7 @@ function Card({
   )
 }
 
-export const galleryMdx = {
+export const siteMdx = {
   ...mdxComponents,
   h2: heading(2),
   h3: heading(3),

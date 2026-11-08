@@ -1,7 +1,7 @@
 import type * as React from "react"
 import Link from "next/link"
 
-import { getGalleryNav } from "@/components/site/data"
+import { getLibraryNav } from "@/components/site/data"
 import { Rail } from "@/components/site/rail"
 import { LibraryTopBar } from "@/components/site/top-bar"
 import { siteConfig } from "@/lib/site"
@@ -12,7 +12,7 @@ import { siteConfig } from "@/lib/site"
  * 404 all sit in it; the landing page does not, it is the shop window.
  */
 export function LibraryShell({ children }: { children: React.ReactNode }) {
-  const nav = getGalleryNav()
+  const nav = getLibraryNav()
   return (
     <div className="flex min-h-dvh">
       <aside className="sticky top-0 hidden h-dvh w-[var(--g-rail)] shrink-0 border-r border-[var(--g-line)] bg-[var(--g-bg)] lg:block">

@@ -7,7 +7,7 @@ import rehypeSlug from "rehype-slug"
 import remarkGfm from "remark-gfm"
 
 import { CopyButton } from "@/components/site/copy-button"
-import { galleryMdx } from "@/components/site/mdx"
+import { siteMdx } from "@/components/site/mdx"
 import { Toc } from "@/components/site/toc"
 import {
   DOCS_INDEX_SLUG,
@@ -39,14 +39,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const resolved = resolveSlug(slug)
   const page = resolved ? getDocsPage(resolved) : undefined
   if (!page) return { title: "Page not found", robots: { index: false } }
+  const canonical = slug?.length ? `/docs/${resolved}` : "/docs"
   return {
     title: page.title,
     description: page.description,
-    robots: { index: false, follow: false },
+    alternates: { canonical },
+    openGraph: {
+      type: "article",
+      title: `${page.title} — ${siteConfig.name}`,
+      description: page.description,
+      url: canonical,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${page.title} — ${siteConfig.name}`,
+      description: page.description,
+    },
   }
 }
 
-export default async function GalleryDocsPage({ params }: PageProps) {
+export default async function DocsPage({ params }: PageProps) {
   const { slug } = await params
   const resolved = resolveSlug(slug)
   const page = resolved ? getDocsPage(resolved) : undefined
@@ -61,8 +73,22 @@ export default async function GalleryDocsPage({ params }: PageProps) {
   const editUrl = `${siteConfig.links.repo}/blob/main/content/docs/${resolved}.mdx`
   const minutes = Math.max(1, Math.round(source.split(/\s+/).length / 230))
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: page.title,
+    description: page.description,
+    url: `${siteConfig.url}${page.href}`,
+    isPartOf: { "@type": "WebSite", name: siteConfig.name, url: siteConfig.url },
+    author: { "@type": "Organization", name: siteConfig.author },
+  }
+
   return (
     <main id="main-content" className="px-4 pt-10 pb-16 sm:px-6 lg:px-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto grid max-w-[70rem] gap-12 xl:grid-cols-[minmax(0,1fr)_13rem] 2xl:gap-20">
         <article className="max-w-[46rem] min-w-0">
           <header className="mb-10 flex flex-col gap-3 border-b border-[var(--g-line)] pb-8">
@@ -103,7 +129,7 @@ export default async function GalleryDocsPage({ params }: PageProps) {
           <div className="g-doc">
             <MDXRemote
               source={source}
-              components={galleryMdx}
+              components={siteMdx}
               options={{
                 parseFrontmatter: false,
                 mdxOptions: {

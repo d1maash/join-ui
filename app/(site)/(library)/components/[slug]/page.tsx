@@ -10,11 +10,11 @@ import { CopyButton } from "@/components/site/copy-button"
 import { CopyPromptButton } from "@/components/site/copy-prompt-button"
 import { GitHubIcon } from "@/components/site/icons"
 import { PackageManagerTabs } from "@/components/site/package-manager-tabs"
-import { GalleryCard, StatusPill } from "@/components/site/card"
+import { ComponentCard, StatusPill } from "@/components/site/card"
 import {
   categoryHref,
   formatDate,
-  toGalleryItem,
+  toCardItem,
 } from "@/components/site/data"
 import { RailRow } from "@/components/site/rail-row"
 import { Toc } from "@/components/site/toc"
@@ -44,10 +44,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   const component = getComponent(slug)
   if (!component) return { title: "Component not found", robots: { index: false } }
+  const url = `/components/${component.slug}`
   return {
     title: component.title,
     description: component.description,
-    robots: { index: false, follow: false },
+    keywords: [component.name, component.category, ...component.tags],
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      title: `${component.title} — ${siteConfig.name}`,
+      description: component.description,
+      url,
+      publishedTime: component.since,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${component.title} — ${siteConfig.name}`,
+      description: component.description,
+    },
   }
 }
 
@@ -60,7 +74,7 @@ const TOC = [
   { id: "related", title: "Related", level: 2 as const },
 ]
 
-export default async function GalleryComponentPage({ params }: PageProps) {
+export default async function ComponentPage({ params }: PageProps) {
   const { slug } = await params
   const component = getComponent(slug)
   if (!component) notFound()
@@ -78,8 +92,26 @@ export default async function GalleryComponentPage({ params }: PageProps) {
     0
   )
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    name: component.title,
+    description: component.description,
+    programmingLanguage: "TypeScript",
+    runtimePlatform: "React",
+    codeRepository: siteConfig.links.repo,
+    license: "https://opensource.org/licenses/MIT",
+    dateCreated: component.since,
+    url: `${siteConfig.url}/components/${component.slug}`,
+    isPartOf: { "@type": "WebSite", name: siteConfig.name, url: siteConfig.url },
+  }
+
   return (
     <main id="main-content">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="flex flex-col gap-4 px-4 pt-6 pb-5 sm:px-6 lg:px-8 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2 text-[0.8125rem]">
@@ -293,7 +325,7 @@ export default async function GalleryComponentPage({ params }: PageProps) {
               hrefLabel={`All ${component.category}`}
             >
               {related.map((item) => (
-                <GalleryCard key={item.slug} item={toGalleryItem(item)} />
+                <ComponentCard key={item.slug} item={toCardItem(item)} />
               ))}
             </RailRow>
           </div>

@@ -48,7 +48,7 @@ const VIEWPORTS: Array<{
  * Tablet and phone widths are rendered through the standalone preview route
  * in a same-origin frame, so the component sees a real viewport of that size
  * and its media queries answer to it. The frame is stripped of that page's
- * own chrome and handed the theme, and the gallery's dark surface tokens.
+ * own chrome and handed the theme, and the site's dark surface tokens.
  */
 const EMBED_CSS = `
 body > div > header { display: none !important; }

@@ -13,19 +13,19 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { GalleryLogo, Rail } from "@/components/site/rail"
+import { SiteLogo, Rail } from "@/components/site/rail"
 import { SearchField, SearchIconButton } from "@/components/site/search"
 import { siteConfig } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
-import type { GalleryNav } from "@/components/site/data"
+import type { LibraryNav } from "@/components/site/data"
 
 /** The rail, as a sheet, for anything narrower than a laptop. */
 export function MobileMenu({
   nav,
   className,
 }: {
-  nav: GalleryNav
+  nav: LibraryNav
   className?: string
 }) {
   const [open, setOpen] = React.useState(false)
@@ -54,7 +54,7 @@ export function MobileMenu({
   )
 }
 
-function useCrumbs(nav: GalleryNav) {
+function useCrumbs(nav: LibraryNav) {
   const pathname = usePathname()
   return React.useMemo(() => {
     const components = "/components"
@@ -97,7 +97,7 @@ function useCrumbs(nav: GalleryNav) {
   }, [nav, pathname])
 }
 
-function Crumbs({ nav, className }: { nav: GalleryNav; className?: string }) {
+function Crumbs({ nav, className }: { nav: LibraryNav; className?: string }) {
   const crumbs = useCrumbs(nav)
   return (
     <nav aria-label="Breadcrumb" className={cn("min-w-0", className)}>
@@ -156,11 +156,11 @@ export function GitHubLink({ className }: { className?: string }) {
 }
 
 /** The bar above every library page: where you are, search on small screens, GitHub, install. */
-export function LibraryTopBar({ nav }: { nav: GalleryNav }) {
+export function LibraryTopBar({ nav }: { nav: LibraryNav }) {
   return (
     <header className="sticky top-0 z-40 flex h-[var(--g-top)] items-center gap-3 border-b border-[var(--g-line)] bg-[rgb(9_9_11/0.82)] px-4 backdrop-blur-xl backdrop-saturate-150 sm:px-5 lg:px-6">
       <MobileMenu nav={nav} className="lg:hidden" />
-      <GalleryLogo className="lg:hidden" />
+      <SiteLogo className="lg:hidden" />
       <Crumbs nav={nav} className="hidden lg:block" />
       <div className="ml-auto flex items-center gap-1">
         <SearchField label="Search" className="hidden h-8 w-56 md:flex lg:hidden" />

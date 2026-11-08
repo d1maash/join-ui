@@ -20,7 +20,7 @@ export function NotFoundSearch() {
   const guess = React.useMemo(() => {
     const last = pathname.split("/").filter(Boolean).pop() ?? ""
     const words = decodeURIComponent(last).replace(/[-_]+/g, " ").trim()
-    if (!words || words === "gallery") return ""
+    if (!words) return ""
     if (searchIndex(index, words, 1).length > 0) return words
     const prefix = words
       .split(" ")

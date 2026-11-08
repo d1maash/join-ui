@@ -11,7 +11,7 @@ import { SearchField } from "@/components/site/search"
 import { siteConfig } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
-import type { GalleryNav } from "@/components/site/data"
+import type { LibraryNav } from "@/components/site/data"
 
 /*
  * The library rail.
@@ -23,7 +23,7 @@ import type { GalleryNav } from "@/components/site/data"
  * remounted. A group with forty components costs nothing until it is opened.
  */
 
-export function GalleryLogo({ className }: { className?: string }) {
+export function SiteLogo({ className }: { className?: string }) {
   return (
     <Link
       href={"/"}
@@ -50,7 +50,7 @@ function useLocation() {
 }
 
 export function Rail(props: {
-  nav: GalleryNav
+  nav: LibraryNav
   onNavigate?: () => void
   className?: string
 }) {
@@ -62,7 +62,7 @@ export function Rail(props: {
 }
 
 function RailWithLocation(props: {
-  nav: GalleryNav
+  nav: LibraryNav
   onNavigate?: () => void
   className?: string
 }) {
@@ -76,7 +76,7 @@ function RailBody({
   onNavigate,
   className,
 }: {
-  nav: GalleryNav
+  nav: LibraryNav
   location: ReturnType<typeof useLocation> | null
   onNavigate?: () => void
   className?: string
@@ -124,7 +124,7 @@ function RailBody({
   return (
     <nav aria-label="Library" className={cn("flex h-full min-h-0 flex-col", className)}>
       <div className="flex flex-col gap-3 px-3 pt-3.5 pb-2">
-        <GalleryLogo className="px-1.5" />
+        <SiteLogo className="px-1.5" />
         <SearchField label="Search library" />
       </div>
 

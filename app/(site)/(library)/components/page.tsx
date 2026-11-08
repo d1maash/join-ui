@@ -2,17 +2,23 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 
 import { Catalog, CatalogFallback } from "@/components/site/catalog"
-import { getGalleryItems } from "@/components/site/data"
+import { getCardItems } from "@/components/site/data"
 
 export const metadata: Metadata = {
   title: "Components",
   description:
     "Every Join UI component as a live card. Filter by category, status and traits, sort by date, copy a prompt for your agent.",
-  robots: { index: false, follow: false },
+  alternates: { canonical: "/components" },
+  openGraph: {
+    title: "Components — Join UI",
+    description:
+      "Every Join UI component as a live card. Filter by category, status and traits, then install with the shadcn CLI.",
+    url: "/components",
+  },
 }
 
-export default function GalleryCatalogPage() {
-  const items = getGalleryItems()
+export default function CatalogPage() {
+  const items = getCardItems()
   const categories = new Set(items.map((item) => item.category)).size
 
   return (

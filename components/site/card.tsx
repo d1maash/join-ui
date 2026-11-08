@@ -8,7 +8,7 @@ import { LazyThumb } from "@/components/site/lazy-thumb"
 import { formatDate } from "@/components/site/links"
 import { cn } from "@/lib/utils"
 
-import type { GalleryItem } from "@/components/site/data"
+import type { CardItem } from "@/components/site/data"
 
 /*
  * The one card. Rails, the catalog grid, related rows and the 404 all render
@@ -20,7 +20,7 @@ export function StatusPill({
   item,
   className,
 }: {
-  item: Pick<GalleryItem, "status"> & { updated?: string }
+  item: Pick<CardItem, "status"> & { updated?: string }
   className?: string
 }) {
   if (item.status === "new")
@@ -32,7 +32,7 @@ export function StatusPill({
   return null
 }
 
-export function GalleryCard({
+export function ComponentCard({
   item,
   aspect = "4/3",
   description = false,
@@ -40,7 +40,7 @@ export function GalleryCard({
   eager = false,
   className,
 }: {
-  item: GalleryItem
+  item: CardItem
   aspect?: "4/3" | "16/10" | "16/9"
   description?: boolean
   /** Adds when it landed, or when it was last reworked, under the title. */

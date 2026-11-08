@@ -12,7 +12,7 @@ import { StatusPill } from "@/components/site/card"
 import { LazyThumb } from "@/components/site/lazy-thumb"
 import { cn } from "@/lib/utils"
 
-import type { GalleryItem, GalleryNav } from "@/components/site/data"
+import type { CardItem, LibraryNav } from "@/components/site/data"
 
 /*
  * The library, framed. Not a screenshot: the rail is the real category list
@@ -20,7 +20,7 @@ import type { GalleryItem, GalleryNav } from "@/components/site/data"
  * live component. It is scenery — inert and hidden from assistive tech, since
  * the same things are one click away for real — so it carries no links.
  */
-export function HeroPreview({ nav, items }: { nav: GalleryNav; items: GalleryItem[] }) {
+export function HeroPreview({ nav, items }: { nav: LibraryNav; items: CardItem[] }) {
   const shown = items.slice(0, 6)
 
   return (
