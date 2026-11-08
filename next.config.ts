@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/components/[slug]": ["./registry/**/*"],
     "/preview/[slug]": ["./registry/**/*"],
+    // The agent brief a catalog card copies, served as a prerendered text file.
+    "/prompts/[slug]": ["./registry/**/*"],
     "/docs/[[...slug]]": ["./content/**/*"],
   },
   async headers() {
