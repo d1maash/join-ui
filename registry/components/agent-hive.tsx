@@ -145,7 +145,6 @@ const SIZES = {
     line: 18,
     marker: 16,
     pip: 11,
-    blur: 4,
     glyph: "size-[1.125rem]",
     /* Apple's small capsule: 13pt semibold on a 36pt bar. */
     action: "h-9 px-5 text-[0.8125rem]",
@@ -165,7 +164,6 @@ const SIZES = {
     line: 22,
     marker: 20,
     pip: 13,
-    blur: 6,
     glyph: "size-6",
     /* A 44pt capsule — the touch target, at 15pt semibold. */
     action: "h-11 px-7 text-[0.9375rem]",
@@ -545,8 +543,7 @@ export function AgentHive({
          * between them are not. That masking is the whole difference between
          * light inside a material and a coloured smear behind it: unmasked, the
          * wash pools in the gaps and around the rim, and the hive looks stained
-         * rather than lit. It sits under the frosting, so each cell's backdrop
-         * filter picks it up and carries a little of it past its own edges.
+         * rather than lit. It sits under the frosting and shows through it.
          */}
         <svg
           aria-hidden="true"
@@ -637,7 +634,6 @@ export function AgentHive({
               slot={slot}
               width={layout.cellW}
               height={layout.cellH}
-              blur={scale.blur}
               edge={edge}
               travel={travel}
               delay={(layout.wave.get(index) ?? 0) * MOUNT_STEP}
@@ -933,7 +929,6 @@ function Cell({
   slot,
   width,
   height,
-  blur,
   edge,
   travel,
   delay,
@@ -950,7 +945,6 @@ function Cell({
   slot: { x: number; y: number; cx: number; cy: number }
   width: number
   height: number
-  blur: number
   edge: string
   travel: Travel
   delay: number
@@ -982,7 +976,7 @@ function Cell({
 
   const body = (
     <motion.span className="absolute inset-0 block" style={wake}>
-      <Glass width={width} height={height} blur={blur} empty={!model} lit={hovered} />
+      <Glass width={width} height={height} empty={!model} lit={hovered} />
       {/*
        * Two strokes on one path. The hairline is what holds the shape on a
        * white card, where no amount of light would; the specular rides over
@@ -1130,61 +1124,46 @@ function CellGlyph({
 /**
  * The frosted body of a cell.
  *
- * A box rather than the SVG, because only a real box can carry a
- * `backdrop-filter` — and the hexagon it is cut to is the same path the outline
- * is drawn from, resolved to this cell's pixel size, because `clip-path: path()`
- * has no viewBox to scale it with.
+ * A box rather than the SVG, so the wash can transition — and the hexagon it is
+ * cut to is the same path the outline is drawn from, resolved to this cell's
+ * pixel size, because `clip-path: path()` has no viewBox to scale it with.
  *
- * Two elements, not one, and the nesting is load-bearing: a `backdrop-filter`
- * is *not* clipped by a `clip-path` on its own element, so a single box leaks
- * its filtered backdrop as a rectangle — visible here as saturated corners
- * bleeding into the gaps between the cells whenever anything colourful passes
- * behind the comb. Clipping the parent and filtering the child clips it.
+ * No `backdrop-filter`, on purpose. Behind a cell there is only the card and
+ * the light, which is already blurred, so a blur would change nothing — and a
+ * backdrop filter is drawn on its own compositor layer, where some browsers
+ * and GPUs drop the hexagon clip and paint it as a square, leaving a grey box
+ * behind every cell. A clipped background is cut the same way everywhere.
  */
 function Glass({
   width,
   height,
-  blur,
   empty = false,
   lit = false,
 }: {
   width: number
   height: number
-  blur: number
   empty?: boolean
   /** Under the cursor: the frosting thickens, as though breathed on. */
   lit?: boolean
 }) {
-  const filter = `blur(${blur}px) saturate(${lit ? 1.9 : 1.6})`
   return (
     <span
       aria-hidden="true"
-      className="absolute inset-0 block"
-      style={{ clipPath: `path("${hexPath(width, height)}")` }}
-    >
-      <span
-        className="block size-full transition-[background,backdrop-filter] duration-300"
-        style={{
-          background: lit ? GLASS_LIT : empty ? GLASS_EMPTY : GLASS,
-          backdropFilter: filter,
-          WebkitBackdropFilter: filter,
-        }}
-      />
-      {/*
-       * The body of the lens: light pooled under the top edge and gone by the
-       * waist, so the cell reads as convex rather than as a flat tint — and a
-       * faint return off the bottom, where the light leaves the glass.
-       */}
-      <span
-        className="absolute inset-0 block"
-        style={{
-          backgroundImage: [
-            `linear-gradient(to bottom, ${light(0.62, 0.09)}, transparent 58%)`,
-            `radial-gradient(70% 34% at 50% 104%, ${light(0.42, 0.07)}, transparent)`,
-          ].join(", "),
-        }}
-      />
-    </span>
+      className="absolute inset-0 block transition-[background-color] duration-300"
+      style={{
+        clipPath: `path("${hexPath(width, height)}")`,
+        backgroundColor: lit ? GLASS_LIT : empty ? GLASS_EMPTY : GLASS,
+        /*
+         * The body of the lens: light pooled under the top edge and gone by the
+         * waist, so the cell reads as convex rather than as a flat tint — and a
+         * faint return off the bottom, where the light leaves the glass.
+         */
+        backgroundImage: [
+          `linear-gradient(to bottom, ${light(0.62, 0.09)}, transparent 58%)`,
+          `radial-gradient(70% 34% at 50% 104%, ${light(0.42, 0.07)}, transparent)`,
+        ].join(", "),
+      }}
+    />
   )
 }
 
