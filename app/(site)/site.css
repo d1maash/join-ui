@@ -484,11 +484,24 @@
   }
 
   /*
-   * The one band of light. A long, soft diagonal of the accent, far off the
-   * top of the page, drifting a few percent over half a minute. It is the
-   * only colour on the landing that is not a component.
+   * The one band of light — the only colour on the landing that is not a
+   * component. It is drawn as cloth by <HeroLight>, on a canvas that covers
+   * the top of the hero and fades to the page colour on its own before its
+   * bottom edge.
+   */
+  .g-hero-light {
+    position: absolute;
+    inset: 0 0 auto;
+    width: 100%;
+    height: min(100%, 64rem);
+  }
+
+  /*
+   * Its stand-in where WebGL is not available: a long, soft diagonal of the
+   * accent, drifting a few percent over half a minute.
    */
   .g-hero-band {
+    display: none;
     position: absolute;
     top: 0;
     left: -22%;
@@ -535,6 +548,10 @@
     filter: blur(18px);
     animation-duration: 38s;
     animation-direction: alternate-reverse;
+  }
+
+  .g-hero-backdrop:has(> .g-hero-light[data-fallback]) .g-hero-band {
+    display: block;
   }
 
   @keyframes g-drift {

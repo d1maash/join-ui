@@ -12,6 +12,7 @@ import {
   getNoteworthy,
 } from "@/components/site/data"
 import { SiteFooter } from "@/components/site/footer"
+import { HeroLight } from "@/components/site/hero-light"
 import { HeroPreview } from "@/components/site/hero-preview"
 import { LandingNav } from "@/components/site/landing-nav"
 import { LazyThumb } from "@/components/site/lazy-thumb"
@@ -47,6 +48,7 @@ export default async function HomePage() {
         {/* ------------------------------------------------------------ hero */}
         <section className="relative overflow-hidden pt-[calc(var(--g-top)+4.5rem)] sm:pt-[calc(var(--g-top)+6rem)]">
           <div aria-hidden="true" className="g-hero-backdrop">
+            <HeroLight className="g-hero-light" />
             <div className="g-hero-band" />
             <div className="g-hero-band g-hero-band-2" />
             <div className="g-grain" />
