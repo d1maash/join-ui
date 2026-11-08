@@ -80,7 +80,7 @@ export default async function HomePage() {
               <span className="g-rise block [--d:1]">The motion is done.</span>
               <span className="g-rise block [--d:2]">The source is yours.</span>
             </h1>
-            <p className="g-rise mt-6 max-w-[38rem] [--d:3] text-[1.0625rem] leading-relaxed text-pretty text-[var(--g-ink-2)] sm:text-[1.1875rem]">
+            <p className="g-rise mt-6 max-w-[38rem] text-[1.0625rem] leading-relaxed text-pretty text-[var(--g-ink-2)] [--d:3] sm:text-[1.1875rem]">
               Animated, accessible React components that land in your repo as plain
               files through the shadcn CLI — each with a ready-made brief for Claude
               Code, Cursor or Codex.

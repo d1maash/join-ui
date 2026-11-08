@@ -602,6 +602,12 @@
     pointer-events: none;
   }
 
+  @media (max-width: 40rem) {
+    .g-hero-copy::before {
+      inset-inline: -14%;
+    }
+  }
+
   .g-hero-copy p {
     text-shadow: 0 1px 14px rgb(9 9 11 / 0.7);
   }
