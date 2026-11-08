@@ -1,4 +1,11 @@
-import { ArrowUp, ChevronDown, GitBranch, MessageSquare, SquareTerminal, Terminal } from "lucide-react"
+import {
+  ArrowUp,
+  ChevronDown,
+  GitBranch,
+  MessageSquare,
+  SquareTerminal,
+  Terminal,
+} from "lucide-react"
 
 import { CopyPromptButton } from "@/components/site/copy-prompt-button"
 import { cn } from "@/lib/utils"
@@ -26,7 +33,10 @@ export function ShipSection({
   const first = lines[0] ?? ""
   const stack = lines.slice(2, 7).join("\n")
   const deps = component.dependencies
-  const propCount = component.props.reduce((total, group) => total + group.props.length, 0)
+  const propCount = component.props.reduce(
+    (total, group) => total + group.props.length,
+    0
+  )
   const depText = deps.length > 0 ? deps.join(" and ") : "no new packages"
 
   const tools = [
@@ -48,7 +58,10 @@ export function ShipSection({
               <span className="text-[var(--g-accent-ink)]">
                 [Pasted text #1 +{lines.length - 1} lines]
               </span>
-              <span aria-hidden="true" className="ml-0.5 inline-block h-3.5 w-1.5 translate-y-0.5 bg-[var(--g-ink-2)]" />
+              <span
+                aria-hidden="true"
+                className="ml-0.5 inline-block h-3.5 w-1.5 translate-y-0.5 bg-[var(--g-ink-2)]"
+              />
             </div>
             <p className="px-1 text-[var(--g-ink-4)]">? for shortcuts</p>
           </div>
@@ -71,7 +84,9 @@ export function ShipSection({
                 {component.slug}.prompt.txt
               </span>
               <p className="text-[var(--g-ink)]">{first}</p>
-              <p className="mt-1 line-clamp-2 whitespace-pre-line text-[var(--g-ink-3)]">{stack}</p>
+              <p className="mt-1 line-clamp-2 whitespace-pre-line text-[var(--g-ink-3)]">
+                {stack}
+              </p>
               <div className="mt-2.5 flex items-center justify-between">
                 <span className="inline-flex items-center gap-1 rounded-md bg-[var(--g-panel-3)] px-1.5 py-0.5 text-[0.6875rem] text-[var(--g-ink-2)]">
                   Agent <ChevronDown aria-hidden="true" className="size-3" />
@@ -115,7 +130,11 @@ export function ShipSection({
 
   const facts = [
     { label: "Writes", value: target, mono: true },
-    { label: "Installs", value: deps.length > 0 ? deps.join(", ") : "Nothing new", mono: deps.length > 0 },
+    {
+      label: "Installs",
+      value: deps.length > 0 ? deps.join(", ") : "Nothing new",
+      mono: deps.length > 0,
+    },
     { label: "Documents", value: `${propCount} props` },
     {
       label: "Must keep",
@@ -127,19 +146,27 @@ export function ShipSection({
     <section aria-labelledby="ship" className="flex flex-col gap-8">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-2xl">
-          <h2 id="ship" className="g-title text-[1.875rem] text-[var(--g-ink)] sm:text-[2.375rem]">
+          <h2
+            id="ship"
+            className="g-title text-[1.875rem] text-[var(--g-ink)] sm:text-[2.375rem]"
+          >
             Built for how you ship
           </h2>
           <p className="mt-3 text-[0.9375rem] leading-relaxed text-pretty text-[var(--g-ink-3)]">
-            Every component carries one brief, and it is the same text wherever you paste it.
-            The one below is the real brief for{" "}
+            Every component carries one brief, and it is the same text wherever you
+            paste it. The one below is the real brief for{" "}
             <span className="text-[var(--g-ink)]">{component.title}</span>:{" "}
-            <span className="g-num">{lines.length}</span> lines, generated from its metadata and
-            its source file.
+            <span className="g-num">{lines.length}</span> lines, generated from its
+            metadata and its source file.
           </p>
         </div>
         <span className="g-accent-scope">
-          <CopyPromptButton prompt={prompt} componentName={component.title} variant="primary" size="md" />
+          <CopyPromptButton
+            prompt={prompt}
+            componentName={component.title}
+            variant="primary"
+            size="md"
+          />
         </span>
       </div>
 
@@ -154,10 +181,15 @@ export function ShipSection({
             </div>
             <div className="mt-auto">
               <h3 className="flex items-center gap-2 text-[0.9375rem] font-semibold tracking-[-0.016em] text-[var(--g-ink)]">
-                <tool.icon aria-hidden="true" className="size-4 text-[var(--g-ink-3)]" />
+                <tool.icon
+                  aria-hidden="true"
+                  className="size-4 text-[var(--g-ink-3)]"
+                />
                 {tool.name}
               </h3>
-              <p className="mt-1.5 text-[0.84375rem] leading-relaxed text-[var(--g-ink-3)]">{tool.line}</p>
+              <p className="mt-1.5 text-[0.84375rem] leading-relaxed text-[var(--g-ink-3)]">
+                {tool.line}
+              </p>
             </div>
           </li>
         ))}

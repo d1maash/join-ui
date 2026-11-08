@@ -16,6 +16,14 @@
   background-color: #0a0a0a;
   color-scheme: dark;
   scroll-padding-top: 5rem;
+  /*
+   * Instant, not smooth. Motion restores the scroll position with
+   * window.scrollTo() every time it measures a height animation, and the
+   * catalog is full of live miniatures doing exactly that; under the global
+   * smooth behaviour each restore became a scroll of its own and fought the
+   * reader's wheel.
+   */
+  scroll-behavior: auto;
 }
 
 :root:has(.v-index) body {
@@ -1035,6 +1043,11 @@
     text-transform: none;
     letter-spacing: normal;
     background: none;
+  }
+  .v-index .ix-table tbody th:not(.ix-mono) {
+    font-family: var(--font-ix-sans), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 400;
   }
   .v-index .ix-table td + td,
   .v-index .ix-table th + td,

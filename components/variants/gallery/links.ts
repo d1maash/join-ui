@@ -17,12 +17,20 @@ export function categoryHref(category: string): string {
   return g(`/components?category=${encodeURIComponent(category)}`)
 }
 
-/** The real slug of a (possibly scale-test) item, for previews and links. */
-export function realSlug(slug: string): string {
-  return slug.split("~")[0] ?? slug
-}
-
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+]
 
 /** `2026-09-10` → `Sep 10, 2026`, without a locale-dependent formatter. */
 export function formatDate(iso: string): string {

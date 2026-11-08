@@ -411,6 +411,12 @@
     transition: color 140ms var(--g-ease);
   }
 
+  /* The link is stretched over the whole card, so the card wears its ring. */
+  .g-card:has(.g-card-link:focus-visible) .g-card-thumb {
+    outline: 2px solid var(--g-accent-ink);
+    outline-offset: 3px;
+  }
+
   .g-card:hover .g-card-title {
     color: #fff;
   }

@@ -67,7 +67,7 @@ export default async function StudioDocsPage({ params }: PageProps) {
     <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_13.5rem] xl:gap-12">
       <main id="main-content" className="min-w-0 pt-8 pb-8">
         <MobileToc items={toc} />
-        <article className="mx-auto max-w-[46rem]">
+        <article className="max-w-[46rem]">
           <DocHeader
             crumbs={[
               { label: "Docs", href: sh("/docs") },

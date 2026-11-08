@@ -10,21 +10,20 @@ import { PackageManagerTabs } from "@/components/site/package-manager-tabs"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FlagBadge, MetaBadge } from "@/components/variants/studio/badges"
 import { ComponentCard } from "@/components/variants/studio/component-card"
-import { componentMarkdown, formatDate, getFlag } from "@/components/variants/studio/data"
+import { componentMarkdown, formatDate, getFlag, toItem } from "@/components/variants/studio/data"
 import { ContributeLinks, DocHeader, DocSection, PrevNext, SubHeading } from "@/components/variants/studio/doc-parts"
-import { categoryHref, categorySlug, sh } from "@/components/variants/studio/href"
+import { categoryHref, sh } from "@/components/variants/studio/href"
 import { PagePromptButton, PromptProvider } from "@/components/variants/studio/page-prompt"
 import { PreviewFrame } from "@/components/variants/studio/preview-frame"
 import { AccessibilityList, KeyboardTable, PropsReference } from "@/components/variants/studio/reference"
 import { MobileToc, Toc } from "@/components/variants/studio/toc"
-import type { StudioItem, TocItem } from "@/components/variants/studio/types"
+import type { TocItem } from "@/components/variants/studio/types"
 import { dependencyCommands, shadcnCommands } from "@/lib/commands"
 import { buildComponentPrompt } from "@/lib/prompts/build-prompt"
 import { allComponents, getComponent, getRelated, getSiblings } from "@/lib/registry"
 import { getComponentSources } from "@/lib/registry/source"
 import { siteConfig } from "@/lib/site"
 import { slugify } from "@/lib/utils"
-import type { ComponentMetadata } from "@/types/registry"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -42,24 +41,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: component.title,
     description: component.description,
     robots: { index: false, follow: false },
-  }
-}
-
-function toItem(component: ComponentMetadata): StudioItem {
-  return {
-    key: component.slug,
-    slug: component.slug,
-    href: sh(`/components/${component.slug}`),
-    title: component.title,
-    description: component.description,
-    category: component.category,
-    categorySlug: categorySlug(component.category),
-    tags: component.tags,
-    status: component.status,
-    flag: getFlag(component),
-    featured: component.featured,
-    since: component.since,
-    dependencies: component.dependencies,
   }
 }
 

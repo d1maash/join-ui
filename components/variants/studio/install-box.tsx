@@ -91,7 +91,7 @@ export function InstallBox({
         </div>
       </div>
       <div className="flex items-center gap-2 py-2 pr-2 pl-4">
-        <code className="min-w-0 flex-1 overflow-x-auto py-1 text-[13px] whitespace-nowrap st-noscrollbar">
+        <code className="min-w-0 flex-1 overflow-x-auto py-1 text-[12px] whitespace-nowrap sm:text-[13px] st-noscrollbar">
           <span aria-hidden="true" className="mr-2 text-muted-foreground select-none">
             $
           </span>

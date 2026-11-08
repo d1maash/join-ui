@@ -21,7 +21,11 @@ export function NotFoundSearch() {
     const last = pathname.split("/").filter(Boolean).pop() ?? ""
     const words = decodeURIComponent(last).replace(/[-_]+/g, " ").trim()
     if (!words || words === "gallery") return ""
-    const prefix = words.split(" ").map((word) => word.slice(0, Math.max(3, word.length - 2))).join(" ")
+    if (searchIndex(index, words, 1).length > 0) return words
+    const prefix = words
+      .split(" ")
+      .map((word) => word.slice(0, Math.max(3, word.length - 2)))
+      .join(" ")
     return searchIndex(index, prefix, 1).length > 0 ? prefix : ""
   }, [index, pathname])
 
@@ -33,7 +37,10 @@ export function NotFoundSearch() {
     <div className="w-full max-w-xl">
       <label className="relative flex h-12 items-center">
         <span className="sr-only">Search the library</span>
-        <Search aria-hidden="true" className="pointer-events-none absolute left-4 size-4 text-[var(--g-ink-4)]" />
+        <Search
+          aria-hidden="true"
+          className="pointer-events-none absolute left-4 size-4 text-[var(--g-ink-4)]"
+        />
         <input
           type="search"
           value={value}
@@ -46,7 +53,10 @@ export function NotFoundSearch() {
         results.length > 0 ? (
           <ul className="mt-2 overflow-hidden rounded-xl border border-[var(--g-line)] bg-[var(--g-panel)]">
             {results.map((entry) => (
-              <li key={entry.id} className="border-b border-[var(--g-line)] last:border-b-0">
+              <li
+                key={entry.id}
+                className="border-b border-[var(--g-line)] last:border-b-0"
+              >
                 <Link
                   href={entry.href}
                   className="group flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-[var(--g-panel-3)]"

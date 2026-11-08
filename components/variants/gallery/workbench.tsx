@@ -33,11 +33,31 @@ import { cn } from "@/lib/utils"
 type Theme = "dark" | "light"
 type Viewport = "desktop" | "tablet" | "mobile"
 
-const VIEWPORTS: Array<{ value: Viewport; label: string; width: number | null; icon: typeof Monitor }> = [
+const VIEWPORTS: Array<{
+  value: Viewport
+  label: string
+  width: number | null
+  icon: typeof Monitor
+}> = [
   { value: "desktop", label: "Full width", width: null, icon: Monitor },
   { value: "tablet", label: "Tablet, 768px", width: 768, icon: Tablet },
   { value: "mobile", label: "Phone, 390px", width: 390, icon: Smartphone },
 ]
+
+/*
+ * Tablet and phone widths are rendered through the standalone preview route
+ * in a same-origin frame, so the component sees a real viewport of that size
+ * and its media queries answer to it. The frame is stripped of that page's
+ * own chrome and handed the theme, and the gallery's dark surface tokens.
+ */
+const EMBED_CSS = `
+body > div > header { display: none !important; }
+main { padding: 0 !important; }
+main > div { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; min-height: 100dvh !important; }
+main > div > div:first-child { display: none !important; }
+html.dark { --background: #09090b; --card: #111114; --popover: #121215; --muted: #1c1c21; --border: #1e1e23; --border-hover: #2a2a31; }
+nextjs-portal { display: none !important; }
+`
 
 const PANEL_MIN = 340
 const PANEL_MAX = 720
@@ -64,9 +84,53 @@ export function Workbench({
   const [panel, setPanel] = React.useState(432)
   const [dragging, setDragging] = React.useState(false)
   const root = React.useRef<HTMLDivElement>(null)
+  const frame = React.useRef<HTMLIFrameElement>(null)
 
   const frameWidth = VIEWPORTS.find((entry) => entry.value === viewport)?.width ?? null
   const demo = renderPreview(slug)
+
+  const dressTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const dressFrame = React.useCallback(() => {
+    const doc = frame.current?.contentDocument
+    if (!doc?.documentElement || !doc.head) return
+    if (!doc.getElementById("g-embed")) {
+      const style = doc.createElement("style")
+      style.id = "g-embed"
+      style.textContent = EMBED_CSS
+      doc.head.appendChild(style)
+    }
+    /*
+     * The theme is a class on the frame's <html>, which React hydrates;
+     * changing it before hydration has reached that node would be reported
+     * as a mismatch, so wait for React to have claimed it.
+     */
+    const html = doc.documentElement
+    let tries = 0
+    const apply = () => {
+      const claimed = Object.keys(html).some((key) => key.startsWith("__reactFiber"))
+      if (!claimed && tries++ < 120) {
+        dressTimer.current = setTimeout(apply, 50)
+        return
+      }
+      html.classList.toggle("dark", theme === "dark")
+      html.classList.toggle("light", theme === "light")
+      html.style.colorScheme = theme
+    }
+    if (dressTimer.current) clearTimeout(dressTimer.current)
+    apply()
+  }, [theme])
+
+  React.useEffect(
+    () => () => {
+      if (dressTimer.current) clearTimeout(dressTimer.current)
+    },
+    []
+  )
+
+  React.useEffect(() => {
+    dressFrame()
+  }, [dressFrame])
 
   const clamp = React.useCallback((value: number) => {
     const total = root.current?.clientWidth ?? 1400
@@ -113,7 +177,10 @@ export function Workbench({
       )}
       style={{ "--wb-panel": `${panel}px` } as React.CSSProperties}
     >
-      <section aria-label={`${title} preview`} className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <section
+        aria-label={`${title} preview`}
+        className="flex min-h-0 min-w-0 flex-1 flex-col"
+      >
         <div className="flex h-11 shrink-0 items-center gap-1 border-b border-[var(--g-line)] px-2 sm:px-3">
           <span className="flex items-center gap-2 px-1.5 text-[0.8125rem] font-medium text-[var(--g-ink-2)]">
             <span
@@ -188,22 +255,34 @@ export function Workbench({
         >
           <div
             className={cn(
-              "g-frame mx-auto flex min-h-full max-w-full flex-col",
+              "g-frame mx-auto flex max-w-full flex-col",
+              frameWidth ? "h-full" : "min-h-full",
               frameWidth &&
                 "my-0 border-x border-dashed border-[color-mix(in_oklab,var(--foreground)_16%,transparent)] bg-background"
             )}
             style={{ width: frameWidth ? `${frameWidth}px` : "100%" }}
           >
-            <div
-              key={run}
-              className="flex min-h-full flex-1 items-center justify-center p-6 text-foreground sm:p-10"
-            >
-              {demo ?? (
-                <p className="text-sm text-muted-foreground">
-                  No preview is registered for <code>{slug}</code>.
-                </p>
-              )}
-            </div>
+            {frameWidth ? (
+              <iframe
+                key={run}
+                ref={frame}
+                src={`/preview/${slug}`}
+                title={`${title} at ${frameWidth}px`}
+                onLoad={dressFrame}
+                className="block w-full flex-1 bg-background"
+              />
+            ) : (
+              <div
+                key={run}
+                className="flex min-h-full flex-1 items-center justify-center p-6 text-foreground sm:p-10"
+              >
+                {demo ?? (
+                  <p className="text-sm text-muted-foreground">
+                    No preview is registered for <code>{slug}</code>.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -229,7 +308,10 @@ export function Workbench({
         aria-label={`${title} install, code, prompt and props`}
         className="flex min-h-0 flex-col border-t border-[var(--g-line)] bg-[var(--g-bg-2)] xl:w-[var(--wb-panel)] xl:shrink-0 xl:border-t-0"
       >
-        <TabsPrimitive.Root defaultValue={tabs[0]?.value} className="flex min-h-0 flex-1 flex-col">
+        <TabsPrimitive.Root
+          defaultValue={tabs[0]?.value}
+          className="flex min-h-0 flex-1 flex-col"
+        >
           <TabsPrimitive.List
             aria-label={`${title} details`}
             className="g-scroller flex h-11 shrink-0 items-center gap-0.5 overflow-x-auto border-b border-[var(--g-line)] px-2"

@@ -1,12 +1,8 @@
-import { docsNav, docsPages } from "@/lib/docs/nav"
+import { docsNav } from "@/lib/docs/nav"
 import { allComponents } from "@/lib/registry"
 import { buildSearchIndex, type SearchEntry } from "@/lib/search"
 import { siteConfig } from "@/lib/site"
-import {
-  COMPONENT_CATEGORIES,
-  type ComponentCategory,
-  type ComponentMetadata,
-} from "@/types/registry"
+import { COMPONENT_CATEGORIES, type ComponentMetadata } from "@/types/registry"
 
 import { categorySlug, sh } from "./href"
 import type { CategoryCount, Flag, NavTree, StudioItem } from "./types"
@@ -21,13 +17,6 @@ import type { CategoryCount, Flag, NavTree, StudioItem } from "./types"
  * folder.
  */
 
-/**
- * Scale test multiplier. Every list below is repeated this many times, with
- * unique keys and the copies spread across all twelve categories, to check
- * that the layout holds at a few hundred components. Keep it at 1.
- */
-const SCALE_TEST = 1
-
 export function getFlag(component: Pick<ComponentMetadata, "status" | "updated">): Flag | null {
   if (component.status === "new") return "new"
   if (component.status === "updated" || component.updated) return "updated"
@@ -35,37 +24,23 @@ export function getFlag(component: Pick<ComponentMetadata, "status" | "updated">
   return null
 }
 
-function toItem(component: ComponentMetadata, copy = 0): StudioItem {
-  const category: ComponentCategory =
-    copy === 0
-      ? component.category
-      : (COMPONENT_CATEGORIES[
-          (COMPONENT_CATEGORIES.indexOf(component.category) + copy * 5) %
-            COMPONENT_CATEGORIES.length
-        ] ?? component.category)
-
+export function toItem(component: ComponentMetadata): StudioItem {
   return {
-    key: copy === 0 ? component.slug : `${component.slug}~${copy}`,
+    key: component.slug,
     slug: component.slug,
     href: sh(`/components/${component.slug}`),
-    title: copy === 0 ? component.title : `${component.title} ${copy + 1}`,
+    title: component.title,
     description: component.description,
-    category,
-    categorySlug: categorySlug(category),
+    category: component.category,
+    categorySlug: categorySlug(component.category),
     tags: component.tags,
     status: component.status,
     flag: getFlag(component),
     featured: component.featured,
-    since: copy === 0 ? component.since : shiftDate(component.since, -copy * 9),
+    since: component.since,
     ...(component.updated ? { updated: component.updated } : {}),
     dependencies: component.dependencies,
   }
-}
-
-function shiftDate(iso: string, days: number): string {
-  const date = new Date(`${iso}T00:00:00Z`)
-  date.setUTCDate(date.getUTCDate() + days)
-  return date.toISOString().slice(0, 10)
 }
 
 const byRecency = (a: StudioItem, b: StudioItem) =>
@@ -75,11 +50,7 @@ const byName = (a: StudioItem, b: StudioItem) => a.title.localeCompare(b.title)
 
 /** Every component, newest first (or A–Z). */
 export function getItems(order: "recency" | "name" = "recency"): StudioItem[] {
-  const items: StudioItem[] = []
-  for (let copy = 0; copy < SCALE_TEST; copy++) {
-    for (const component of allComponents) items.push(toItem(component, copy))
-  }
-  return items.sort(order === "name" ? byName : byRecency)
+  return allComponents.map(toItem).sort(order === "name" ? byName : byRecency)
 }
 
 /** Non-empty categories in taxonomy order, with counts. */
@@ -118,24 +89,7 @@ export function getNavTree(): NavTree {
 
 /** The shared search index with every link kept inside the variant. */
 export function getSearchIndex(): SearchEntry[] {
-  const base = buildSearchIndex().map((entry) => ({ ...entry, href: sh(entry.href) }))
-  if (SCALE_TEST <= 1) return base
-  const copies: SearchEntry[] = getItems()
-    .filter((item) => item.key !== item.slug)
-    .map((item) => ({
-      id: `component:${item.key}`,
-      title: item.title,
-      description: item.description,
-      href: item.href,
-      group: "Components",
-      keywords: [item.slug, item.category, ...item.tags],
-      badge: item.category,
-    }))
-  return [...base, ...copies]
-}
-
-export function getDocsCount(): number {
-  return docsPages.length
+  return buildSearchIndex().map((entry) => ({ ...entry, href: sh(entry.href) }))
 }
 
 /*
@@ -144,7 +98,8 @@ export function getDocsCount(): number {
  * Featured components first, newest first, then the newest of the rest, up
  * to ten. One rule sizes a tile: a featured component that is also new spans
  * two columns, everything else spans one. Rows are packed on a four-column
- * grid, alternating which side the wide tile sits on, and the last row's
+ * grid, alternating which side the wide tile sits on (checked at 140
+ * components during the scale test), and the last row's
  * leftover cells become the "browse everything" tile — so the wall never has
  * a hole, whatever the registry holds.
  */
@@ -165,15 +120,19 @@ export function getWallTiles(limit = 10, columns = 4): WallTile[] {
   const rows: WallTile[][] = []
   let w = 0
   let n = 0
+  let lastWasPair = false
   while (w < wide.length || n < narrow.length) {
     const row: WallTile[] = []
     let room = columns
-    const pattern: Array<"w" | "n"> =
-      narrow.length - n < 2
-        ? ["w", "w", "n"]
-        : rows.length % 2 === 0
-          ? ["w", "n", "n"]
-          : ["n", "n", "w"]
+    // Two wide tiles side by side only when there are not enough narrow ones
+    // to flank a single wide tile, and never two such rows in a row — a wall
+    // of nothing but pairs reads as a plain two-column grid.
+    const pair: boolean = narrow.length - n < 2 && wide.length - w >= 2 && !lastWasPair
+    const pattern: Array<"w" | "n"> = pair
+      ? ["w", "w"]
+      : rows.length % 2 === 0
+        ? ["w", "n", "n"]
+        : ["n", "n", "w"]
     for (const slot of pattern) {
       const nextWide = wide[w]
       const nextNarrow = narrow[n]
@@ -185,8 +144,14 @@ export function getWallTiles(limit = 10, columns = 4): WallTile[] {
         row.push({ kind: "component", item: nextNarrow, span: 1 })
         n++
         room -= 1
+      } else if (slot === "n" && room >= 3 && nextWide) {
+        // Out of narrow tiles: a wide one steps down to flank the next wide.
+        row.push({ kind: "component", item: nextWide, span: 1 })
+        w++
+        room -= 1
       }
     }
+    lastWasPair = pair
     // Fill whatever the pattern left: wide tiles first, then narrow ones, and a
     // wide tile shrinks to one column rather than leave a single cell empty.
     for (let next = wide[w]; room >= 2 && next; next = wide[w]) {

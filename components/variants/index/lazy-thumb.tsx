@@ -59,17 +59,28 @@ export function LazyThumb({
   }, [])
 
   const thumb = mounted ? renderThumb(slug) : null
+  const placeholder = (
+    <div className="ix-placeholder">
+      <span>{mounted && !thumb ? `${code} · no preview` : `${code} · loading`}</span>
+    </div>
+  )
 
   return (
     <div ref={ref} inert aria-hidden="true" className="ix-stage-inner select-none">
       {thumb ? (
-        <div key={replayKey} className="ix-mounted absolute inset-0">
-          {thumb}
-        </div>
+        /*
+         * Each miniature is code-split, so its first mount suspends while its
+         * chunk loads. The boundary keeps that inside this cell: without it the
+         * suspension climbs to the page's boundary, the page collapses to its
+         * fallback for a frame, and the reader's scroll position goes with it.
+         */
+        <React.Suspense fallback={placeholder}>
+          <div key={replayKey} className="ix-mounted absolute inset-0">
+            {thumb}
+          </div>
+        </React.Suspense>
       ) : (
-        <div className="ix-placeholder">
-          <span>{mounted ? `${code} · no preview` : `${code} · loading`}</span>
-        </div>
+        placeholder
       )}
     </div>
   )

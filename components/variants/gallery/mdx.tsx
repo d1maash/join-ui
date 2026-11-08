@@ -20,7 +20,10 @@ function heading(level: 2 | 3 | 4) {
     3: "mt-9 mb-3 text-[1.0625rem] font-semibold tracking-[-0.018em]",
     4: "mt-7 mb-2 text-[0.9375rem] font-semibold",
   }
-  return function Heading({ className, ...props }: React.ComponentPropsWithoutRef<"h2">) {
+  return function Heading({
+    className,
+    ...props
+  }: React.ComponentPropsWithoutRef<"h2">) {
     return (
       <Tag
         className={cn(
@@ -34,18 +37,40 @@ function heading(level: 2 | 3 | 4) {
   }
 }
 
-function Anchor({ href = "", className, ...props }: React.ComponentPropsWithoutRef<"a">) {
+function Anchor({
+  href = "",
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"a">) {
   const style = cn(
     "font-medium text-[var(--g-ink)] underline decoration-[var(--g-line-3)] decoration-1 underline-offset-4 transition-[text-decoration-color] hover:decoration-[var(--g-accent-ink)]",
     className
   )
   if (href.startsWith("/") || href.startsWith("#")) {
-    return <Link href={href.startsWith("/") ? g(href) : href} className={style} {...props} />
+    return (
+      <Link href={href.startsWith("/") ? g(href) : href} className={style} {...props} />
+    )
   }
-  return <a href={href} target="_blank" rel="noreferrer noopener" className={style} {...props} />
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer noopener"
+      className={style}
+      {...props}
+    />
+  )
 }
 
-function Card({ title, href, children }: { title: string; href: string; children?: React.ReactNode }) {
+function Card({
+  title,
+  href,
+  children,
+}: {
+  title: string
+  href: string
+  children?: React.ReactNode
+}) {
   const external = href.startsWith("http")
   const body = (
     <>
@@ -57,7 +82,9 @@ function Card({ title, href, children }: { title: string; href: string; children
         />
       </span>
       {children ? (
-        <span className="text-[0.8125rem] leading-relaxed text-[var(--g-ink-3)]">{children}</span>
+        <span className="text-[0.8125rem] leading-relaxed text-[var(--g-ink-3)]">
+          {children}
+        </span>
       ) : null}
     </>
   )
@@ -85,7 +112,13 @@ export const galleryMdx = {
   a: Anchor,
   Card,
   p: ({ className, ...props }: React.ComponentPropsWithoutRef<"p">) => (
-    <p className={cn("my-4 text-[0.9375rem] leading-[1.75] text-[var(--g-ink-2)]", className)} {...props} />
+    <p
+      className={cn(
+        "my-4 text-[0.9375rem] leading-[1.75] text-[var(--g-ink-2)]",
+        className
+      )}
+      {...props}
+    />
   ),
   ul: ({ className, ...props }: React.ComponentPropsWithoutRef<"ul">) => (
     <ul
@@ -114,7 +147,10 @@ export const galleryMdx = {
       {...props}
     />
   ),
-  blockquote: ({ className, ...props }: React.ComponentPropsWithoutRef<"blockquote">) => (
+  blockquote: ({
+    className,
+    ...props
+  }: React.ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
       className={cn(
         "my-5 border-l-2 border-[var(--g-accent)] pl-4 text-[var(--g-ink-2)] [&>p]:my-2",
@@ -125,7 +161,10 @@ export const galleryMdx = {
   ),
   table: ({ className, ...props }: React.ComponentPropsWithoutRef<"table">) => (
     <div className="my-6 overflow-x-auto rounded-xl border border-[var(--g-line)]">
-      <table className={cn("w-full border-collapse text-left text-[0.8125rem]", className)} {...props} />
+      <table
+        className={cn("w-full border-collapse text-left text-[0.8125rem]", className)}
+        {...props}
+      />
     </div>
   ),
   th: ({ className, ...props }: React.ComponentPropsWithoutRef<"th">) => (

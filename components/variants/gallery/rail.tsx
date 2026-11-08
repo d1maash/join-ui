@@ -3,13 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
-import {
-  BookOpen,
-  ChevronRight,
-  Home,
-  LayoutGrid,
-  Sparkles,
-} from "lucide-react"
+import { BookOpen, ChevronRight, Home, LayoutGrid, Sparkles } from "lucide-react"
 
 import { GitHubIcon } from "@/components/site/icons"
 import { LogoMark } from "@/components/site/logo"
@@ -56,7 +50,11 @@ function useLocation() {
   }
 }
 
-export function Rail(props: { nav: GalleryNav; onNavigate?: () => void; className?: string }) {
+export function Rail(props: {
+  nav: GalleryNav
+  onNavigate?: () => void
+  className?: string
+}) {
   return (
     <React.Suspense fallback={<RailBody {...props} location={null} />}>
       <RailWithLocation {...props} />
@@ -64,7 +62,11 @@ export function Rail(props: { nav: GalleryNav; onNavigate?: () => void; classNam
   )
 }
 
-function RailWithLocation(props: { nav: GalleryNav; onNavigate?: () => void; className?: string }) {
+function RailWithLocation(props: {
+  nav: GalleryNav
+  onNavigate?: () => void
+  className?: string
+}) {
   const location = useLocation()
   return <RailBody {...props} location={location} />
 }
@@ -82,7 +84,9 @@ function RailBody({
 }) {
   const pathname = location?.pathname ?? ""
   const base = g("/components")
-  const currentSlug = pathname.startsWith(`${base}/`) ? pathname.slice(base.length + 1) : null
+  const currentSlug = pathname.startsWith(`${base}/`)
+    ? pathname.slice(base.length + 1)
+    : null
   const onCatalog = pathname === base
   const onDocs = pathname.startsWith(g("/docs"))
 
@@ -149,7 +153,9 @@ function RailBody({
                 />
                 <span className="flex-1">{item.label}</span>
                 {item.count !== undefined ? (
-                  <span className="g-num text-[0.75rem] text-[var(--g-ink-4)]">{item.count}</span>
+                  <span className="g-num text-[0.75rem] text-[var(--g-ink-4)]">
+                    {item.count}
+                  </span>
                 ) : null}
               </Link>
             </li>
@@ -273,7 +279,10 @@ function RailBody({
                   <span className="flex size-8 shrink-0 items-center justify-center text-[var(--g-ink-4)] group-hover:text-[var(--g-ink)]">
                     <ChevronRight
                       aria-hidden="true"
-                      className={cn("size-3.5 transition-transform duration-200", open && "rotate-90")}
+                      className={cn(
+                        "size-3.5 transition-transform duration-200",
+                        open && "rotate-90"
+                      )}
                     />
                   </span>
                   <span className="flex-1 truncate">{section.title}</span>

@@ -180,7 +180,7 @@ export const studioMdx = {
   code: ({ className, ...props }: Props<"code">) => (
     <code
       className={cn(
-        "rounded-md bg-muted px-[0.4em] py-[0.15em] text-[0.84em] font-medium text-foreground",
+        "rounded-md bg-muted px-[0.4em] py-[0.15em] text-[0.84em] text-foreground",
         className
       )}
       {...props}

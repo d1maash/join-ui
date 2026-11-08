@@ -25,13 +25,15 @@ function observers() {
   if (!nearObserver) {
     nearObserver = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) listeners.get(entry.target)?.("near", entry.isIntersecting)
+        for (const entry of entries)
+          listeners.get(entry.target)?.("near", entry.isIntersecting)
       },
       { rootMargin: "320px 240px" }
     )
     farObserver = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) listeners.get(entry.target)?.("far", entry.isIntersecting)
+        for (const entry of entries)
+          listeners.get(entry.target)?.("far", entry.isIntersecting)
       },
       { rootMargin: "1400px 1200px" }
     )

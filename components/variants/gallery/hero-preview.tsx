@@ -1,9 +1,15 @@
-import { BookOpen, ChevronRight, Home, LayoutGrid, Search, Sparkles } from "lucide-react"
+import {
+  BookOpen,
+  ChevronRight,
+  Home,
+  LayoutGrid,
+  Search,
+  Sparkles,
+} from "lucide-react"
 
 import { LogoMark } from "@/components/site/logo"
 import { StatusPill } from "@/components/variants/gallery/card"
 import { LazyThumb } from "@/components/variants/gallery/lazy-thumb"
-import { realSlug } from "@/components/variants/gallery/links"
 import { cn } from "@/lib/utils"
 
 import type { GalleryItem, GalleryNav } from "@/components/variants/gallery/data"
@@ -47,30 +53,44 @@ export function HeroPreview({ nav, items }: { nav: GalleryNav; items: GalleryIte
                 key={item.label}
                 className={cn(
                   "flex h-7 items-center gap-2 rounded-md px-2",
-                  item.active ? "bg-[var(--g-panel-3)] text-[var(--g-ink)]" : "text-[var(--g-ink-3)]"
+                  item.active
+                    ? "bg-[var(--g-panel-3)] text-[var(--g-ink)]"
+                    : "text-[var(--g-ink-3)]"
                 )}
               >
                 <item.icon
-                  className={cn("size-3.5", item.active ? "text-[var(--g-accent-ink)]" : "text-[var(--g-ink-4)]")}
+                  className={cn(
+                    "size-3.5",
+                    item.active ? "text-[var(--g-accent-ink)]" : "text-[var(--g-ink-4)]"
+                  )}
                 />
                 <span className="flex-1">{item.label}</span>
                 {item.count !== undefined ? (
-                  <span className="g-num text-[0.6875rem] text-[var(--g-ink-4)]">{item.count}</span>
+                  <span className="g-num text-[0.6875rem] text-[var(--g-ink-4)]">
+                    {item.count}
+                  </span>
                 ) : null}
               </li>
             ))}
           </ul>
           <div>
-            <p className="mb-1 px-2 text-[0.625rem] font-medium text-[var(--g-ink-4)]">Categories</p>
+            <p className="mb-1 px-2 text-[0.625rem] font-medium text-[var(--g-ink-4)]">
+              Categories
+            </p>
             <ul className="flex flex-col gap-px text-[0.75rem]">
               {nav.categories.slice(0, 9).map((category, index) => (
                 <li key={category.name}>
                   <div className="flex h-7 items-center gap-1.5 rounded-md px-1.5 text-[var(--g-ink-2)]">
                     <ChevronRight
-                      className={cn("size-3 text-[var(--g-ink-4)]", index === 0 && "rotate-90")}
+                      className={cn(
+                        "size-3 text-[var(--g-ink-4)]",
+                        index === 0 && "rotate-90"
+                      )}
                     />
                     <span className="flex-1 truncate">{category.name}</span>
-                    <span className="g-num text-[0.6875rem] text-[var(--g-ink-4)]">{category.count}</span>
+                    <span className="g-num text-[0.6875rem] text-[var(--g-ink-4)]">
+                      {category.count}
+                    </span>
                   </div>
                   {index === 0 ? (
                     <ul className="mb-1 ml-3.5 border-l border-[var(--g-line)] pl-2">
@@ -84,7 +104,9 @@ export function HeroPreview({ nav, items }: { nav: GalleryNav; items: GalleryIte
                             <span
                               className={cn(
                                 "text-[0.5625rem] font-medium",
-                                item.badge === "New" ? "text-[var(--g-accent-ink)]" : "text-[var(--g-ink-4)]"
+                                item.badge === "New"
+                                  ? "text-[var(--g-accent-ink)]"
+                                  : "text-[var(--g-ink-4)]"
                               )}
                             >
                               {item.badge}
@@ -111,7 +133,9 @@ export function HeroPreview({ nav, items }: { nav: GalleryNav; items: GalleryIte
               </p>
             </div>
             <div className="hidden h-7 items-center rounded-md border border-[var(--g-line)] bg-[var(--g-panel)] p-0.5 text-[0.6875rem] sm:flex">
-              <span className="rounded bg-[var(--g-panel-3)] px-2 py-1 text-[var(--g-ink)]">Newest</span>
+              <span className="rounded bg-[var(--g-panel-3)] px-2 py-1 text-[var(--g-ink)]">
+                Newest
+              </span>
               <span className="px-2 py-1 text-[var(--g-ink-3)]">A–Z</span>
               <span className="px-2 py-1 text-[var(--g-ink-3)]">Updated</span>
             </div>
@@ -125,7 +149,8 @@ export function HeroPreview({ nav, items }: { nav: GalleryNav; items: GalleryIte
                 key={category.name}
                 className="flex h-6 shrink-0 items-center gap-1 rounded-full border border-[var(--g-line-2)] px-2.5 text-[0.6875rem] text-[var(--g-ink-2)]"
               >
-                {category.name} <span className="text-[var(--g-ink-4)]">{category.count}</span>
+                {category.name}{" "}
+                <span className="text-[var(--g-ink-4)]">{category.count}</span>
               </span>
             ))}
           </div>
@@ -133,7 +158,7 @@ export function HeroPreview({ nav, items }: { nav: GalleryNav; items: GalleryIte
             {shown.map((item) => (
               <li key={item.slug} className="flex min-w-0 flex-col gap-2">
                 <div className="g-card-thumb aspect-[4/3] rounded-[0.7rem]">
-                  <LazyThumb slug={realSlug(item.slug)} eager />
+                  <LazyThumb slug={item.slug} eager />
                 </div>
                 <div className="flex items-center justify-between gap-2 px-0.5">
                   <span className="min-w-0">

@@ -5,7 +5,7 @@ import type { ComponentMetadata } from "@/types/registry"
 
 import { categoryHref, g } from "./links"
 
-export { categoryHref, formatDate, g, realSlug, VARIANT } from "./links"
+export { categoryHref, formatDate, g, VARIANT } from "./links"
 
 /*
  * Gallery — the data layer (server only: it reads the full registry).
@@ -26,31 +26,16 @@ export function toGalleryItem(component: ComponentMetadata): GalleryItem {
   return { ...toCatalogItem(component), touched: component.updated ?? component.since }
 }
 
-/**
- * Scale test multiplier. Kept at 1 — the rails, the catalog and the rail were
- * verified at 20 (≈140 items).
- */
-const SCALE = 1
-
-function scaled<T extends { slug: string; title: string }>(items: T[]): T[] {
-  if (SCALE <= 1) return items
-  return Array.from({ length: SCALE }, (_, round) =>
-    items.map((item) =>
-      round === 0
-        ? item
-        : { ...item, slug: `${item.slug}~${round}`, title: `${item.title} ${round + 1}` }
-    )
-  ).flat()
-}
-
 export function getGalleryItems(): GalleryItem[] {
-  return scaled(allComponents.map(toGalleryItem))
+  return allComponents.map(toGalleryItem)
 }
 
 /** "New & noteworthy": newest first by the later of entry and rework. */
 export function getNoteworthy(limit = 12): GalleryItem[] {
   return [...getGalleryItems()]
-    .sort((a, b) => b.touched.localeCompare(a.touched) || a.title.localeCompare(b.title))
+    .sort(
+      (a, b) => b.touched.localeCompare(a.touched) || a.title.localeCompare(b.title)
+    )
     .slice(0, limit)
 }
 
@@ -95,14 +80,12 @@ function navBadge(component: ComponentMetadata): NavComponent["badge"] {
 
 /** The rail: categories that have something in them, then the guides. */
 export function getGalleryNav(): GalleryNav {
-  const named = scaled(
-    componentsByName.map((component) => ({
-      slug: component.slug,
-      title: component.title,
-      category: component.category as string,
-      badge: navBadge(component),
-    }))
-  )
+  const named = componentsByName.map((component) => ({
+    slug: component.slug,
+    title: component.title,
+    category: component.category as string,
+    badge: navBadge(component),
+  }))
 
   const categories = getCategorySummaries()
     .filter((summary) => summary.count > 0)

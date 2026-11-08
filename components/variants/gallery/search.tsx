@@ -3,9 +3,21 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { Command } from "cmdk"
-import { ArrowRight, BookOpen, CornerDownLeft, LayoutGrid, Search, Shapes } from "lucide-react"
+import {
+  ArrowRight,
+  BookOpen,
+  CornerDownLeft,
+  LayoutGrid,
+  Search,
+  Shapes,
+} from "lucide-react"
 
-import { groupResults, searchIndex, type SearchEntry, type SearchGroup } from "@/lib/search"
+import {
+  groupResults,
+  searchIndex,
+  type SearchEntry,
+  type SearchGroup,
+} from "@/lib/search"
 import { cn } from "@/lib/utils"
 
 /*
@@ -22,7 +34,10 @@ interface SearchContextValue {
   index: SearchEntry[]
 }
 
-const SearchContext = React.createContext<SearchContextValue>({ open: () => {}, index: [] })
+const SearchContext = React.createContext<SearchContextValue>({
+  open: () => {},
+  index: [],
+})
 
 export function useSearch() {
   return React.useContext(SearchContext)
@@ -70,10 +85,16 @@ export function SearchProvider({
 
   const groups = React.useMemo(() => {
     if (query.trim().length === 0) {
-      const components = index.filter((entry) => entry.group === "Components").slice(0, 6)
+      const components = index
+        .filter((entry) => entry.group === "Components")
+        .slice(0, 6)
       const docs = index.filter((entry) => entry.group === "Documentation").slice(0, 4)
       return [
-        { group: "Components" as const, entries: components, heading: "Newest components" },
+        {
+          group: "Components" as const,
+          entries: components,
+          heading: "Newest components",
+        },
         { group: "Documentation" as const, entries: docs, heading: "Guides" },
       ]
     }
@@ -108,7 +129,10 @@ export function SearchProvider({
         )}
       >
         <div className="flex items-center gap-3 border-b border-[var(--g-line)] px-4">
-          <Search aria-hidden="true" className="size-4 shrink-0 text-[var(--g-ink-3)]" />
+          <Search
+            aria-hidden="true"
+            className="size-4 shrink-0 text-[var(--g-ink-3)]"
+          />
           <Command.Input
             value={query}
             onValueChange={setQuery}
@@ -186,7 +210,8 @@ export function SearchProvider({
             to open
           </span>
           <span className="ml-auto hidden sm:inline">
-            {index.filter((entry) => entry.group === "Components").length} components indexed
+            {index.filter((entry) => entry.group === "Components").length} components
+            indexed
           </span>
         </div>
       </Command.Dialog>
@@ -195,7 +220,13 @@ export function SearchProvider({
 }
 
 /** The wide field in the rail and the top bar. */
-export function SearchField({ className, label = "Search" }: { className?: string; label?: string }) {
+export function SearchField({
+  className,
+  label = "Search",
+}: {
+  className?: string
+  label?: string
+}) {
   const { open } = useSearch()
   return (
     <button

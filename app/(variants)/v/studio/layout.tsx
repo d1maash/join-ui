@@ -7,7 +7,7 @@ import { StudioFooter } from "@/components/variants/studio/footer"
 import { StudioHeader } from "@/components/variants/studio/header"
 import { StudioSearch } from "@/components/variants/studio/search"
 import { ThemeSync } from "@/components/variants/studio/theme"
-import { THEME_SCRIPT } from "@/components/variants/studio/theme-script"
+import { THEME_SCRIPT_HTML } from "@/components/variants/studio/theme-script"
 import { VariantSwitcherDock } from "@/components/variants/variant-switcher"
 import { siteConfig } from "@/lib/site"
 
@@ -56,7 +56,7 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
       suppressHydrationWarning
       className={`v-studio light ${mono.variable} flex min-h-dvh flex-col bg-background text-foreground antialiased`}
     >
-      <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      <div hidden dangerouslySetInnerHTML={{ __html: THEME_SCRIPT_HTML }} />
       <a
         href="#main-content"
         className="sr-only z-50 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"

@@ -59,10 +59,10 @@ function project(components: ComponentMetadata[]): IxItem[] {
 
   return [...components]
     .sort((a, b) => b.since.localeCompare(a.since) || a.title.localeCompare(b.title))
-    .map((component, index) => {
+    .map((component) => {
       const traits = getTraits(component)
       return {
-        id: SCALE > 1 ? `${component.slug}~${index}` : component.slug,
+        id: component.slug,
         slug: component.slug,
         title: component.title,
         description: component.description,
@@ -83,40 +83,10 @@ function project(components: ComponentMetadata[]): IxItem[] {
     })
 }
 
-/*
- * SCALE TEST — set above 1 to render every list repeated, with unique keys and
- * spread across categories, to check the layout holds at a few hundred.
- */
-const SCALE: number = 1
-
-function scaled(): ComponentMetadata[] {
-  if (SCALE <= 1) return allComponents
-  const out: ComponentMetadata[] = []
-  for (let round = 0; round < SCALE; round += 1) {
-    for (const component of allComponents) {
-      const category = COMPONENT_CATEGORIES[(round + allComponents.indexOf(component)) % COMPONENT_CATEGORIES.length]!
-      out.push({
-        ...component,
-        title: round === 0 ? component.title : `${component.title} ${round + 1}`,
-        category: round === 0 ? component.category : category,
-        since: shiftDate(component.since, round * 3),
-        status: round % 3 === 0 ? component.status : round % 3 === 1 ? "new" : "stable",
-      })
-    }
-  }
-  return out
-}
-
-function shiftDate(iso: string, days: number): string {
-  const date = new Date(`${iso}T00:00:00Z`)
-  date.setUTCDate(date.getUTCDate() + days)
-  return date.toISOString().slice(0, 10)
-}
-
 let cache: IxItem[] | null = null
 
 export function getIxItems(): IxItem[] {
-  cache ??= project(scaled())
+  cache ??= project(allComponents)
   return cache
 }
 

@@ -38,6 +38,7 @@ export function StudioLogo({ onClick }: { onClick?: () => void }) {
 export function StudioHeader({ tree, freshCount }: { tree: NavTree; freshCount: number }) {
   const pathname = usePathname()
   const [open, setOpen] = React.useState(false)
+  const sheetRef = React.useRef<HTMLDivElement>(null)
 
   const links = [
     { href: sh("/docs"), label: "Docs", active: pathname.startsWith(sh("/docs")) },
@@ -58,12 +59,27 @@ export function StudioHeader({ tree, freshCount }: { tree: NavTree; freshCount: 
           >
             <Menu aria-hidden="true" className="size-[18px]" />
           </SheetTrigger>
-          <SheetContent side="left" aria-describedby={undefined} className="w-[20rem] bg-background">
+          <SheetContent
+            ref={sheetRef}
+            side="left"
+            aria-describedby={undefined}
+            // Focus the panel itself, not its first field — on a phone that
+            // would open the keyboard over the navigation.
+            onOpenAutoFocus={(event) => {
+              event.preventDefault()
+              sheetRef.current?.focus()
+            }}
+            className="w-[20rem] bg-background"
+          >
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             <div className="flex h-14 shrink-0 items-center border-b border-border px-5">
               <StudioLogo onClick={() => setOpen(false)} />
             </div>
-            <div data-st-scroll className="flex-1 overflow-y-auto overscroll-contain px-3 py-5">
+            <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-2.5">
+              <span className="text-[13px] text-muted-foreground">Theme</span>
+              <ThemeSegmented />
+            </div>
+            <div data-st-scroll className="flex-1 overflow-y-auto overscroll-contain px-3 pt-5 pb-24">
               <nav aria-label="Main" className="mb-6 flex flex-col gap-0.5">
                 {[
                   { href: sh("/"), label: "Home" },
@@ -81,10 +97,6 @@ export function StudioHeader({ tree, freshCount }: { tree: NavTree; freshCount: 
                 ))}
               </nav>
               <Sidebar tree={tree} onNavigate={() => setOpen(false)} />
-            </div>
-            <div className="flex shrink-0 items-center justify-between border-t border-border px-5 py-3">
-              <span className="text-[13px] text-muted-foreground">Theme</span>
-              <ThemeSegmented />
             </div>
           </SheetContent>
         </Sheet>

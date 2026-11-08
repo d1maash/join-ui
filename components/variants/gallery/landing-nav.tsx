@@ -58,7 +58,10 @@ export function LandingNav({ nav }: { nav: GalleryNav }) {
           <SearchField label="Search" className="mr-1 hidden h-8 w-52 md:flex" />
           <SearchIconButton className="md:hidden" />
           <GitHubLink />
-          <Link href={g("/docs/installation")} className="g-btn g-btn-accent ml-1 h-8 px-3">
+          <Link
+            href={g("/docs/installation")}
+            className="g-btn g-btn-accent ml-1 h-8 px-3"
+          >
             Install
           </Link>
           <MobileMenu nav={nav} className="ml-1 md:hidden" />

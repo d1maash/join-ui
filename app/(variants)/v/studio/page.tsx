@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight, FileCode2, ListChecks, Sparkles } from "lucide-react"
+import { ArrowRight, FileCode2, ListChecks, Sparkles } from "lucide-react"
 
 import { CategoryArt } from "@/components/variants/studio/category-art"
 import { getCategoryCounts, getItems, getWallTiles } from "@/components/variants/studio/data"
@@ -62,12 +62,13 @@ export default async function StudioHome() {
           </Link>
         ) : null}
 
-        <h1 className="mt-6 max-w-[15ch] text-[clamp(2.5rem,6.2vw,4.25rem)] leading-[1.02] font-semibold tracking-[-0.045em] text-balance">
-          Components that move, in code you own.
+        <h1 className="mt-6 text-[clamp(2.5rem,6.2vw,4.25rem)] leading-[1.02] font-semibold tracking-[-0.042em] text-balance">
+          Components that move,
+          <br className="hidden sm:block" /> in code you own.
         </h1>
         <p className="mt-5 max-w-[40rem] text-[clamp(1rem,1.6vw,1.125rem)] leading-relaxed text-pretty text-muted-foreground">
-          Accessible, motion-first React components for Next.js. Add one with the shadcn CLI as
-          a file in your repo, or hand its ready-made prompt to Claude Code, Cursor or Codex.
+          Accessible, motion-first React components for Next.js. Install one as a file you own
+          with the shadcn CLI, or hand its ready-made prompt to your coding agent.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
@@ -135,7 +136,7 @@ export default async function StudioHome() {
                     category={category.name}
                     className="aspect-[16/10] border-b border-border bg-[var(--st-stage)] transition-transform duration-300 [&>*]:transition-transform [&>*]:duration-300 group-hover:[&>*]:scale-[1.04]"
                   />
-                  <span className="flex items-center justify-between gap-3 px-4 py-3">
+                  <span className="flex flex-col gap-0.5 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <span className="truncate text-sm font-medium">{category.name}</span>
                     <span className="text-xs text-muted-foreground tabular-nums">
                       {category.count} {category.count === 1 ? "component" : "components"}
@@ -242,7 +243,7 @@ function SectionHead({
         className="group inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-3 text-[13px] font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         {link.label}
-        <ArrowUpRight aria-hidden="true" className="size-3.5 text-muted-foreground transition-colors group-hover:text-foreground" />
+        <ArrowRight aria-hidden="true" className="size-3.5 text-muted-foreground transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-foreground" />
       </Link>
     </div>
   )

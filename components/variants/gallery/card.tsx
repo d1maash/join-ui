@@ -5,8 +5,8 @@ import { Maximize2 } from "lucide-react"
 
 import { CopyPromptIcon } from "@/components/variants/gallery/copy-prompt-icon"
 import { LazyThumb } from "@/components/variants/gallery/lazy-thumb"
+import { formatDate } from "@/components/variants/gallery/links"
 import { cn } from "@/lib/utils"
-import { realSlug } from "@/components/variants/gallery/links"
 import { variantHref } from "@/lib/variants"
 
 import type { GalleryItem } from "@/components/variants/gallery/data"
@@ -17,9 +17,15 @@ import type { GalleryItem } from "@/components/variants/gallery/data"
  * page of them never reflows when the miniatures mount.
  */
 
-
-export function StatusPill({ item, className }: { item: Pick<GalleryItem, "status" | "updated">; className?: string }) {
-  if (item.status === "new") return <span className={cn("g-pill g-pill-new", className)}>New</span>
+export function StatusPill({
+  item,
+  className,
+}: {
+  item: Pick<GalleryItem, "status"> & { updated?: string }
+  className?: string
+}) {
+  if (item.status === "new")
+    return <span className={cn("g-pill g-pill-new", className)}>New</span>
   if (item.updated || item.status === "updated")
     return <span className={cn("g-pill g-pill-updated", className)}>Updated</span>
   if (item.status === "experimental")
@@ -31,24 +37,29 @@ export function GalleryCard({
   item,
   aspect = "4/3",
   description = false,
+  dated = false,
   eager = false,
   className,
 }: {
   item: GalleryItem
   aspect?: "4/3" | "16/10" | "16/9"
   description?: boolean
+  /** Adds when it landed, or when it was last reworked, under the title. */
+  dated?: boolean
   eager?: boolean
   className?: string
 }) {
-  const slug = realSlug(item.slug)
+  const slug = item.slug
   const href = variantHref("gallery", `/components/${slug}`)
 
   return (
-    <article className={cn("g-card group/card relative flex min-w-0 flex-col gap-3", className)}>
-      <div
-        className="g-card-thumb"
-        style={{ aspectRatio: aspect.replace("/", " / ") }}
-      >
+    <article
+      className={cn(
+        "g-card group/card relative flex min-w-0 flex-col gap-3",
+        className
+      )}
+    >
+      <div className="g-card-thumb" style={{ aspectRatio: aspect.replace("/", " / ") }}>
         <LazyThumb slug={slug} eager={eager} />
         <div className="g-card-actions absolute top-2.5 right-2.5 z-10 flex items-center gap-1.5">
           <CopyPromptIcon slug={slug} title={item.title} />
@@ -79,6 +90,13 @@ export function GalleryCard({
           ) : (
             <p className="truncate text-[0.8125rem] leading-5 text-[var(--g-ink-3)]">
               {item.category}
+              {dated ? (
+                <span className="text-[var(--g-ink-4)]">
+                  {" · "}
+                  {item.updated ? "Updated" : "Added"}{" "}
+                  {formatDate(item.touched).split(",")[0]}
+                </span>
+              ) : null}
             </p>
           )}
         </div>

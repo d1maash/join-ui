@@ -11,7 +11,6 @@ import {
   getGalleryItems,
   getGalleryNav,
   getNoteworthy,
-  realSlug,
 } from "@/components/variants/gallery/data"
 import { GalleryFooter } from "@/components/variants/gallery/footer"
 import { HeroPreview } from "@/components/variants/gallery/hero-preview"
@@ -38,7 +37,7 @@ export default async function GalleryLanding() {
   const tiles = getCategoryTiles()
 
   const newest = noteworthy[0]
-  const subject = newest ? getComponent(realSlug(newest.slug)) : undefined
+  const subject = newest ? getComponent(newest.slug) : undefined
   const sources = subject ? await getComponentSources(subject) : []
   const prompt = subject ? buildComponentPrompt({ component: subject, sources }) : ""
 
@@ -58,7 +57,7 @@ export default async function GalleryLanding() {
           <div className="relative mx-auto flex max-w-[80rem] flex-col items-center px-4 text-center sm:px-6 lg:px-8">
             {newest ? (
               <Link
-                href={g(`/components/${realSlug(newest.slug)}`)}
+                href={g(`/components/${newest.slug}`)}
                 className="group mb-7 inline-flex h-8 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] pr-2.5 pl-1 text-[0.8125rem] text-[var(--g-ink-2)] backdrop-blur-md transition-colors hover:border-white/20 hover:text-[var(--g-ink)]"
               >
                 <StatusPill item={newest} className="h-6 px-2" />
@@ -76,8 +75,9 @@ export default async function GalleryLanding() {
               </Link>
             ) : null}
 
-            <h1 className="g-display max-w-[15ch] text-[clamp(2.75rem,7.2vw,5.75rem)] text-[var(--g-ink)]">
-              The motion is done. The source is yours.
+            <h1 className="g-display text-[clamp(2.25rem,7.2vw,5.75rem)] text-[var(--g-ink)]">
+              <span className="block">The motion is done.</span>
+              <span className="block">The source is yours.</span>
             </h1>
             <p className="mt-6 max-w-[38rem] text-[1.0625rem] leading-relaxed text-pretty text-[var(--g-ink-2)] sm:text-[1.1875rem]">
               Animated, accessible React components that land in your repo as plain files through
@@ -102,7 +102,7 @@ export default async function GalleryLanding() {
           </div>
         </section>
 
-        <div className="mx-auto flex max-w-[80rem] flex-col gap-24 px-4 pt-20 pb-28 sm:px-6 sm:pt-24 lg:px-8">
+        <div className="mx-auto flex max-w-[80rem] flex-col gap-24 px-4 pt-20 pb-20 sm:px-6 sm:pt-24 sm:pb-24 lg:px-8">
           {/* ------------------------------------------------------- rails */}
           <div className="flex flex-col gap-16">
             <RailRow
@@ -112,7 +112,7 @@ export default async function GalleryLanding() {
               href={g("/components")}
             >
               {noteworthy.map((item) => (
-                <GalleryCard key={item.slug} item={item} />
+                <GalleryCard key={item.slug} item={item} dated />
               ))}
             </RailRow>
 
@@ -137,7 +137,7 @@ export default async function GalleryLanding() {
                   Categories
                 </h2>
                 <p className="mt-1 text-[0.875rem] text-[var(--g-ink-3)]">
-                  {tiles.length} of them hold components so far; empty ones stay hidden until they don&apos;t.
+                  {`${tiles.length} ${tiles.length === 1 ? "category holds" : "categories hold"} components so far. Empty ones stay out of the way until they fill.`}
                 </p>
               </div>
               <Link
@@ -156,7 +156,7 @@ export default async function GalleryLanding() {
                 >
                   <Link href={tile.href} className="group block">
                     <div className="relative aspect-[16/10] overflow-hidden border-b border-[var(--g-line)] bg-[radial-gradient(120%_90%_at_50%_0%,rgb(255_255_255/0.04),transparent_70%)]">
-                      {tile.example ? <LazyThumb slug={realSlug(tile.example.slug)} /> : null}
+                      {tile.example ? <LazyThumb slug={tile.example.slug} /> : null}
                     </div>
                     <div className="flex items-baseline justify-between gap-3 px-4 pt-3.5 pb-1">
                       <h3 className="text-[0.9375rem] font-semibold tracking-[-0.016em] text-[var(--g-ink)]">
@@ -171,7 +171,7 @@ export default async function GalleryLanding() {
                     {tile.members.slice(0, TILE_LIST).map((member) => (
                       <li key={member.slug}>
                         <Link
-                          href={g(`/components/${realSlug(member.slug)}`)}
+                          href={g(`/components/${member.slug}`)}
                           className="flex h-8 items-center gap-2 rounded-lg px-2 text-[0.8125rem] text-[var(--g-ink-3)] transition-colors hover:bg-[var(--g-panel-3)] hover:text-[var(--g-ink)]"
                         >
                           <span className="flex-1 truncate">{member.title}</span>

@@ -36,13 +36,22 @@ function SlimFooter() {
           {siteConfig.name} · MIT licensed · by {siteConfig.author}
         </span>
         <span className="flex flex-wrap gap-x-5 gap-y-2 sm:ml-auto">
-          <Link href={g("/docs/installation")} className="transition-colors hover:text-[var(--g-ink)]">
+          <Link
+            href={g("/docs/installation")}
+            className="transition-colors hover:text-[var(--g-ink)]"
+          >
             Installation
           </Link>
-          <Link href={g("/docs/ai")} className="transition-colors hover:text-[var(--g-ink)]">
+          <Link
+            href={g("/docs/ai")}
+            className="transition-colors hover:text-[var(--g-ink)]"
+          >
             Prompts for agents
           </Link>
-          <Link href={g("/docs/contributing")} className="transition-colors hover:text-[var(--g-ink)]">
+          <Link
+            href={g("/docs/contributing")}
+            className="transition-colors hover:text-[var(--g-ink)]"
+          >
             Contributing
           </Link>
           <a

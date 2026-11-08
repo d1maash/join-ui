@@ -6,7 +6,13 @@ import { usePathname } from "next/navigation"
 import { ChevronRight, Menu } from "lucide-react"
 
 import { GitHubIcon } from "@/components/site/icons"
-import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { GalleryLogo, Rail } from "@/components/variants/gallery/rail"
 import { SearchField, SearchIconButton } from "@/components/variants/gallery/search"
 import { siteConfig } from "@/lib/site"
@@ -16,7 +22,13 @@ import type { GalleryNav } from "@/components/variants/gallery/data"
 import { g } from "@/components/variants/gallery/links"
 
 /** The rail, as a sheet, for anything narrower than a laptop. */
-export function MobileMenu({ nav, className }: { nav: GalleryNav; className?: string }) {
+export function MobileMenu({
+  nav,
+  className,
+}: {
+  nav: GalleryNav
+  className?: string
+}) {
   const [open, setOpen] = React.useState(false)
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -29,7 +41,10 @@ export function MobileMenu({ nav, className }: { nav: GalleryNav; className?: st
           <Menu aria-hidden="true" />
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[18rem] border-[var(--g-line)] bg-[var(--g-bg)] p-0">
+      <SheetContent
+        side="left"
+        className="w-[18rem] border-[var(--g-line)] bg-[var(--g-bg)] p-0"
+      >
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         <SheetDescription className="sr-only">
           Every category and guide in the library.
@@ -51,7 +66,9 @@ function useCrumbs(nav: GalleryNav) {
       crumbs.push({ label: "Components" })
     } else if (pathname.startsWith(`${components}/`)) {
       const slug = pathname.slice(components.length + 1)
-      const category = nav.categories.find((entry) => entry.items.some((item) => item.slug === slug))
+      const category = nav.categories.find((entry) =>
+        entry.items.some((item) => item.slug === slug)
+      )
       const item = category?.items.find((entry) => entry.slug === slug)
       crumbs.push({ label: "Components", href: components })
       if (category && item) {
@@ -62,7 +79,9 @@ function useCrumbs(nav: GalleryNav) {
       }
     } else if (pathname === docs || pathname.startsWith(`${docs}/`)) {
       const href = pathname === docs ? g("/docs/introduction") : pathname
-      const section = nav.docs.find((entry) => entry.items.some((item) => item.href === href))
+      const section = nav.docs.find((entry) =>
+        entry.items.some((item) => item.href === href)
+      )
       const page = section?.items.find((item) => item.href === href)
       crumbs.push({ label: "Docs", href: docs })
       if (section && page) {
@@ -87,7 +106,10 @@ function Crumbs({ nav, className }: { nav: GalleryNav; className?: string }) {
         {crumbs.map((crumb, index) => {
           const last = index === crumbs.length - 1
           return (
-            <li key={`${crumb.label}-${index}`} className="flex min-w-0 items-center gap-1">
+            <li
+              key={`${crumb.label}-${index}`}
+              className="flex min-w-0 items-center gap-1"
+            >
               {crumb.href && !last ? (
                 <Link
                   href={crumb.href}
@@ -98,13 +120,19 @@ function Crumbs({ nav, className }: { nav: GalleryNav; className?: string }) {
               ) : (
                 <span
                   aria-current={last ? "page" : undefined}
-                  className={cn("truncate", last ? "text-[var(--g-ink)]" : "text-[var(--g-ink-3)]")}
+                  className={cn(
+                    "truncate",
+                    last ? "text-[var(--g-ink)]" : "text-[var(--g-ink-3)]"
+                  )}
                 >
                   {crumb.label}
                 </span>
               )}
               {!last ? (
-                <ChevronRight aria-hidden="true" className="size-3.5 shrink-0 text-[var(--g-ink-4)]" />
+                <ChevronRight
+                  aria-hidden="true"
+                  className="size-3.5 shrink-0 text-[var(--g-ink-4)]"
+                />
               ) : null}
             </li>
           )
@@ -138,11 +166,17 @@ export function LibraryTopBar({ nav }: { nav: GalleryNav }) {
       <div className="ml-auto flex items-center gap-1">
         <SearchField label="Search" className="hidden h-8 w-56 md:flex lg:hidden" />
         <SearchIconButton className="md:hidden" />
-        <Link href={g("/docs")} className="g-btn g-btn-ghost hidden h-8 px-2.5 sm:inline-flex">
+        <Link
+          href={g("/docs")}
+          className="g-btn g-btn-ghost hidden h-8 px-2.5 sm:inline-flex"
+        >
           Docs
         </Link>
         <GitHubLink />
-        <Link href={g("/docs/installation")} className="g-btn g-btn-accent ml-1.5 h-8 px-3">
+        <Link
+          href={g("/docs/installation")}
+          className="g-btn g-btn-accent ml-1.5 h-8 px-3"
+        >
           Install
         </Link>
       </div>

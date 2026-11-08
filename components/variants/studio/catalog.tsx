@@ -158,7 +158,7 @@ function CatalogView({
                 type="search"
                 value={state.query}
                 onChange={(event) => onChange({ query: event.target.value })}
-                placeholder="Search by name, tag or package"
+                placeholder="Search components"
                 className={cn(
                   "h-8 w-full rounded-md border border-border bg-background pr-7 pl-8 text-[13px]",
                   "placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",

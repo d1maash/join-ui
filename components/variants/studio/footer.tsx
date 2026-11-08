@@ -62,7 +62,7 @@ export function StudioFooter() {
             )
           )}
         </nav>
-        <ThemeSegmented />
+        <ThemeSegmented className="self-start md:self-auto" />
       </div>
     </footer>
   )

@@ -109,7 +109,7 @@ export function MobileToc({ items }: { items: TocItem[] }) {
   return (
     <div
       data-st-toc-bar=""
-      className="sticky top-14 z-20 -mx-4 mb-6 border-b border-border bg-background/90 px-4 backdrop-blur-md md:-mx-6 md:px-6 lg:mx-0 lg:px-0 xl:hidden"
+      className="sticky top-14 z-20 -mx-4 -mt-8 mb-6 border-b border-border bg-background/90 px-4 backdrop-blur-md md:-mx-6 md:px-6 lg:mx-0 lg:px-0 xl:hidden"
     >
       <button
         type="button"

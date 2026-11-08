@@ -80,11 +80,10 @@ export default async function GalleryComponentPage({ params }: PageProps) {
               ·
             </span>
             <span className="text-[var(--g-ink-4)]">
-              {component.updated
-                ? `Updated ${formatDate(component.updated)}`
-                : `Added ${formatDate(component.since)}`}
+              Added {formatDate(component.since)}
+              {component.updated ? ` · Updated ${formatDate(component.updated)}` : null}
             </span>
-            <StatusPill item={component} />
+            <StatusPill item={{ status: component.status }} />
           </div>
           <h1 className="g-title mt-2 text-[1.75rem] text-[var(--g-ink)] sm:text-[2rem]">
             {component.title}
@@ -224,7 +223,7 @@ export default async function GalleryComponentPage({ params }: PageProps) {
                       ))}
                     </dt>
                     <dd className="text-[0.875rem] leading-relaxed text-[var(--g-ink-2)]">
-                      {entry.description}
+                      <InlineCode text={entry.description} />
                     </dd>
                   </div>
                 ))}

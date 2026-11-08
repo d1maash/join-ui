@@ -73,11 +73,16 @@ export function RailRow({
     <section aria-labelledby={id} className={cn("flex flex-col gap-5", className)}>
       <div className="flex items-end justify-between gap-6">
         <div className="min-w-0">
-          <h2 id={id} className="g-title text-[1.25rem] text-[var(--g-ink)] sm:text-[1.375rem]">
+          <h2
+            id={id}
+            className="g-title text-[1.25rem] text-[var(--g-ink)] sm:text-[1.375rem]"
+          >
             {title}
           </h2>
           {description ? (
-            <p className="mt-1 text-[0.875rem] leading-snug text-[var(--g-ink-3)]">{description}</p>
+            <p className="mt-1 text-[0.875rem] leading-snug text-[var(--g-ink-3)]">
+              {description}
+            </p>
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-1">

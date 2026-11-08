@@ -150,7 +150,7 @@ export function StudioSearch({ index }: { index: SearchEntry[] }) {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] data-[state=open]:animate-fade-in" />
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-fade-in" />
         <Dialog.Content
           aria-describedby={undefined}
           className={cn(

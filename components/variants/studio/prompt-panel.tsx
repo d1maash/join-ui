@@ -9,9 +9,11 @@ import { cn } from "@/lib/utils"
  */
 function excerpt(prompt: string): string[] {
   const lines = prompt.split("\n")
+  const clip = (line: string) =>
+    line.length > 190 ? `${line.slice(0, line.lastIndexOf(" ", 180))} …` : line
   const from = (prefix: string, count: number) => {
     const start = lines.findIndex((line) => line.startsWith(prefix))
-    return start === -1 ? [] : lines.slice(start, start + count)
+    return start === -1 ? [] : lines.slice(start, start + count).map(clip)
   }
   return [
     lines[0] ?? "",
