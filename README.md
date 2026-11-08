@@ -14,12 +14,16 @@ delete what you do not need.
 
 - **Real registry** — `/r/registry.json` plus one installable item per component
 - **Copy Prompt** — a structured, agent-ready brief on every component page
-- **Two-layer design system** — an entirely neutral chrome (emphasis by ink and
-  elevation rather than by an accent; neither ramp reaches pure black or pure
-  white) around components that take their hue from the `--info` / `--positive`
-  / `--caution` / `--critical` token families. The site renders dark only; the
-  tokens ship both themes, because installed components land in light projects
-  too
+- **Two-layer design system** — a neutral layer built on Apple's system greys
+  (light: a `#f5f5f7` page, white cards, `#1d1d1f` ink; dark: a true-black page,
+  `#1c1c1e` cards, `#f5f5f7` ink), with emphasis by ink and elevation rather
+  than by an accent, around components that take their hue from the `--info` /
+  `--positive` / `--caution` / `--critical` families — Apple system colours at
+  contrast-safe values. Set in Geist and Geist Mono; code is highlighted in
+  Xcode's default colours. The tokens ship both themes, because installed
+  components land in light projects too
+- **The site** renders dark only, in its own zinc chrome with one electric-blue
+  accent (`app/(site)/site.css`); none of that ships with a component
 - **WCAG 2.2 AA** baseline, with reduced-motion fallbacks throughout
 - **Fully static** — every route prerendered, no runtime services
 
@@ -91,8 +95,8 @@ lib/
   search/                       # local search index and scorer
   docs/                         # navigation and sidebar trees
   mdx/                          # MDX loading, TOC extraction, rehype plugin
-  highlight.ts, shiki-theme.ts  # Shiki, and the two low-chroma syntax themes
-  commands.ts, hooks.ts, site.ts, clipboard.ts, reveal.ts, utils.ts
+  highlight.ts, shiki-theme.ts  # Shiki (JS regex engine), and the two Xcode-derived syntax themes
+  commands.ts, hooks.ts, site.ts, clipboard.ts, utils.ts
 registry/
   components/                   # the components the CLI ships
 public/
@@ -190,10 +194,15 @@ export const previews: Record<string, () => ReactNode> = {
 }
 ```
 
-The catalog card gets a thumbnail too — a small configuration of the component
-at `components/previews/thumbnails/<slug>.tsx`, registered in
-`components/previews/thumbnails/registry.tsx`. It is still at rest and plays
-while the card is hovered, driven by `useBeats` from `./clock`.
+The catalog card gets a thumbnail too — one composed shot of the component at
+`components/previews/thumbnails/<slug>.tsx`, registered in
+`components/previews/thumbnails/registry.tsx` as `"<slug>": () => <Thumbnail />`
+(`registry:validate` checks for it). The contract is in that file's header:
+a default export with no props that fills its parent and scales a fixed-size
+scene to the box; purely presentational, because cards render it `inert` and
+`aria-hidden`; free to play a gentle loop of its own, and still and complete
+under reduced motion; token-driven. Cards mount it only near the viewport
+(`components/site/lazy-thumb.tsx`).
 
 ### 3. Describe it
 

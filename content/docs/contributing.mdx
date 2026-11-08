@@ -87,27 +87,102 @@ pnpm dev
     pass props or wrap the demo in a stage. A slug with no entry renders an
     explicit empty state rather than failing.
 
-    The catalog card needs a thumbnail as well: one small configuration of the
-    component, in `components/previews/thumbnails/<slug>.tsx`, registered the
-    same way in `components/previews/thumbnails/registry.tsx`. It is drawn
-    still and plays only while the card is pointed at, so its script reads the
-    card's clock instead of running a timer of its own:
+    The catalog card needs a thumbnail as well. A preview is the docs page's
+    demo; a thumbnail is one composed shot of the component doing the thing it
+    is for, small enough for a card. It lives in
+    `components/previews/thumbnails/<slug>.tsx` and keeps a short contract:
+
+    - **Default export, no props.** It fills its parent and centres itself; the
+      card decides the size. The scene is laid out at one fixed size and scaled
+      to the box, so it reads from about 300×220 up to about 640×420.
+    - **Purely presentational.** Cards render it inside a link, wrapped in
+      `inert` and `aria-hidden`, so it must never depend on focus, clicks or
+      hover to look finished.
+    - **It may play a gentle loop of its own**, and sits still — and complete —
+      under `prefers-reduced-motion: reduce`.
+    - **Token-driven**, like the components, so it works on light and dark
+      surfaces.
 
     ```tsx title="components/previews/thumbnails/glow-card.tsx"
     "use client"
 
+    import * as React from "react"
+    import { useInView, useReducedMotion } from "motion/react"
+
     import { GlowCard } from "@/registry/components/glow-card"
 
-    import { useBeats } from "./clock"
-
-    /* Two beats, looped while the card is hovered: lit, then dim. */
-    const BEATS = [1200, 1200] as const
+    /* The shot is composed once, at this size, and scaled to the card. */
+    const SCENE = { width: 480, height: 360 }
 
     export default function GlowCardThumbnail() {
-      const clock = useBeats(BEATS) // null at rest
-      return <GlowCard glowing={clock?.beat === 0}>Preview content</GlowCard>
+      const [ref, scale] = useFit(SCENE.width, SCENE.height)
+      const reduceMotion = useReducedMotion()
+      const inView = useInView(ref, { amount: 0.3 })
+      const [lit, setLit] = React.useState(true)
+
+      /* A slow pulse while on screen. Reduced motion holds the lit frame. */
+      React.useEffect(() => {
+        if (reduceMotion || !inView) return
+        const timer = window.setInterval(() => setLit((value) => !value), 1600)
+        return () => window.clearInterval(timer)
+      }, [inView, reduceMotion])
+
+      return (
+        <div ref={ref} className="flex size-full items-center justify-center overflow-hidden">
+          {scale === null ? null : (
+            <div
+              className="flex shrink-0 items-center justify-center"
+              style={{ width: SCENE.width, height: SCENE.height, transform: `scale(${scale})` }}
+            >
+              <GlowCard intensity={reduceMotion || lit ? 1 : 0.4} className="w-80">
+                Preview content
+              </GlowCard>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    /* Scales a fixed-size scene to its parent; draws nothing until measured. */
+    function useFit(width: number, height: number) {
+      const ref = React.useRef<HTMLDivElement>(null)
+      const [scale, setScale] = React.useState<number | null>(null)
+
+      React.useLayoutEffect(() => {
+        const node = ref.current
+        if (!node) return
+        const measure = () => {
+          if (node.clientWidth > 0 && node.clientHeight > 0)
+            setScale(Math.min(node.clientWidth / width, node.clientHeight / height) * 0.92)
+        }
+        measure()
+        const observer = new ResizeObserver(measure)
+        observer.observe(node)
+        return () => observer.disconnect()
+      }, [width, height])
+
+      return [ref, scale] as const
     }
     ```
+
+    Register it in `components/previews/thumbnails/registry.tsx` the same way
+    as the preview — a `next/dynamic` import and a render function:
+
+    ```tsx title="components/previews/thumbnails/registry.tsx"
+    const GlowCardThumbnail = dynamic(() => import("./glow-card"))
+
+    export const thumbnails: Record<string, () => ReactNode> = {
+      "glow-card": () => <GlowCardThumbnail />,
+    }
+    ```
+
+    Keep the entry in exactly that `"<slug>": () => <Thumbnail />` shape:
+    `pnpm registry:validate` reads it out of the file and fails for any
+    component without one. Cards mount a thumbnail only once it is near the
+    viewport and unmount it when it is far away
+    (`components/site/lazy-thumb.tsx`), so a catalog of hundreds keeps a dozen
+    alive at a time; the `useInView` check above stops the loop for one that is
+    mounted but scrolled out of sight.
 
     <Callout variant="note">
       Previews and thumbnails must not use `dark:` variants either. They
@@ -251,7 +326,8 @@ the component — see [using components with AI](/docs/ai#overriding-the-prompt)
 - The component works with a keyboard alone.
 - It behaves correctly with Reduce Motion enabled at the OS level.
 - Both preview themes look right — check with the sun and moon buttons on the
-  preview frame, not just by switching the site theme.
+  component page's workbench, since the site itself only renders dark.
+- The thumbnail looks finished as a still frame, with reduced motion on.
 - No `dark:` variants in `registry/` or `components/previews/`.
 - No hard-coded colours, no gradients, no shadows. Hue comes from the four
   token families, and corners round through `rounded-soft*`.
