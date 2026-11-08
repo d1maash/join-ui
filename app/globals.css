@@ -36,7 +36,7 @@
    *
    * Apple's own greys: the page is the #f5f5f7 every apple.com band sits on, a
    * card is pure white one step above it, and the ink is #1d1d1f rather than
-   * black. Secondary text is #6e6e73, the hairline is #d2d2d7.
+   * black. Secondary text is #6e6e73, the hairline is #dcdce1.
    */
   --grey-0: #ffffff;
   --grey-50: #fbfbfd;
@@ -77,7 +77,7 @@
    * Emphasis is ink. `--primary` is the filled surface — the one solid dark
    * shape on a page — and `--accent` is the same ink used as text or as a
    * marker. `--accent-soft` is the neutral tint behind a held state; it is one
-   * step above the page so it stays visible on both paper and white.
+   * step above the page so it stays visible on both the page and a card.
    */
   --primary: var(--grey-1000);
   --primary-hover: var(--grey-900);
@@ -136,9 +136,9 @@
   --radius: 0.75rem;
 
   /*
-   * Elevation. Shadows are wide, low-opacity and tinted with the theme's own
-   * ink rather than with black, so a raised surface reads as lit paper instead
-   * of as a cut-out. Nothing on this site goes above `-md` except a portal.
+   * Elevation. Shadows are wide and low-opacity black, so a raised surface
+   * reads as lifted rather than as a cut-out. Nothing goes above `-md` except a
+   * portal.
    */
   --elevation-xs: 0 1px 2px rgb(0 0 0 / 0.04);
   --elevation-sm: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 14px rgb(0 0 0 / 0.05);
@@ -152,8 +152,8 @@
   --duration-slow: 320ms;
   /*
    * The two entrance tempos. A band or a card arriving on the page takes the
-   * first; the masthead's display type, which has further to travel and
-   * nothing to hurry for, takes the second.
+   * first; display type, which has further to travel and nothing to hurry for,
+   * takes the second.
    */
   --duration-enter: 640ms;
   --duration-display: 1100ms;
@@ -228,16 +228,8 @@
   /*
    * The hues invert their roles rather than their values: the ink lightens so
    * it reads on a dark surface, the tint darkens, and the colour that sits on
-   * a solid fill becomes dark ink.
-   *
-   * The tints came down with the page. They are read as a step above the
-   * surface behind them rather than as an absolute value, and the page dropped
-   * by 0.06 of lightness when it went from warm charcoal to the plate's black —
-   * left where they were, a callout would have sat higher off the page than a
-   * card does, which puts a coloured panel above the elevation that is supposed
-   * to mean "raised". The inks and the foregrounds are unchanged: one is read
-   * against the tint and the other against a solid fill, and neither of those
-   * moved.
+   * a solid fill becomes dark ink. The tints sit just above the page, below a
+   * card, so a coloured panel never reads as more raised than a card does.
    */
   --info: #409cff;
   --info-soft: #0c2541;
@@ -256,7 +248,7 @@
   --critical-foreground: #330000;
 
   /*
-   * Shadows on charcoal cannot rely on darkening alone, so they are deeper and
+   * Shadows on black cannot rely on darkening alone, so they are deeper and
    * paired with a hairline on the raised surface itself.
    */
   --elevation-xs: 0 1px 2px rgb(0 0 0 / 0.5);
@@ -471,10 +463,8 @@
      */
     -webkit-font-smoothing: antialiased;
     /*
-     * Inter is drawn on a wide sidebearing so it holds up at 12px in a form
-     * label. At paragraph size that spacing reads loose, which is why every
-     * site shipping it pulls the tracking in slightly. This is the whole
-     * adjustment; headings take more, below.
+     * A hair of negative tracking at paragraph size; headings take more,
+     * below.
      */
     letter-spacing: -0.009em;
     /* Contextual alternates on, so `->` and friends stay unmangled in prose. */
