@@ -11,13 +11,24 @@ import { CopyPromptButton } from "@/components/site/copy-prompt-button"
 import { GitHubIcon } from "@/components/site/icons"
 import { PackageManagerTabs } from "@/components/site/package-manager-tabs"
 import { GalleryCard, StatusPill } from "@/components/variants/gallery/card"
-import { categoryHref, formatDate, g, toGalleryItem } from "@/components/variants/gallery/data"
+import {
+  categoryHref,
+  formatDate,
+  g,
+  toGalleryItem,
+} from "@/components/variants/gallery/data"
 import { RailRow } from "@/components/variants/gallery/rail-row"
 import { Toc } from "@/components/variants/gallery/toc"
 import { Workbench } from "@/components/variants/gallery/workbench"
 import { dependencyCommands, shadcnCommands } from "@/lib/commands"
 import { buildComponentPrompt } from "@/lib/prompts/build-prompt"
-import { allComponents, getComponent, getRelated, getSiblings, getTraits } from "@/lib/registry"
+import {
+  allComponents,
+  getComponent,
+  getRelated,
+  getSiblings,
+  getTraits,
+} from "@/lib/registry"
 import { getComponentSources, type SourceFile } from "@/lib/registry/source"
 import { siteConfig } from "@/lib/site"
 import type { ComponentMetadata } from "@/types/registry"
@@ -63,7 +74,10 @@ export default async function GalleryComponentPage({ params }: PageProps) {
   const related = getRelated(component, 6)
   const { previous, next } = getSiblings(component.slug)
   const sourceUrl = `${siteConfig.links.repo}/blob/main/${primary.path}`
-  const propCount = component.props.reduce((total, group) => total + group.props.length, 0)
+  const propCount = component.props.reduce(
+    (total, group) => total + group.props.length,
+    0
+  )
 
   return (
     <main id="main-content">
@@ -95,7 +109,12 @@ export default async function GalleryComponentPage({ params }: PageProps) {
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
           <span className="g-accent-scope">
-            <CopyPromptButton prompt={prompt} componentName={component.title} variant="primary" size="md" />
+            <CopyPromptButton
+              prompt={prompt}
+              componentName={component.title}
+              variant="primary"
+              size="md"
+            />
           </span>
           <CopyButton
             value={component.installCommand}
@@ -106,7 +125,12 @@ export default async function GalleryComponentPage({ params }: PageProps) {
             size="md"
             showLabel
           />
-          <a href={sourceUrl} target="_blank" rel="noreferrer noopener" className="g-btn">
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="g-btn"
+          >
             <GitHubIcon aria-hidden="true" />
             Source
             <span className="sr-only">on GitHub (opens in a new tab)</span>
@@ -148,7 +172,7 @@ export default async function GalleryComponentPage({ params }: PageProps) {
       />
 
       <div className="grid gap-12 px-4 pt-14 pb-6 sm:px-6 lg:px-8 xl:grid-cols-[minmax(0,1fr)_12rem] 2xl:gap-20">
-        <div className="flex min-w-0 max-w-[52rem] flex-col gap-16">
+        <div className="flex max-w-[52rem] min-w-0 flex-col gap-16">
           <Section id="overview" title="Overview">
             <p className="text-[0.9375rem] leading-[1.75] text-pretty text-[var(--g-ink-2)]">
               {component.overview}
@@ -156,7 +180,11 @@ export default async function GalleryComponentPage({ params }: PageProps) {
             <Facts component={component} primary={primary} />
           </Section>
 
-          <Section id="usage" title="Usage" lead="The smallest working example — paste it into any page.">
+          <Section
+            id="usage"
+            title="Usage"
+            lead="The smallest working example — paste it into any page."
+          >
             <CodeBlock code={component.usage} language="tsx" title="example.tsx" />
           </Section>
 
@@ -181,13 +209,21 @@ export default async function GalleryComponentPage({ params }: PageProps) {
                       </p>
                     </div>
                   </div>
-                  <CodeBlock code={example.code} language={example.language ?? "tsx"} collapsible />
+                  <CodeBlock
+                    code={example.code}
+                    language={example.language ?? "tsx"}
+                    collapsible
+                  />
                 </div>
               ))}
             </div>
           </Section>
 
-          <Section id="accessibility" title="Accessibility" lead="What the component guarantees, and what any edit has to keep.">
+          <Section
+            id="accessibility"
+            title="Accessibility"
+            lead="What the component guarantees, and what any edit has to keep."
+          >
             <ul className="flex flex-col divide-y divide-[var(--g-line)] rounded-2xl border border-[var(--g-line)] bg-[var(--g-panel)]">
               {component.accessibility.map((note) => (
                 <li key={note} className="flex gap-3 px-4 py-3.5">
@@ -214,7 +250,10 @@ export default async function GalleryComponentPage({ params }: PageProps) {
                       {entry.keys.map((key, index) => (
                         <span key={key} className="flex items-center gap-1.5">
                           {index > 0 ? (
-                            <span aria-hidden="true" className="text-[0.75rem] text-[var(--g-ink-4)]">
+                            <span
+                              aria-hidden="true"
+                              className="text-[0.75rem] text-[var(--g-ink-4)]"
+                            >
                               /
                             </span>
                           ) : null}
@@ -230,8 +269,8 @@ export default async function GalleryComponentPage({ params }: PageProps) {
               </dl>
             ) : (
               <p className="rounded-2xl border border-dashed border-[var(--g-line-2)] px-4 py-5 text-[0.875rem] leading-relaxed text-[var(--g-ink-3)]">
-                {component.title} has no controls of its own, so it adds nothing to the tab order.
-                Anything you pass into it keeps its own keyboard behaviour.
+                {component.title} has no controls of its own, so it adds nothing to the
+                tab order. Anything you pass into it keeps its own keyboard behaviour.
               </p>
             )}
           </Section>
@@ -261,8 +300,15 @@ export default async function GalleryComponentPage({ params }: PageProps) {
           </div>
         ) : null}
 
-        <nav aria-label="Previous and next component" className="grid gap-3 sm:grid-cols-2">
-          {previous ? <PrevNextCard direction="previous" component={previous} /> : <span />}
+        <nav
+          aria-label="Previous and next component"
+          className="grid gap-3 sm:grid-cols-2"
+        >
+          {previous ? (
+            <PrevNextCard direction="previous" component={previous} />
+          ) : (
+            <span />
+          )}
           {next ? <PrevNextCard direction="next" component={next} /> : null}
         </nav>
       </div>
@@ -320,25 +366,41 @@ function InlineCode({ text }: { text: string }) {
   )
 }
 
-function Facts({ component, primary }: { component: ComponentMetadata; primary: SourceFile }) {
+function Facts({
+  component,
+  primary,
+}: {
+  component: ComponentMetadata
+  primary: SourceFile
+}) {
   const traits = getTraits(component)
   const facts: Array<{ label: string; value: React.ReactNode }> = [
     {
       label: "Category",
       value: (
-        <Link href={categoryHref(component.category)} className="hover:text-[var(--g-ink)]">
+        <Link
+          href={categoryHref(component.category)}
+          className="hover:text-[var(--g-ink)]"
+        >
           {component.category}
         </Link>
       ),
     },
     { label: "Status", value: <span className="capitalize">{component.status}</span> },
     { label: "Added", value: formatDate(component.since) },
-    { label: "Updated", value: component.updated ? formatDate(component.updated) : "—" },
+    {
+      label: "Updated",
+      value: component.updated ? formatDate(component.updated) : "—",
+    },
     {
       label: "npm",
-      value: component.dependencies.length > 0 ? component.dependencies.join(", ") : "None",
+      value:
+        component.dependencies.length > 0 ? component.dependencies.join(", ") : "None",
     },
-    { label: "Installs to", value: <code className="text-[0.8125rem]">{primary.target}</code> },
+    {
+      label: "Installs to",
+      value: <code className="text-[0.8125rem]">{primary.target}</code>,
+    },
     { label: "Traits", value: traits.length > 0 ? traits.join(" · ") : "—" },
     { label: "Licence", value: "MIT" },
   ]
@@ -347,10 +409,12 @@ function Facts({ component, primary }: { component: ComponentMetadata; primary: 
       {facts.map((fact) => (
         <div
           key={fact.label}
-          className="flex min-w-0 flex-col gap-1 border-[var(--g-line)] px-4 py-3.5 [&:nth-child(n+3)]:border-t sm:[&:nth-child(n+3)]:border-t-0 sm:[&:nth-child(n+5)]:border-t [&:not(:nth-child(2n+1))]:border-l sm:[&:not(:nth-child(4n+1))]:border-l"
+          className="flex min-w-0 flex-col gap-1 border-[var(--g-line)] px-4 py-3.5 [&:not(:nth-child(2n+1))]:border-l sm:[&:not(:nth-child(4n+1))]:border-l [&:nth-child(n+3)]:border-t sm:[&:nth-child(n+3)]:border-t-0 sm:[&:nth-child(n+5)]:border-t"
         >
           <dt className="text-[0.75rem] text-[var(--g-ink-4)]">{fact.label}</dt>
-          <dd className="truncate text-[0.875rem] text-[var(--g-ink-2)]">{fact.value}</dd>
+          <dd className="truncate text-[0.875rem] text-[var(--g-ink-2)]">
+            {fact.value}
+          </dd>
         </div>
       ))}
     </dl>
@@ -367,7 +431,10 @@ function SiblingLink({
   const Icon = direction === "previous" ? ArrowLeft : ArrowRight
   if (!component) {
     return (
-      <span aria-hidden="true" className="g-icon-btn border border-[var(--g-line)] opacity-35">
+      <span
+        aria-hidden="true"
+        className="g-icon-btn border border-[var(--g-line)] opacity-35"
+      >
         <Icon />
       </span>
     )
@@ -402,8 +469,12 @@ function PrevNextCard({
         {next ? "Next" : "Previous"}
         {next ? <ArrowRight aria-hidden="true" className="size-3.5" /> : null}
       </span>
-      <span className="text-[0.9375rem] font-medium text-[var(--g-ink)]">{component.title}</span>
-      <span className="text-[0.8125rem] text-[var(--g-ink-3)]">{component.category}</span>
+      <span className="text-[0.9375rem] font-medium text-[var(--g-ink)]">
+        {component.title}
+      </span>
+      <span className="text-[0.8125rem] text-[var(--g-ink-3)]">
+        {component.category}
+      </span>
     </Link>
   )
 }
@@ -432,7 +503,9 @@ function PanelBlock({
         <div className="flex min-w-0 flex-col gap-1">
           <h3 className="text-[0.875rem] font-medium text-[var(--g-ink)]">{title}</h3>
           {note ? (
-            <p className="text-[0.8125rem] leading-relaxed text-[var(--g-ink-3)]">{note}</p>
+            <p className="text-[0.8125rem] leading-relaxed text-[var(--g-ink-3)]">
+              {note}
+            </p>
           ) : null}
         </div>
       </div>
@@ -449,7 +522,13 @@ function Mono({ children }: { children: React.ReactNode }) {
   )
 }
 
-function InstallPanel({ component, primary }: { component: ComponentMetadata; primary: SourceFile }) {
+function InstallPanel({
+  component,
+  primary,
+}: {
+  component: ComponentMetadata
+  primary: SourceFile
+}) {
   const registryTarget = `${siteConfig.namespace}/${component.slug}`
   const registryUrl = `${siteConfig.url}/r/${component.slug}.json`
   const deps = component.dependencies
@@ -462,15 +541,22 @@ function InstallPanel({ component, primary }: { component: ComponentMetadata; pr
         title="Add it with the shadcn CLI"
         note={
           <>
-            Needs the <Mono>{siteConfig.namespace}</Mono> namespace in <Mono>components.json</Mono> —{" "}
-            <Link href={g("/docs/registry-setup")} className="text-[var(--g-ink-2)] underline decoration-[var(--g-line-3)] underline-offset-4 hover:text-[var(--g-ink)]">
+            Needs the <Mono>{siteConfig.namespace}</Mono> namespace in{" "}
+            <Mono>components.json</Mono> —{" "}
+            <Link
+              href={g("/docs/registry-setup")}
+              className="text-[var(--g-ink-2)] underline decoration-[var(--g-line-3)] underline-offset-4 hover:text-[var(--g-ink)]"
+            >
               registry setup
             </Link>
             .
           </>
         }
       >
-        <PackageManagerTabs commands={shadcnCommands(registryTarget)} label="Install with the shadcn CLI" />
+        <PackageManagerTabs
+          commands={shadcnCommands(registryTarget)}
+          label="Install with the shadcn CLI"
+        />
       </PanelBlock>
 
       <PanelBlock
@@ -478,7 +564,10 @@ function InstallPanel({ component, primary }: { component: ComponentMetadata; pr
         title="Or point it at the URL"
         note="No configuration: the registry item is a plain JSON file."
       >
-        <PackageManagerTabs commands={shadcnCommands(registryUrl)} label="Install from the registry URL" />
+        <PackageManagerTabs
+          commands={shadcnCommands(registryUrl)}
+          label="Install from the registry URL"
+        />
       </PanelBlock>
 
       <PanelBlock
@@ -486,20 +575,36 @@ function InstallPanel({ component, primary }: { component: ComponentMetadata; pr
         title="Or copy it in by hand"
         note={
           deps.length > 0 ? (
-            <>Install {deps.length === 1 ? "the dependency" : `the ${deps.length} dependencies`}, then paste the source into the file below.</>
+            <>
+              Install{" "}
+              {deps.length === 1 ? "the dependency" : `the ${deps.length} dependencies`}
+              , then paste the source into the file below.
+            </>
           ) : (
-            <>Nothing to install. Paste the source into the file below and you are done.</>
+            <>
+              Nothing to install. Paste the source into the file below and you are done.
+            </>
           )
         }
       >
         {deps.length > 0 ? (
-          <PackageManagerTabs commands={dependencyCommands(deps)} label="Install dependencies" />
+          <PackageManagerTabs
+            commands={dependencyCommands(deps)}
+            label="Install dependencies"
+          />
         ) : null}
         <div className="flex items-center gap-3 rounded-xl border border-[var(--g-line)] bg-[var(--g-panel)] px-3 py-2.5">
-          <FileCode2 aria-hidden="true" className="size-4 shrink-0 text-[var(--g-ink-3)]" />
+          <FileCode2
+            aria-hidden="true"
+            className="size-4 shrink-0 text-[var(--g-ink-3)]"
+          />
           <span className="min-w-0 flex-1">
-            <span className="block truncate font-mono text-[0.75rem] text-[var(--g-ink)]">{primary.target}</span>
-            <span className="g-num block text-[0.6875rem] text-[var(--g-ink-4)]">{lines} lines · see Code</span>
+            <span className="block truncate font-mono text-[0.75rem] text-[var(--g-ink)]">
+              {primary.target}
+            </span>
+            <span className="g-num block text-[0.6875rem] text-[var(--g-ink-4)]">
+              {lines} lines · see Code
+            </span>
           </span>
           <CopyButton
             value={primary.content}
@@ -511,7 +616,11 @@ function InstallPanel({ component, primary }: { component: ComponentMetadata; pr
       </PanelBlock>
 
       <div className="grid gap-3 border-t border-[var(--g-line)] pt-5">
-        <DependencyRow title="npm packages" items={deps} empty="None beyond React and Tailwind" />
+        <DependencyRow
+          title="npm packages"
+          items={deps}
+          empty="None beyond React and Tailwind"
+        />
         <DependencyRow
           title="Registry items"
           items={component.registryDependencies}
@@ -522,10 +631,20 @@ function InstallPanel({ component, primary }: { component: ComponentMetadata; pr
   )
 }
 
-function DependencyRow({ title, items, empty }: { title: string; items: string[]; empty: string }) {
+function DependencyRow({
+  title,
+  items,
+  empty,
+}: {
+  title: string
+  items: string[]
+  empty: string
+}) {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-      <span className="w-28 shrink-0 text-[0.75rem] text-[var(--g-ink-4)]">{title}</span>
+      <span className="w-28 shrink-0 text-[0.75rem] text-[var(--g-ink-4)]">
+        {title}
+      </span>
       {items.length > 0 ? (
         <span className="flex flex-wrap gap-1.5">
           {items.map((item) => (
@@ -541,7 +660,13 @@ function DependencyRow({ title, items, empty }: { title: string; items: string[]
   )
 }
 
-function CodePanel({ component, sources }: { component: ComponentMetadata; sources: SourceFile[] }) {
+function CodePanel({
+  component,
+  sources,
+}: {
+  component: ComponentMetadata
+  sources: SourceFile[]
+}) {
   return (
     <div className="p-4">
       <CodeTabs
@@ -550,7 +675,12 @@ function CodePanel({ component, sources }: { component: ComponentMetadata; sourc
           value: source.name,
           label: source.name,
           content: (
-            <CodeBlock code={source.content} language={source.language} title={source.target} showLineNumbers />
+            <CodeBlock
+              code={source.content}
+              language={source.language}
+              title={source.target}
+              showLineNumbers
+            />
           ),
         }))}
       />
@@ -558,22 +688,36 @@ function CodePanel({ component, sources }: { component: ComponentMetadata; sourc
   )
 }
 
-function PromptPanel({ component, prompt }: { component: ComponentMetadata; prompt: string }) {
+function PromptPanel({
+  component,
+  prompt,
+}: {
+  component: ComponentMetadata
+  prompt: string
+}) {
   const lines = prompt.split("\n").length
   const kb = (new TextEncoder().encode(prompt).length / 1024).toFixed(1)
   return (
     <div className="flex flex-col gap-4 p-4">
       <p className="text-[0.8125rem] leading-relaxed text-[var(--g-ink-3)]">
-        One brief for Claude Code, Cursor or Codex. It is assembled from this component&apos;s
-        metadata and its real source file, so it names the install path, the dependencies, every
-        prop and every accessibility rule — and cannot describe a prop that does not exist.{" "}
-        <Link href={g("/docs/ai")} className="text-[var(--g-ink-2)] underline decoration-[var(--g-line-3)] underline-offset-4 hover:text-[var(--g-ink)]">
+        One brief for Claude Code, Cursor or Codex. It is assembled from this
+        component&apos;s metadata and its real source file, so it names the install
+        path, the dependencies, every prop and every accessibility rule — and cannot
+        describe a prop that does not exist.{" "}
+        <Link
+          href={g("/docs/ai")}
+          className="text-[var(--g-ink-2)] underline decoration-[var(--g-line-3)] underline-offset-4 hover:text-[var(--g-ink)]"
+        >
           How it is built
         </Link>
       </p>
       <div className="flex items-center gap-3">
         <span className="g-accent-scope">
-          <CopyPromptButton prompt={prompt} componentName={component.title} variant="primary" />
+          <CopyPromptButton
+            prompt={prompt}
+            componentName={component.title}
+            variant="primary"
+          />
         </span>
         <span className="g-num text-[0.75rem] text-[var(--g-ink-4)]">
           {lines} lines · {kb} KB
@@ -586,16 +730,24 @@ function PromptPanel({ component, prompt }: { component: ComponentMetadata; prom
 
 function PropsPanel({ component }: { component: ComponentMetadata }) {
   if (component.props.length === 0) {
-    return <p className="p-4 text-[0.875rem] text-[var(--g-ink-3)]">This component takes no props.</p>
+    return (
+      <p className="p-4 text-[0.875rem] text-[var(--g-ink-3)]">
+        This component takes no props.
+      </p>
+    )
   }
   return (
     <div className="flex flex-col gap-6 p-4">
       {component.props.map((group) => (
         <section key={group.name} className="flex flex-col gap-2.5">
           <div>
-            <h3 className="font-mono text-[0.8125rem] font-medium text-[var(--g-ink)]">{group.name}</h3>
+            <h3 className="font-mono text-[0.8125rem] font-medium text-[var(--g-ink)]">
+              {group.name}
+            </h3>
             {group.description ? (
-              <p className="mt-0.5 text-[0.8125rem] text-[var(--g-ink-3)]">{group.description}</p>
+              <p className="mt-0.5 text-[0.8125rem] text-[var(--g-ink-3)]">
+                {group.description}
+              </p>
             ) : null}
           </div>
           <table className="w-full table-fixed border-collapse overflow-hidden rounded-xl text-left">
@@ -609,7 +761,10 @@ function PropsPanel({ component }: { component: ComponentMetadata }) {
             <tbody className="divide-y divide-[var(--g-line)] border border-[var(--g-line)] bg-[var(--g-panel)]">
               {group.props.map((prop) => (
                 <tr key={prop.name} className="align-top">
-                  <th scope="row" className="w-[36%] px-3 py-3 font-mono text-[0.75rem] font-medium break-words text-[var(--g-ink)]">
+                  <th
+                    scope="row"
+                    className="w-[36%] px-3 py-3 font-mono text-[0.75rem] font-medium break-words text-[var(--g-ink)]"
+                  >
                     {prop.name}
                     {prop.required ? (
                       <>

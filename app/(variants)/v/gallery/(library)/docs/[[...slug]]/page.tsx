@@ -65,12 +65,14 @@ export default async function GalleryDocsPage({ params }: PageProps) {
   return (
     <main id="main-content" className="px-4 pt-10 pb-16 sm:px-6 lg:px-10">
       <div className="mx-auto grid max-w-[70rem] gap-12 xl:grid-cols-[minmax(0,1fr)_13rem] 2xl:gap-20">
-        <article className="min-w-0 max-w-[46rem]">
+        <article className="max-w-[46rem] min-w-0">
           <header className="mb-10 flex flex-col gap-3 border-b border-[var(--g-line)] pb-8">
             <p className="text-[0.8125rem] font-medium text-[var(--g-accent-ink)]">
               {section?.title ?? "Docs"}
             </p>
-            <h1 className="g-title text-[2rem] text-[var(--g-ink)] sm:text-[2.375rem]">{page.title}</h1>
+            <h1 className="g-title text-[2rem] text-[var(--g-ink)] sm:text-[2.375rem]">
+              {page.title}
+            </h1>
             <p className="text-[1rem] leading-relaxed text-pretty text-[var(--g-ink-3)]">
               {page.description}
             </p>
@@ -93,7 +95,9 @@ export default async function GalleryDocsPage({ params }: PageProps) {
                 Edit on GitHub
                 <span className="sr-only">(opens in a new tab)</span>
               </a>
-              <span className="g-num ml-auto text-[0.75rem] text-[var(--g-ink-4)]">{minutes} min read</span>
+              <span className="g-num ml-auto text-[0.75rem] text-[var(--g-ink-4)]">
+                {minutes} min read
+              </span>
             </div>
           </header>
 
@@ -121,7 +125,9 @@ export default async function GalleryDocsPage({ params }: PageProps) {
                   <ArrowLeft aria-hidden="true" className="size-3.5" />
                   Previous
                 </span>
-                <span className="text-[0.9375rem] font-medium text-[var(--g-ink)]">{previous.title}</span>
+                <span className="text-[0.9375rem] font-medium text-[var(--g-ink)]">
+                  {previous.title}
+                </span>
               </Link>
             ) : (
               <span />
@@ -135,7 +141,9 @@ export default async function GalleryDocsPage({ params }: PageProps) {
                   Next
                   <ArrowRight aria-hidden="true" className="size-3.5" />
                 </span>
-                <span className="text-[0.9375rem] font-medium text-[var(--g-ink)]">{next.title}</span>
+                <span className="text-[0.9375rem] font-medium text-[var(--g-ink)]">
+                  {next.title}
+                </span>
               </Link>
             ) : null}
           </nav>
@@ -161,7 +169,10 @@ export default async function GalleryDocsPage({ params }: PageProps) {
               >
                 Report an issue
               </a>
-              <Link href={g("/components")} className="text-[var(--g-ink-3)] transition-colors hover:text-[var(--g-ink)]">
+              <Link
+                href={g("/components")}
+                className="text-[var(--g-ink-3)] transition-colors hover:text-[var(--g-ink)]"
+              >
                 Browse components
               </Link>
             </div>

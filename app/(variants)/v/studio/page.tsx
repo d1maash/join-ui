@@ -14,7 +14,8 @@ import { getComponentSources } from "@/lib/registry/source"
 import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
-  title: { absolute: "Join UI — Components that move, in code you own" },
+  title: "Studio",
+  description: "Join UI: accessible, motion-first React components you install as source with the shadcn CLI.",
   robots: { index: false, follow: false },
 }
 

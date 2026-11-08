@@ -80,8 +80,9 @@ export default async function GalleryLanding() {
               <span className="block">The source is yours.</span>
             </h1>
             <p className="mt-6 max-w-[38rem] text-[1.0625rem] leading-relaxed text-pretty text-[var(--g-ink-2)] sm:text-[1.1875rem]">
-              Animated, accessible React components that land in your repo as plain files through
-              the shadcn CLI — each with a ready-made brief for Claude Code, Cursor or Codex.
+              Animated, accessible React components that land in your repo as plain
+              files through the shadcn CLI — each with a ready-made brief for Claude
+              Code, Cursor or Codex.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
               <Link href={g("/components")} className="g-btn g-btn-accent g-btn-lg">
@@ -130,10 +131,17 @@ export default async function GalleryLanding() {
           </div>
 
           {/* --------------------------------------------------- categories */}
-          <section id="categories" aria-labelledby="categories-heading" className="scroll-mt-24">
+          <section
+            id="categories"
+            aria-labelledby="categories-heading"
+            className="scroll-mt-24"
+          >
             <div className="mb-6 flex items-end justify-between gap-6">
               <div>
-                <h2 id="categories-heading" className="g-title text-[1.25rem] text-[var(--g-ink)] sm:text-[1.375rem]">
+                <h2
+                  id="categories-heading"
+                  className="g-title text-[1.25rem] text-[var(--g-ink)] sm:text-[1.375rem]"
+                >
                   Categories
                 </h2>
                 <p className="mt-1 text-[0.875rem] text-[var(--g-ink-3)]">
@@ -175,7 +183,10 @@ export default async function GalleryLanding() {
                           className="flex h-8 items-center gap-2 rounded-lg px-2 text-[0.8125rem] text-[var(--g-ink-3)] transition-colors hover:bg-[var(--g-panel-3)] hover:text-[var(--g-ink)]"
                         >
                           <span className="flex-1 truncate">{member.title}</span>
-                          <StatusPill item={member} className="h-[1.125rem] px-1.5 text-[0.625rem]" />
+                          <StatusPill
+                            item={member}
+                            className="h-[1.125rem] px-1.5 text-[0.625rem]"
+                          />
                         </Link>
                       </li>
                     ))}
@@ -198,11 +209,20 @@ export default async function GalleryLanding() {
 
           {/* ------------------------------------------------------ agents */}
           {subject && sources[0] ? (
-            <ShipSection component={subject} prompt={prompt} target={sources[0].target} />
+            <ShipSection
+              component={subject}
+              prompt={prompt}
+              target={sources[0].target}
+            />
           ) : null}
         </div>
       </main>
-      <GalleryFooter nav={nav} installCommand={subject?.installCommand ?? "pnpm dlx shadcn@latest add @joinui/…"} />
+      <GalleryFooter
+        nav={nav}
+        installCommand={
+          subject?.installCommand ?? "pnpm dlx shadcn@latest add @joinui/…"
+        }
+      />
     </>
   )
 }

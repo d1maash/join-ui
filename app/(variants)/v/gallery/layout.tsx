@@ -17,7 +17,11 @@ import "./gallery.css"
  * outside this tree — set in the same faces.
  */
 const sans = Geist({ subsets: ["latin"], display: "swap", variable: "--g-font-sans" })
-const mono = Geist_Mono({ subsets: ["latin"], display: "swap", variable: "--g-font-mono" })
+const mono = Geist_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--g-font-mono",
+})
 
 export const metadata: Metadata = {
   title: {

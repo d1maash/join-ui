@@ -502,7 +502,13 @@
       rgb(30 66 214 / 0.34) 72%,
       transparent 100%
     );
-    mask-image: linear-gradient(90deg, transparent 4%, #000 30%, #000 66%, transparent 96%);
+    mask-image: linear-gradient(
+      90deg,
+      transparent 4%,
+      #000 30%,
+      #000 66%,
+      transparent 96%
+    );
     filter: blur(34px);
     transform: rotate(-12deg);
     transform-origin: 50% 50%;
@@ -519,7 +525,13 @@
       rgb(150 180 255 / 0.4) 50%,
       transparent
     );
-    mask-image: linear-gradient(90deg, transparent 18%, #000 42%, #000 58%, transparent 84%);
+    mask-image: linear-gradient(
+      90deg,
+      transparent 18%,
+      #000 42%,
+      #000 58%,
+      transparent 84%
+    );
     filter: blur(18px);
     animation-duration: 38s;
     animation-direction: alternate-reverse;
@@ -553,7 +565,11 @@
   .g-bezel {
     border-radius: 1.75rem;
     padding: 0.625rem;
-    background: linear-gradient(to bottom, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.015));
+    background: linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 0.07),
+      rgb(255 255 255 / 0.015)
+    );
     box-shadow:
       inset 0 0 0 1px rgb(255 255 255 / 0.08),
       0 40px 120px -40px rgb(0 0 0 / 0.9);
@@ -597,7 +613,9 @@
     width: 1px;
     translate: -50% 0;
     background: var(--g-line);
-    transition: background-color 140ms var(--g-ease), width 140ms var(--g-ease);
+    transition:
+      background-color 140ms var(--g-ease),
+      width 140ms var(--g-ease);
   }
 
   .g-resizer:hover::after,

@@ -22,15 +22,20 @@ export default function GalleryNotFound() {
 
   return (
     <LibraryShell>
-      <main id="main-content" className="flex flex-col gap-20 px-4 pt-16 pb-16 sm:px-6 sm:pt-24 lg:px-8">
+      <main
+        id="main-content"
+        className="flex flex-col gap-20 px-4 pt-16 pb-16 sm:px-6 sm:pt-24 lg:px-8"
+      >
         <section className="flex flex-col items-start gap-6">
-          <p className="font-mono text-[0.8125rem] text-[var(--g-accent-ink)]">404 · not in the registry</p>
+          <p className="font-mono text-[0.8125rem] text-[var(--g-accent-ink)]">
+            404 · not in the registry
+          </p>
           <h1 className="g-display max-w-[16ch] text-[clamp(2.25rem,5vw,3.75rem)] text-[var(--g-ink)]">
             Nothing is filed under this address.
           </h1>
           <p className="max-w-xl text-[1rem] leading-relaxed text-[var(--g-ink-3)]">
-            The page may have been renamed, or the component you want lives under another slug.
-            Search for it, or start from the catalog.
+            The page may have been renamed, or the component you want lives under
+            another slug. Search for it, or start from the catalog.
           </p>
           <NotFoundSearch />
           <div className="flex flex-wrap gap-2">
