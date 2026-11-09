@@ -88,6 +88,8 @@ const SOFT = "cubic-bezier(0.32, 0.72, 0, 1)"
 const IN_OUT = "cubic-bezier(0.65, 0, 0.35, 1)"
 /** One soft overshoot: a thing set down, rather than slid into place. */
 const SEAT = "cubic-bezier(0.34, 1.38, 0.64, 1)"
+/** The same, for a long fall: it lands and gives a little, and no more. */
+const LAND = "cubic-bezier(0.33, 1.14, 0.6, 1)"
 
 /** Scaling a shape about its own middle rather than the corner of the drawing. */
 const CENTRED: React.CSSProperties = {
@@ -175,7 +177,12 @@ function buildSort(): Program {
     })
   }
 
-  const rest: SortState = { order: [0, 1, 2, 3, 4], pair: null, dealt: false, sorted: true }
+  const rest: SortState = {
+    order: [0, 1, 2, 3, 4],
+    pair: null,
+    dealt: false,
+    sorted: true,
+  }
 
   return program(beats, rest, 4, (state, clock) =>
     BAR_HEIGHTS.map((height, rank) => {
@@ -217,8 +224,8 @@ interface Disc {
   aloft: boolean
 }
 
-const PEG_X = [5, 12, 19] as const
-const DISC_WIDTHS = [6.6, 5, 3.4] as const
+const PEG_X = [4.6, 12, 19.4] as const
+const DISC_WIDTHS = [7, 5.2, 3.4] as const
 const LANE_Y = 4.4
 const levelY = (level: number) => 17.4 - level * 3.3
 
@@ -267,7 +274,15 @@ function buildHanoi(): Program {
   return program<readonly Disc[]>(beats, rest, 8, (state, clock) => (
     <>
       {PEG_X.map((x) => (
-        <rect key={x} x={x - 0.5} y={7.8} width={1} height={12} rx={0.5} opacity={FAINT} />
+        <rect
+          key={x}
+          x={x - 0.5}
+          y={7.8}
+          width={1}
+          height={10.9}
+          rx={0.5}
+          opacity={FAINT}
+        />
       ))}
       {state.map((disc, index) => {
         const width = DISC_WIDTHS[index]!
@@ -287,7 +302,7 @@ function buildHanoi(): Program {
               rx={1}
               style={{
                 transform: `translateY(${disc.aloft ? LANE_Y : levelY(disc.level)}px)`,
-                transition: `transform ${clock(disc.aloft ? 190 : 250)} ${disc.aloft ? SOFT : SEAT}`,
+                transition: `transform ${clock(disc.aloft ? 190 : 250)} ${disc.aloft ? SOFT : LAND}`,
               }}
             />
           </g>

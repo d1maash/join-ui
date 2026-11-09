@@ -2,10 +2,7 @@
 
 import * as React from "react"
 
-import {
-  PROOF_OF_WORK_MARKS,
-  ProofOfWork,
-} from "@/registry/components/proof-of-work"
+import { PROOF_OF_WORK_MARKS, ProofOfWork } from "@/registry/components/proof-of-work"
 
 /*
  * The product shot: the whole family at once, each mark at work on its own
@@ -19,19 +16,22 @@ export default function ProofOfWorkThumbnail() {
   const [frame, scale] = useFit(SCENE.width, SCENE.height)
 
   return (
-    <div ref={frame} className="relative flex size-full items-center justify-center overflow-hidden">
+    <div
+      ref={frame}
+      className="relative flex size-full items-center justify-center overflow-hidden"
+    >
       {scale === null ? null : (
         <div
           className="grid shrink-0 animate-fade-in grid-cols-3 place-items-center text-foreground"
           style={{
             width: SCENE.width,
             height: SCENE.height,
-            padding: "44px 52px",
+            padding: "30px 40px",
             transform: `scale(${scale})`,
           }}
         >
           {PROOF_OF_WORK_MARKS.map((mark) => (
-            <ProofOfWork key={mark} mark={mark} size={76} />
+            <ProofOfWork key={mark} mark={mark} size={92} />
           ))}
         </div>
       )}

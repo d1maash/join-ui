@@ -20,7 +20,8 @@ const WORK: Record<ProofOfWorkMark, string> = {
   descent: "Gradient descent to the floor of a valley.",
 }
 
-const PAIR = "grid grid-cols-1 gap-14 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-5"
+const PAIR =
+  "grid grid-cols-1 gap-14 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-5"
 const ALIGNED = "lg:row-span-2 lg:grid lg:grid-rows-subgrid"
 
 export default function ProofOfWorkPreview() {
@@ -43,7 +44,11 @@ export default function ProofOfWorkPreview() {
               key={mark}
               className="flex flex-col items-center gap-6 rounded-soft-lg bg-card px-5 pt-10 pb-6 text-center"
             >
-              <ProofOfWork mark={mark} active={!resting} className="size-16 text-foreground" />
+              <ProofOfWork
+                mark={mark}
+                active={!resting}
+                className="size-16 text-foreground"
+              />
               <div className="flex flex-col gap-1">
                 <code className="font-mono text-[0.8125rem] font-medium text-foreground">
                   {mark}
@@ -79,25 +84,31 @@ export default function ProofOfWorkPreview() {
             <Tile className="items-end justify-between">
               {[14, 16, 20, 28, 40].map((size) => (
                 <div key={size} className="flex flex-col items-center gap-3">
-                  <ProofOfWork mark="hanoi" size={size} />
-                  <span className="font-mono text-xs text-muted-foreground">{size}</span>
+                  <ProofOfWork mark="sort" size={size} />
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {size}
+                  </span>
                 </div>
               ))}
             </Tile>
             <Tile className="items-end justify-between">
               {[0.5, 1, 2].map((speed) => (
                 <div key={speed} className="flex flex-col items-center gap-3">
-                  <ProofOfWork mark="sort" speed={speed} className="size-8" />
+                  <ProofOfWork mark="hanoi" speed={speed} className="size-8" />
                   <span className="font-mono text-xs text-muted-foreground">{`${speed}×`}</span>
                 </div>
               ))}
               <div className="flex flex-col items-center gap-3">
                 <ProofOfWork mark="branch" className="size-8 text-info" />
-                <span className="font-mono text-xs text-muted-foreground">text-info</span>
+                <span className="font-mono text-xs text-muted-foreground">
+                  text-info
+                </span>
               </div>
               <div className="flex flex-col items-center gap-3">
                 <ProofOfWork mark="life" className="size-8 text-positive" />
-                <span className="font-mono text-xs text-muted-foreground">text-positive</span>
+                <span className="font-mono text-xs text-muted-foreground">
+                  text-positive
+                </span>
               </div>
             </Tile>
           </div>
@@ -158,7 +169,14 @@ function Conversation() {
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2.5 text-[0.9375rem] leading-none tracking-[-0.009em]">
-          <ProofOfWork mark={stage.mark} active={!done} className="text-foreground" />
+          <ProofOfWork
+            mark={stage.mark}
+            active={!done}
+            className={cn(
+              "transition-colors duration-[var(--duration-slow)]",
+              done ? "text-muted-foreground" : "text-foreground"
+            )}
+          />
           <span
             className={cn(
               "transition-colors duration-[var(--duration-slow)]",
@@ -212,9 +230,20 @@ function Conversation() {
  * Furniture
  * ------------------------------------------------------------------------- */
 
-function Tile({ className, children }: { className?: string; children: React.ReactNode }) {
+function Tile({
+  className,
+  children,
+}: {
+  className?: string
+  children: React.ReactNode
+}) {
   return (
-    <div className={cn("flex min-h-[7.5rem] rounded-soft-lg bg-card px-6 py-6 sm:px-8", className)}>
+    <div
+      className={cn(
+        "flex min-h-[7.5rem] rounded-soft-lg bg-card px-6 py-6 sm:px-8",
+        className
+      )}
+    >
       {children}
     </div>
   )
@@ -283,5 +312,9 @@ function Toggle({
 
 /** Mono is reserved for the captions that really are quoting the API. */
 function Code({ children }: { children: React.ReactNode }) {
-  return <code className="font-mono text-[0.92em] font-medium text-foreground">{children}</code>
+  return (
+    <code className="font-mono text-[0.92em] font-medium text-foreground">
+      {children}
+    </code>
+  )
 }

@@ -440,6 +440,44 @@
           "critical-foreground": "#330000"
         }
       }
+    },
+    {
+      "name": "proof-of-work",
+      "type": "registry:ui",
+      "title": "Proof of Work",
+      "description": "Thinking indicators that do real work: six animated marks, each running an actual algorithm and settling on its answer when the thinking stops.",
+      "author": "Join Way",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "feedback",
+        "ai",
+        "agent",
+        "thinking",
+        "loader",
+        "spinner",
+        "indicator",
+        "icon",
+        "algorithm",
+        "streaming",
+        "animated"
+      ],
+      "docs": "https://ui.join-way.com/components/proof-of-work",
+      "meta": {
+        "status": "new",
+        "since": "2026-11-10",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinui/proof-of-work"
+      },
+      "files": [
+        {
+          "path": "registry/components/proof-of-work.tsx",
+          "type": "registry:ui",
+          "target": "components/joinui/proof-of-work.tsx"
+        }
+      ]
     }
   ]
 }

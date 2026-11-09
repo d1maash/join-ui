@@ -2531,7 +2531,7 @@ export function Example() {
     files: [uiFile("proof-of-work")],
     accessibility: [
       "Decorative by default. Without a `label` the mark is `aria-hidden`, which is right wherever a visible line such as “Thinking…” sits beside it — the words are read once, not twice.",
-      "Pass `label` when the mark stands alone and it becomes an image with that name: `role=\"img\"` and `aria-label`. Change the label along with `active` so the name follows the state.",
+      'Pass `label` when the mark stands alone and it becomes an image with that name: `role="img"` and `aria-label`. Change the label along with `active` so the name follows the state.',
       "State is never carried by colour. Working and finished are different drawings — bars out of order and in it, a tower in pieces and rebuilt — in the same ink.",
       "`prefers-reduced-motion` is honoured structurally: no timer is started and nothing moves. A working mark holds one frame from the middle of its problem and a finished one holds its answer, so the two states stay distinguishable with motion off.",
       "Nothing flashes. The quickest beat is longer than a tenth of a second and changes a few percent of a 20-pixel square, well clear of the three-flashes threshold.",
@@ -2562,7 +2562,7 @@ export function Example() {
             name: "size",
             type: "number | string",
             description:
-              "The edge of the mark's square. A number is pixels, a string is any CSS length — `\"1em\"` ties it to the text. Left out, the mark is 1.25rem and a `size-*` class can resize it.",
+              'The edge of the square the mark fills. A number is pixels, a string is any CSS length — `"1em"` ties it to the text. Left out, the mark is 1.25rem and a `size-*` class can resize it.',
           },
           {
             name: "speed",
