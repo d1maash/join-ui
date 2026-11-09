@@ -1973,10 +1973,10 @@ function buildSplit(): Program {
           key={index}
           cx={round(12 + sample.x * SAMPLE_SCALE)}
           cy={round(12 + sample.y * SAMPLE_SCALE)}
-          r={sample.kind === 1 ? 1.6 : 1.15}
+          r={sample.kind === 1 ? 1.6 : 1.3}
           fill={sample.kind === 1 ? "currentColor" : "none"}
           stroke={sample.kind === 1 ? "none" : "currentColor"}
-          strokeWidth={1.1}
+          strokeWidth={0.95}
           style={{
             ...CENTRED,
             transform: `scale(${state.wrong === index ? 1.5 : 1})`,
