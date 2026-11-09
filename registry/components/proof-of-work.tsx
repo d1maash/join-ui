@@ -1332,8 +1332,6 @@ function buildHail(): Program {
 
   const beats: Beat<HailState>[] = []
   runs.forEach((terms, run) => {
-    /* A blank beat first: the strip is wound back with nothing on it to see. */
-    beats.push({ state: { run, step: -1, shown: true, landed: false }, hold: 280 })
     terms.forEach((_, step) => {
       beats.push({ state: { run, step, shown: true, landed: false }, hold: 160 })
     })
@@ -1341,6 +1339,11 @@ function buildHail(): Program {
     beats.push({ state: { run, step: last, shown: true, landed: true }, hold: 200 })
     beats.push({ state: { run, step: last, shown: true, landed: false }, hold: 900 })
     beats.push({ state: { run, step: last, shown: false, landed: false }, hold: 240 })
+    /* A blank beat: the strip is wound back for the next run with nothing on it. */
+    beats.push({
+      state: { run: (run + 1) % runs.length, step: -1, shown: true, landed: false },
+      hold: 280,
+    })
   })
 
   const rest: HailState = {
@@ -2004,10 +2007,12 @@ function buildPascal(): Program {
   }
 
   /* The state is how many rows have been worked out. */
-  const beats: Beat<number>[] = [{ state: 0, hold: 400 }]
+  const beats: Beat<number>[] = []
   for (let rows = 1; rows <= PASCAL_ROWS; rows += 1) {
     beats.push({ state: rows, hold: rows === PASCAL_ROWS ? 1250 : 200 })
   }
+  /* And a beat with nothing known, before it starts again from the top. */
+  beats.push({ state: 0, hold: 360 })
 
   return program(beats, PASCAL_ROWS, 5, (rows, clock) =>
     odd.flatMap((entries, row) =>
