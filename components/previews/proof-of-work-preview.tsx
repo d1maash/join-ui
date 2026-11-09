@@ -18,6 +18,20 @@ const WORK: Record<ProofOfWorkMark, string> = {
   tape: "A busy-beaver Turing machine, run until it halts.",
   branch: "A depth-first search, backing out of dead ends.",
   descent: "Gradient descent to the floor of a valley.",
+  bisect: "A binary search, halving its way to one tick.",
+  queens: "Four queens, placed by backtracking.",
+  sieve: "The sieve of Eratosthenes, from 2 to 26.",
+  josephus: "The Josephus problem: counted off until one is left.",
+  modulo: "A stride walked round a clock of seven.",
+  hull: "A convex hull, found by gift wrapping.",
+  monte: "π, estimated by darts on a quarter circle.",
+  hail: "The Collatz sequence, falling to one.",
+  euclid: "Euclid's algorithm, cutting squares off a rectangle.",
+  hilbert: "A Hilbert curve, filling a lattice.",
+  slide: "The eight puzzle, solved in the fewest moves.",
+  match: "A stable matching, by proposal and refusal.",
+  split: "A perceptron learning the line between two kinds.",
+  pascal: "Pascal's triangle, odd and even.",
 }
 
 const PAIR =
@@ -25,48 +39,72 @@ const PAIR =
 const ALIGNED = "lg:row-span-2 lg:grid lg:grid-rows-subgrid"
 
 export default function ProofOfWorkPreview() {
+  const [chosen, setChosen] = React.useState<ProofOfWorkMark>("hull")
   const [resting, setResting] = React.useState(false)
 
   return (
     <div className="flex w-full max-w-5xl flex-col gap-14 font-sans">
       <Panel
-        caption="Six marks, six real problems"
-        description="None of them is a loop drawn to look busy. Each one runs an algorithm and plays back what happened — and stopped, each settles on the answer it was working towards."
+        caption="Twenty marks, twenty real problems"
+        description="None of them is a loop drawn to look busy. Each one runs an algorithm and plays back what happened — and stopped, each settles on the answer it was working towards. Pick one to see it large."
         action={
           <Toggle pressed={resting} onPressedChange={setResting}>
             {resting ? "Resume" : "Finish"}
           </Toggle>
         }
       >
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {PROOF_OF_WORK_MARKS.map((mark) => (
-            <li
-              key={mark}
-              className="flex flex-col items-center gap-6 rounded-soft-lg bg-card px-5 pt-10 pb-6 text-center"
-            >
-              <ProofOfWork
-                mark={mark}
-                active={!resting}
-                className="size-16 text-foreground"
-              />
-              <div className="flex flex-col gap-1">
-                <code className="font-mono text-[0.8125rem] font-medium text-foreground">
-                  {mark}
-                </code>
-                <p className="text-[0.8125rem] leading-[1.35] text-pretty text-muted-foreground">
-                  {WORK[mark]}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <div className="flex min-h-64 flex-col items-center justify-center gap-7 rounded-soft-lg bg-card px-6 py-9 text-center">
+            <ProofOfWork
+              mark={chosen}
+              active={!resting}
+              className="size-28 text-foreground"
+            />
+            <div className="flex flex-col gap-1.5">
+              <code className="font-mono text-[0.8125rem] font-medium text-foreground">
+                {`mark="${chosen}"`}
+              </code>
+              <p className="max-w-[26ch] text-[0.9375rem] leading-[1.35] tracking-[-0.009em] text-pretty text-muted-foreground">
+                {WORK[chosen]}
+              </p>
+            </div>
+          </div>
+
+          <div
+            role="group"
+            aria-label="Marks"
+            className="grid grid-cols-4 gap-2 sm:grid-cols-5"
+          >
+            {PROOF_OF_WORK_MARKS.map((mark) => (
+              <button
+                key={mark}
+                type="button"
+                aria-pressed={mark === chosen}
+                aria-label={mark}
+                title={mark}
+                onClick={() => setChosen(mark)}
+                className={cn(
+                  "flex min-h-[4.5rem] cursor-pointer items-center justify-center rounded-soft bg-card",
+                  "transition-[background-color,color,scale] duration-[var(--duration-fast)] ease-[var(--ease-out-soft)]",
+                  "active:scale-[0.96]",
+                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                  mark === chosen
+                    ? "bg-muted text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <ProofOfWork mark={mark} active={!resting} className="size-7" />
+              </button>
+            ))}
+          </div>
+        </div>
       </Panel>
 
       <div className={PAIR}>
         <Panel
           className={ALIGNED}
           caption="Beside a line of text"
-          description="At text size, in the text's own colour. When the answer arrives the mark is not swapped for a tick: it finishes, and stays as the record of the work."
+          description="At text size, in the text's own colour, with a mark for each kind of work. When the answer arrives the last one is not swapped for a tick: it finishes, and stays as the record of the step."
         >
           <Conversation />
         </Panel>
@@ -78,13 +116,13 @@ export default function ProofOfWorkPreview() {
               <Code>size</Code>, <Code>speed</Code>, <Code>className</Code>
             </>
           }
-          description="One 24-unit drawing, so it holds from a caption to a hero. The tempo is one number, and the colour is whatever the text around it is."
+          description="One 24-unit drawing, so the mark you picked holds from a caption to a hero. The tempo is one number, and the colour is whatever the text around it is."
         >
           <div className="flex flex-col gap-3">
             <Tile className="items-end justify-between">
               {[14, 16, 20, 28, 40].map((size) => (
                 <div key={size} className="flex flex-col items-center gap-3">
-                  <ProofOfWork mark="sort" size={size} />
+                  <ProofOfWork mark={chosen} size={size} />
                   <span className="font-mono text-xs text-muted-foreground">
                     {size}
                   </span>
@@ -99,7 +137,7 @@ export default function ProofOfWorkPreview() {
                 </div>
               ))}
               <div className="flex flex-col items-center gap-3">
-                <ProofOfWork mark="branch" className="size-8 text-info" />
+                <ProofOfWork mark="match" className="size-8 text-info" />
                 <span className="font-mono text-xs text-muted-foreground">
                   text-info
                 </span>
@@ -126,7 +164,7 @@ export default function ProofOfWorkPreview() {
 const STAGES: ReadonlyArray<{ mark: ProofOfWorkMark; label: string; for: number }> = [
   { mark: "branch", label: "Searching the repository", for: 4200 },
   { mark: "tape", label: "Reading ci.yml", for: 3800 },
-  { mark: "descent", label: "Narrowing it down", for: 4400 },
+  { mark: "bisect", label: "Narrowing it down", for: 4400 },
 ]
 
 const THINKING = STAGES.reduce((total, stage) => total + stage.for, 0)

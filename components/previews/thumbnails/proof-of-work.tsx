@@ -22,16 +22,16 @@ export default function ProofOfWorkThumbnail() {
     >
       {scale === null ? null : (
         <div
-          className="grid shrink-0 animate-fade-in grid-cols-3 place-items-center text-foreground"
+          className="grid shrink-0 animate-fade-in grid-cols-5 place-items-center text-foreground"
           style={{
             width: SCENE.width,
             height: SCENE.height,
-            padding: "30px 40px",
+            padding: "22px 30px",
             transform: `scale(${scale})`,
           }}
         >
           {PROOF_OF_WORK_MARKS.map((mark) => (
-            <ProofOfWork key={mark} mark={mark} size={92} />
+            <ProofOfWork key={mark} mark={mark} size={50} />
           ))}
         </div>
       )}
