@@ -838,11 +838,11 @@ function buildQueens(): Program {
       {state.rows.map((row, column) => (
         <rect
           key={column}
-          x={-1.5}
-          y={-1.5}
-          width={3}
-          height={3}
-          rx={0.6}
+          x={-1.7}
+          y={-1.7}
+          width={3.4}
+          height={3.4}
+          rx={0.7}
           style={{
             transform: [
               `translate(${squareAt(column)}px, ${squareAt(row ?? 0)}px)`,
@@ -1286,7 +1286,7 @@ function buildMonte(): Program {
             key={index}
             cx={dart.x}
             cy={dart.y}
-            r={1.15}
+            r={1.25}
             style={{
               ...CENTRED,
               opacity: landed ? (dart.inside ? 1 : DIM) : 0,
