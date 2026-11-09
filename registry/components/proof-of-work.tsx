@@ -1321,7 +1321,7 @@ const HAIL_PITCH = 3
 function buildHail(): Program {
   /* Halve an even number; triple an odd one and add one; stop at one. */
   const runs = SEEDS.map((seed) => {
-    const terms = [seed]
+    const terms: number[] = [seed]
     for (let value: number = seed; value !== 1;) {
       value = value % 2 === 0 ? value / 2 : value * 3 + 1
       terms.push(value)
