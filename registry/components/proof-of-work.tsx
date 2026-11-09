@@ -218,9 +218,9 @@ interface Disc {
 }
 
 const PEG_X = [5, 12, 19] as const
-const DISC_WIDTHS = [6.6, 4.6, 2.6] as const
-const LANE_Y = 4.6
-const levelY = (level: number) => 17.6 - level * 3
+const DISC_WIDTHS = [6.6, 5, 3.4] as const
+const LANE_Y = 4.4
+const levelY = (level: number) => 17.4 - level * 3.3
 
 function buildHanoi(): Program {
   const pegs: number[][] = [[0, 1, 2], [], []]
@@ -267,7 +267,7 @@ function buildHanoi(): Program {
   return program<readonly Disc[]>(beats, rest, 8, (state, clock) => (
     <>
       {PEG_X.map((x) => (
-        <rect key={x} x={x - 1.5} y={19.9} width={3} height={1} rx={0.5} opacity={FAINT} />
+        <rect key={x} x={x - 0.5} y={7.8} width={1} height={12} rx={0.5} opacity={FAINT} />
       ))}
       {state.map((disc, index) => {
         const width = DISC_WIDTHS[index]!
@@ -281,10 +281,10 @@ function buildHanoi(): Program {
           >
             <rect
               x={-width / 2}
-              y={-1.1}
+              y={-1.3}
               width={width}
-              height={2.2}
-              rx={1.1}
+              height={2.6}
+              rx={1}
               style={{
                 transform: `translateY(${disc.aloft ? LANE_Y : levelY(disc.level)}px)`,
                 transition: `transform ${clock(disc.aloft ? 190 : 250)} ${disc.aloft ? SOFT : SEAT}`,
