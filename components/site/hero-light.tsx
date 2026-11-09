@@ -111,8 +111,8 @@ void main() {
   vec3 azure = vec3(0.08, 0.46, 1.0);
   vec3 ice = vec3(0.78, 0.89, 1.0);
   vec3 mid = mix(indigo, azure, smoothstep(-0.8, 0.8, q.x));
-  vec3 cloth = mix(shadow, mid, lit) + ice * sheen * 0.9;
-  float amount = body * (0.25 + 0.75 * lit + 0.6 * sheen);
+  vec3 cloth = mix(shadow, mid, lit) + ice * sheen * 0.75;
+  float amount = body * (0.25 + 0.75 * lit + 0.5 * sheen);
 
   // The bar sits on dark, and nothing may reach the canvas edge at the
   // bottom: it hands off to the page.
@@ -121,15 +121,16 @@ void main() {
   amount *= smoothstep(0.0, 0.35, uReveal);
 
   vec3 base = vec3(0.035, 0.035, 0.043);
-  vec3 color = base + cloth * clamp(amount, 0.0, 1.4);
+  vec3 color = base + cloth * clamp(amount, 0.0, 1.1);
   color += (hash(gl_FragCoord.xy + fract(t) * 91.0) - 0.5) / 255.0 * 2.0;
   gl_FragColor = vec4(color, 1.0);
 }
 `
 
 const REVEAL_MS = 2200
-// Start the clock part-way in: this is the drape the page opens on.
-const TIME_OFFSET = 0
+// Once the ribbon has unfurled, the drift is slow enough that 30 fps is
+// indistinguishable from 60 — and half the work for a laptop on battery.
+const SETTLED_FRAME_MS = 1000 / 30
 
 function compile(gl: WebGLRenderingContext, type: number, source: string) {
   const shader = gl.createShader(type)
@@ -175,7 +176,11 @@ export function HeroLight({ className }: { className?: string }) {
 
     const buffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 3, -1, -1, 3]),
+      gl.STATIC_DRAW
+    )
     const position = gl.getAttribLocation(program, "aPosition")
     gl.enableVertexAttribArray(position)
     gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
@@ -188,10 +193,13 @@ export function HeroLight({ className }: { className?: string }) {
     const uReveal = uniform("uReveal")
     const uPointer = uniform("uPointer")
 
-    const DEBUG_T = Number(new URLSearchParams(location.search).get("heroT") ?? NaN) // TEMP
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     const pointer = { x: 0, y: 0, tx: 0, ty: 0 }
-    let started = 0
+    // The cloth's own clock: it only runs while frames are being drawn, so a
+    // background tab or a scroll away does not make the drape jump on return.
+    let clock = 0
+    let last = 0
+    let drawn = 0
     let frame = 0
     let onScreen = true
     let lost = false
@@ -207,18 +215,20 @@ export function HeroLight({ className }: { className?: string }) {
       // close-up of the same drape rather than a squeezed one.
       const unit = Math.min(Math.max(width * 0.7, 560), 1100)
       gl.uniform2f(uResolution, canvas.width, canvas.height)
-      gl.uniform2f(uOrigin, canvas.width * 0.5, Math.min(height * 0.3, unit * 0.31) * scale)
+      gl.uniform2f(
+        uOrigin,
+        canvas.width * 0.5,
+        Math.min(height * 0.3, unit * 0.31) * scale
+      )
       gl.uniform1f(uUnit, unit * scale)
     }
 
-    const draw = (now: number) => {
-      if (!started) started = now
-      const elapsed = now - started
-      const reveal = still ? 1 : Math.min(elapsed / REVEAL_MS, 1)
+    const draw = () => {
+      const reveal = still ? 1 : Math.min(clock / REVEAL_MS, 1)
       const eased = 1 - Math.pow(1 - reveal, 3)
       pointer.x += (pointer.tx - pointer.x) * 0.04
       pointer.y += (pointer.ty - pointer.y) * 0.04
-      gl.uniform1f(uTime, Number.isNaN(DEBUG_T) ? TIME_OFFSET + (still ? 0 : elapsed / 1000) : DEBUG_T)
+      gl.uniform1f(uTime, clock / 1000)
       gl.uniform1f(uReveal, eased)
       gl.uniform2f(uPointer, pointer.x, pointer.y)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
@@ -226,16 +236,23 @@ export function HeroLight({ className }: { className?: string }) {
     }
 
     const loop = (now: number) => {
-      draw(now)
+      clock += Math.min(now - last, 100)
+      last = now
+      // A few ms of slack so a 60 Hz display lands on every other frame.
+      if (clock < REVEAL_MS || now - drawn >= SETTLED_FRAME_MS - 4) {
+        draw()
+        drawn = now
+      }
       frame = requestAnimationFrame(loop)
     }
 
     const start = () => {
       if (lost || frame) return
       if (still) {
-        draw(performance.now())
+        draw()
         return
       }
+      last = performance.now()
       frame = requestAnimationFrame(loop)
     }
 
@@ -252,7 +269,7 @@ export function HeroLight({ className }: { className?: string }) {
     resize()
     const resizer = new ResizeObserver(() => {
       resize()
-      if (still) draw(performance.now())
+      if (still && !lost) draw()
     })
     resizer.observe(canvas)
 
