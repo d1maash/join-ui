@@ -2503,4 +2503,172 @@ export function Example() {
     related: ["tool-trace", "agent-hive"],
     since: "2026-09-10",
   }),
+  defineComponent({
+    name: "ProofOfWork",
+    slug: "proof-of-work",
+    title: "Proof of Work",
+    description:
+      "Thinking indicators that do real work: six animated marks, each running an actual algorithm and settling on its answer when the thinking stops.",
+    overview:
+      "ProofOfWork is a family of marks for the time a model spends thinking, and instead of acting busy each of them is. One sorts five bars with a shaker sort. One solves the Tower of Hanoi, seven moves a crossing. One flies a glider through Conway's Game of Life on a board whose edges meet, one runs a three-state busy-beaver Turing machine until it halts, one searches a tree depth-first and backs out of the dead ends, and one rolls down a loss curve by gradient descent, overshooting the floor a little less each step. None of the frames are drawn by hand: when the file loads it runs each algorithm and keeps what happened, and the mark plays that back, so what you watch is a recording of work rather than a loop made to look like it. Because the work is real, it has an end. Turn active off and the mark does not vanish or freeze mid-stride — it settles on the answer its algorithm was heading for and holds it: the bars in order, the tower rebuilt, the machine halted, the path to the leaf lit. The element that said “thinking” becomes the one that says “thought”, which is what lets it stay in the transcript as the record of the step. All six are drawn on one 24-unit grid in currentColor, with one weight and two opacities, so they sit beside each other and beside a line of text as a set, and they change nothing but transform and opacity. There is no dependency beyond React: one timer per mark, waiting only on the current beat.",
+    category: "Feedback",
+    tags: [
+      "ai",
+      "agent",
+      "thinking",
+      "loader",
+      "spinner",
+      "indicator",
+      "icon",
+      "algorithm",
+      "streaming",
+      "animated",
+    ],
+    status: "new",
+    featured: true,
+    dependencies: [],
+    registryDependencies: ["utils"],
+    files: [uiFile("proof-of-work")],
+    accessibility: [
+      "Decorative by default. Without a `label` the mark is `aria-hidden`, which is right wherever a visible line such as “Thinking…” sits beside it — the words are read once, not twice.",
+      'Pass `label` when the mark stands alone and it becomes an image with that name: `role="img"` and `aria-label`. Change the label along with `active` so the name follows the state.',
+      "State is never carried by colour. Working and finished are different drawings — bars out of order and in it, a tower in pieces and rebuilt — in the same ink.",
+      "`prefers-reduced-motion` is honoured structurally: no timer is started and nothing moves. A working mark holds one frame from the middle of its problem and a finished one holds its answer, so the two states stay distinguishable with motion off.",
+      "Nothing flashes. The quickest beat is longer than a tenth of a second and changes a few percent of a 20-pixel square, well clear of the three-flashes threshold.",
+      "The mark is drawn in `currentColor`, so its contrast is the contrast of the text it sits in, in either theme and inside a forced-theme subtree. The dimmed parts are furniture — a peg, a wire, a cell not yet reached — and nothing a reader needs is drawn only in them.",
+      "It takes no focus and answers no pointer, so it adds nothing to the tab order of the message it sits in.",
+      "The preference is read through a store with a server snapshot, so the server's markup and the client's first render agree and the still frame arrives without a hydration mismatch.",
+    ],
+    keyboard: [],
+    props: [
+      {
+        name: "ProofOfWork",
+        props: [
+          {
+            name: "mark",
+            type: '"sort" | "hanoi" | "life" | "tape" | "branch" | "descent"',
+            defaultValue: '"sort"',
+            description:
+              "Which piece of work the mark does. A shaker sort, the Tower of Hanoi, a Game of Life glider, a busy-beaver Turing machine, a depth-first search, or gradient descent. Changing it starts the new mark from its first beat.",
+          },
+          {
+            name: "active",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Whether the work is still going. Turned off, the mark settles on its answer and holds it; turned back on, it starts again from the top.",
+          },
+          {
+            name: "size",
+            type: "number | string",
+            description:
+              'The edge of the square the mark fills. A number is pixels, a string is any CSS length — `"1em"` ties it to the text. Left out, the mark is 1.25rem and a `size-*` class can resize it.',
+          },
+          {
+            name: "speed",
+            type: "number",
+            defaultValue: "1",
+            description:
+              "Tempo. Every hold and every transition is divided by it, so the motion keeps its shape at any pace.",
+          },
+          {
+            name: "label",
+            type: "string",
+            description:
+              "The accessible name. Left out, the mark is decorative and hidden from assistive technology.",
+          },
+          {
+            name: "className",
+            type: "string",
+            description:
+              "Merged onto the wrapping span through `cn`. Size and colour are yours: the mark is drawn in `currentColor`.",
+          },
+        ],
+      },
+      {
+        name: "PROOF_OF_WORK_MARKS",
+        description:
+          "The six mark names as a readonly tuple, for a picker, a rotation, or a type guard. `ProofOfWorkMark` is its element type.",
+        props: [
+          {
+            name: "[index]",
+            type: "ProofOfWorkMark",
+            description:
+              '`"sort"`, `"hanoi"`, `"life"`, `"tape"`, `"branch"`, `"descent"` — in the order the docs show them.',
+          },
+        ],
+      },
+    ],
+    usage: `import { ProofOfWork } from "@/components/joinui/proof-of-work"
+
+export function Example({ thinking }: { thinking: boolean }) {
+  return (
+    <p className="flex items-center gap-2 text-sm">
+      <ProofOfWork mark="hanoi" active={thinking} />
+      {thinking ? "Thinking…" : "Thought it through"}
+    </p>
+  )
+}`,
+    customization: [
+      {
+        title: "Finish, do not unmount",
+        description:
+          "The usual indicator is removed the moment the answer starts, which throws away the one honest thing it could say. Keep the mark mounted and turn active off: it settles on its answer and becomes the still glyph beside “Thought for 12s”, so the transcript keeps a record of the step in the same place the reader was already looking.",
+        code: `<div className="flex items-center gap-2 text-sm text-muted-foreground">
+  <ProofOfWork mark="tape" active={status === "thinking"} />
+  {status === "thinking" ? "Thinking…" : \`Thought for \${seconds}s\`}
+</div>`,
+      },
+      {
+        title: "Give each kind of work its own mark",
+        description:
+          "Six marks are six verbs. A search is a tree being walked, a read is a tape going past a head, a comparison is a sort, a plan is a tower moved one disc at a time. Map your agent's steps onto them once and the reader learns to tell what is happening from the shape of the motion, before reading the label.",
+        code: `const MARK: Record<Step["kind"], ProofOfWorkMark> = {
+  search: "branch",
+  read: "tape",
+  compare: "sort",
+  plan: "hanoi",
+  simulate: "life",
+  refine: "descent",
+}
+
+<ProofOfWork mark={MARK[step.kind]} active={step.running} />`,
+      },
+      {
+        title: "Name it when it stands alone",
+        description:
+          "Beside a visible label the mark should stay silent, and it is by default. On its own — in a tab, a collapsed sidebar row, a send button — it is the only thing saying that work is going on, so give it the words, and change them when the state does.",
+        code: `<ProofOfWork
+  mark="life"
+  active={busy}
+  label={busy ? "Thinking" : "Finished thinking"}
+/>`,
+      },
+      {
+        title: "Size, colour and tempo",
+        description:
+          "The drawing is 24 units of currentColor, so size and colour come from wherever you already set them: a size utility or the size prop, and the text colour. speed divides every hold and every transition together — slower for a hero, quicker for a status bar — and the motion keeps its proportions either way.",
+        code: `<ProofOfWork mark="descent" className="size-4 text-muted-foreground" />
+<ProofOfWork mark="sort" size="1em" />
+<ProofOfWork mark="hanoi" size={64} speed={0.75} className="text-info" />`,
+      },
+      {
+        title: "Let the reader pick",
+        description:
+          "PROOF_OF_WORK_MARKS is the list of names, so a settings row that offers all six is a map over it. Changing mark starts the new one from its first beat.",
+        code: `{PROOF_OF_WORK_MARKS.map((mark) => (
+  <button
+    key={mark}
+    type="button"
+    aria-pressed={mark === chosen}
+    onClick={() => setChosen(mark)}
+  >
+    <ProofOfWork mark={mark} label={mark} />
+  </button>
+))}`,
+      },
+    ],
+    related: ["tool-trace", "agent-hive", "approval-gate"],
+    since: "2026-11-10",
+  }),
 ]

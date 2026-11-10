@@ -48,14 +48,17 @@ const VIEWPORTS: Array<{
  * Tablet and phone widths are rendered through the standalone preview route
  * in a same-origin frame, so the component sees a real viewport of that size
  * and its media queries answer to it. The frame is stripped of that page's
- * own chrome and handed the theme, and the site's dark surface tokens.
+ * own chrome and handed the theme.
+ *
+ * Both are done through attributes the preview route sets on purpose —
+ * `data-preview-chrome` on its bar, `data-preview-stage` on the surface the
+ * demo sits on — and never through the shape of its markup. An earlier
+ * version of this sheet reached for `main > div > div:first-child` to hide a
+ * title bar that page used to have; the bar was removed, the selector began
+ * matching the demo itself, and every component drew nothing at these widths.
  */
 const EMBED_CSS = `
-body > div > header { display: none !important; }
-main { padding: 0 !important; }
-main > div { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; min-height: 100dvh !important; }
-main > div > div:first-child { display: none !important; }
-html.dark { --background: #09090b; --card: #111114; --popover: #121215; --muted: #1c1c21; --border: #1e1e23; --border-hover: #2a2a31; }
+[data-preview-chrome] { display: none !important; }
 nextjs-portal { display: none !important; }
 `
 
@@ -101,21 +104,24 @@ export function Workbench({
       doc.head.appendChild(style)
     }
     /*
-     * The theme is a class on the frame's <html>, which React hydrates;
-     * changing it before hydration has reached that node would be reported
-     * as a mismatch, so wait for React to have claimed it.
+     * The theme is a `.light` island on the frame's stage — the same thing
+     * the full-width canvas does to its own — so the stage and the demo on it
+     * re-declare their tokens together. React hydrates that element; changing
+     * its class before hydration has reached it would be reported as a
+     * mismatch, so wait for React to have claimed it.
      */
-    const html = doc.documentElement
     let tries = 0
     const apply = () => {
-      const claimed = Object.keys(html).some((key) => key.startsWith("__reactFiber"))
+      const stage = doc.querySelector<HTMLElement>("[data-preview-stage]")
+      const claimed =
+        stage !== null &&
+        Object.keys(stage).some((key) => key.startsWith("__reactFiber"))
       if (!claimed && tries++ < 120) {
         dressTimer.current = setTimeout(apply, 50)
         return
       }
-      html.classList.toggle("dark", theme === "dark")
-      html.classList.toggle("light", theme === "light")
-      html.style.colorScheme = theme
+      stage?.classList.toggle("light", theme === "light")
+      doc.documentElement.style.colorScheme = theme
     }
     if (dressTimer.current) clearTimeout(dressTimer.current)
     apply()

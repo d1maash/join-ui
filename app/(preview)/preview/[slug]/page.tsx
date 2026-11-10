@@ -46,7 +46,11 @@ export default async function FullPreviewPage({ params }: PageProps) {
 
   return (
     <div className="join-site dark flex min-h-dvh flex-col">
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-[var(--g-line)] px-3 sm:px-4">
+      {/* Marked as chrome so the workbench can hide it when it frames this page. */}
+      <header
+        data-preview-chrome=""
+        className="flex h-12 shrink-0 items-center gap-3 border-b border-[var(--g-line)] px-3 sm:px-4"
+      >
         <Link href={`/components/${component.slug}`} className="g-btn g-btn-ghost">
           <ArrowLeft aria-hidden="true" />
           {component.title}
