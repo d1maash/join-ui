@@ -527,9 +527,6 @@
           "color-positive": "var(--positive)",
           "color-positive-soft": "var(--positive-soft)",
           "color-positive-foreground": "var(--positive-foreground)",
-          "color-caution": "var(--caution)",
-          "color-caution-soft": "var(--caution-soft)",
-          "color-caution-foreground": "var(--caution-foreground)",
           "color-critical": "var(--critical)",
           "color-critical-soft": "var(--critical-soft)",
           "color-critical-foreground": "var(--critical-foreground)"
@@ -541,9 +538,6 @@
           "positive": "#1a7f37",
           "positive-soft": "#e6f4ea",
           "positive-foreground": "#ffffff",
-          "caution": "#b05a00",
-          "caution-soft": "#fdf1e1",
-          "caution-foreground": "#ffffff",
           "critical": "#d70015",
           "critical-soft": "#fdeaea",
           "critical-foreground": "#ffffff"
@@ -555,9 +549,6 @@
           "positive": "#30d158",
           "positive-soft": "#0d2b16",
           "positive-foreground": "#002910",
-          "caution": "#ffb340",
-          "caution-soft": "#2f2208",
-          "caution-foreground": "#2b1700",
           "critical": "#ff6961",
           "critical-soft": "#35100f",
           "critical-foreground": "#330000"

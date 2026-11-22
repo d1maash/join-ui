@@ -260,7 +260,7 @@ export default function PromptPerchPreview() {
             <Code>busy</Code> and <Code>listening</Code>
           </>
         }
-        description="The eyes are the only hue the robot spends, and the hue is its state: green at rest, blue while it listens. Thinking, it squints and sweeps, and the lamp on its head pulses; it hops when the work is done."
+        description="The eyes are white at rest and take a hue only when there is a state to show. Thinking, they narrow to two bars that sweep the display; listening, they turn blue and become level meters. When the work is done they close green and the robot hops."
         aside={
           <div
             role="radiogroup"

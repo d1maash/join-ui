@@ -2678,7 +2678,7 @@ export function Example({ thinking }: { thinking: boolean }) {
     description:
       "A prompt composer with a small robot perched on its edge, watching what you do. Attachments, style and model pickers, an ideas tray, and voice.",
     overview:
-      "PromptPerch is the box a product's first prompt is typed into, with a companion sitting on it: a small robot that hooks its hands over the composer's top edge and watches what you do. Its eyes follow the caret as you type and the pointer as you move it. They glance at the control that takes focus and at the option the keyboard is on, and drift back to rest when nothing is happening, so the one moving thing on the screen always points at what you are attending to. Around it is everything a prompt box usually gets built out of by hand. The field grows with its text. Files attach by the clip, by dropping them on the composer, or by pasting. There is a style picker and a model picker, both real listboxes. The ideas tray holds ready-made prompts in tabs, and a picked prompt types itself into the field so the robot can read along. One dark button is voice while the field is empty, send once it is not, and stop while the prompt is being worked on. The robot spends hue only on its eyes, and the hue is its state: green at rest, blue while it listens, red for a moment when a file is turned away. It squints and sweeps while it thinks, hops when a prompt is sent and again when the work is done, widens its eyes at a file dragged over it, and nods off after half a minute of nothing. Everything it follows is written into motion values, so tracking the pointer re-renders nothing, and under prefers-reduced-motion it is simply there, looking ahead.",
+      "PromptPerch is the box a product's first prompt is typed into, with a companion sitting on it: a small robot, one rounded block with an LED display for a face, that stands behind the composer, holds its top edge with two grips and watches what you do. Its eyes follow the caret as you type and the pointer as you move it. They glance at the control that takes focus and at the option the keyboard is on, and drift back to rest when nothing is happening, so the one moving thing on the screen always points at what you are attending to. Around it is everything a prompt box usually gets built out of by hand. The field grows with its text. Files attach by the clip, by dropping them on the composer, or by pasting. There is a style picker and a model picker, both real listboxes. The ideas tray holds ready-made prompts in tabs, and a picked prompt types itself into the field so the robot can read along. One dark button is voice while the field is empty, send once it is not, and stop while the prompt is being worked on. The eyes are drawn smooth and seen only through a grid of dots, so they move the way an LED matrix moves: a dot at a time across the display, a blink as rows going dark. They are white at rest and take a hue only when there is a state to show. They turn blue and become level meters while the robot listens, close green when a prompt goes out or the work comes back, and flash red when a file is turned away. While it thinks they narrow to two bars that sweep the display. When it looks at something the block leans that way from the edge, it widens its eyes at a file dragged over it, and it nods off after half a minute of nothing. Everything it follows is written into motion values, so tracking the pointer re-renders nothing, and under prefers-reduced-motion it is simply there, looking ahead.",
     category: "Forms",
     tags: [
       "ai",
@@ -2709,7 +2709,7 @@ export function Example({ thinking }: { thinking: boolean }) {
       "Hue never carries a state alone, which satisfies WCAG 1.4.1. The robot's eye colour is matched by its expression and by the controls, and the ideas toggle shows it is on by its fill as well as by its hue.",
       "Typing Enter during IME composition does not send, so a sentence composed in Japanese or Chinese is not cut off at its first candidate.",
       "Under `prefers-reduced-motion` nothing moves on its own: no climb, no blinking, no glances, no tracking. The robot looks straight ahead and still changes expression, ideas are written in at once, and the tray opens without travel.",
-      "Both themes are covered by the tokens rather than by `dark:` variants. The robot's screen is a `.dark` island, so its eyes read the dark theme's lit hues on any page.",
+      "Both themes are covered by the tokens rather than by `dark:` variants. The robot's display is a `.dark` island, so its eyes read the dark theme's lit hues on any page.",
     ],
     keyboard: [
       {
@@ -3117,23 +3117,23 @@ useSpeechRecognition({
       {
         title: "Retint the robot",
         description:
-          "The robot reads three custom properties with sensible defaults: the shell, the screen and the resting eye. Its shell follows the popover surface, so it is a light toy on a light page and a graphite one on a dark one. Set the shell to white for a toy that stays white everywhere, or give the eyes your brand's colour. Listening and refusal keep the info and critical hues, because those are states.",
+          "The robot reads three custom properties with sensible defaults: the shell, the display and the resting eye. It is an object rather than a surface, so by default it stays white on any page, a few percent dimmer on a dark one. Point the shell at a surface token and it follows the theme instead, or give the resting eyes your brand's colour. Listening, done and refused keep the info, positive and critical hues, because those are states.",
         language: "css",
         code: `/* app/globals.css */
 :root {
-  --prompt-perch-shell: oklch(0.985 0.004 85); /* warm ivory plastic */
-  --prompt-perch-eye: oklch(0.82 0.16 190);    /* cyan */
+  --prompt-perch-shell: oklch(0.975 0.006 85); /* warm ivory */
+  --prompt-perch-eye: oklch(0.86 0.12 190);    /* cyan LEDs at rest */
 }
 
 .dark {
-  --prompt-perch-shell: oklch(0.93 0.006 85);  /* still ivory, a touch dimmer */
-  --prompt-perch-screen: oklch(0.12 0 0);
+  --prompt-perch-shell: var(--popover);        /* graphite, following the theme */
+  --prompt-perch-screen: oklch(0.1 0 0);
 }`,
       },
     ],
     /**
      * Shipped with the registry item so `shadcn add` writes the palette into the
-     * consumer's `globals.css`. Both themes are declared: the robot's screen is
+     * consumer's `globals.css`. Both themes are declared: the robot's display is
      * a `.dark` island and reads the dark values on any page.
      */
     cssVars: {
@@ -3144,9 +3144,6 @@ useSpeechRecognition({
         "color-positive": "var(--positive)",
         "color-positive-soft": "var(--positive-soft)",
         "color-positive-foreground": "var(--positive-foreground)",
-        "color-caution": "var(--caution)",
-        "color-caution-soft": "var(--caution-soft)",
-        "color-caution-foreground": "var(--caution-foreground)",
         "color-critical": "var(--critical)",
         "color-critical-soft": "var(--critical-soft)",
         "color-critical-foreground": "var(--critical-foreground)",
@@ -3158,9 +3155,6 @@ useSpeechRecognition({
         positive: "#1a7f37",
         "positive-soft": "#e6f4ea",
         "positive-foreground": "#ffffff",
-        caution: "#b05a00",
-        "caution-soft": "#fdf1e1",
-        "caution-foreground": "#ffffff",
         critical: "#d70015",
         "critical-soft": "#fdeaea",
         "critical-foreground": "#ffffff",
@@ -3172,9 +3166,6 @@ useSpeechRecognition({
         positive: "#30d158",
         "positive-soft": "#0d2b16",
         "positive-foreground": "#002910",
-        caution: "#ffb340",
-        "caution-soft": "#2f2208",
-        "caution-foreground": "#2b1700",
         critical: "#ff6961",
         "critical-soft": "#35100f",
         "critical-foreground": "#330000",
