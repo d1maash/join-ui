@@ -167,17 +167,36 @@ const PERCH = "clamp(7.5px, 2.45cqi, 17px)"
 const PERCH_RIGHT = "clamp(0.75rem, 8cqi, 4.5rem)"
 
 /*
- * The robot, in ems. The origin is the top of its head. `EDGE` is where the
- * composer's top edge falls: the torso carries on down behind it, out of
- * sight, and the hands grip it, their fingers hanging `GRIP` over the front.
+ * The robot, in ems. It is one rounded block standing behind the composer,
+ * and its origin is the block's top edge. `EDGE` is where the composer's top
+ * edge falls across it; below that it carries on out of sight. Its two grips
+ * sit on the edge, a little wider than the block, hanging `GRIP` over the
+ * front.
  */
-const W = 7.4
-const EDGE = 7.65
-const GRIP = 0.82
-const HAND_W = 1.42
-const HAND_H = 1.34
-const TORSO_W = 5
-const HAND_X = (W - TORSO_W) / 2 - 0.6
+const BODY_W = 7.2
+const BODY_R = 2.5
+const EDGE = 6.3
+/** The shell left around the display. */
+const BEZEL = 0.52
+const FACE_H = 4.15
+const GRIP = 0.48
+const GRIP_W = 1.6
+const GRIP_H = 1.02
+/** How far each grip stands out past the block's side. */
+const SPREAD = 0.4
+/** The whole drawing's width, grips included. */
+const W = BODY_W + SPREAD * 2
+
+/**
+ * The display's dot pitch, and the radius of one dot. The eyes are drawn as
+ * smooth shapes and seen only through this grid, so every movement they make
+ * is rendered the way an LED matrix renders it: dots coming up and going down
+ * as the shape passes over them, partly lit at its edges.
+ */
+const PITCH = 0.3
+const DOT = 0.1
+const dots = (ink: string) =>
+  `radial-gradient(circle, ${ink} ${DOT}em, transparent ${DOT + 0.03}em)`
 
 /** How long a glance holds before the gaze drifts back to where it rests. */
 const HOLD = 2400
@@ -197,34 +216,35 @@ const GAZE_SPRING = { stiffness: 340, damping: 30, mass: 0.7 }
 /**
  * The companion's materials.
  *
- * It is a toy, not a surface, so it does not change colour with the theme the
- * way a card does: it is white plastic on a light page and the same plastic,
+ * It is an object, not a surface, so it does not change colour with the
+ * theme the way a card does: it is white on a light page and the same white,
  * a few percent dimmer, on a dark one — mixed from white and the page's own
- * background, which is what dims it. It is lit from above and shaded below
- * in white and black, the one lighting that holds on any page. The screen is
- * near-black in both themes, because a screen is.
+ * background, which is what dims it. It is lit from above and shaded below in
+ * white and black, the one lighting that holds on any page. The display is
+ * near-black in both themes, because a display is.
  */
 const SHELL =
-  "var(--prompt-perch-shell, color-mix(in oklab, white, var(--background) 9%))"
-const SHADE = `color-mix(in oklab, ${SHELL}, black 8%)`
+  "var(--prompt-perch-shell, color-mix(in oklab, white, var(--background) 8%))"
+const SHADE = `color-mix(in oklab, ${SHELL}, black 10%)`
 const SCREEN =
-  "var(--prompt-perch-screen, color-mix(in oklab, var(--foreground) 6%, black))"
+  "var(--prompt-perch-screen, color-mix(in oklab, var(--foreground) 5%, black))"
 const LIT =
-  "linear-gradient(to bottom, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 34%, rgb(0 0 0 / 0) 56%, rgb(0 0 0 / 0.09))"
+  "linear-gradient(to bottom, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 26%, rgb(0 0 0 / 0) 60%, rgb(0 0 0 / 0.07))"
 const RIM =
-  "inset 0 0 0 1px rgb(0 0 0 / 0.08), inset 0 0.07em 0 rgb(255 255 255 / 0.75), inset 0 -0.1em 0.22em rgb(0 0 0 / 0.05)"
-const DROP = "0 0.3em 0.7em -0.3em rgb(0 0 0 / 0.32)"
-const GLOW = "0 0 0.55em 0.02em color-mix(in oklab, currentColor 62%, transparent)"
+  "inset 0 0 0 1px rgb(0 0 0 / 0.07), inset 0 0.06em 0 rgb(255 255 255 / 0.8)"
+const DROP = "0 0.4em 1em -0.45em rgb(0 0 0 / 0.34)"
+const BLOOM =
+  "drop-shadow(0 0 0.09em color-mix(in oklab, currentColor 85%, transparent)) drop-shadow(0 0 0.4em color-mix(in oklab, currentColor 45%, transparent))"
 
-/** The eyes are the one place the robot spends hue, and the hue is its state. */
-const EYE = "var(--prompt-perch-eye, var(--positive))"
+/**
+ * The eyes are the one place the robot spends hue, and only when there is
+ * something to say. At rest they are white, because at rest there is no
+ * state; they turn blue while it listens, green when a prompt goes out or the
+ * work comes back, and red for a moment when a file is turned away.
+ */
+const EYE = "var(--prompt-perch-eye, color-mix(in oklab, white 92%, var(--foreground)))"
 const EYE_HUE: Partial<Record<Mood, string>> = {
   listening: "var(--info)",
-  upset: "var(--critical)",
-}
-const LED_HUE: Partial<Record<Mood, string>> = {
-  listening: "var(--info)",
-  thinking: "var(--caution)",
   happy: "var(--positive)",
   upset: "var(--critical)",
 }
@@ -237,11 +257,11 @@ const EYES: Record<
   idle: { scaleX: 1, scaleY: 1, tilt: 0, dim: 1 },
   attentive: { scaleX: 1.06, scaleY: 1.06, tilt: 0, dim: 1 },
   listening: { scaleX: 1, scaleY: 1, tilt: 0, dim: 1 },
-  thinking: { scaleX: 1.04, scaleY: 0.56, tilt: 0, dim: 1 },
+  thinking: { scaleX: 1.1, scaleY: 0.34, tilt: 0, dim: 1 },
   happy: { scaleX: 1, scaleY: 0.25, tilt: 0, dim: 0 },
-  startled: { scaleX: 1.24, scaleY: 1.24, tilt: 0, dim: 1 },
-  upset: { scaleX: 1.02, scaleY: 0.6, tilt: 14, dim: 1 },
-  drowsy: { scaleX: 1.08, scaleY: 0.14, tilt: 0, dim: 0.55 },
+  startled: { scaleX: 1.22, scaleY: 1.22, tilt: 0, dim: 1 },
+  upset: { scaleX: 1.04, scaleY: 0.56, tilt: 16, dim: 1 },
+  drowsy: { scaleX: 1.1, scaleY: 0.2, tilt: 0, dim: 0.5 },
 }
 
 const TEXT = "px-3 pt-3 pb-1 text-[1.0625rem] leading-[1.625rem] tracking-[-0.014em]"
