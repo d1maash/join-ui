@@ -230,8 +230,7 @@ const SCREEN =
   "var(--prompt-perch-screen, color-mix(in oklab, var(--foreground) 5%, black))"
 const LIT =
   "linear-gradient(to bottom, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 26%, rgb(0 0 0 / 0) 60%, rgb(0 0 0 / 0.07))"
-const RIM =
-  "inset 0 0 0 1px rgb(0 0 0 / 0.07), inset 0 0.06em 0 rgb(255 255 255 / 0.8)"
+const RIM = "inset 0 0 0 1px rgb(0 0 0 / 0.07), inset 0 0.06em 0 rgb(255 255 255 / 0.8)"
 const DROP = "0 0.4em 1em -0.45em rgb(0 0 0 / 0.34)"
 const BLOOM =
   "drop-shadow(0 0 0.09em color-mix(in oklab, currentColor 85%, transparent)) drop-shadow(0 0 0.4em color-mix(in oklab, currentColor 45%, transparent))"
@@ -2158,23 +2157,27 @@ const shell = (shadow?: string): React.CSSProperties => ({
   boxShadow: shadow ? `${RIM}, ${shadow}` : RIM,
 })
 
+/** How far the block carries on below the composer's edge, out of sight. */
+const BELOW = 2.6
+/** Where a grip bends over the edge, as a share of its height. */
+const BEND = ((GRIP_H - GRIP) / GRIP_H) * 100
+
 /**
  * The robot.
  *
- * Drawn from rounded rectangles in ems, so it scales with its unit and stays
- * crisp at any size. It stands behind the composer and looks over it, the
- * way a figure looks over a wall: the body — torso, neck and head — is
- * clipped at the composer's top edge, so the torso carries on out of sight
- * and on its first appearance the whole robot rises from behind it; the two
- * hands are in front, gripping the edge with their fingers curled over.
+ * One rounded block with a display set into it, and two grips. It stands
+ * behind the composer and looks over it, the way a figure looks over a wall:
+ * the block is clipped at the composer's top edge and carries on out of sight
+ * below it, and on its first appearance it rises from behind the edge once its
+ * grips have taken hold. When it looks at something it leans that way from
+ * the edge, a few degrees, rather than turning a head it does not have; its
+ * eyes travel further than the block does, which is what gives the face depth.
  *
- * The screen is a `.dark` theme island. The hues on it read the dark theme's
- * values whatever theme the page is in — lit colours on a dark glass — and the
- * component needs no colour of its own to get them.
- *
- * The head turns toward what the eyes look at, a few degrees, pivoting on the
- * neck; the eyes move further than the head does, which is what gives the
- * face depth.
+ * The display is a `.dark` theme island, so the hues on it read the dark
+ * theme's values on any page — lit colours on black glass. Its eyes are drawn
+ * as smooth shapes and seen only through a grid of dots, so they move the way
+ * an LED matrix moves: a blink is rows going dark, listening is columns
+ * rising and falling, a glance is dots handing the light across.
  */
 const Perch = React.memo(function Perch({
   mood,
@@ -2206,38 +2209,32 @@ const Perch = React.memo(function Perch({
   const rise = useMotionValue(hidden ? EDGE + 0.6 : 0)
   const reach = useMotionValue(hidden ? 0 : 1)
 
-  const eyeX = useTransform(sx, (v) => `${v * 1.12}em`)
-  const eyeY = useTransform(sy, (v) => `${v * 0.62}em`)
-  const headX = useTransform(
+  const eyeX = useTransform(sx, (v) => `${v * 1.2}em`)
+  const eyeY = useTransform(sy, (v) => `${v * 0.66}em`)
+  const bodyX = useTransform(
     [sx, shake],
-    (v: number[]) => `${(v[0] ?? 0) * 0.22 + (v[1] ?? 0)}em`
-  )
-  const headY = useTransform(
-    [sy, nod, droop],
-    (v: number[]) => `${(v[0] ?? 0) * 0.16 + (v[1] ?? 0) + (v[2] ?? 0) * 0.3}em`
-  )
-  const headRotate = useTransform(
-    [sx, shake, droop],
-    (v: number[]) => (v[0] ?? 0) * 6 + (v[1] ?? 0) * 18 - (v[2] ?? 0) * 5
+    (v: number[]) => `${(v[0] ?? 0) * 0.2 + (v[1] ?? 0)}em`
   )
   const bodyY = useTransform(
-    [rise, hop],
-    (v: number[]) => `${(v[0] ?? 0) + (v[1] ?? 0)}em`
+    [rise, hop, sy, nod, droop],
+    (v: number[]) =>
+      `${(v[0] ?? 0) + (v[1] ?? 0) + (v[2] ?? 0) * 0.1 + (v[3] ?? 0) + (v[4] ?? 0) * 0.28}em`
   )
-  /* The hands arrive with a little drop onto the edge, and press into it as the body hops. */
-  const handY = useTransform(
-    [reach, hop],
-    (v: number[]) => `${(1 - (v[0] ?? 0)) * -0.9}em`
+  const lean = useTransform(
+    [sx, shake, droop],
+    (v: number[]) => (v[0] ?? 0) * 3.5 + (v[1] ?? 0) * 12 - (v[2] ?? 0) * 3
   )
-  const handScale = useTransform(
+  /* The grips arrive with a little drop onto the edge, and press into it as the block hops. */
+  const gripY = useTransform(reach, (k) => `${(1 - k) * -0.8}em`)
+  const gripScale = useTransform(
     [reach, hop],
     (v: number[]) => (v[0] ?? 0) * (1 + (v[1] ?? 0) * 0.08)
   )
 
   /*
-   * The climb. The hands come over the edge first and grip it, then the body
-   * rises from behind the composer on a spring with a little overshoot, and
-   * the eyes open once it is up.
+   * The climb. The grips come over the edge first and take hold, then the
+   * block rises from behind the composer on a spring with a little overshoot,
+   * and the display comes on once it is up.
    */
   React.useEffect(() => {
     if (still) {
@@ -2257,10 +2254,10 @@ const Perch = React.memo(function Perch({
     const climb = animate(rise, 0, {
       type: "spring",
       visualDuration: 0.7,
-      bounce: 0.24,
+      bounce: 0.22,
       delay: 0.32,
     })
-    const wake = animate(blink, 1, { duration: 0.2, delay: 0.95, ease: "easeOut" })
+    const wake = animate(blink, 1, { duration: 0.24, delay: 0.95, ease: "easeOut" })
     return () => {
       grab.stop()
       climb.stop()
@@ -2268,7 +2265,7 @@ const Perch = React.memo(function Perch({
     }
   }, [still, peek, inView, rise, reach, blink])
 
-  /* Nodding off: the head sinks a little and tips to one side. */
+  /* Nodding off: the block sinks a little and tips to one side. */
   React.useEffect(() => {
     const sleepy = mood === "drowsy" ? 1 : 0
     if (still) {
@@ -2308,7 +2305,7 @@ const Perch = React.memo(function Perch({
   React.useEffect(() => {
     if (still) return
     if (mood === "happy") {
-      animate(hop, [0, -0.75, 0, -0.12, 0], {
+      animate(hop, [0, -0.7, 0, -0.1, 0], {
         duration: 0.72,
         times: [0, 0.3, 0.58, 0.76, 1],
         ease: ["easeOut", "easeIn", "easeOut", "easeIn"],
@@ -2321,8 +2318,7 @@ const Perch = React.memo(function Perch({
     }
   }, [still, mood, hop, shake])
 
-  const eyeHue = EYE_HUE[mood] ?? EYE
-  const led = LED_HUE[mood]
+  const grid = `${PITCH}em ${PITCH}em`
 
   return (
     <div
@@ -2337,196 +2333,115 @@ const Perch = React.memo(function Perch({
         height: `${EDGE + GRIP}em`,
       }}
     >
-      {/* The body, clipped at the composer's edge so it can rise from behind it. */}
+      {/* The block, clipped at the composer's edge so it can rise from behind it. */}
       <div
         className="absolute overflow-hidden"
-        style={{ left: "-3em", right: "-3em", top: "-3em", bottom: `${GRIP}em` }}
+        style={{ left: "-2em", right: "-2em", top: "-2em", bottom: `${GRIP}em` }}
       >
         <motion.div
           className="absolute"
           style={{
-            left: "3em",
-            top: "3em",
-            width: `${W}em`,
-            height: `${EDGE}em`,
+            left: `${2 + SPREAD}em`,
+            top: "2em",
+            width: `${BODY_W}em`,
+            height: `${EDGE + BELOW}em`,
+            borderRadius: `${BODY_R}em ${BODY_R}em 0 0`,
+            ...shell(DROP),
+            x: bodyX,
             y: bodyY,
+            rotate: lean,
+            originX: 0.5,
+            originY: EDGE / (EDGE + BELOW),
           }}
         >
-          {/* The neck, in the shadow under the head. */}
+          {/* The display. */}
           <div
-            className="absolute"
+            ref={head}
+            className="dark absolute overflow-hidden"
             style={{
-              left: `${(W - 1.3) / 2}em`,
-              top: "4.6em",
-              width: "1.3em",
-              height: "1.2em",
-              backgroundColor: SHADE,
-              boxShadow: RIM,
-            }}
-          />
-          {/* The torso, carrying on below the edge, out of sight. */}
-          <div
-            className="absolute rounded-t-[1.7em]"
-            style={{
-              left: `${(W - TORSO_W) / 2}em`,
-              top: "5.5em",
-              width: `${TORSO_W}em`,
-              height: "3.6em",
-              ...shell(DROP),
+              left: `${BEZEL}em`,
+              right: `${BEZEL}em`,
+              top: `${BEZEL}em`,
+              height: `${FACE_H}em`,
+              borderRadius: `${BODY_R - BEZEL}em`,
+              backgroundColor: SCREEN,
+              boxShadow: `0 0 0 0.07em ${SHADE}, inset 0 0.14em 0.36em rgb(0 0 0 / 0.8)`,
             }}
           >
+            {/* The dots that are off. */}
             <div
-              className="absolute left-1/2 h-[0.3em] w-[1.5em] -translate-x-1/2 rounded-full"
+              className="absolute inset-0"
               style={{
-                top: "0.75em",
-                backgroundColor: SHADE,
-                boxShadow: "inset 0 0.05em 0.1em rgb(0 0 0 / 0.16)",
+                backgroundImage: dots("rgb(255 255 255 / 0.075)"),
+                backgroundSize: grid,
+                backgroundPosition: "center",
               }}
             />
-          </div>
-
-          <motion.div
-            ref={head}
-            className="absolute"
-            style={{
-              left: 0,
-              top: 0,
-              width: `${W}em`,
-              height: "4.95em",
-              x: headX,
-              y: headY,
-              rotate: headRotate,
-              originX: 0.5,
-              originY: 0.95,
-            }}
-          >
-            {/* Ears. */}
-            {(["left", "right"] as const).map((side) => (
-              <div
-                key={side}
-                className="absolute rounded-full"
-                style={{
-                  [side]: "-0.3em",
-                  top: "1.6em",
-                  width: "0.62em",
-                  height: "1.7em",
-                  backgroundColor: SHADE,
-                  boxShadow: RIM,
-                }}
-              />
-            ))}
-
-            <div className="absolute inset-0 rounded-[1.8em]" style={shell(DROP)} />
-
-            {/* The lamp on top: dark glass at rest, the mood's hue when there is one. */}
+            {/* The dots that are on: the eyes, seen through the grid. */}
             <div
-              className="absolute left-1/2 size-[0.66em] -translate-x-1/2 rounded-full"
-              style={{ top: "-0.24em", ...shell() }}
-            >
-              <motion.div
-                className="absolute inset-[0.16em] rounded-full transition-[background-color,box-shadow] duration-300"
-                style={{
-                  color: led,
-                  backgroundColor: led ?? SCREEN,
-                  boxShadow: led ? GLOW : undefined,
-                }}
-                animate={
-                  mood === "thinking" && !still
-                    ? { opacity: [1, 0.3, 1] }
-                    : { opacity: 1 }
-                }
-                transition={
-                  mood === "thinking" && !still
-                    ? { duration: 1.1, repeat: Infinity, ease: "easeInOut" }
-                    : { duration: 0.2 }
-                }
-              />
-            </div>
-
-            {/* The visor: a bezel, and the screen set into it. */}
-            <div
-              className="absolute rounded-[1.42em]"
-              style={{
-                inset: "0.46em 0.44em 0.72em",
-                backgroundColor: SHADE,
-                boxShadow: "inset 0 0.06em 0.12em rgb(0 0 0 / 0.14)",
-              }}
+              className="absolute inset-0 transition-[color] duration-300"
+              style={{ color: EYE_HUE[mood] ?? EYE, filter: BLOOM }}
             >
               <div
-                className="dark absolute overflow-hidden rounded-[1.3em]"
+                className="absolute inset-0"
                 style={{
-                  inset: "0.13em",
-                  backgroundColor: SCREEN,
-                  boxShadow: "inset 0 0.14em 0.36em rgb(0 0 0 / 0.65)",
+                  WebkitMaskImage: dots("black"),
+                  maskImage: dots("black"),
+                  WebkitMaskSize: grid,
+                  maskSize: grid,
+                  WebkitMaskPosition: "center",
+                  maskPosition: "center",
                 }}
               >
                 <motion.div
-                  className="absolute inset-0 flex items-center justify-center gap-[1.04em]"
+                  className="absolute inset-0 flex items-center justify-center gap-[1.3em]"
                   style={{ x: eyeX, y: eyeY }}
                 >
-                  <Eye
-                    side="left"
-                    mood={mood}
-                    hue={eyeHue}
-                    blink={blink}
-                    still={still}
-                  />
-                  <Eye
-                    side="right"
-                    mood={mood}
-                    hue={eyeHue}
-                    blink={blink}
-                    still={still}
-                  />
+                  <Eye side="left" mood={mood} blink={blink} still={still} />
+                  <Eye side="right" mood={mood} blink={blink} still={still} />
                 </motion.div>
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(152deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.05) 34%, rgb(255 255 255 / 0) 34.4%)",
-                  }}
-                />
               </div>
             </div>
-          </motion.div>
+            {/* The glass. */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage:
+                  "linear-gradient(160deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.03) 40%, rgb(255 255 255 / 0) 62%)",
+              }}
+            />
+          </div>
         </motion.div>
       </div>
 
-      {/* The hands, in front: the backs above the edge, the fingers curled over it. */}
-      {[HAND_X, W - HAND_X - HAND_W].map((left) => (
+      {/* The grips, in front of the edge, bending over it. */}
+      {[0, W - GRIP_W].map((left) => (
         <motion.div
           key={left}
           className="absolute"
           style={{
             left: `${left}em`,
-            top: `${EDGE + GRIP - HAND_H}em`,
-            width: `${HAND_W}em`,
-            height: `${HAND_H}em`,
-            y: handY,
-            scaleY: handScale,
+            top: `${EDGE + GRIP - GRIP_H}em`,
+            width: `${GRIP_W}em`,
+            height: `${GRIP_H}em`,
+            y: gripY,
+            scaleY: gripScale,
             opacity: reach,
             originY: 1,
           }}
         >
           <div
-            className="absolute left-1/2 h-[0.4em] w-[1.6em] -translate-x-1/2 rounded-full bg-black/20 blur-[0.16em]"
-            style={{ bottom: "-0.18em" }}
+            className="absolute left-1/2 h-[0.34em] w-[1.7em] -translate-x-1/2 rounded-full bg-black/20 blur-[0.16em]"
+            style={{ bottom: "-0.14em" }}
           />
-          <div className="absolute inset-0 rounded-[0.62em]" style={shell(DROP)}>
-            {[0.36, 0.67, 0.98].map((x) => (
-              <span
-                key={x}
-                className="absolute rounded-full"
-                style={{
-                  left: `${x}em`,
-                  top: `${HAND_H - GRIP + 0.06}em`,
-                  bottom: "0.2em",
-                  width: "0.08em",
-                  backgroundColor: "rgb(0 0 0 / 0.13)",
-                }}
-              />
-            ))}
-          </div>
+          <div
+            className="absolute inset-0"
+            style={{
+              borderRadius: `${GRIP_H / 2}em`,
+              ...shell(DROP),
+              backgroundImage: `linear-gradient(to bottom, rgb(0 0 0 / 0) ${BEND}%, rgb(0 0 0 / 0.07) ${BEND}%), ${LIT}`,
+            }}
+          />
         </motion.div>
       ))}
     </div>
@@ -2534,20 +2449,19 @@ const Perch = React.memo(function Perch({
 })
 
 /**
- * One eye: a lit pill that changes shape with the mood, blinks on its own
- * clock, and gives way to a closed arc when the robot is pleased. While it
- * listens the two pills bounce out of step, like a pair of level meters.
+ * One eye: a pill that changes shape with the mood, blinks on its own clock,
+ * and gives way to a closed arc when the robot is pleased. While it listens
+ * the two pills rise and fall out of step, like a pair of level meters. It is
+ * drawn smooth; the grid it is seen through does the rest.
  */
 function Eye({
   side,
   mood,
-  hue,
   blink,
   still,
 }: {
   side: "left" | "right"
   mood: Mood
-  hue: string
   blink: MotionValue<number>
   still: boolean
 }) {
@@ -2558,19 +2472,20 @@ function Eye({
 
   return (
     <motion.div
-      className="relative transition-colors duration-300"
-      style={{ width: "0.98em", height: "1.5em", color: hue, scaleY: blink }}
+      className="relative"
+      style={{ width: "1.2em", height: "1.8em", scaleY: blink }}
     >
       <motion.div
-        className="absolute inset-0 rounded-[0.5em]"
-        style={{ backgroundColor: "currentColor", boxShadow: GLOW }}
+        className="absolute inset-0 rounded-[0.6em] bg-current"
         initial={false}
         animate={
           metering
             ? {
                 scaleX: 1,
                 scaleY:
-                  side === "left" ? [1, 0.42, 1.12, 0.6, 1] : [0.7, 1.12, 0.5, 1, 0.7],
+                  side === "left"
+                    ? [1, 0.38, 1.1, 0.58, 1]
+                    : [0.66, 1.1, 0.46, 1, 0.66],
                 rotate: 0,
                 opacity: 1,
               }
@@ -2592,12 +2507,8 @@ function Eye({
         }
       />
       <motion.div
-        className="absolute left-1/2 h-[0.74em] w-[1.2em] -translate-x-1/2 rounded-t-full border-[0.3em] border-b-0 border-current"
-        style={{
-          top: "0.24em",
-          filter:
-            "drop-shadow(0 0 0.28em color-mix(in oklab, currentColor 60%, transparent))",
-        }}
+        className="absolute left-1/2 h-[0.82em] w-[1.38em] -translate-x-1/2 rounded-t-full border-[0.36em] border-b-0 border-current"
+        style={{ top: "0.3em" }}
         initial={false}
         animate={
           happy
