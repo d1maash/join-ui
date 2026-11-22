@@ -175,7 +175,7 @@ const PERCH_RIGHT = "clamp(0.75rem, 8cqi, 4.5rem)"
  */
 const BODY_W = 7.2
 const BODY_R = 2.5
-const EDGE = 6.3
+const EDGE = 5.9
 /** The shell left around the display. */
 const BEZEL = 0.52
 const FACE_H = 4.15
@@ -254,13 +254,13 @@ const EYES: Record<
   { scaleX: number; scaleY: number; tilt: number; dim: number }
 > = {
   idle: { scaleX: 1, scaleY: 1, tilt: 0, dim: 1 },
-  attentive: { scaleX: 1.06, scaleY: 1.06, tilt: 0, dim: 1 },
+  attentive: { scaleX: 1, scaleY: 1, tilt: 0, dim: 1 },
   listening: { scaleX: 1, scaleY: 1, tilt: 0, dim: 1 },
-  thinking: { scaleX: 1.1, scaleY: 0.34, tilt: 0, dim: 1 },
+  thinking: { scaleX: 1, scaleY: 0.34, tilt: 0, dim: 1 },
   happy: { scaleX: 1, scaleY: 0.25, tilt: 0, dim: 0 },
-  startled: { scaleX: 1.22, scaleY: 1.22, tilt: 0, dim: 1 },
+  startled: { scaleX: 1.25, scaleY: 1.17, tilt: 0, dim: 1 },
   upset: { scaleX: 1.04, scaleY: 0.56, tilt: 16, dim: 1 },
-  drowsy: { scaleX: 1.1, scaleY: 0.2, tilt: 0, dim: 0.5 },
+  drowsy: { scaleX: 1, scaleY: 0.34, tilt: 0, dim: 0.45 },
 }
 
 const TEXT = "px-3 pt-3 pb-1 text-[1.0625rem] leading-[1.625rem] tracking-[-0.014em]"
@@ -2209,8 +2209,17 @@ const Perch = React.memo(function Perch({
   const rise = useMotionValue(hidden ? EDGE + 0.6 : 0)
   const reach = useMotionValue(hidden ? 0 : 1)
 
-  const eyeX = useTransform(sx, (v) => `${v * 1.2}em`)
-  const eyeY = useTransform(sy, (v) => `${v * 0.66}em`)
+  /*
+   * The eyes step across the display a whole dot at a time, as a matrix does,
+   * and sit half a dot off centre so that at rest each one covers exactly
+   * four columns and six rows. The block they are drawn on moves smoothly; the
+   * picture on it does not.
+   */
+  const eyeX = useTransform(sx, (v) => `${Math.round((v * 1.2) / PITCH) * PITCH}em`)
+  const eyeY = useTransform(
+    sy,
+    (v) => `${Math.round((v * 0.62) / PITCH) * PITCH - PITCH / 2}em`
+  )
   const bodyX = useTransform(
     [sx, shake],
     (v: number[]) => `${(v[0] ?? 0) * 0.2 + (v[1] ?? 0)}em`
@@ -2394,7 +2403,7 @@ const Perch = React.memo(function Perch({
                 }}
               >
                 <motion.div
-                  className="absolute inset-0 flex items-center justify-center gap-[1.3em]"
+                  className="absolute inset-0 flex items-center justify-center gap-[1.5em] blur-[0.04em]"
                   style={{ x: eyeX, y: eyeY }}
                 >
                   <Eye side="left" mood={mood} blink={blink} still={still} />
