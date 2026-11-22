@@ -162,7 +162,7 @@ interface Point {
  * it is read off the component's own width, so the robot is the same size
  * relative to the composer in a sidebar as on a landing page.
  */
-const PERCH = "clamp(7.5px, 2.45cqi, 17px)"
+const PERCH = "clamp(8px, 2.7cqi, 19px)"
 /** How far in from the composer's right edge it sits. */
 const PERCH_RIGHT = "clamp(0.75rem, 8cqi, 4.5rem)"
 
@@ -674,9 +674,10 @@ const NO_FILES: File[] = []
 /**
  * Prompt Perch.
  *
- * A prompt composer with a companion perched on it: a small robot that hooks
- * its hands over the composer's top edge and watches whatever you are doing.
- * Its eyes follow the caret as you type and the pointer as you move it, glance
+ * A prompt composer with a companion perched on it: a small robot — one
+ * rounded block with an LED display for a face — that stands behind the
+ * composer, holds its top edge with two grips and watches whatever you are
+ * doing. Its eyes follow the caret as you type and the pointer as you move it, glance
  * at the control that takes focus and the option the keyboard is on, and
  * drift back to rest when nothing is happening — so the one moving thing on
  * the screen is always pointed at the thing you are attending to.
@@ -687,11 +688,13 @@ const NO_FILES: File[] = []
  * themselves in when picked, and one dark button that is voice when the field
  * is empty, send when it is not, and stop while the prompt is being worked on.
  *
- * The robot's eyes are the only hue it spends, and the hue is its state:
- * green at rest, blue while it listens, red for a moment when a file is
- * turned away. It squints and sweeps while it thinks, hops when a prompt is
- * sent and again when the work is done, widens its eyes at a file dragged
- * over it, and nods off after half a minute of nothing.
+ * The eyes are drawn on a dot matrix and step across it a dot at a time. They
+ * are white at rest and spend hue only when there is a state to show: blue
+ * while the robot listens, its eyes become level meters; green when a prompt
+ * goes out or the work comes back, and it hops; red for a moment when a file
+ * is turned away, and it shakes. While it thinks its eyes narrow to two bars
+ * that sweep from side to side; it widens them at a file dragged over it, and
+ * nods off after half a minute of nothing.
  *
  * Under `prefers-reduced-motion` nothing moves on its own: the robot is
  * simply there, looking ahead, and changes expression without animating;
