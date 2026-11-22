@@ -26,6 +26,7 @@ const GlassCrestPreview = dynamic(() => import("./glass-crest-preview"))
 const CarbonCopyPreview = dynamic(() => import("./carbon-copy-preview"))
 const ApprovalGatePreview = dynamic(() => import("./approval-gate-preview"))
 const ProofOfWorkPreview = dynamic(() => import("./proof-of-work-preview"))
+const PromptPerchPreview = dynamic(() => import("./prompt-perch-preview"))
 
 export const previews: Record<string, () => ReactNode> = {
   "status-timeline": () => <StatusTimelinePreview />,
@@ -36,6 +37,7 @@ export const previews: Record<string, () => ReactNode> = {
   "carbon-copy": () => <CarbonCopyPreview />,
   "approval-gate": () => <ApprovalGatePreview />,
   "proof-of-work": () => <ProofOfWorkPreview />,
+  "prompt-perch": () => <PromptPerchPreview />,
 }
 
 export function renderPreview(slug: string): ReactNode | null {

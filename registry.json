@@ -478,6 +478,91 @@
           "target": "components/joinui/proof-of-work.tsx"
         }
       ]
+    },
+    {
+      "name": "prompt-perch",
+      "type": "registry:ui",
+      "title": "Prompt Perch",
+      "description": "A prompt composer with a small robot perched on its edge, watching what you do. Attachments, style and model pickers, an ideas tray, and voice.",
+      "author": "Join Way",
+      "dependencies": [
+        "motion",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "categories": [
+        "forms",
+        "ai",
+        "prompt",
+        "composer",
+        "chat",
+        "input",
+        "textarea",
+        "mascot",
+        "attachments",
+        "voice",
+        "suggestions"
+      ],
+      "docs": "https://ui.join-way.com/components/prompt-perch",
+      "meta": {
+        "status": "new",
+        "since": "2026-11-23",
+        "featured": true,
+        "installCommand": "pnpm dlx shadcn@latest add @joinui/prompt-perch"
+      },
+      "files": [
+        {
+          "path": "registry/components/prompt-perch.tsx",
+          "type": "registry:ui",
+          "target": "components/joinui/prompt-perch.tsx"
+        }
+      ],
+      "cssVars": {
+        "theme": {
+          "color-info": "var(--info)",
+          "color-info-soft": "var(--info-soft)",
+          "color-info-foreground": "var(--info-foreground)",
+          "color-positive": "var(--positive)",
+          "color-positive-soft": "var(--positive-soft)",
+          "color-positive-foreground": "var(--positive-foreground)",
+          "color-caution": "var(--caution)",
+          "color-caution-soft": "var(--caution-soft)",
+          "color-caution-foreground": "var(--caution-foreground)",
+          "color-critical": "var(--critical)",
+          "color-critical-soft": "var(--critical-soft)",
+          "color-critical-foreground": "var(--critical-foreground)"
+        },
+        "light": {
+          "info": "#0068d1",
+          "info-soft": "#e8f1fc",
+          "info-foreground": "#ffffff",
+          "positive": "#1a7f37",
+          "positive-soft": "#e6f4ea",
+          "positive-foreground": "#ffffff",
+          "caution": "#b05a00",
+          "caution-soft": "#fdf1e1",
+          "caution-foreground": "#ffffff",
+          "critical": "#d70015",
+          "critical-soft": "#fdeaea",
+          "critical-foreground": "#ffffff"
+        },
+        "dark": {
+          "info": "#409cff",
+          "info-soft": "#0c2541",
+          "info-foreground": "#00152e",
+          "positive": "#30d158",
+          "positive-soft": "#0d2b16",
+          "positive-foreground": "#002910",
+          "caution": "#ffb340",
+          "caution-soft": "#2f2208",
+          "caution-foreground": "#2b1700",
+          "critical": "#ff6961",
+          "critical-soft": "#35100f",
+          "critical-foreground": "#330000"
+        }
+      }
     }
   ]
 }

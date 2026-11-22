@@ -35,6 +35,7 @@ const CarbonCopyThumbnail = dynamic(() => import("./carbon-copy"))
 const FocusStackThumbnail = dynamic(() => import("./focus-stack"))
 const GlassCrestThumbnail = dynamic(() => import("./glass-crest"))
 const ProofOfWorkThumbnail = dynamic(() => import("./proof-of-work"))
+const PromptPerchThumbnail = dynamic(() => import("./prompt-perch"))
 const StatusTimelineThumbnail = dynamic(() => import("./status-timeline"))
 const ToolTraceThumbnail = dynamic(() => import("./tool-trace"))
 
@@ -45,6 +46,7 @@ export const thumbnails: Record<string, () => ReactNode> = {
   "focus-stack": () => <FocusStackThumbnail />,
   "glass-crest": () => <GlassCrestThumbnail />,
   "proof-of-work": () => <ProofOfWorkThumbnail />,
+  "prompt-perch": () => <PromptPerchThumbnail />,
   "status-timeline": () => <StatusTimelineThumbnail />,
   "tool-trace": () => <ToolTraceThumbnail />,
 }

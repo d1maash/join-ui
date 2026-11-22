@@ -2671,4 +2671,516 @@ export function Example({ thinking }: { thinking: boolean }) {
     related: ["tool-trace", "agent-hive", "approval-gate"],
     since: "2026-11-10",
   }),
+  defineComponent({
+    name: "PromptPerch",
+    slug: "prompt-perch",
+    title: "Prompt Perch",
+    description:
+      "A prompt composer with a small robot perched on its edge, watching what you do. Attachments, style and model pickers, an ideas tray, and voice.",
+    overview:
+      "PromptPerch is the box a product's first prompt is typed into, with a companion sitting on it: a small robot that hooks its hands over the composer's top edge and watches what you do. Its eyes follow the caret as you type and the pointer as you move it. They glance at the control that takes focus and at the option the keyboard is on, and drift back to rest when nothing is happening, so the one moving thing on the screen always points at what you are attending to. Around it is everything a prompt box usually gets built out of by hand. The field grows with its text. Files attach by the clip, by dropping them on the composer, or by pasting. There is a style picker and a model picker, both real listboxes. The ideas tray holds ready-made prompts in tabs, and a picked prompt types itself into the field so the robot can read along. One dark button is voice while the field is empty, send once it is not, and stop while the prompt is being worked on. The robot spends hue only on its eyes, and the hue is its state: green at rest, blue while it listens, red for a moment when a file is turned away. It squints and sweeps while it thinks, hops when a prompt is sent and again when the work is done, widens its eyes at a file dragged over it, and nods off after half a minute of nothing. Everything it follows is written into motion values, so tracking the pointer re-renders nothing, and under prefers-reduced-motion it is simply there, looking ahead.",
+    category: "Forms",
+    tags: [
+      "ai",
+      "prompt",
+      "composer",
+      "chat",
+      "input",
+      "textarea",
+      "mascot",
+      "attachments",
+      "voice",
+      "suggestions",
+    ],
+    status: "new",
+    featured: true,
+    dependencies: ["motion", "lucide-react"],
+    registryDependencies: ["utils"],
+    files: [uiFile("prompt-perch")],
+    accessibility: [
+      "The composer is a `form`. With a `title` it is named by the headline, which makes it a form landmark a screen reader can jump to; without one it is named by `label`.",
+      "The field is a real `textarea` named by `label` and described by a hidden hint: “Enter sends, Shift and Enter starts a new line.” Its placeholder is still set on the element, so it is read, even though the one you see is drawn over it so that a list of them can turn over.",
+      "The robot is decoration. It is `aria-hidden`, takes no pointer events and no focus, and nothing it shows is only shown by it: every state it acts out — listening, thinking, a refused file — is also on a control or in an announcement.",
+      "Both pickers are the listbox pattern. The trigger declares `aria-haspopup` and `aria-expanded`, and its name is the picker and the choice — “Model: Auto” — so the visible label is always part of it. Focus moves into the list, and the active option is named through `aria-activedescendant`.",
+      "The ideas toggle is a disclosure: `aria-expanded`, pointing at the tray through `aria-controls`. A closed tray is `inert`, so nothing inside it can be reached with Tab.",
+      "The tray's tabs are a real `tablist` with automatic activation. The ideas are buttons, and picking one moves focus into the field with the prompt written in, so the next key edits it.",
+      "The action button's name follows its job: “Start voice input”, “Stop voice input”, “Send”, “Stop”. With nothing to send and no voice it is disabled rather than silently doing nothing.",
+      "Attaching, removing, refusing and sending are announced through a polite live region — “Attached sketch.png”, “Could not attach 2 files”. Each attachment has its own remove button, named for the file, which is always visible on touch screens.",
+      "Hue never carries a state alone, which satisfies WCAG 1.4.1. The robot's eye colour is matched by its expression and by the controls, and the ideas toggle shows it is on by its fill as well as by its hue.",
+      "Typing Enter during IME composition does not send, so a sentence composed in Japanese or Chinese is not cut off at its first candidate.",
+      "Under `prefers-reduced-motion` nothing moves on its own: no climb, no blinking, no glances, no tracking. The robot looks straight ahead and still changes expression, ideas are written in at once, and the tray opens without travel.",
+      "Both themes are covered by the tokens rather than by `dark:` variants. The robot's screen is a `.dark` island, so its eyes read the dark theme's lit hues on any page.",
+    ],
+    keyboard: [
+      {
+        keys: ["Enter"],
+        description: "Sends the prompt, from the field.",
+      },
+      {
+        keys: ["Shift", "Enter"],
+        description: "Starts a new line.",
+      },
+      {
+        keys: ["↓"],
+        description:
+          "From the end of the field, moves into the ideas tray. Up from the first idea comes back.",
+      },
+      {
+        keys: ["↑", "↓"],
+        description:
+          "Moves between ideas in the tray, and between options in an open picker. Home and End jump to the first and last option.",
+      },
+      {
+        keys: ["←", "→"],
+        description: "Moves between the tray's tabs and shows each one.",
+      },
+      {
+        keys: ["Enter", "Space"],
+        description: "Chooses the active option in a picker and closes it.",
+      },
+      {
+        keys: ["Esc"],
+        description: "Closes an open picker and gives focus back to its trigger.",
+      },
+    ],
+    props: [
+      {
+        name: "PromptPerch",
+        props: [
+          {
+            name: "title",
+            type: "React.ReactNode",
+            description:
+              "The headline set in the lid above the composer. `<strong>` inside it is set heavier — “Turn your <strong>ideas</strong> into <strong>interfaces</strong>”. Without it there is no lid, and the robot sits on the composer with room left above it.",
+          },
+          {
+            name: "titleAs",
+            type: '"h1" | "h2" | "h3" | "p"',
+            defaultValue: '"h2"',
+            description: "The element the headline is set in.",
+          },
+          {
+            name: "placeholder",
+            type: "string | string[]",
+            defaultValue: '"What do you want to make?"',
+            description:
+              "An array turns over one line at a time while the field is empty and nobody is in it.",
+          },
+          {
+            name: "label",
+            type: "string",
+            defaultValue: '"Prompt"',
+            description: "The field's accessible name, and the form's when there is no title.",
+          },
+          {
+            name: "name",
+            type: "string",
+            defaultValue: '"prompt"',
+            description:
+              "The field's name, so a form `action` that reads `FormData` gets the prompt. Leave out `onSubmit` and the form submits natively.",
+          },
+          {
+            name: "value",
+            type: "string",
+            description: "Controlled text. Pair it with `onValueChange`.",
+          },
+          {
+            name: "defaultValue",
+            type: "string",
+            defaultValue: '""',
+            description: "Where an uncontrolled field starts.",
+          },
+          {
+            name: "onValueChange",
+            type: "(value: string) => void",
+            description:
+              "Fires on every change, including each frame of an idea typing itself in.",
+          },
+          {
+            name: "onSubmit",
+            type: "(submission: PromptPerchSubmission) => void",
+            description:
+              "Fires on Enter or the send button with `{ text, files, preset, model }`. The text is trimmed, and nothing fires while the field is empty and nothing is attached.",
+          },
+          {
+            name: "clearOnSubmit",
+            type: "boolean",
+            defaultValue: "true",
+            description: "Empties the field and the attachments once a prompt is sent.",
+          },
+          {
+            name: "busy",
+            type: "boolean",
+            defaultValue: "false",
+            description:
+              "The prompt is being worked on. The send button becomes stop and the robot thinks; when it goes back to false the robot hops.",
+          },
+          {
+            name: "onStop",
+            type: "() => void",
+            description: "Fires from the stop button. Without it, stop is drawn but disabled.",
+          },
+          {
+            name: "presets",
+            type: "PromptPerchOption[]",
+            description:
+              "The style presets, each `{ value, label, description?, icon? }`. Leave it out and the picker is not drawn.",
+          },
+          {
+            name: "preset",
+            type: "string | null",
+            description:
+              "Controlled preset. `null` is nothing chosen; choosing the chosen one again clears it.",
+          },
+          {
+            name: "defaultPreset",
+            type: "string | null",
+            defaultValue: "null",
+            description: "Where an uncontrolled preset starts.",
+          },
+          {
+            name: "onPresetChange",
+            type: "(preset: string | null) => void",
+            description: "Fires when a preset is chosen or cleared.",
+          },
+          {
+            name: "presetLabel",
+            type: "string",
+            defaultValue: '"Style"',
+            description: "The picker's name, and what its trigger says while nothing is chosen.",
+          },
+          {
+            name: "models",
+            type: "PromptPerchOption[]",
+            description: "The models. Leave it out and the picker is not drawn.",
+          },
+          {
+            name: "model",
+            type: "string",
+            description: "Controlled model.",
+          },
+          {
+            name: "defaultModel",
+            type: "string",
+            description: "Where an uncontrolled model starts. The first model when left out.",
+          },
+          {
+            name: "onModelChange",
+            type: "(model: string) => void",
+            description: "Fires when a model is chosen.",
+          },
+          {
+            name: "ideas",
+            type: "PromptPerchIdeaGroup[]",
+            description:
+              "The ideas tray, as groups of `{ value, label, icon?, ideas: { label, prompt?, icon? }[] }`. One group draws no tabs; none draws no tray and no toggle.",
+          },
+          {
+            name: "ideasOpen",
+            type: "boolean",
+            description: "Controlled tray.",
+          },
+          {
+            name: "defaultIdeasOpen",
+            type: "boolean",
+            defaultValue: "true",
+            description: "Whether an uncontrolled tray starts open.",
+          },
+          {
+            name: "onIdeasOpenChange",
+            type: "(open: boolean) => void",
+            description: "Fires when the ideas toggle opens or closes the tray.",
+          },
+          {
+            name: "ideasLabel",
+            type: "string",
+            defaultValue: '"Ideas"',
+            description: "The toggle's label, and the tray's accessible name.",
+          },
+          {
+            name: "onIdeaSelect",
+            type: "(idea: PromptPerchIdea, group: PromptPerchIdeaGroup) => void",
+            description:
+              "Fires when an idea is picked, before its `prompt` — or its label — is written into the field.",
+          },
+          {
+            name: "attachments",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "Whether files can be attached — by the clip, by dropping them on the composer, or by pasting.",
+          },
+          {
+            name: "accept",
+            type: "string",
+            description:
+              "The types taken, in the `accept` attribute's syntax: `image/*,.pdf`. Dropped and pasted files are held to it too.",
+          },
+          {
+            name: "maxFiles",
+            type: "number",
+            defaultValue: "8",
+            description: "How many files can be attached at once. Extra ones are refused.",
+          },
+          {
+            name: "files",
+            type: "File[]",
+            description: "Controlled attachments.",
+          },
+          {
+            name: "defaultFiles",
+            type: "File[]",
+            description: "Where uncontrolled attachments start.",
+          },
+          {
+            name: "onFilesChange",
+            type: "(files: File[]) => void",
+            description: "Fires when a file is added or removed.",
+          },
+          {
+            name: "onFilesReject",
+            type: "(files: File[]) => void",
+            description:
+              "Fires with the files that were turned away, for the wrong type or for being over the limit. The robot shakes its head.",
+          },
+          {
+            name: "listening",
+            type: "boolean",
+            defaultValue: "false",
+            description:
+              "Whether voice input is on. The robot listens, and the button's bars move.",
+          },
+          {
+            name: "onListeningChange",
+            type: "(listening: boolean) => void",
+            description:
+              "Fires from the voice button. The voice button is drawn only when this is passed; what listening does is yours.",
+          },
+          {
+            name: "companion",
+            type: "boolean",
+            defaultValue: "true",
+            description: "The robot. Turn it off for a plain composer.",
+          },
+          {
+            name: "peek",
+            type: "boolean",
+            defaultValue: "true",
+            description:
+              "The robot climbs up from behind the composer the first time it scrolls into view. Off, it is simply there.",
+          },
+          {
+            name: "disabled",
+            type: "boolean",
+            defaultValue: "false",
+            description: "Disables the field and every control.",
+          },
+          {
+            name: "autoFocus",
+            type: "boolean",
+            defaultValue: "false",
+            description: "Focuses the field on mount.",
+          },
+          {
+            name: "maxRows",
+            type: "number",
+            defaultValue: "8",
+            description: "How many lines the field grows to before it scrolls.",
+          },
+          {
+            name: "className",
+            type: "string",
+            description:
+              "Merged onto the form through `cn`. Give it a width; the robot sizes itself from it.",
+          },
+        ],
+      },
+      {
+        name: "PromptPerchSubmission",
+        description: "What `onSubmit` receives.",
+        props: [
+          { name: "text", type: "string", description: "The prompt, trimmed." },
+          { name: "files", type: "File[]", description: "The attachments, in order." },
+          {
+            name: "preset",
+            type: "string | null",
+            description: "The chosen preset's value, or `null`.",
+          },
+          {
+            name: "model",
+            type: "string | null",
+            description: "The chosen model's value, or `null` when there are no models.",
+          },
+        ],
+      },
+    ],
+    usage: `import { PromptPerch } from "@/components/joinui/prompt-perch"
+
+export function Example() {
+  return (
+    <PromptPerch
+      className="max-w-3xl"
+      title={
+        <>
+          Turn your <strong>ideas</strong> into <strong>interfaces</strong>
+        </>
+      }
+      placeholder="What do you want to design?"
+      models={[
+        { value: "auto", label: "Auto" },
+        { value: "fast", label: "Fast" },
+      ]}
+      onSubmit={({ text, files, model }) => generate({ text, files, model })}
+    />
+  )
+}`,
+    customization: [
+      {
+        title: "Wire it to a request",
+        description:
+          "The composer knows nothing about your backend. onSubmit hands over the prompt, the files and the choices; busy says the work has started, and turning it off says it is done, which is when the robot hops. Give it onStop and the stop button aborts the request.",
+        code: `const [busy, setBusy] = React.useState(false)
+const controller = React.useRef<AbortController | null>(null)
+
+<PromptPerch
+  busy={busy}
+  onStop={() => controller.current?.abort()}
+  onSubmit={async ({ text, files, model }) => {
+    controller.current = new AbortController()
+    setBusy(true)
+    try {
+      await generate({ text, files, model, signal: controller.current.signal })
+    } finally {
+      setBusy(false)
+    }
+  }}
+/>`,
+      },
+      {
+        title: "Give it ideas",
+        description:
+          "Ideas are grouped into tabs, each with an icon. An idea's label is what the row says; its prompt, if you give one, is what gets written into the field — so the row can stay short while the prompt is detailed. With one group the tabs disappear.",
+        code: `import { Hourglass, Lightbulb, Smartphone } from "lucide-react"
+
+const ideas = [
+  {
+    value: "suggested",
+    label: "Suggested",
+    icon: <Lightbulb />,
+    ideas: [
+      {
+        label: "A landing page for a time-tracking app",
+        prompt:
+          "A landing page for a time-tracking app. A live timer in the hero, three pricing tiers and a FAQ.",
+        icon: <Hourglass />,
+      },
+    ],
+  },
+  { value: "apps", label: "Apps", icon: <Smartphone />, ideas: [/* … */] },
+]
+
+<PromptPerch ideas={ideas} defaultIdeasOpen={false} />`,
+      },
+      {
+        title: "Wire up voice",
+        description:
+          "The voice button appears only when onListeningChange is passed, and listening is yours to drive: start a recogniser, stream a transcript into a controlled value, and turn listening off when it ends. The robot listens with blue eyes while it is on.",
+        code: `const [value, setValue] = React.useState("")
+const [listening, setListening] = React.useState(false)
+
+useSpeechRecognition({
+  enabled: listening,
+  onTranscript: setValue,
+  onEnd: () => setListening(false),
+})
+
+<PromptPerch
+  value={value}
+  onValueChange={setValue}
+  listening={listening}
+  onListeningChange={setListening}
+/>`,
+      },
+      {
+        title: "Submit natively",
+        description:
+          "Leave out onSubmit and the composer submits as a plain form, so a server action gets the prompt in FormData under the field's name. Attachments, presets and models stay client-side; reach for onSubmit when you need them.",
+        code: `<PromptPerch
+  name="prompt"
+  attachments={false}
+  action={async (formData) => {
+    "use server"
+    await createDraft(String(formData.get("prompt")))
+  }}
+/>`,
+      },
+      {
+        title: "Retint the robot",
+        description:
+          "The robot reads three custom properties with sensible defaults: the shell, the screen and the resting eye. Its shell follows the popover surface, so it is a light toy on a light page and a graphite one on a dark one. Set the shell to white for a toy that stays white everywhere, or give the eyes your brand's colour. Listening and refusal keep the info and critical hues, because those are states.",
+        language: "css",
+        code: `/* app/globals.css */
+:root {
+  --prompt-perch-shell: oklch(0.985 0.004 85); /* warm ivory plastic */
+  --prompt-perch-eye: oklch(0.82 0.16 190);    /* cyan */
+}
+
+.dark {
+  --prompt-perch-shell: oklch(0.93 0.006 85);  /* still ivory, a touch dimmer */
+  --prompt-perch-screen: oklch(0.12 0 0);
+}`,
+      },
+    ],
+    /**
+     * Shipped with the registry item so `shadcn add` writes the palette into the
+     * consumer's `globals.css`. Both themes are declared: the robot's screen is
+     * a `.dark` island and reads the dark values on any page.
+     */
+    cssVars: {
+      theme: {
+        "color-info": "var(--info)",
+        "color-info-soft": "var(--info-soft)",
+        "color-info-foreground": "var(--info-foreground)",
+        "color-positive": "var(--positive)",
+        "color-positive-soft": "var(--positive-soft)",
+        "color-positive-foreground": "var(--positive-foreground)",
+        "color-caution": "var(--caution)",
+        "color-caution-soft": "var(--caution-soft)",
+        "color-caution-foreground": "var(--caution-foreground)",
+        "color-critical": "var(--critical)",
+        "color-critical-soft": "var(--critical-soft)",
+        "color-critical-foreground": "var(--critical-foreground)",
+      },
+      light: {
+        info: "#0068d1",
+        "info-soft": "#e8f1fc",
+        "info-foreground": "#ffffff",
+        positive: "#1a7f37",
+        "positive-soft": "#e6f4ea",
+        "positive-foreground": "#ffffff",
+        caution: "#b05a00",
+        "caution-soft": "#fdf1e1",
+        "caution-foreground": "#ffffff",
+        critical: "#d70015",
+        "critical-soft": "#fdeaea",
+        "critical-foreground": "#ffffff",
+      },
+      dark: {
+        info: "#409cff",
+        "info-soft": "#0c2541",
+        "info-foreground": "#00152e",
+        positive: "#30d158",
+        "positive-soft": "#0d2b16",
+        "positive-foreground": "#002910",
+        caution: "#ffb340",
+        "caution-soft": "#2f2208",
+        "caution-foreground": "#2b1700",
+        critical: "#ff6961",
+        "critical-soft": "#35100f",
+        "critical-foreground": "#330000",
+      },
+    },
+    related: ["approval-gate", "proof-of-work", "tool-trace"],
+    since: "2026-11-23",
+  }),
 ]
